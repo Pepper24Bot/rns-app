@@ -73,29 +73,36 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
               width: 8,
               height: 8,
             },
+            // TODO: Create a light version for scrollbar
             ...(mode === "light"
               ? {
                   "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
-                    // backgroundColor: '#7D8F69',
+                    width: "6px",
+                    height: "6px",
+                    backgroundColor: "#0d0d0d",
                   },
                   "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
-                    backgroundColor: "#557153",
+                    backgroundColor: "#C2185B",
+                    borderRadius: "8px",
                   },
                   "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
                     {
-                      backgroundColor: "#7D8F69",
+                      backgroundColor: "#540624",
                     },
                 }
               : {
                   "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
-                    // backgroundColor: grey[900],
+                    width: "6px",
+                    height: "6px",
+                    backgroundColor: "#0d0d0d",
                   },
                   "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
-                    backgroundColor: alpha(grey[800], 0.75),
+                    backgroundColor: "#C2185B",
+                    borderRadius: "8px",
                   },
                   "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
                     {
-                      backgroundColor: alpha(yellow[800], 0.5),
+                      backgroundColor: "#540624",
                     },
                 }),
           },
@@ -118,6 +125,7 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
       },
       palette: {
         mode,
+        // TODO: Create a light theme version
         ...(mode === "light"
           ? {
               background: {
@@ -143,22 +151,19 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
             }
           : {
               background: {
-                paper: darken(grey[900], 0.5),
-                default: darken(grey[700], 0.75),
-
-                light: grey[500],
-                dark: darken(grey[900], 0.75),
-                darker: darken(grey[900], 1),
+                paper: "#000000", // High Contrast Background
+                default: "#100208", // Dark Primary Color
+                dark: "#1A1A1A",
+                darker: "#0C0C0C",
               },
               primary: {
-                light: yellow[700],
-                main: yellow[800],
-                dark: "#000000",
+                main: "#C2185B",
+                dark: "#540624",
                 contrastText: "#FFFFFF",
               },
               secondary: {
-                main: alpha(yellow[800], 0.75),
-                dark: grey[800],
+                main: "#A40544",
+                dark: "#3E3D3D",
                 contrastText: "#FFFFFF",
               },
             }),

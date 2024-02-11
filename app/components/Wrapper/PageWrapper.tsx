@@ -3,12 +3,15 @@
 import React from "react";
 import { Grid, styled } from "@mui/material";
 import { Provider } from "react-redux";
+
 import store from "@/redux/store";
 
+import PageNavigation from "@/components/Navigation/NavigationBar";
 import GlobalTheme from "../Theme/Global";
 
 const WrapperContainer = styled(Grid)(({ theme }) => ({
-  padding: theme.spacing(3),
+  minHeight: "250vh",
+  backgroundColor: theme.palette.background.paper,
 }));
 
 export interface WrapperProps {
@@ -22,7 +25,7 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
     <Provider store={store}>
       <GlobalTheme>
         <WrapperContainer>
-          {/* TODO: Add PageNavigation */}
+          <PageNavigation />
           {/* TODO: Mount PageModal */}
           {/* TODO: Mount PageSnackbars */}
           {children}
