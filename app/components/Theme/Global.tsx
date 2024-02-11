@@ -57,7 +57,7 @@ declare module "@mui/material/styles" {
 
 export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
   const { children } = props;
-  const { useTheme, toggleTheme, updateTheme } = useThemeState();
+  const { useTheme, updateTheme } = useThemeState();
   const { theme: mode } = useTheme();
 
   /** TODO: Clean this please */

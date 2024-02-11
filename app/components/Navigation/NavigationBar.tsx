@@ -9,10 +9,19 @@ import {
   Box,
   Chip,
   alpha,
+  Typography,
 } from "@mui/material";
-import { Flex, FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
+import {
+  BaseButton,
+  WalletButton,
+  Flex,
+  FlexCenter,
+  FlexJustified,
+} from "../Theme/StyledGlobal";
 
 import Image from "next/image";
+import { useAccount } from "wagmi";
+import { useModalState } from "@/redux/modal/modalSlice";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -34,6 +43,7 @@ const Navigation = styled(MuiAppBar, {
 }));
 
 const NavigationContainer = styled(FlexCenter)(({ theme }) => ({
+  filter: `drop-shadow(0px 0px 15px #000000)`,
   backgroundColor: alpha(theme.palette.primary.dark, 0.15),
   border: `solid 1px ${alpha(theme.palette.primary.main, 0.5)}`,
   borderRadius: "8px",
@@ -46,6 +56,8 @@ const Contents = styled(FlexJustified)(({ theme }) => ({
   width: "100%",
   padding: "10px 40px",
 }));
+
+const ToolbarContainer = styled(Flex)(({ theme }) => ({}));
 
 export type ScrollProps = {
   window?: () => Window;
@@ -70,6 +82,14 @@ export const HideOnScrollBar: React.FC<ScrollProps> = (props: ScrollProps) => {
 };
 
 export const NavigationBar: React.FC = () => {
+  const account = useAccount();
+  const { toggleModal } = useModalState();
+
+  const isWalletConnected = account.isConnected;
+  const walletAddress = account.address;
+
+  console.log("is wallet connected:: ", account.isConnected);
+
   return (
     <HideOnScrollBar>
       <Navigation>
@@ -81,7 +101,31 @@ export const NavigationBar: React.FC = () => {
               width={260}
               height={30}
             />
-            <Flex>Social Media</Flex>
+            <ToolbarContainer>
+              <WalletButton
+                variant="contained"
+                onClick={() => {
+                  toggleModal({
+                    title: "Choose your Wallet",
+                    node: (
+                      <Typography>
+                        By connecting your wallet, you agree to our Terms of
+                        Service and our Privacy Policy.
+                      </Typography>
+                    ),
+                  });
+                }}
+              >
+                <Image
+                  src="/icons/wallet.svg"
+                  alt="RNS Icon"
+                  width={24}
+                  height={24}
+                  style={{ marginRight: "8px", color: "white" }}
+                />
+                {isWalletConnected ? walletAddress : "Connect Wallet"}
+              </WalletButton>
+            </ToolbarContainer>
           </Contents>
         </NavigationContainer>
       </Navigation>
