@@ -1,7 +1,14 @@
 import React from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { Dialog as MuiDialog, Grid, styled, alpha } from "@mui/material";
+import {
+  Dialog as MuiDialog,
+  Grid,
+  styled,
+  alpha,
+  IconButton,
+} from "@mui/material";
 import { FlexCenter } from "../Theme/StyledGlobal";
+import { Close } from "@mui/icons-material";
 import Paragraph from "../Reusables/Paragraph";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
@@ -29,19 +36,36 @@ const Title = styled(Grid)(({ theme }) => ({
 
 const Content = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
-  padding: "50px 45px",
+  padding: "50px 45px 40px 45px",
   margin: "1px",
   borderRadius: "8px",
 }));
 
+const CloseIcon = styled(Close)(({ theme }) => ({
+  position: "absolute",
+  right: 25,
+  top: 25,
+  color: alpha(theme.palette.primary.contrastText, 0.5),
+
+  "&:hover": {
+    color: alpha(theme.palette.primary.contrastText, 0.75),
+    cursor: "pointer",
+  },
+}));
+
 export const ModalContainer: React.FC = () => {
-  const { useModal, toggleModal, closeModal } = useModalState();
+  const { useModal, closeModal } = useModalState();
   const { isModalOpen, props } = useModal();
 
   return (
     <Dialog open={isModalOpen} onClose={closeModal}>
       <DialogContainer>
         <Content>
+          <CloseIcon
+            onClick={() => {
+              closeModal();
+            }}
+          />
           <Title>{props?.title}</Title>
           {props?.description && <Paragraph description={props?.description} />}
           {props?.node}

@@ -1,30 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   useScrollTrigger,
   styled,
-  Grid,
   Slide,
   AppBar as MuiAppBar,
-  Avatar,
-  Box,
-  Chip,
   alpha,
-  Typography,
 } from "@mui/material";
-import {
-  BaseButton,
-  WalletButton,
-  Flex,
-  FlexCenter,
-  FlexJustified,
-} from "../Theme/StyledGlobal";
+import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 
-import { useAccount } from "wagmi";
-import { useModalState } from "@/redux/modal/modalSlice";
 import Image from "next/image";
-import WalletsContainer from "../Modal/Wallets";
-import { getMaskedAddress } from "@/services/utils";
-import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
+import Toolbar from "./Toolbar";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -60,8 +45,6 @@ const Contents = styled(FlexJustified)(({ theme }) => ({
   padding: "10px 40px",
 }));
 
-const ToolbarContainer = styled(Flex)(({ theme }) => ({}));
-
 export type ScrollProps = {
   window?: () => Window;
   children: React.ReactElement;
@@ -85,27 +68,6 @@ export const HideOnScrollBar: React.FC<ScrollProps> = (props: ScrollProps) => {
 };
 
 export const NavigationBar: React.FC = () => {
-  const { address, isConnected, connector } = useAccount();
-  const { toggleModal } = useModalState();
-  const { path } = useWalletIcon({ name: connector?.name as Wallet });
-
-  /**
-   * Move wallet label and icon path to useState/useEffect
-   * to fix nextjs hydration issue wherein the generated
-   * html on the server does not match the rendered html
-   * on the client-side
-   */
-  const [walletLabel, setWalletLabel] = useState<string>("Connect Wallet");
-  const [iconPath, setIconPath] = useState<string>("/icons/wallet.svg");
-
-  useEffect(() => {
-    const label = address ? getMaskedAddress(address) : "Connect Wallet";
-    setWalletLabel(label);
-
-    const walletIcon = address ? path : "/icons/wallet.svg";
-    setIconPath(walletIcon);
-  }, [address]);
-
   return (
     <HideOnScrollBar>
       <Navigation>
@@ -117,26 +79,7 @@ export const NavigationBar: React.FC = () => {
               width={260}
               height={30}
             />
-            <ToolbarContainer>
-              <WalletButton
-                variant="contained"
-                onClick={() => {
-                  toggleModal({
-                    title: "Choose your Wallet",
-                    node: <WalletsContainer />,
-                  });
-                }}
-              >
-                <Image
-                  src={iconPath}
-                  alt={connector?.name || "Wallet Icon"}
-                  width={24}
-                  height={24}
-                  style={{ marginRight: "8px", color: "white" }}
-                />
-                {walletLabel}
-              </WalletButton>
-            </ToolbarContainer>
+            <Toolbar />
           </Contents>
         </NavigationContainer>
       </Navigation>

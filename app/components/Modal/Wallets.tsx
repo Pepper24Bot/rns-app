@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, Typography, alpha, styled } from "@mui/material";
 import { Description, useModalState } from "@/redux/modal/modalSlice";
-import { useAccount, useConnect, useConnectors } from "wagmi";
-import { Flex } from "../Theme/StyledGlobal";
+import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
+import { ActionButton, Flex, FlexRight } from "../Theme/StyledGlobal";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -32,11 +32,13 @@ const WalletItem = styled(Flex, {
     : alpha(theme.palette.primary.dark, 0.1),
   filter: `drop-shadow(0px 4px 10px ${alpha(
     theme.palette.background.paper,
-    0.5
+    0.75
   )})`,
 
   "&:hover": {
-    backgroundColor: alpha(theme.palette.primary.dark, 0.25),
+    backgroundColor: isActive
+      ? theme.palette.primary.dark
+      : alpha(theme.palette.primary.dark, 0.25),
     border: `solid 1px ${alpha(theme.palette.primary.main, 0.5)}`,
     cursor: "pointer",
   },
@@ -53,6 +55,7 @@ export const Wallets: React.FC = () => {
   const connectors = useConnectors();
   const { connect } = useConnect();
   const { connector: activeConnector } = useAccount();
+  const { disconnect, isPending: isDisconnecting } = useDisconnect();
 
   const { closeModal } = useModalState();
   const { getIcon } = useWalletIcon();
@@ -74,7 +77,9 @@ export const Wallets: React.FC = () => {
 
   return (
     <Container>
-      <Paragraph description={description} />
+      {!activeConnector?.name && !isDisconnecting && (
+        <Paragraph description={description} />
+      )}
       <WalletsContainer>
         {connectors?.map((connector) => {
           return (
@@ -98,6 +103,19 @@ export const Wallets: React.FC = () => {
             )
           );
         })}
+        {activeConnector?.name && (
+          <FlexRight>
+            <ActionButton
+              variant="contained"
+              onClick={() => {
+                disconnect();
+                closeModal();
+              }}
+            >
+              Disconnect
+            </ActionButton>
+          </FlexRight>
+        )}
       </WalletsContainer>
     </Container>
   );

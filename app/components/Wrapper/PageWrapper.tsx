@@ -5,7 +5,7 @@ import { Grid, styled } from "@mui/material";
 import { Provider } from "react-redux";
 
 import { WagmiProvider } from "wagmi";
-import { config } from "@/services/config";
+import { config } from "@/chains/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import store from "@/redux/store";
