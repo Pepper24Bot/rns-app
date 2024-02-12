@@ -4,10 +4,15 @@ import { useDispatch } from "react-redux"
 import { RootState } from "../store"
 import { isEmpty } from "lodash"
 
+export interface Description {
+    content: string
+    highlights?: string[]
+}
+
 export interface ModalProps {
     node?: React.ReactNode
     title?: string
-    description?: string
+    description?: string | Description
     id?: string
 
     // Implement as needed
@@ -30,12 +35,12 @@ export const modalState = createSlice({
     initialState,
     reducers: {
         toggleModal: (state, { payload }: { payload: ModalProps }): void => {
-            if (isEmpty(payload?.title)) {
+            if (isEmpty(payload)) {
                 console.log('[false] toggle modal....')
                 state.isModalOpen = false
             }
 
-            if (!isEmpty(payload?.title)) {
+            if (!isEmpty(payload)) {
                 console.log('[true] toggle modal....')
                 state.isModalOpen = true
                 state.props = payload

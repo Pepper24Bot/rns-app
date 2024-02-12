@@ -17,3 +17,12 @@ export const parseCookie = (key: string) => {
         return value
     }
 }
+
+/**
+ * This util will return a masked address
+ * @param address string
+ * @returns string
+ */
+export const getMaskedAddress = (address: string, index?: number) => {
+    return `${address.slice(0, 6)}...${address.slice(-6)}`
+}

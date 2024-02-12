@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   useScrollTrigger,
   styled,
@@ -19,9 +19,12 @@ import {
   FlexJustified,
 } from "../Theme/StyledGlobal";
 
-import Image from "next/image";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
+import Image from "next/image";
+import WalletsContainer from "../Modal/Wallets";
+import { getMaskedAddress } from "@/services/utils";
+import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -82,13 +85,26 @@ export const HideOnScrollBar: React.FC<ScrollProps> = (props: ScrollProps) => {
 };
 
 export const NavigationBar: React.FC = () => {
-  const account = useAccount();
+  const { address, isConnected, connector } = useAccount();
   const { toggleModal } = useModalState();
+  const { path } = useWalletIcon({ name: connector?.name as Wallet });
 
-  const isWalletConnected = account.isConnected;
-  const walletAddress = account.address;
+  /**
+   * Move wallet label and icon path to useState/useEffect
+   * to fix nextjs hydration issue wherein the generated
+   * html on the server does not match the rendered html
+   * on the client-side
+   */
+  const [walletLabel, setWalletLabel] = useState<string>("Connect Wallet");
+  const [iconPath, setIconPath] = useState<string>("/icons/wallet.svg");
 
-  console.log("is wallet connected:: ", account.isConnected);
+  useEffect(() => {
+    const label = address ? getMaskedAddress(address) : "Connect Wallet";
+    setWalletLabel(label);
+
+    const walletIcon = address ? path : "/icons/wallet.svg";
+    setIconPath(walletIcon);
+  }, [address]);
 
   return (
     <HideOnScrollBar>
@@ -107,23 +123,18 @@ export const NavigationBar: React.FC = () => {
                 onClick={() => {
                   toggleModal({
                     title: "Choose your Wallet",
-                    node: (
-                      <Typography>
-                        By connecting your wallet, you agree to our Terms of
-                        Service and our Privacy Policy.
-                      </Typography>
-                    ),
+                    node: <WalletsContainer />,
                   });
                 }}
               >
                 <Image
-                  src="/icons/wallet.svg"
-                  alt="RNS Icon"
+                  src={iconPath}
+                  alt={connector?.name || "Wallet Icon"}
                   width={24}
                   height={24}
                   style={{ marginRight: "8px", color: "white" }}
                 />
-                {isWalletConnected ? walletAddress : "Connect Wallet"}
+                {walletLabel}
               </WalletButton>
             </ToolbarContainer>
           </Contents>

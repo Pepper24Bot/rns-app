@@ -38,3 +38,8 @@ export const WalletButton = styled(Button)(({ theme }) => ({
     fontFamily: "Roboto Mono",
   },
 }));
+
+export const HighlightText = styled("span")(({ theme }) => ({
+  fontWeight: 700,
+  color: theme.palette.text.primary,
+}));

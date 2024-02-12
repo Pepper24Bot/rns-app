@@ -2,6 +2,7 @@ import React from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Dialog as MuiDialog, Grid, styled, alpha } from "@mui/material";
 import { FlexCenter } from "../Theme/StyledGlobal";
+import Paragraph from "../Reusables/Paragraph";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -18,9 +19,15 @@ const DialogContainer = styled(FlexCenter)(({ theme }) => ({
   background: "linear-gradient(180deg, #000000 32.5%, #c2185b 100%)",
 }));
 
-const DialogTitle = styled(Grid)(({ theme }) => ({}));
+const Title = styled(Grid)(({ theme }) => ({
+  fontFamily: "Roboto Mono",
+  fontSize: "24px",
+  fontWeight: 700,
+  textAlign: "center",
+  marginBottom: "15px",
+}));
 
-const DialogContent = styled(Grid)(({ theme }) => ({
+const Content = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
   padding: "50px 45px",
   margin: "1px",
@@ -34,10 +41,11 @@ export const ModalContainer: React.FC = () => {
   return (
     <Dialog open={isModalOpen} onClose={closeModal}>
       <DialogContainer>
-        <DialogContent>
-          <DialogTitle>{props?.title}</DialogTitle>
+        <Content>
+          <Title>{props?.title}</Title>
+          {props?.description && <Paragraph description={props?.description} />}
           {props?.node}
-        </DialogContent>
+        </Content>
       </DialogContainer>
     </Dialog>
   );

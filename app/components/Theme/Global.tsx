@@ -162,9 +162,9 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
                 contrastText: "#FFFFFF",
               },
               secondary: {
-                main: "#A40544",
+                main: "#C7C7C7",
                 dark: "#3E3D3D",
-                contrastText: "#FFFFFF",
+                contrastText: "#000000",
               },
             }),
       },
