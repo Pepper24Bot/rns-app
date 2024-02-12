@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   useScrollTrigger,
   styled,
@@ -7,9 +7,13 @@ import {
   alpha,
 } from "@mui/material";
 import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
+import { useAccount } from "wagmi";
+import { porcini } from "@/chains/porcini";
 
 import Image from "next/image";
 import Toolbar from "./Toolbar";
+import { useModalState } from "@/redux/modal/modalSlice";
+import SwitchNetwork from "../Modal/SwitchNetwork";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -33,8 +37,8 @@ const Navigation = styled(MuiAppBar, {
 const NavigationContainer = styled(FlexCenter)(({ theme }) => ({
   filter: `drop-shadow(0px 0px 15px #000000)`,
   backgroundColor: alpha(theme.palette.primary.dark, 0.15),
-  border: `solid 1px ${alpha(theme.palette.primary.main, 0.5)}`,
   borderRadius: "8px",
+  border: `solid 1px ${alpha(theme.palette.primary.main, 0.5)}`,
   height: "60px",
   margin: "10px",
 }));
@@ -68,6 +72,23 @@ export const HideOnScrollBar: React.FC<ScrollProps> = (props: ScrollProps) => {
 };
 
 export const NavigationBar: React.FC = () => {
+  const { address, chainId } = useAccount();
+  const { toggleModal, closeModal } = useModalState();
+
+  // TODO: Mount this somewhere else
+  useEffect(() => {
+    console.log("chainId:: ", chainId);
+    if (chainId !== undefined && chainId !== porcini.id) {
+      toggleModal({
+        title: "Switch Network",
+        node: <SwitchNetwork />,
+        isCloseDisabled: true,
+      });
+    } else {
+      closeModal();
+    }
+  }, [chainId, address]);
+
   return (
     <HideOnScrollBar>
       <Navigation>

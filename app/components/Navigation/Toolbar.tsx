@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { alpha, styled } from "@mui/material";
+import { Link, alpha, styled } from "@mui/material";
 import { X } from "@mui/icons-material";
 import {
   Divider,
@@ -58,12 +58,16 @@ export const Toolbar: React.FC = () => {
 
   return (
     <ToolbarContainer>
-      <SocialButton variant="outlined">
-        <i className="fa-brands fa-discord fa-xl" />
-      </SocialButton>
-      <SocialButton variant="outlined">
-        <i className="fa-brands fa-x-twitter fa-xl" />
-      </SocialButton>
+      <Link href="https://twitter.com/RootNameService" target="_blank">
+        <SocialButton variant="outlined">
+          <i className="fa-brands fa-discord fa-xl" />
+        </SocialButton>
+      </Link>
+      <Link href="https://twitter.com/RootNameService" target="_blank">
+        <SocialButton variant="outlined">
+          <i className="fa-brands fa-x-twitter fa-xl" />
+        </SocialButton>
+      </Link>
       <Divider orientation="vertical" flexItem />
       <ToolbarButton
         variant="contained"

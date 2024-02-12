@@ -4,12 +4,11 @@
  * Docs: https://wagmi.sh/core/api/chains#create-chain
  */
 
-import { defineChain } from 'viem/utils/chain/defineChain'
 import { type Chain } from 'viem'
 
-export const root = /*#__PURE__*/ defineChain({
+export const root = {
     id: 7668,
-    name: 'Root',
+    name: 'Root Mainnet',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 6 },
     rpcUrls: {
         default: {
@@ -36,4 +35,4 @@ export const root = /*#__PURE__*/ defineChain({
     //         blockCreated: 14_353_601,
     //     },
     // },
-})
+} as const satisfies Chain

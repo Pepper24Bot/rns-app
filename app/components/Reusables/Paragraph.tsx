@@ -1,19 +1,13 @@
 import React from "react";
 import { Description } from "@/redux/modal/modalSlice";
-import { HighlightText } from "../Theme/StyledGlobal";
-import { Grid, styled } from "@mui/material";
+import {
+  Description as StyledDescription,
+  HighlightText,
+} from "../Theme/StyledGlobal";
 
 export interface Paragraph {
   description?: Description | string;
 }
-
-const Description = styled(Grid)(({ theme }) => ({
-  fontFamily: "Roboto Mono",
-  textAlign: "center",
-  fontSize: "12px",
-  fontWeight: 200,
-  color: theme.palette.secondary.main,
-}));
 
 export const Paragraph: React.FC<Paragraph> = (props: Paragraph) => {
   const getDescription = (desc?: Description | string) => {
@@ -41,7 +35,9 @@ export const Paragraph: React.FC<Paragraph> = (props: Paragraph) => {
     }
   };
 
-  return <Description>{getDescription(props?.description)}</Description>;
+  return (
+    <StyledDescription>{getDescription(props?.description)}</StyledDescription>
+  );
 };
 
 export default Paragraph;

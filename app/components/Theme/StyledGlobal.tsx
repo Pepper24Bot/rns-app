@@ -40,11 +40,18 @@ export const BaseButton = styled(Button)(({ theme }) => ({
 export const ActionButton = styled(BaseButton)(({ theme }) => ({
   "&.MuiButtonBase-root": {
     marginTop: "35px",
-    border: `solid 1px ${alpha(grey[50], 0.15)}`,
     filter: `drop-shadow(0px 0px 10px ${alpha(
       theme.palette.background.paper,
       0.5
     )})`,
+  },
+  "&.MuiButton-contained": {
+    border: `solid 1px ${alpha(grey[50], 0.15)}`,
+  },
+  "&.MuiButton-text": {
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
   },
 }));
 
@@ -70,4 +77,12 @@ export const HighlightText = styled("span")(({ theme }) => ({
 export const Divider = styled(MuiDivider)(({ theme }) => ({
   margin: "4px 30px",
   borderColor: alpha(theme.palette.primary.main, 0.2),
+}));
+
+export const Description = styled(Grid)(({ theme }) => ({
+  fontFamily: "Roboto Mono",
+  textAlign: "center",
+  fontSize: "12px",
+  fontWeight: 200,
+  color: theme.palette.secondary.main,
 }));

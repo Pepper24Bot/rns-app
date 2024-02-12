@@ -4,12 +4,11 @@
  * Docs: https://wagmi.sh/core/api/chains#create-chain
  */
 
-import { defineChain } from 'viem/utils/chain/defineChain'
 import { type Chain } from 'viem'
 
 export const porcini = {
     id: 7672,
-    name: 'Root',
+    name: 'Root Testnet',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 6 },
     rpcUrls: {
         default: {

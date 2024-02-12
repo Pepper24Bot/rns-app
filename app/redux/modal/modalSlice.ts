@@ -14,6 +14,7 @@ export interface ModalProps {
     title?: string
     description?: string | Description
     id?: string
+    isCloseDisabled?: boolean,
 
     // Implement as needed
     saveCallback?: () => void,
@@ -36,12 +37,10 @@ export const modalState = createSlice({
     reducers: {
         toggleModal: (state, { payload }: { payload: ModalProps }): void => {
             if (isEmpty(payload)) {
-                console.log('[false] toggle modal....')
                 state.isModalOpen = false
             }
 
             if (!isEmpty(payload)) {
-                console.log('[true] toggle modal....')
                 state.isModalOpen = true
                 state.props = payload
             }

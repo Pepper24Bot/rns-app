@@ -31,7 +31,7 @@ const Title = styled(Grid)(({ theme }) => ({
   fontSize: "24px",
   fontWeight: 700,
   textAlign: "center",
-  marginBottom: "15px",
+  marginBottom: "20px",
 }));
 
 const Content = styled(Grid)(({ theme }) => ({
@@ -41,10 +41,13 @@ const Content = styled(Grid)(({ theme }) => ({
   borderRadius: "8px",
 }));
 
-const CloseIcon = styled(Close)(({ theme }) => ({
+const CloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
   right: 25,
   top: 25,
+}));
+
+const CloseIcon = styled(Close)(({ theme }) => ({
   color: alpha(theme.palette.primary.contrastText, 0.5),
 
   "&:hover": {
@@ -57,15 +60,36 @@ export const ModalContainer: React.FC = () => {
   const { useModal, closeModal } = useModalState();
   const { isModalOpen, props } = useModal();
 
+  const isCloseDisabled = props?.isCloseDisabled || false;
+
   return (
-    <Dialog open={isModalOpen} onClose={closeModal}>
+    <Dialog
+      open={isModalOpen}
+      onClose={() => {
+        if (isCloseDisabled) {
+          // do not allow modal to be closed
+        } else {
+          return closeModal();
+        }
+      }}
+      disableEscapeKeyDown={isCloseDisabled}
+    >
       <DialogContainer>
         <Content>
-          <CloseIcon
-            onClick={() => {
-              closeModal();
-            }}
-          />
+          <CloseButton
+            disabled={isCloseDisabled}
+            sx={{ opacity: isCloseDisabled ? 0.25 : 1 }}
+          >
+            <CloseIcon
+              onClick={() => {
+                if (isCloseDisabled) {
+                  // do not allow modal to be closed
+                } else {
+                  return closeModal();
+                }
+              }}
+            />
+          </CloseButton>
           <Title>{props?.title}</Title>
           {props?.description && <Paragraph description={props?.description} />}
           {props?.node}
