@@ -77,7 +77,7 @@ export const NavigationBar: React.FC = () => {
 
   // TODO: Mount this somewhere else
   useEffect(() => {
-    console.log("chainId:: ", chainId);
+    // console.log("chainId:: ", chainId);
     if (chainId !== undefined && chainId !== porcini.id) {
       toggleModal({
         title: "Switch Network",

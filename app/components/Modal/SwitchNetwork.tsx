@@ -11,6 +11,7 @@ import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useSwitchChain } from "wagmi";
+import { porciniWalletConfig } from "@/chains/porcini";
 
 const Container = styled(Grid)(({ theme }) => ({
   maxWidth: "360px",
@@ -54,7 +55,32 @@ export const SwitchNetwork: React.FC = () => {
   const { chains, switchChain } = useSwitchChain();
   const { closeModal } = useModalState();
 
-  console.log("chains:: ", chains);
+  // console.log("chains:: ", chains);
+
+  /**
+   * TODO:
+   * 1. Check for the existence of porcini/root network in the wallet
+   * - if root/porcini is not setup, call window.ethereum.request({method: 'wallet_addEthereumChain'})
+   * - else call wagmi switchChain()
+   *
+   */
+  // switchChain({ chainId: chains[0].id });
+  const switchNetwork = async () => {
+    const config = porciniWalletConfig;
+
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        const result = await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [config],
+        });
+
+        console.log("result:: ", result);
+      } catch (error) {
+        console.log("Error:: ", error);
+      }
+    }
+  };
 
   return (
     <Container>
@@ -95,7 +121,7 @@ export const SwitchNetwork: React.FC = () => {
           variant="contained"
           onClick={() => {
             // chains only include the root testnet
-            switchChain({ chainId: chains[0].id });
+            switchNetwork();
           }}
         >
           Confirm

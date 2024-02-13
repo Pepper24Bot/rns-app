@@ -9,7 +9,7 @@ import { type Chain } from 'viem'
 export const root = {
     id: 7668,
     name: 'Root Mainnet',
-    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 6 },
+    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: {
         default: {
             http: ['https://root.rootnet.live/archive'],

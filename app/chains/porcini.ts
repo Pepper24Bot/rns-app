@@ -6,10 +6,13 @@
 
 import { type Chain } from 'viem'
 
+/**
+ * Use this config to setup chain in wagmi
+ */
 export const porcini = {
     id: 7672,
     name: 'Root Testnet',
-    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 6 },
+    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: {
         default: {
             http: ['https://porcini.rootnet.app/archive'],
@@ -36,3 +39,14 @@ export const porcini = {
     //     },
     // },
 } as const satisfies Chain
+
+/**
+ * Use this config to programatically add this network to a wallet
+ */
+export const porciniWalletConfig = {
+    chainId: "0x1DF8",
+    chainName: 'Root Testnet',
+    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
+    rpcUrls: ['https://porcini.rootnet.app/archive'],
+    blockExplorerUrls: ['https://explorer.rootnet.cloud'],
+}
