@@ -5,32 +5,16 @@ import {
   Divider,
   ToolbarButton,
   Flex,
-  ActionButton,
+  SocialButton,
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
-import { grey } from "@mui/material/colors";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
 import WalletsContainer from "../Modal/Wallets";
 
 const ToolbarContainer = styled(Flex)(({ theme }) => ({}));
-
-const SocialButton = styled(ToolbarButton)(({ theme }) => ({
-  textTransform: "capitalize",
-  marginLeft: "5px",
-  "&.MuiButtonBase-root": {
-    color: theme.palette.text.primary,
-    backgroundColor: theme.palette.background.default,
-    border: `solid 1px ${theme.palette.primary.main}`,
-    height: "40px",
-    width: "50px",
-    "&:hover": {
-      backgroundColor: theme.palette.primary.dark,
-    },
-  },
-}));
 
 export const Toolbar: React.FC = () => {
   const { address, connector } = useAccount();

@@ -5,10 +5,11 @@
     "paths": {
       "@/*": [
         // "./*"
-        "./app/*"
+        "./app/*",
+        "./public/*"
       ]
     },
-    "target": "ESNext",
+    "target": "ES2017",
     "lib": [
       "DOM",
       "DOM.Iterable",
@@ -37,7 +38,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/services/utils.ts"
+    "src/services/utils.ts",
+    "**/*.pdf",
   ],
   "exclude": [
     "node_modules"

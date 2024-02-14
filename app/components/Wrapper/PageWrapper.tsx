@@ -7,11 +7,13 @@ import { Provider } from "react-redux";
 import { WagmiProvider } from "wagmi";
 import { config } from "@/chains/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Flex } from "../Theme/StyledGlobal";
 
 import store from "@/redux/store";
 import PageNavigation from "@/components/Navigation/NavigationBar";
 import PageModal from "@/components/Modal/ModalContainer";
 import GlobalTheme from "../Theme/Global";
+import PageFooter from "../Footer/PageFooter";
 
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/700.css";
@@ -23,8 +25,11 @@ import "@fontsource/roboto-mono/700.css";
 const queryClient = new QueryClient();
 
 const WrapperContainer = styled(Grid)(({ theme }) => ({
-  minHeight: "100vh",
   backgroundColor: theme.palette.background.paper,
+}));
+
+const ContentContainer = styled(Grid)(({ theme }) => ({
+  minHeight: "calc(100vh - 198px)",
 }));
 
 export interface WrapperProps {
@@ -41,11 +46,13 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
         <Provider store={store}>
           <GlobalTheme>
             <WrapperContainer>
-              <PageNavigation />
-              <PageModal />
-              {/* TODO: Mount PageSnackbars */}
-              {children}
-              {/* TODO: Add PageFooter */}
+              <ContentContainer>
+                <PageNavigation />
+                <PageModal />
+                {/* TODO: Mount PageSnackbars */}
+                {children}
+              </ContentContainer>
+              <PageFooter />
             </WrapperContainer>
           </GlobalTheme>
         </Provider>

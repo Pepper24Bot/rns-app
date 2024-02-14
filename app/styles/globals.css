@@ -1,0 +1,44 @@
+/* Modal PDF Reader starts here */
+.document-container .react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Page {
+  background-color: #0c0c0c !important;
+  width: 100%;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin-top: -75px;
+  left: -8%;
+  /* margin-left: -100px; */
+}
+
+.react-pdf__Page__canvas {
+}
+
+.react-pdf__Page__textContent {
+  background-color: #0c0c0c;
+}
+
+.textLayer {
+  /* border: solid yellow; */
+  /* background-color: red; */
+}
+
+.react-pdf__Page__annotations {
+  /* max-width: 580px; */
+  /* margin-top: -75px; */
+}
+
+.react-pdf__Page__textContent > span {
+  color: rgb(255, 255, 255, 0.75);
+  /* font-size: 12px !important; */
+  font-size: calc(var(--scale-factor) * 12.5px) !important;
+}
+
+.react-pdf__Page__annotations > section {
+  /* max-width: 580px; */
+  /* margin-top: -75px; */
+}

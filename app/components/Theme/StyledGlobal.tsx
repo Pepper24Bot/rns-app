@@ -69,6 +69,21 @@ export const ToolbarButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+export const SocialButton = styled(ToolbarButton)(({ theme }) => ({
+  textTransform: "capitalize",
+  marginLeft: "5px",
+  "&.MuiButtonBase-root": {
+    color: theme.palette.text.primary,
+    backgroundColor: theme.palette.background.default,
+    border: `solid 1px ${theme.palette.primary.main}`,
+    height: "40px",
+    width: "50px",
+    "&:hover": {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+}));
+
 export const HighlightText = styled("span")(({ theme }) => ({
   fontWeight: 700,
   color: theme.palette.text.primary,

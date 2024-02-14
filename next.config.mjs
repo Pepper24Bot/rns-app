@@ -3,4 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
 };
 
-export default nextConfig;
+export default {
+  reactStrictMode: true,
+  webpack: (config) => {
+    config.resolve.alias.canvas = false;
+    return config;
+  },
+};

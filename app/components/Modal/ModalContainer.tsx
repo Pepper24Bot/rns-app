@@ -6,13 +6,15 @@ import {
   styled,
   alpha,
   IconButton,
+  Link,
 } from "@mui/material";
-import { FlexCenter } from "../Theme/StyledGlobal";
+import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
 import Paragraph from "../Reusables/Paragraph";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
+    maxWidth: "900px",
     borderRadius: "8px",
     filter: `drop-shadow(0px 0px 15px ${alpha(
       theme.palette.primary.main,
@@ -22,7 +24,7 @@ const Dialog = styled(MuiDialog)(({ theme }) => ({
 }));
 
 const DialogContainer = styled(FlexCenter)(({ theme }) => ({
-  maxWidth: "670px",
+  maxWidth: "900px",
   background: "linear-gradient(180deg, #000000 32.5%, #c2185b 100%)",
 }));
 
@@ -34,11 +36,23 @@ const Title = styled(Grid)(({ theme }) => ({
   marginBottom: "20px",
 }));
 
-const Content = styled(Grid)(({ theme }) => ({
+const ContentContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
-  padding: "50px 45px 40px 45px",
   margin: "1px",
   borderRadius: "8px",
+}));
+
+const Content = styled(Grid)(({ theme }) => ({
+  padding: "0px 45px 0px 45px",
+}));
+
+const DownloadButton = styled(Link)(({ theme }) => ({
+  border: "none",
+  color: theme.palette.primary.main,
+
+  "&:hover": {
+    color: theme.palette.primary.dark,
+  },
 }));
 
 const CloseButton = styled(IconButton)(({ theme }) => ({
@@ -54,6 +68,11 @@ const CloseIcon = styled(Close)(({ theme }) => ({
     color: alpha(theme.palette.primary.contrastText, 0.75),
     cursor: "pointer",
   },
+}));
+
+const Footer = styled(FlexJustified)(({ theme }) => ({
+  borderTop: `solid 1px ${alpha(theme.palette.primary.dark, 0.75)}`,
+  padding: "24px 50px",
 }));
 
 export const ModalContainer: React.FC = () => {
@@ -75,25 +94,44 @@ export const ModalContainer: React.FC = () => {
       disableEscapeKeyDown={isCloseDisabled}
     >
       <DialogContainer>
-        <Content>
-          <CloseButton
-            disabled={isCloseDisabled}
-            sx={{ opacity: isCloseDisabled ? 0.25 : 1 }}
+        <ContentContainer>
+          {props?.header}
+          {/* TODO: Move the styling to styledcomponents */}
+          <Content
+            sx={{
+              paddingTop: props?.header ? "0px" : "50px",
+              paddingBottom: props?.header ? "10px" : "40px",
+            }}
           >
-            <CloseIcon
-              onClick={() => {
-                if (isCloseDisabled) {
-                  // do not allow modal to be closed
-                } else {
-                  return closeModal();
-                }
-              }}
-            />
-          </CloseButton>
-          <Title>{props?.title}</Title>
-          {props?.description && <Paragraph description={props?.description} />}
-          {props?.node}
-        </Content>
+            {!props?.isXDisabled && (
+              <CloseButton>
+                <CloseIcon
+                  onClick={() => {
+                    return closeModal();
+                  }}
+                />
+              </CloseButton>
+            )}
+            <Title>{props?.title}</Title>
+            {props?.description && (
+              <Paragraph description={props?.description} />
+            )}
+            {props?.node}
+          </Content>
+          {props?.isFooterEnabled && (
+            <Footer>
+              {props?.downloadFile && (
+                <DownloadButton href={props?.downloadFile} download>
+                  <i
+                    className="fa-solid fa-file-pdf"
+                    style={{ color: "#c2185b", marginRight: "8px" }}
+                  />
+                  Download
+                </DownloadButton>
+              )}
+            </Footer>
+          )}
+        </ContentContainer>
       </DialogContainer>
     </Dialog>
   );

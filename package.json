@@ -15,10 +15,13 @@
     "@reduxjs/toolkit": "1.9.5",
     "@tanstack/react-query": "^5.20.1",
     "@types/lodash": "^4.14.202",
+    "@types/pdfjs-dist": "^2.10.378",
     "lodash": "^4.17.21",
     "next": "latest",
+    "pdfjs-dist": "^4.0.379",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-pdf": "^7.7.0",
     "react-redux": "8.1.0",
     "viem": "^2.7.8",
     "wagmi": "^2.5.6"

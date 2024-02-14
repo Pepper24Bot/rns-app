@@ -3,6 +3,7 @@ import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { RootState } from "../store"
 import { isEmpty } from "lodash"
+import React from "react"
 
 export interface Description {
     content: string
@@ -11,10 +12,14 @@ export interface Description {
 
 export interface ModalProps {
     node?: React.ReactNode
+    header?: React.ReactNode
     title?: string
     description?: string | Description
     id?: string
-    isCloseDisabled?: boolean,
+    isCloseDisabled?: boolean
+    isXDisabled?: boolean
+    isFooterEnabled?: boolean
+    downloadFile?: string
 
     // Implement as needed
     saveCallback?: () => void,
