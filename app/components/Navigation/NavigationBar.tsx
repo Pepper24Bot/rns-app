@@ -81,7 +81,7 @@ export const NavigationBar: React.FC = () => {
     if (chainId !== undefined && chainId !== porcini.id) {
       toggleModal({
         title: "Switch Network",
-        node: <SwitchNetwork />,
+        content: <SwitchNetwork />,
         isCloseDisabled: true,
       });
     } else {

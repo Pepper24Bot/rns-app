@@ -89,12 +89,12 @@ export const PageFooter: React.FC = () => {
           />
           <Typography>{title}</Typography>
         </Flex>
-        <IconButton>
-          <CloseIcon
-            onClick={() => {
-              return closeModal();
-            }}
-          />
+        <IconButton
+          onClick={() => {
+            return closeModal();
+          }}
+        >
+          <CloseIcon />
         </IconButton>
       </Header>
     );
@@ -136,8 +136,9 @@ export const PageFooter: React.FC = () => {
             <TermsPolicy
               onClick={() => {
                 toggleModal({
-                  node: <PolicyAndTerms type="Policy" />,
-                  header: getTermsAndPolicyHeader("Privacy Policy"),
+                  // content: <PolicyAndTerms type="Policy" />,
+                  // header: getTermsAndPolicyHeader("Privacy Policy"),
+                  title: "Privacy Policy",
                   isXDisabled: true,
                   isFooterEnabled: true,
                   downloadFile: "/documents/rns-privacy-policy.pdf",
@@ -149,7 +150,7 @@ export const PageFooter: React.FC = () => {
             <TermsPolicy
               onClick={() => {
                 toggleModal({
-                  node: <PolicyAndTerms type="Terms" />,
+                  content: <PolicyAndTerms type="Terms" />,
                   header: getTermsAndPolicyHeader("Terms of Service"),
                   isXDisabled: true,
                   isFooterEnabled: true,

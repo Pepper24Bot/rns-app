@@ -11,7 +11,7 @@ export interface Description {
 }
 
 export interface ModalProps {
-    node?: React.ReactNode
+    content?: React.ReactNode
     header?: React.ReactNode
     title?: string
     description?: string | Description
@@ -29,7 +29,7 @@ export interface ModalProps {
 
 export interface ModalState {
     isModalOpen: boolean,
-    props?: ModalProps
+    props?: ModalProps,
 }
 
 const initialState: ModalState = {

@@ -58,7 +58,7 @@ export const Toolbar: React.FC = () => {
         onClick={() => {
           toggleModal({
             title: address ? "Switch Wallet" : "Choose your Wallet",
-            node: <WalletsContainer />,
+            content: <WalletsContainer />,
           });
         }}
       >

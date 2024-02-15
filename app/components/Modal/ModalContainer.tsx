@@ -116,7 +116,7 @@ export const ModalContainer: React.FC = () => {
             {props?.description && (
               <Paragraph description={props?.description} />
             )}
-            {props?.node}
+            {props?.content}
           </Content>
           {props?.isFooterEnabled && (
             <Footer>
