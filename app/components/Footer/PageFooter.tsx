@@ -1,35 +1,16 @@
 "use client";
 
 import React from "react";
-import {
-  Grid,
-  IconButton,
-  Link,
-  Typography,
-  alpha,
-  styled,
-} from "@mui/material";
+import { Grid, Link, Typography, alpha, styled } from "@mui/material";
 import { useModalState } from "@/redux/modal/modalSlice";
-import {
-  FlexCenter,
-  FlexJustified,
-  SocialButton,
-  Flex,
-} from "../Theme/StyledGlobal";
+import { FlexCenter, FlexJustified, SocialButton } from "../Theme/StyledGlobal";
 import { grey } from "@mui/material/colors";
 
 import Image from "next/image";
 import PolicyAndTerms from "../Modal/PolicyAndTerms";
-import { Close } from "@mui/icons-material";
 
 const Page = styled(Grid)(({ theme }) => ({
   width: "100%",
-}));
-
-const Header = styled(FlexJustified)(({ theme }) => ({
-  borderRadius: "8px 8px 0 0",
-  backgroundColor: alpha(theme.palette.primary.dark, 0.25),
-  padding: "20px 25px 20px 50px",
 }));
 
 const Footer = styled(FlexCenter)(({ theme }) => ({
@@ -64,41 +45,8 @@ const TermsPolicy = styled(Link)(({ theme }) => ({
   padding: "0 8px",
 }));
 
-const CloseIcon = styled(Close)(({ theme }) => ({
-  color: alpha(theme.palette.primary.contrastText, 0.5),
-
-  "&:hover": {
-    color: alpha(theme.palette.primary.contrastText, 0.75),
-    cursor: "pointer",
-  },
-}));
-
 export const PageFooter: React.FC = () => {
-  const { toggleModal, closeModal } = useModalState();
-
-  const getTermsAndPolicyHeader = (title: string) => {
-    return (
-      <Header>
-        <Flex>
-          <Image
-            src="/images/rns-2.svg"
-            alt="RNS Icon"
-            width={46}
-            height={20}
-            style={{ opacity: 0.5, margin: "4px 10px 0 0" }}
-          />
-          <Typography>{title}</Typography>
-        </Flex>
-        <IconButton
-          onClick={() => {
-            return closeModal();
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </Header>
-    );
-  };
+  const { toggleModal } = useModalState();
 
   return (
     <Footer>
@@ -136,11 +84,11 @@ export const PageFooter: React.FC = () => {
             <TermsPolicy
               onClick={() => {
                 toggleModal({
-                  // content: <PolicyAndTerms type="Policy" />,
-                  // header: getTermsAndPolicyHeader("Privacy Policy"),
+                  id: "Policy",
                   title: "Privacy Policy",
                   isXDisabled: true,
                   isFooterEnabled: true,
+                  isHeaderEnabled: true,
                   downloadFile: "/documents/rns-privacy-policy.pdf",
                 });
               }}
@@ -150,8 +98,8 @@ export const PageFooter: React.FC = () => {
             <TermsPolicy
               onClick={() => {
                 toggleModal({
-                  content: <PolicyAndTerms type="Terms" />,
-                  header: getTermsAndPolicyHeader("Terms of Service"),
+                  id: "Terms",
+                  title: "Terms of Service",
                   isXDisabled: true,
                   isFooterEnabled: true,
                   downloadFile: "/documents/rns-terms-of-service.pdf",

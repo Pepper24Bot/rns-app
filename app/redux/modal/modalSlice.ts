@@ -11,13 +11,12 @@ export interface Description {
 }
 
 export interface ModalProps {
-    content?: React.ReactNode
-    header?: React.ReactNode
+    id?: string
     title?: string
     description?: string | Description
-    id?: string
     isCloseDisabled?: boolean
     isXDisabled?: boolean
+    isHeaderEnabled?: boolean
     isFooterEnabled?: boolean
     downloadFile?: string
 

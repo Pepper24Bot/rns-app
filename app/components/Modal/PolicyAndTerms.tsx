@@ -56,10 +56,11 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
           renderMode="canvas"
         >
           {Array.from(new Array(numPages), (_, index) => {
-            return numPages && index !== numPages - 1 ? (
-              <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-            ) : (
-              <></>
+            return (
+              numPages &&
+              index !== numPages - 1 && (
+                <Page key={`pdf_page_${index + 1}`} pageNumber={index + 1} />
+              )
             );
           })}
         </Document>

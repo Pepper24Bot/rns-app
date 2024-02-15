@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, alpha, styled } from "@mui/material";
-import { X } from "@mui/icons-material";
+import { Link, styled } from "@mui/material";
 import {
   Divider,
   ToolbarButton,
@@ -12,8 +11,6 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
-import WalletsContainer from "../Modal/Wallets";
-
 const ToolbarContainer = styled(Flex)(({ theme }) => ({}));
 
 export const Toolbar: React.FC = () => {
@@ -57,8 +54,8 @@ export const Toolbar: React.FC = () => {
         variant="contained"
         onClick={() => {
           toggleModal({
+            id: "Wallets",
             title: address ? "Switch Wallet" : "Choose your Wallet",
-            content: <WalletsContainer />,
           });
         }}
       >

@@ -10,7 +10,11 @@ import {
 } from "@mui/material";
 import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
+import { PolicyAndTerms } from "./PolicyAndTerms";
 import Paragraph from "../Reusables/Paragraph";
+import ModalHeader from "./ModalHeader";
+import Wallets from "./Wallets";
+import SwitchNetwork from "./SwitchNetwork";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -80,6 +84,29 @@ export const ModalContainer: React.FC = () => {
   const { isModalOpen, props } = useModal();
 
   const isCloseDisabled = props?.isCloseDisabled || false;
+  const type = props?.id || "";
+
+  /**
+   * Storing a non-serializeable (e.g, react components)
+   * in redux is not recommended, So instead of passing the components
+   * thru RTK Query, create a switch here instead to get the needed components.
+   *
+   * "reduxy way :("
+   */
+  const getContent = (type: string) => {
+    switch (type) {
+      case "Policy":
+        return <PolicyAndTerms type="Policy" />;
+      case "Terms":
+        return <PolicyAndTerms type="Terms" />;
+      case "Wallets":
+        return <Wallets />;
+      case "Switch-Network":
+        return <SwitchNetwork />;
+      default:
+        return;
+    }
+  };
 
   return (
     <Dialog
@@ -95,28 +122,28 @@ export const ModalContainer: React.FC = () => {
     >
       <DialogContainer>
         <ContentContainer>
-          {props?.header}
+          {props?.isHeaderEnabled && <ModalHeader />}
           {/* TODO: Move the styling to styledcomponents */}
           <Content
             sx={{
-              paddingTop: props?.header ? "0px" : "50px",
-              paddingBottom: props?.header ? "10px" : "40px",
+              paddingTop: props?.isHeaderEnabled ? "0px" : "50px",
+              paddingBottom: props?.isHeaderEnabled ? "10px" : "40px",
             }}
           >
             {!props?.isXDisabled && (
-              <CloseButton>
-                <CloseIcon
-                  onClick={() => {
-                    return closeModal();
-                  }}
-                />
+              <CloseButton
+                onClick={() => {
+                  return closeModal();
+                }}
+              >
+                <CloseIcon />
               </CloseButton>
             )}
-            <Title>{props?.title}</Title>
+            {!props?.isHeaderEnabled && <Title>{props?.title}</Title>}
             {props?.description && (
               <Paragraph description={props?.description} />
             )}
-            {props?.content}
+            {getContent(type)}
           </Content>
           {props?.isFooterEnabled && (
             <Footer>
