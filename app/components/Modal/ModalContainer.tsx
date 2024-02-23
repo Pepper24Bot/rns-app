@@ -126,7 +126,7 @@ export const ModalContainer: React.FC = () => {
           {/* TODO: Move the styling to styledcomponents */}
           <Content
             sx={{
-              paddingTop: props?.isHeaderEnabled ? "0px" : "50px",
+              paddingTop: props?.isHeaderEnabled ? "10px" : "50px",
               paddingBottom: props?.isHeaderEnabled ? "10px" : "40px",
             }}
           >

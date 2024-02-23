@@ -4,13 +4,12 @@ import React, { useState } from "react";
 import { Grid, styled } from "@mui/material";
 import { pdfjs, Document, Page } from "react-pdf";
 
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const options = {
-  standardFontDataUrl: "/standard_fonts/",
+  standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts`,
 };
 
 interface PolicyAndTerms {
@@ -19,7 +18,7 @@ interface PolicyAndTerms {
 
 const PdfContainer = styled(Grid)(({ theme }) => ({
   height: "400px",
-  maxWidth: "900px",
+  maxWidth: "560px",
   width: "100%",
   overflow: "auto",
 }));
@@ -38,7 +37,7 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
   const getFileName = () => {
     switch (type) {
       case "Policy":
-        return "/documents/rns-privacy-policy.pdf";
+        return "/documents/rns-privacy-view.pdf";
       case "Terms":
         return "/documents/rns-terms-of-service.pdf";
       default:
@@ -46,21 +45,62 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
     }
   };
 
+  const getHref = (url: string) => {
+    if (url.toLocaleLowerCase() === "support@rootnameservice.com") {
+      return "mailto:support@rootnameservice.com";
+    } else {
+      return url;
+    }
+  };
+
+  const getTextRenderer = (options: any) => {
+    const text = options.str;
+    const pageNumber = options.pageNumber;
+    const height = options.height;
+
+    console.log("options:: ", options);
+
+    // TODO: Enable case insensitivity
+    // (?i:.rootnameservice.com) -- fix this
+    const pattern = new RegExp(
+      /(?:.ROOTNAMESERVICE.COM|.rootnameservice.com)/g
+    );
+
+    // this means it is a header
+    if (height === 16) {
+      return `<span class="${
+        pageNumber > 1 ? "custom_heading" : "custom_top_heading"
+      }">${text}</span>`;
+    } else if (text.match(pattern)) {
+      return `
+        <a class="custom-link" href="${getHref(text)}" target="_blank">
+          <span class="${
+            pageNumber > 1 ? "custom_span" : "top_page_span"
+          }">${text}</span>
+        </a>
+      `;
+    } else if (pageNumber > 1) {
+      return `<span style="top: -75px; left: -40px;">${text}</span>`;
+    } else {
+      return `<span style="left: -40px">${text}</span>`;
+    }
+  };
+
   return (
     <PdfContainer>
       <div className="document-container">
-        <Document
-          file={getFileName()}
-          onLoadSuccess={onDocumentLoadSuccess}
-          options={options}
-          renderMode="canvas"
-        >
+        <Document file={getFileName()} onLoadSuccess={onDocumentLoadSuccess}>
           {Array.from(new Array(numPages), (_, index) => {
             return (
-              numPages &&
-              index !== numPages - 1 && (
-                <Page key={`pdf_page_${index + 1}`} pageNumber={index + 1} />
-              )
+              <Page
+                renderAnnotationLayer={false} // creating a custom annotation
+                key={`pdf_page_${index + 1}`}
+                pageNumber={index + 1}
+                canvasBackground="transparent"
+                customTextRenderer={(options) => {
+                  return getTextRenderer(options);
+                }}
+              />
             );
           })}
         </Document>
