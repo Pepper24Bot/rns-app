@@ -102,6 +102,7 @@ export const PageFooter: React.FC = () => {
                   title: "Terms of Service",
                   isXDisabled: true,
                   isFooterEnabled: true,
+                  isHeaderEnabled: true,
                   downloadFile: "/documents/rns-terms-of-service.pdf",
                 });
               }}

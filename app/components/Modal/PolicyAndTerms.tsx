@@ -1,5 +1,12 @@
 "use client";
 
+/**
+ * Careful in updating this component.
+ * This is tightly coupled (Policy and Terms)
+ *
+ * If you need another pdf renderer, create a new component instead.
+ */
+
 import React, { useState } from "react";
 import { Grid, styled } from "@mui/material";
 import { pdfjs, Document, Page } from "react-pdf";
@@ -39,7 +46,7 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
       case "Policy":
         return "/documents/rns-privacy-view.pdf";
       case "Terms":
-        return "/documents/rns-terms-of-service.pdf";
+        return "/documents/rns-terms-view.pdf";
       default:
         return "";
     }
@@ -89,10 +96,15 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
   return (
     <PdfContainer>
       <div className="document-container">
-        <Document file={getFileName()} onLoadSuccess={onDocumentLoadSuccess}>
+        <Document
+          file={getFileName()}
+          onLoadSuccess={onDocumentLoadSuccess}
+          options={options}
+        >
           {Array.from(new Array(numPages), (_, index) => {
             return (
               <Page
+                className={type === "Policy" ? "Policy-Page" : ""}
                 renderAnnotationLayer={false} // creating a custom annotation
                 key={`pdf_page_${index + 1}`}
                 pageNumber={index + 1}

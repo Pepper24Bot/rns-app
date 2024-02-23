@@ -8,6 +8,10 @@
 .react-pdf__Page {
   background-color: #0c0c0c !important;
   width: 100%;
+  min-height: 0 !important;
+}
+
+.react-pdf__Page[data-page-number="1"].Policy-Page {
   margin-top: -50px;
 }
 
