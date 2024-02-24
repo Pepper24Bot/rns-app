@@ -62,7 +62,7 @@ export const Toolbar: React.FC = () => {
       >
         <Image
           src={iconPath}
-          alt={connector?.name || "Wallet Icon"}
+          alt="Wallet Icon"
           width={24}
           height={24}
           style={{ marginRight: "8px", color: "white" }}

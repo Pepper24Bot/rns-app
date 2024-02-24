@@ -3,17 +3,18 @@
 import React from "react";
 import { Grid, Link, Typography, alpha, styled } from "@mui/material";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { FlexCenter, FlexJustified, SocialButton } from "../Theme/StyledGlobal";
+import {
+  FlexCenter,
+  FlexJustified,
+  Relative,
+  SocialButton,
+} from "../Theme/StyledGlobal";
 import { grey } from "@mui/material/colors";
+import { FeatureList } from "@/hooks/useFeatureToggle";
 
 import Image from "next/image";
 import EmailSubscription from "./EmailSubscription";
 import FeatureToggle from "../Reusables/FeatureToggle";
-import { FeatureList } from "@/hooks/useFeatureToggle";
-
-const Container = styled(Grid)(({ theme }) => ({
-  padding: "0 10px",
-}));
 
 const Page = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -54,7 +55,7 @@ export const PageFooter: React.FC = () => {
   const { toggleModal } = useModalState();
 
   return (
-    <Container>
+    <Relative>
       <FeatureToggle feature={FeatureList.Subscription}>
         <EmailSubscription />
       </FeatureToggle>
@@ -131,7 +132,7 @@ export const PageFooter: React.FC = () => {
           </Terms>
         </Page>
       </Footer>
-    </Container>
+    </Relative>
   );
 };
 

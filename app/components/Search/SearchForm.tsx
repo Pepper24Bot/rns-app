@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Divider as MuiDivider,
   Grid,
   InputAdornment,
   alpha,
   styled,
+  Collapse,
 } from "@mui/material";
 import {
   ActionButton,
@@ -22,6 +23,10 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import Image from "next/image";
 
 const Container = styled(Grid)(({ theme }) => ({
+  margin: "50px 0 120px 0",
+}));
+
+const SearchContainer = styled(Grid)(({ theme }) => ({
   background: `linear-gradient(0deg, ${
     theme.palette.background.paper
   } 20%, ${alpha(theme.palette.primary.main, 0.5)} 100%)`,
@@ -32,7 +37,6 @@ const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
   maxWidth: "800px",
   borderRadius: "16px",
-  marginTop: "50px",
 
   "&::before": {
     position: "absolute",
@@ -58,7 +62,7 @@ const Search = styled(Grid)(({ theme }) => ({
 
 const ViewContainer = styled(Grid)(({ theme }) => ({
   textAlign: "center",
-  padding: "50px 0 100px 0",
+  padding: "50px 0",
 }));
 
 const SearchTitle = styled(Title)(({ theme }) => ({
@@ -105,8 +109,7 @@ export const SearchForm: React.FC = () => {
 
   const [searchValue, setSearchValue] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
-
-  console.log("wallet address:: ", address);
+  const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
 
   /**
    * TODO:
@@ -126,10 +129,14 @@ export const SearchForm: React.FC = () => {
     []
   );
 
+  useEffect(() => {
+    setIsViewRnsVisible(isEmpty(address));
+  }, [address]);
+
   return (
-    <Grid>
+    <Container>
       <FlexCenter>
-        <Container>
+        <SearchContainer>
           <Search>
             <SearchTitle>Name Search</SearchTitle>
             <SearchSubText>
@@ -140,26 +147,26 @@ export const SearchForm: React.FC = () => {
               <SearchField
                 variant="outlined"
                 placeholder="Search..."
-                value={inputValue}
                 fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
+                value={inputValue}
                 onChange={(event) => {
                   const { value } = event.target;
                   setInputValue(value);
                   debounceFn(value);
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </FlexCenter>
           </Search>
-        </Container>
+        </SearchContainer>
       </FlexCenter>
-      {isEmpty(address) && (
+      <Collapse in={isViewRnsVisible}>
         <FlexCenter>
           <ViewContainer>
             <Divider orientation="horizontal" variant="fullWidth" />
@@ -184,8 +191,8 @@ export const SearchForm: React.FC = () => {
             </ConnectButton>
           </ViewContainer>
         </FlexCenter>
-      )}
-    </Grid>
+      </Collapse>
+    </Container>
   );
 };
 

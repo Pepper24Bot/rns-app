@@ -144,7 +144,7 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
                 light: yellow[600],
                 main: yellow[700],
                 dark: darken(yellow[800], 0.25),
-                contrastText: "#FFFFFF",
+                contrastText: "#000000",
               },
               secondary: {
                 light: grey[50],

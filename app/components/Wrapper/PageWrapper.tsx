@@ -28,7 +28,7 @@ const WrapperContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const ContentContainer = styled(Grid)(({ theme }) => ({
-  minHeight: "calc(100vh - 198px)",
+  // minHeight: "calc(100vh - 198px)",
 }));
 
 export interface WrapperProps {

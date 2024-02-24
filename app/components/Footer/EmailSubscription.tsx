@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Grid, Typography, alpha, styled } from "@mui/material";
-import { ActionButton, FlexCenter, InputField } from "../Theme/StyledGlobal";
+import {
+  ActionButton,
+  FlexCenter,
+  Heading,
+  InputField,
+} from "../Theme/StyledGlobal";
 
 const Container = styled(FlexCenter)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.dark, 0.1),
@@ -12,10 +17,8 @@ const Subscription = styled(Grid)(({ theme }) => ({
   maxWidth: "430px",
 }));
 
-const Title = styled(Typography)(({ theme }) => ({
-  fontFamily: "var(--secondary-font)",
+const Title = styled(Heading)(({ theme }) => ({
   fontSize: "32px",
-  fontWeight: 700,
   textAlign: "center",
   marginBottom: "10px",
   textTransform: "uppercase",
@@ -45,6 +48,7 @@ const SubscribeButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButtonBase-root": {
     padding: "9px 24px",
     borderRadius: "0 16px 16px 0",
+    boxShadow: `0px 0px 20px 0px ${theme.palette.background.paper}`,
   },
 
   "&.MuiButton-contained": {
@@ -71,6 +75,7 @@ export const EmailSubscription: React.FC = () => {
         </SubTitle>
         <FlexCenter>
           <SubscribeField
+            required
             variant="outlined"
             placeholder="Your Email Address here..."
             fullWidth

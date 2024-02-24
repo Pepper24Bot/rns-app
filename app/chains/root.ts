@@ -36,3 +36,14 @@ export const root = {
     //     },
     // },
 } as const satisfies Chain
+
+/**
+ * Use this config to programatically add this network to a wallet
+ */
+export const rootWalletConfig = {
+    chainId: "0x1DF4",
+    chainName: 'Root Mainnet',
+    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
+    rpcUrls: ['https://root.rootnet.live/archive'],
+    blockExplorerUrls: ['https://explorer.rootnet.live'],
+}

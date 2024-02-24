@@ -6,8 +6,13 @@ import {
   Divider as MuiDivider,
   Typography,
   TextField,
+  IconButton,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+
+export const Relative = styled(Grid)(({ theme }) => ({
+  position: "relative",
+}));
 
 export const Flex = styled(Grid)(({ theme }) => ({
   display: "flex",
@@ -85,6 +90,12 @@ export const SocialButton = styled(ToolbarButton)(({ theme }) => ({
   },
 }));
 
+export const BaseIconButton = styled(IconButton)(({ theme }) => ({
+  backgroundColor: theme.palette.background.darker,
+  borderRadius: "8px",
+  padding: "10px",
+}));
+
 export const HighlightText = styled("span")(({ theme }) => ({
   fontWeight: 700,
   color: theme.palette.text.primary,
@@ -117,6 +128,12 @@ export const SubTitle = styled(Title)(({ theme }) => ({
   letterSpacing: "normal",
 }));
 
+export const Heading = styled(Typography)(({ theme }) => ({
+  fontFamily: "var(--secondary-font)",
+  fontSize: "36px",
+  fontWeight: 700,
+}));
+
 export const BaseInputField = styled(TextField)(({ theme }) => ({
   ".MuiInputBase-input": {
     padding: "0",
@@ -124,6 +141,24 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
 
   ".MuiInputBase-root": {
     borderRadius: "8px",
+
+    "&.MuiFilledInput-root": {
+      backgroundColor: theme.palette.background.darker,
+      "&::before": {
+        border: "none",
+      },
+      "&::after": {
+        border: "none",
+        transition: "none", // disable animation
+      },
+      "&:hover": {
+        backgroundColor: alpha(theme.palette.background.dark, 0.5),
+        "&::before": {
+          border: "none",
+          transition: "none", // disable animation
+        },
+      },
+    },
 
     "&.MuiOutlinedInput-root": {
       fontStyle: "italic",
