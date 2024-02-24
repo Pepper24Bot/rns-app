@@ -5,9 +5,9 @@ import {
   Description,
   Flex,
   FlexRight,
-} from "../Theme/StyledGlobal";
+} from "../../Theme/StyledGlobal";
 
-import Paragraph from "../Reusables/Paragraph";
+import Paragraph from "../../Reusables/Paragraph";
 import Image from "next/image";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useSwitchChain } from "wagmi";
@@ -32,7 +32,7 @@ const RootNetwork = styled(Flex)(({ theme }) => ({
 }));
 
 const WalletName = styled(Typography)(({ theme }) => ({
-  fontFamily: "Roboto Mono",
+  fontFamily: "var(--default-font)",
   fontWeight: 700,
   color: theme.palette.secondary.main,
   marginLeft: "20px",

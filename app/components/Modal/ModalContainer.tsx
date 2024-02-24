@@ -8,13 +8,13 @@ import {
   IconButton,
   Link,
 } from "@mui/material";
-import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
+import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
-import { PolicyAndTerms } from "./PolicyAndTerms";
+import { PolicyAndTerms } from "./Content/PolicyAndTerms";
 import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
-import Wallets from "./Wallets";
-import SwitchNetwork from "./SwitchNetwork";
+import Wallets from "./Content/Wallets";
+import SwitchNetwork from "./Content/SwitchNetwork";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -30,14 +30,6 @@ const Dialog = styled(MuiDialog)(({ theme }) => ({
 const DialogContainer = styled(FlexCenter)(({ theme }) => ({
   maxWidth: "900px",
   background: "linear-gradient(180deg, #000000 32.5%, #c2185b 100%)",
-}));
-
-const Title = styled(Grid)(({ theme }) => ({
-  fontFamily: "Roboto Mono",
-  fontSize: "24px",
-  fontWeight: 700,
-  textAlign: "center",
-  marginBottom: "20px",
 }));
 
 const ContentContainer = styled(Grid)(({ theme }) => ({

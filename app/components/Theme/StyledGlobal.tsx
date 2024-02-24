@@ -4,6 +4,8 @@ import {
   alpha,
   styled,
   Divider as MuiDivider,
+  Typography,
+  TextField,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
@@ -65,7 +67,7 @@ export const ToolbarButton = styled(Button)(({ theme }) => ({
     borderRadius: "16px",
     border: `solid 1px ${alpha(grey[50], 0.15)}`,
     fontSize: "14px",
-    fontFamily: "Roboto Mono",
+    fontFamily: "var(--default-font)",
   },
 }));
 
@@ -95,9 +97,49 @@ export const Divider = styled(MuiDivider)(({ theme }) => ({
 }));
 
 export const Description = styled(Grid)(({ theme }) => ({
-  fontFamily: "Roboto Mono",
+  fontFamily: "var(--default-font)",
   textAlign: "center",
   fontSize: "12px",
   fontWeight: 200,
   color: theme.palette.secondary.main,
+}));
+
+export const Title = styled(Typography)(({ theme }) => ({
+  fontFamily: "var(--default-font)",
+  fontSize: "24px",
+  fontWeight: 700,
+  textAlign: "center",
+  marginBottom: "20px",
+}));
+
+export const SubTitle = styled(Title)(({ theme }) => ({
+  fontSize: "18px",
+  fontWeight: 200,
+  letterSpacing: "normal",
+}));
+
+export const InputField = styled(TextField)(({ theme }) => ({
+  ".MuiInputBase-input": {
+    padding: "0",
+  },
+  ".MuiInputBase-root": {
+    borderRadius: "8px",
+
+    "&.MuiOutlinedInput-root": {
+      fontStyle: "italic",
+      fontFamily: "var(--default-font)",
+      fontSize: "18px",
+      padding: "16px 25px",
+
+      "& fieldset": {
+        borderColor: theme.palette.primary.dark,
+      },
+      "&:hover fieldset": {
+        borderColor: alpha(theme.palette.primary.main, 0.75),
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: theme.palette.primary.main,
+      },
+    },
+  },
 }));

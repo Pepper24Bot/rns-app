@@ -11,6 +11,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
+
 const ToolbarContainer = styled(Flex)(({ theme }) => ({}));
 
 export const Toolbar: React.FC = () => {

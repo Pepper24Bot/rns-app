@@ -15,6 +15,14 @@ export interface LayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * To add new components in the body section,
+ * go to (pages)/page.tsx
+ *
+ * @param props
+ * @returns
+ */
+
 export default function RootLayout(props: LayoutProps) {
   const { children } = props;
 

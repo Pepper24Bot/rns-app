@@ -7,7 +7,7 @@ import { FlexCenter, FlexJustified, SocialButton } from "../Theme/StyledGlobal";
 import { grey } from "@mui/material/colors";
 
 import Image from "next/image";
-import PolicyAndTerms from "../Modal/PolicyAndTerms";
+import PolicyAndTerms from "../Modal/Content/PolicyAndTerms";
 
 const Page = styled(Grid)(({ theme }) => ({
   width: "100%",

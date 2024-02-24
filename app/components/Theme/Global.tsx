@@ -60,14 +60,18 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
   const { useTheme, updateTheme } = useThemeState();
   const { theme: mode } = useTheme();
 
-  /** TODO: Clean this please */
+  /**
+   * TODO: Clean this please and follow the below URL
+   * https://mui.com/material-ui/experimental-api/css-theme-variables/overview/
+   * https://mui.com/material-ui/experimental-api/css-theme-variables/usage/
+   */
   const theme = useMemo(() => {
     return createTheme({
       components: {
         MuiCssBaseline: {
           styleOverrides: {
             "@font-face": {
-              fontFamily: "Roboto",
+              fontFamily: "var(--secondary-font)",
             },
             "*::-webkit-scrollbar": {
               width: 8,

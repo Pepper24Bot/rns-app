@@ -13,7 +13,6 @@ import { porcini } from "@/chains/porcini";
 import Image from "next/image";
 import Toolbar from "./Toolbar";
 import { useModalState } from "@/redux/modal/modalSlice";
-import SwitchNetwork from "../Modal/SwitchNetwork";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -77,7 +76,6 @@ export const NavigationBar: React.FC = () => {
 
   // TODO: Mount this somewhere else
   useEffect(() => {
-    // console.log("chainId:: ", chainId);
     if (chainId !== undefined && chainId !== porcini.id) {
       toggleModal({
         id: "Switch-Network",

@@ -7,7 +7,6 @@ import { Provider } from "react-redux";
 import { WagmiProvider } from "wagmi";
 import { config } from "@/chains/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Flex } from "../Theme/StyledGlobal";
 
 import store from "@/redux/store";
 import PageNavigation from "@/components/Navigation/NavigationBar";
