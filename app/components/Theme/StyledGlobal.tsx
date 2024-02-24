@@ -41,7 +41,6 @@ export const BaseButton = styled(Button)(({ theme }) => ({
 
 export const ActionButton = styled(BaseButton)(({ theme }) => ({
   "&.MuiButtonBase-root": {
-    marginTop: "35px",
     filter: `drop-shadow(0px 0px 10px ${alpha(
       theme.palette.background.paper,
       0.5
@@ -118,10 +117,11 @@ export const SubTitle = styled(Title)(({ theme }) => ({
   letterSpacing: "normal",
 }));
 
-export const InputField = styled(TextField)(({ theme }) => ({
+export const BaseInputField = styled(TextField)(({ theme }) => ({
   ".MuiInputBase-input": {
     padding: "0",
   },
+
   ".MuiInputBase-root": {
     borderRadius: "8px",
 
@@ -139,6 +139,27 @@ export const InputField = styled(TextField)(({ theme }) => ({
       },
       "&.Mui-focused fieldset": {
         borderColor: theme.palette.primary.main,
+      },
+    },
+  },
+}));
+
+export const InputField = styled(BaseInputField)(({ theme }) => ({
+  ".MuiInputBase-root": {
+    backgroundColor: alpha(theme.palette.primary.dark, 0.15),
+    borderRadius: "8px",
+
+    "&.MuiOutlinedInput-root": {
+      fontStyle: "normal",
+      fontFamily: "var(--secondary-font)",
+      fontSize: "14px",
+      padding: "12px 20px",
+
+      "&:hover fieldset": {
+        borderColor: alpha(theme.palette.primary.main, 0.5),
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: alpha(theme.palette.primary.main, 0.5),
       },
     },
   },

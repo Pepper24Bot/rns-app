@@ -51,6 +51,12 @@ const WalletName = styled(Typography)(({ theme }) => ({
   marginLeft: "20px",
 }));
 
+const DisconnectButton = styled(ActionButton)(({ theme }) => ({
+  "&.MuiButtonBase-root": {
+    marginTop: "35px",
+  },
+}));
+
 export const Wallets: React.FC = () => {
   const connectors = useConnectors();
   const { connect } = useConnect();
@@ -105,7 +111,7 @@ export const Wallets: React.FC = () => {
         })}
         {activeConnector?.name && (
           <FlexRight>
-            <ActionButton
+            <DisconnectButton
               variant="contained"
               onClick={() => {
                 disconnect();
@@ -113,7 +119,7 @@ export const Wallets: React.FC = () => {
               }}
             >
               Disconnect
-            </ActionButton>
+            </DisconnectButton>
           </FlexRight>
         )}
       </WalletsContainer>

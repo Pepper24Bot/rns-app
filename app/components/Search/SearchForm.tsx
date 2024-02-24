@@ -9,7 +9,7 @@ import {
 import {
   ActionButton,
   FlexCenter,
-  InputField,
+  BaseInputField,
   SubTitle,
   Title,
 } from "../Theme/StyledGlobal";
@@ -65,7 +65,7 @@ const SearchTitle = styled(Title)(({ theme }) => ({
   fontSize: "48px",
 }));
 
-const SearchField = styled(InputField)(({ theme }) => ({
+const SearchField = styled(BaseInputField)(({ theme }) => ({
   marginTop: "50px",
   maxWidth: "500px",
 }));
@@ -88,7 +88,6 @@ const ConnectButton = styled(ActionButton)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 
   "&.MuiButtonBase-root": {
-    marginTop: 0,
     padding: "8px 24px",
     borderRadius: "16px",
   },

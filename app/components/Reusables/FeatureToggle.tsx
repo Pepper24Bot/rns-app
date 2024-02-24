@@ -8,13 +8,13 @@
 import React from "react";
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 
-export interface IFeatureToggle {
+export interface FeatureToggle {
   feature: FeatureList;
   children?: React.ReactNode;
 }
 
-export const FeatureToggle: React.FC<IFeatureToggle> = (
-  props: IFeatureToggle
+export const FeatureToggle: React.FC<FeatureToggle> = (
+  props: FeatureToggle
 ) => {
   const { feature, children } = props;
   const { isFeatureEnabled } = useFeatureToggle();

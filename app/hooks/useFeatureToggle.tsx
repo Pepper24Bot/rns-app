@@ -4,7 +4,7 @@
  */
 
 export enum FeatureList {
-  Subscription = "false",
+  Subscription = "true",
   Favorites = "false",
 }
 

@@ -49,6 +49,9 @@ const VideoLabel = styled(Description)(({ theme }) => ({
 
 const CancelButton = styled(ActionButton)(({ theme }) => ({
   marginRight: "10px",
+  "&.MuiButtonBase-root": {
+    marginTop: "35px",
+  },
 }));
 
 export const SwitchNetwork: React.FC = () => {
