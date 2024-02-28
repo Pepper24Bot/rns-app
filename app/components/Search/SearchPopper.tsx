@@ -18,6 +18,7 @@ import {
   BaseIconButton,
   SubTitle,
   TextLabel,
+  InformationTip,
 } from "../Theme/StyledGlobal";
 import { Star, StarBorder } from "@mui/icons-material";
 
@@ -78,6 +79,10 @@ const SearchButton = styled(BaseButton)(({ theme }) => ({
       theme.palette.background.paper,
       0.5
     )})`,
+
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.primary.main, 0.25),
+    },
   },
 }));
 
@@ -142,25 +147,32 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
               <Grid>
                 <Relative>
                   <Flex isloading={isLoading}>
-                    <FavoriteButton>
-                      {/* TODO: Add checker here - if favorite */}
-                      {/* TODO: Add tooltip saying "Coming soon!" */}
-                      {/* <FavoriteIcon /> */}
-                      <StarIcon />
-                    </FavoriteButton>
+                    <InformationTip title="Coming soon!" arrow>
+                      <FavoriteButton>
+                        {/* TODO: Add checker here - if favorite */}
+                        {/* TODO: Add tooltip saying "Coming soon!" */}
+                        {/* <FavoriteIcon /> */}
+                        <StarIcon />
+                      </FavoriteButton>
+                    </InformationTip>
                     <Divider orientation="vertical" flexItem />
                     {isAvailable ? (
                       <SearchButton variant="contained">Register</SearchButton>
                     ) : isRegisteredByYou ? (
                       <SearchButton variant="contained">View</SearchButton>
                     ) : (
-                      <Image
-                        src="/icons/marketplace.svg"
-                        alt="MarketPlace Icon"
-                        width={36}
-                        height={36}
-                        style={{ marginLeft: "20px" }}
-                      />
+                      <InformationTip
+                        title="View on secondary marketplace."
+                        arrow
+                      >
+                        <Image
+                          src="/icons/marketplace.svg"
+                          alt="MarketPlace Icon"
+                          width={36}
+                          height={36}
+                          style={{ marginLeft: "20px", cursor: "pointer" }}
+                        />
+                      </InformationTip>
                     )}
                   </Flex>
                   <SkeletonRectangular

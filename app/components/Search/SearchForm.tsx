@@ -115,7 +115,7 @@ export const SearchForm: React.FC = () => {
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
 
   const { data, isLoading } = useGetNamesByNameQuery(
-    { name: `${searchValue}` }, //`${searchValue}.root`
+    { name: `${searchValue}.root` }, //`${searchValue}.root`
     // Make sure not to call the api when the field is null
     { skip: searchValue === null }
   );
@@ -196,7 +196,7 @@ export const SearchForm: React.FC = () => {
         <FlexCenter>
           <ViewContainer>
             <Divider orientation="horizontal" variant="fullWidth" />
-            <ViewRnsText>View your registered RNS?</ViewRnsText>
+            <ViewRnsText>View your Dashboard</ViewRnsText>
             <ConnectButton
               variant="outlined"
               onClick={() => {
