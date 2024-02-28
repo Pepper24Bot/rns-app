@@ -7,6 +7,7 @@ import {
   Typography,
   TextField,
   IconButton,
+  Skeleton,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
@@ -14,8 +15,10 @@ export const Relative = styled(Grid)(({ theme }) => ({
   position: "relative",
 }));
 
-export const Flex = styled(Grid)(({ theme }) => ({
-  display: "flex",
+export const Flex = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "isloading",
+})<{ isloading?: boolean }>(({ isloading = false }) => ({
+  display: !isloading ? "flex" : "none",
   alignItems: "center",
 }));
 
@@ -198,4 +201,31 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
       },
     },
   },
+}));
+
+export const SkeletonGeneric = styled(Skeleton, {
+  shouldForwardProp: (prop) => prop !== "isloading",
+})<{ isloading?: boolean }>(({ isloading }) => ({
+  display: isloading ? "block" : "none",
+  position: "absolute",
+}));
+
+export const SkeletonTypography = styled(SkeletonGeneric)(() => ({
+  height: "100%",
+  width: "100%",
+}));
+
+export const SkeletonRectangular = styled(SkeletonGeneric)(() => ({
+  minHeight: "30px",
+  minWidth: "150px",
+  borderRadius: "8px",
+}));
+
+export const TextLabel = styled(SubTitle, {
+  shouldForwardProp: (prop) => prop !== "isloading",
+})<{ isloading?: boolean }>(({ theme, isloading }) => ({
+  visibility: isloading ? "hidden" : "visible",
+  lineHeight: "normal",
+  textAlign: "start",
+  marginBottom: 0,
 }));

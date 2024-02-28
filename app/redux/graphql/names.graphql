@@ -1,12 +1,15 @@
 query GetNames {
-  nameRegistereds {
+  nameWrappeds {
+    name
     id
-    registrant {
-      domains {
-        id
-        labelName
-        name
-      }
+  }
+}
+
+query GetNamesByName($name: String!) {
+  nameWrappeds(where: { name: $name }) {
+    name
+    owner {
+      id
     }
   }
 }

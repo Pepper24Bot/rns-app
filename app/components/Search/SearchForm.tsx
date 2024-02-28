@@ -6,6 +6,7 @@ import {
   alpha,
   styled,
   Collapse,
+  ClickAwayListener,
 } from "@mui/material";
 import {
   ActionButton,
@@ -19,9 +20,10 @@ import { DEFAULT_DEBOUNCE } from "@/services/constants";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useGetNamesQuery } from "@/redux/graphql/hooks";
+import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
 
 import Image from "next/image";
+import { SearchPopper } from "./SearchPopper";
 
 const Container = styled(Grid)(({ theme }) => ({
   margin: "50px 0 120px 0",
@@ -108,23 +110,26 @@ export const SearchForm: React.FC = () => {
   const { address } = useAccount();
   const { toggleModal } = useModalState();
 
-  const { data, isLoading } = useGetNamesQuery({});
-
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
 
-  /**
-   * TODO:
-   * Use RTK Query
-   * This is an API call -- pending
-   *
-   * Should call api and search for the name inputted
-   * @param value
-   */
+  const { data, isLoading } = useGetNamesByNameQuery(
+    { name: `${searchValue}` }, //`${searchValue}.root`
+    // Make sure not to call the api when the field is null
+    { skip: searchValue === null }
+  );
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const searchFieldRef = React.useRef(null);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const handleDebounceOnChange = (value: string) => {
-    console.log("debounce value:: ", value);
     setSearchValue(value);
+    setAnchorEl(searchFieldRef.current);
   };
 
   const debounceFn = useCallback(
@@ -150,26 +155,40 @@ export const SearchForm: React.FC = () => {
               Your official cross platform, data, social and wallet identity on
               The Root Network. Take your identity and data wherever you go.
             </SearchSubText>
-            <FlexCenter>
-              <SearchField
-                variant="outlined"
-                placeholder="Search..."
-                fullWidth
-                value={inputValue}
-                onChange={(event) => {
-                  const { value } = event.target;
-                  setInputValue(value);
-                  debounceFn(value);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </FlexCenter>
+            <ClickAwayListener
+              onClickAway={() => {
+                handleClose();
+              }}
+            >
+              <FlexCenter>
+                <SearchField
+                  ref={searchFieldRef}
+                  variant="outlined"
+                  placeholder="Search..."
+                  fullWidth
+                  value={inputValue}
+                  onChange={(event) => {
+                    const { value } = event.target;
+                    setInputValue(value);
+                    debounceFn(value);
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <SearchPopper
+                  isLoading={isLoading}
+                  address={address}
+                  anchorEl={anchorEl}
+                  searchValue={searchValue}
+                  data={data}
+                />
+              </FlexCenter>
+            </ClickAwayListener>
           </Search>
         </SearchContainer>
       </FlexCenter>

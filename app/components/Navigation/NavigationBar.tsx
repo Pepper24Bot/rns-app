@@ -9,10 +9,10 @@ import {
 import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 import { useAccount } from "wagmi";
 import { porcini } from "@/chains/porcini";
+import { useModalState } from "@/redux/modal/modalSlice";
 
 import Image from "next/image";
 import Toolbar from "./Toolbar";
-import { useModalState } from "@/redux/modal/modalSlice";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",

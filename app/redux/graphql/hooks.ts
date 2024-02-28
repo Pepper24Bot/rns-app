@@ -5440,14 +5440,18 @@ export type DirectiveResolvers<ContextType = any> = {
 
 export const GetNamesDocument = `
     query GetNames {
-  nameRegistereds {
+  nameWrappeds {
+    name
     id
-    registrant {
-      domains {
-        id
-        labelName
-        name
-      }
+  }
+}
+    `;
+export const GetNamesByNameDocument = `
+    query GetNamesByName($name: String!) {
+  nameWrappeds(where: {name: $name}) {
+    name
+    owner {
+      id
     }
   }
 }
@@ -5459,9 +5463,12 @@ const injectedRtkApi = api.injectEndpoints({
     GetNames: build.query<GetNamesQuery, GetNamesQueryVariables | void>({
       query: (variables) => ({ document: GetNamesDocument, variables })
     }),
+    GetNamesByName: build.query<GetNamesByNameQuery, GetNamesByNameQueryVariables>({
+      query: (variables) => ({ document: GetNamesByNameDocument, variables })
+    }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useGetNamesQuery, useLazyGetNamesQuery } = injectedRtkApi;
+export const { useGetNamesQuery, useLazyGetNamesQuery, useGetNamesByNameQuery, useLazyGetNamesByNameQuery } = injectedRtkApi;
 
