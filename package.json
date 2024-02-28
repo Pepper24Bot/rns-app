@@ -3,20 +3,25 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "graphql-codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
     "@fontsource/roboto-mono": "^5.0.16",
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript-resolvers": "^4.0.6",
     "@mui/icons-material": "^5.15.9",
     "@mui/material": "^5.15.9",
     "@reduxjs/toolkit": "1.9.5",
+    "@rtk-query/graphql-request-base-query": "^2.3.1",
     "@tanstack/react-query": "^5.20.1",
     "@types/lodash": "^4.14.202",
     "@types/pdfjs-dist": "^2.10.378",
     "encoding": "^0.1.13",
+    "graphql": "^16.8.1",
     "lodash": "^4.17.21",
     "next": "latest",
     "pdfjs-dist": "^4.0.379",
@@ -29,6 +34,10 @@
     "wagmi": "^2.5.6"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/client-preset": "4.2.4",
+    "@graphql-codegen/introspection": "4.0.3",
+    "@graphql-codegen/typescript-rtk-query": "^3.1.1",
     "@types/node": "20.3.1",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.5",

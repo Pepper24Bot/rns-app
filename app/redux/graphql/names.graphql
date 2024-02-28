@@ -1,0 +1,12 @@
+query GetNames {
+  nameRegistereds {
+    id
+    registrant {
+      domains {
+        id
+        labelName
+        name
+      }
+    }
+  }
+}

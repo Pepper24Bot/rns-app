@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { baseApi } from './baseSlice'
+import { api } from './baseSlice'
 import { themeState } from './theme/themeSlice'
 import { modalState } from './modal/modalSlice'
 
 const store = configureStore({
     // Add reducers here
     reducer: {
-        [baseApi.reducerPath]: baseApi.reducer,
+        [api.reducerPath]: api.reducer,
         // TODO: Add states here
         themeState: themeState.reducer,
         modalState: modalState.reducer
@@ -14,7 +14,7 @@ const store = configureStore({
 
     // Add middleware to handle api queries
     middleware: (getDefaultMiddleware) => {
-        return getDefaultMiddleware({}).concat([baseApi.middleware])
+        return getDefaultMiddleware({}).concat([api.middleware])
     }
 })
 

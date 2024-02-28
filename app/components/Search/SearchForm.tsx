@@ -19,6 +19,7 @@ import { DEFAULT_DEBOUNCE } from "@/services/constants";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
+import { useGetNamesQuery } from "@/redux/graphql/hooks";
 
 import Image from "next/image";
 
@@ -107,6 +108,8 @@ export const SearchForm: React.FC = () => {
   const { address } = useAccount();
   const { toggleModal } = useModalState();
 
+  const { data, isLoading } = useGetNamesQuery({});
+
   const [searchValue, setSearchValue] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
@@ -132,6 +135,10 @@ export const SearchForm: React.FC = () => {
   useEffect(() => {
     setIsViewRnsVisible(isEmpty(address));
   }, [address]);
+
+  useEffect(() => {
+    console.log("data:: ", data);
+  }, [data]);
 
   return (
     <Container>
