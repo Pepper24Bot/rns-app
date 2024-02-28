@@ -23,6 +23,7 @@ import {
 import { Star, StarBorder } from "@mui/icons-material";
 
 import Image from "next/image";
+import { useModalState } from "@/redux/modal/modalSlice";
 
 export interface SearchPopper {
   isLoading: boolean;
@@ -105,6 +106,7 @@ const StarIcon = styled(StarBorder)(({ theme }) => ({
 
 export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   const { isLoading, data, address, anchorEl, searchValue } = props;
+  const { toggleModal } = useModalState();
 
   const isAvailable = isEmpty(data?.nameWrappeds);
 
@@ -157,7 +159,17 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                     </InformationTip>
                     <Divider orientation="vertical" flexItem />
                     {isAvailable ? (
-                      <SearchButton variant="contained">Register</SearchButton>
+                      <SearchButton
+                        variant="contained"
+                        onClick={() => {
+                          toggleModal({
+                            id: "Register-Name",
+                            title: "Register",
+                          });
+                        }}
+                      >
+                        Register
+                      </SearchButton>
                     ) : isRegisteredByYou ? (
                       <SearchButton variant="contained">View</SearchButton>
                     ) : (

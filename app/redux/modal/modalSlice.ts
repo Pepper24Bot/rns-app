@@ -3,7 +3,6 @@ import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { RootState } from "../store"
 import { isEmpty } from "lodash"
-import React from "react"
 
 export interface Description {
     content: string

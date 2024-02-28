@@ -15,6 +15,7 @@ import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
 import Wallets from "./Content/Wallets";
 import SwitchNetwork from "./Content/SwitchNetwork";
+import RegisterName from "./Content/RegisterName";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -95,6 +96,8 @@ export const ModalContainer: React.FC = () => {
         return <Wallets />;
       case "Switch-Network":
         return <SwitchNetwork />;
+      case "Register-Name":
+        return <RegisterName />;
       default:
         return;
     }

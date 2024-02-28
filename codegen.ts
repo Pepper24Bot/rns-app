@@ -7,11 +7,13 @@ const config: CodegenConfig = {
   documents: "app/**/*.graphql",
   generates: {
     "app/redux/graphql/hooks.ts": {
-      plugins: ['typescript', 'typescript-resolvers', {
+      plugins: ['typescript', 'typescript-operations', {
         'typescript-rtk-query': {
           importBaseApiFrom: 'app/redux/baseSlice',
           exportHooks: true,
-          overrideExisting: 'module.hot?.status() === "apply"'
+          // TODO: Figure out why typescript-resolver causes duplicate resolver identifier
+          // typescript-operations does not have module.hot
+          // overrideExisting: 'module.hot?.status() === "apply"',
         }
       }],
     },
