@@ -247,6 +247,7 @@ export const PrimaryLabel = styled(SubTitle, {
   lineHeight: "normal",
   textAlign: "start",
   marginBottom: 0,
+  fontWeight: 400,
   color: theme.palette.primary.contrastText,
 }));
 

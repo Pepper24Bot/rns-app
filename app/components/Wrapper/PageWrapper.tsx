@@ -14,6 +14,7 @@ import PageModal from "@/components/Modal/ModalContainer";
 import GlobalTheme from "../Theme/Global";
 import PageFooter from "../Footer/PageFooter";
 
+import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/700.css";
 

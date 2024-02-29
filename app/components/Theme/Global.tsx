@@ -14,6 +14,12 @@ export interface GlobalTheme {
   children?: React.ReactNode;
 }
 
+export enum FONT_WEIGHT {
+  Light = 200,
+  Regular = 400,
+  Bold = 700,
+}
+
 /**
  * TODO: Clean this please
  * Generic Font Sizes

@@ -25,6 +25,7 @@ export interface Menu {
 }
 
 const PaymentLabel = styled(SecondaryLabel)(({ theme }) => ({
+  margin: "10px 0 0 5px",
   fontSize: "16px",
   color: alpha(theme.palette.primary.contrastText, 0.5),
 }));
@@ -107,8 +108,8 @@ export const MenuField: React.FC<Menu> = (props: Menu) => {
         </Grid>
         <FieldContainer item xs>
           {selectedOption}
-          <ArrowButton ref={anchorRef}>
-            <ArrowDownIcon onClick={handleToggle} />
+          <ArrowButton onClick={handleToggle} ref={anchorRef}>
+            <ArrowDownIcon />
           </ArrowButton>
         </FieldContainer>
       </FlexCenter>
@@ -153,7 +154,7 @@ export const MenuField: React.FC<Menu> = (props: Menu) => {
       >
         {options?.map((option, index) => {
           return (
-            <Grid>
+            <Grid key={`field-item-${option}`}>
               <MenuItem
                 disabled={option === selectedOption}
                 onClick={(event) => {

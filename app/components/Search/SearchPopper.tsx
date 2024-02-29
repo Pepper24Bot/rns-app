@@ -52,6 +52,7 @@ const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
   color: "#24FF00",
   textTransform: "uppercase",
   marginTop: "5px",
+  fontSize: "14px",
 }));
 
 const NotAvailableText = styled(AvailableText)(({ theme }) => ({
