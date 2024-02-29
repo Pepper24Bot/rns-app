@@ -21,9 +21,10 @@ import { debounce as _debounce, isEmpty } from "lodash";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
+import { SearchPopper } from "./SearchPopper";
+import { useDomainState } from "@/redux/domain/domainSlice";
 
 import Image from "next/image";
-import { SearchPopper } from "./SearchPopper";
 
 const Container = styled(Grid)(({ theme }) => ({
   margin: "50px 0 120px 0",
@@ -109,6 +110,7 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 export const SearchForm: React.FC = () => {
   const { address } = useAccount();
   const { toggleModal } = useModalState();
+  const { registerName } = useDomainState();
 
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
@@ -128,8 +130,11 @@ export const SearchForm: React.FC = () => {
   };
 
   const handleDebounceOnChange = (value: string) => {
-    setSearchValue(value);
     setAnchorEl(searchFieldRef.current);
+    setSearchValue(value);
+
+    // Store in global state so the other componenst will be able to access the value
+    registerName({ name: value });
   };
 
   const debounceFn = useCallback(
@@ -140,10 +145,6 @@ export const SearchForm: React.FC = () => {
   useEffect(() => {
     setIsViewRnsVisible(isEmpty(address));
   }, [address]);
-
-  useEffect(() => {
-    console.log("data:: ", data);
-  }, [data]);
 
   return (
     <Container>

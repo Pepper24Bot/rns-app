@@ -17,8 +17,8 @@ import {
   BaseButton,
   BaseIconButton,
   SubTitle,
-  TextLabel,
   InformationTip,
+  SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { Star, StarBorder } from "@mui/icons-material";
 
@@ -48,11 +48,9 @@ const SearchText = styled(SubTitle)(({ theme }) => ({
   textAlign: "start",
 }));
 
-const AvailableText = styled(TextLabel)(({ theme }) => ({
+const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
   color: "#24FF00",
-  fontSize: "14px",
   textTransform: "uppercase",
-  fontFamily: "var(--secondary-font)",
   marginTop: "5px",
 }));
 

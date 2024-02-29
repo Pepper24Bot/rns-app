@@ -30,6 +30,10 @@ export const FlexJustified = styled(Flex)(({ theme }) => ({
   justifyContent: "space-between",
 }));
 
+export const FlexEven = styled(Flex)(({ theme }) => ({
+  justifyContent: "space-evenly",
+}));
+
 export const FlexCenter = styled(Flex)(({ theme }) => ({
   justifyContent: "center",
 }));
@@ -187,6 +191,9 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
 }));
 
 export const InputField = styled(BaseInputField)(({ theme }) => ({
+  "&.MuiFormControl-root": {
+    width: "100%",
+  },
   ".MuiInputBase-root": {
     backgroundColor: alpha(theme.palette.primary.dark, 0.15),
     borderRadius: "8px",
@@ -195,7 +202,7 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
       fontStyle: "normal",
       fontFamily: "var(--secondary-font)",
       fontSize: "14px",
-      padding: "12px 20px",
+      padding: "10px 25px",
 
       "&:hover fieldset": {
         borderColor: alpha(theme.palette.primary.main, 0.5),
@@ -205,6 +212,14 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
       },
     },
   },
+}));
+
+export const FieldContainer = styled(FlexJustified)(({ theme }) => ({
+  borderRadius: "8px",
+  backgroundColor: alpha(theme.palette.primary.dark, 0.15),
+  border: `solid 1px ${alpha(theme.palette.primary.main, 0.5)}`,
+  marginTop: "10px",
+  padding: "16px 25px",
 }));
 
 export const SkeletonGeneric = styled(Skeleton, {
@@ -225,13 +240,20 @@ export const SkeletonRectangular = styled(SkeletonGeneric)(() => ({
   borderRadius: "8px",
 }));
 
-export const TextLabel = styled(SubTitle, {
+export const PrimaryLabel = styled(SubTitle, {
   shouldForwardProp: (prop) => prop !== "isloading",
 })<{ isloading?: boolean }>(({ theme, isloading }) => ({
   visibility: isloading ? "hidden" : "visible",
   lineHeight: "normal",
   textAlign: "start",
   marginBottom: 0,
+  color: theme.palette.primary.contrastText,
+}));
+
+export const SecondaryLabel = styled(PrimaryLabel, {
+  shouldForwardProp: (prop) => prop !== "isloading",
+})<{ isloading?: boolean }>(({ theme, isloading }) => ({
+  fontFamily: "var(--secondary-font)",
 }));
 
 export const InformationTip = styled(
