@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { api } from './baseSlice'
 import { themeState } from './theme/themeSlice'
 import { modalState } from './modal/modalSlice'
+import { domainState } from './domain/domainSlice'
 
 const store = configureStore({
     // Add reducers here
@@ -9,7 +10,8 @@ const store = configureStore({
         [api.reducerPath]: api.reducer,
         // TODO: Add states here
         themeState: themeState.reducer,
-        modalState: modalState.reducer
+        modalState: modalState.reducer,
+        domainState: domainState.reducer
     },
 
     // Add middleware to handle api queries
