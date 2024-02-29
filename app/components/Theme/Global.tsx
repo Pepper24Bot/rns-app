@@ -101,7 +101,7 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
                     backgroundColor: "#0d0d0d",
                   },
                   "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
-                    backgroundColor: "#C2185B",
+                    backgroundColor: "#1A1A1A",
                     borderRadius: "8px",
                   },
                   "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":

@@ -36,7 +36,7 @@ const SearchContainer = styled(Grid)(({ theme }) => ({
   } 20%, ${alpha(theme.palette.primary.main, 0.5)} 100%)`,
 
   // TODO: theme.palette.primary.main -- fix this
-  boxShadow: `0px 0px 20px 0px rgba(194,24,91,0.25)`,
+  // boxShadow: `0px 0px 20px 0px rgba(194,24,91,0.25)`,
   position: "relative",
   width: "100%",
   maxWidth: "800px",
@@ -49,7 +49,7 @@ const SearchContainer = styled(Grid)(({ theme }) => ({
     height: "80%",
     content: '""',
     background: "linear-gradient(transparent 0%,#000000 100%)",
-    transform: "scale(1.2)",
+    // transform: "scale(1.2)",
     borderRadius: "16px",
   },
 }));
@@ -102,8 +102,8 @@ const ConnectButton = styled(ActionButton)(({ theme }) => ({
 }));
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
-  width: "65vh",
-  borderColor: "rgba(184,167,174,0.15)",
+  width: "65vmin",
+  borderColor: "rgba(184,167,174,0.1)",
   filter: `drop-shadow(0px 0px 5px ${alpha(theme.palette.primary.main, 0.15)})`,
 }));
 
