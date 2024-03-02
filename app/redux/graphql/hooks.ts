@@ -4654,7 +4654,7 @@ export enum _SubgraphErrorPolicy_ {
 export type GetNamesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNamesQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, id: string }> };
+export type GetNamesQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, id: string, domain: { __typename?: 'Domain', labelName?: string | null, name?: string | null } }> };
 
 export type GetNamesByNameQueryVariables = Exact<{
   name: Scalars['String']['input'];
@@ -4669,6 +4669,10 @@ export const GetNamesDocument = `
   nameWrappeds {
     name
     id
+    domain {
+      labelName
+      name
+    }
   }
 }
     `;

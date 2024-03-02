@@ -54,6 +54,10 @@ const CancelButton = styled(ActionButton)(({ theme }) => ({
   },
 }));
 
+const ConfirmButton = styled(CancelButton)(({ theme }) => ({
+  marginRight: 0,
+}));
+
 export const SwitchNetwork: React.FC = () => {
   const { chains, switchChain } = useSwitchChain();
   const { closeModal } = useModalState();
@@ -66,6 +70,7 @@ export const SwitchNetwork: React.FC = () => {
    * - if root/porcini is not setup, call window.ethereum.request({method: 'wallet_addEthereumChain'})
    * - else call wagmi switchChain()
    *
+   * 2. Get environment variable and check for the network
    */
   // switchChain({ chainId: chains[0].id });
   const switchNetwork = async () => {
@@ -120,7 +125,7 @@ export const SwitchNetwork: React.FC = () => {
         >
           Cancel
         </CancelButton>
-        <ActionButton
+        <ConfirmButton
           variant="contained"
           onClick={() => {
             // chains only include the root testnet
@@ -128,7 +133,7 @@ export const SwitchNetwork: React.FC = () => {
           }}
         >
           Confirm
-        </ActionButton>
+        </ConfirmButton>
       </FlexRight>
     </Container>
   );

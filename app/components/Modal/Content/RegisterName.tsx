@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BaseButton,
   InputField,
@@ -10,16 +10,25 @@ import {
   FlexRight,
   ActionButton,
 } from "@/components/Theme/StyledGlobal";
-import { Grid, alpha, styled } from "@mui/material";
+import { CircularProgress, Grid, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 import { PaymentMethod, useDomainState } from "@/redux/domain/domainSlice";
-import { PAYMENT_METHOD } from "@/services/constants";
+import {
+  COMMITMENT_AGE,
+  MIN_REGISTRATION_TIME,
+  PAYMENT_METHOD,
+} from "@/services/constants";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
+import { Address, formatUnits } from "viem";
 
 import MenuField from "@/components/Reusables/MenuField";
 import Image from "next/image";
+import useRegistrationDetails from "@/hooks/useRegistrationDetails";
+import useRegister from "@/hooks/useRegister";
+import useFees from "@/hooks/useFees";
+import { BigNumber } from "ethers";
 
 const NameField = styled(InputField)(({ theme }) => ({
   ".MuiInputBase-root": {
@@ -71,6 +80,7 @@ const Button = styled(BaseButton)(({ theme }) => ({
 }));
 
 export const RegisterName: React.FC = () => {
+  console.log("registration");
   const { address } = useAccount();
   const { useDomain } = useDomainState();
   const { name, payment } = useDomain();
@@ -80,6 +90,73 @@ export const RegisterName: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<PaymentMethod>(
     payment?.method || "ROOT"
   );
+
+  const { writeContract, isPending, isSuccess } = useWriteContract();
+
+  const {
+    controller,
+    availability,
+    duration,
+    rentPrice,
+    nameHash,
+    resolverAddr,
+  } = useRegistrationDetails({
+    name,
+    action: "Registration",
+    year: yearCount,
+    owner: address,
+  });
+
+  const { hash } = useRegister({
+    name,
+    owner: address as Address,
+    duration,
+    nameHash,
+    resolverAddr,
+    isAvailable: Boolean(availability),
+  });
+
+  console.log(
+    "details:: ",
+    availability,
+    duration,
+    rentPrice,
+    nameHash,
+    resolverAddr
+  );
+
+  // TODO: add hook and fix computation
+  const { rentFee } = useFees({ rent: rentPrice?.base });
+
+  const handleRegister = async () => {
+    if (hash) {
+      writeContract({
+        abi: controller.abi,
+        address: controller.address,
+        functionName: "commit",
+        args: [hash],
+      });
+
+      setTimeout(() => {
+        console.log("waiting for commitment age...");
+      }, COMMITMENT_AGE);
+
+      // if commit is success then proceed to registration
+      // TODO: bind this in useEffect
+      if (isSuccess) {
+        writeContract({
+          abi: controller.abi,
+          address: controller.address,
+          functionName: "register",
+          args: [hash],
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    console.log("isPending:: ", isPending);
+  }, [isPending]);
 
   return (
     <Grid mt={6} minWidth={350}>
@@ -114,15 +191,15 @@ export const RegisterName: React.FC = () => {
         <SummaryContainer>
           <Transaction>
             <TransactionLabel>{`${yearCount} Year/s Registration`}</TransactionLabel>
-            <Value>{`${100} ROOT`}</Value>
+            <Value>{`${rentFee} ${selectedOption}`}</Value>
           </Transaction>
           <Transaction>
             <TransactionLabel>Transaction Fee</TransactionLabel>
-            <Value>{`${25} ROOT`}</Value>
+            <Value>{`${0} ${selectedOption}`}</Value>
           </Transaction>
           <Transaction>
             <TransactionLabel>Total</TransactionLabel>
-            <Value>{`${125} ROOT`}</Value>
+            <Value>{`${0} ${selectedOption}`}</Value>
           </Transaction>
         </SummaryContainer>
       </FieldContainer>
@@ -144,8 +221,16 @@ export const RegisterName: React.FC = () => {
             >
               Cancel
             </ActionButton>
-            <ActionButton variant="contained" onClick={() => {}}>
+            <ActionButton
+              variant="contained"
+              onClick={() => {
+                handleRegister();
+              }}
+            >
               Confirm
+              {isPending && (
+                <CircularProgress color="secondary" size={18} sx={{ ml: 1 }} />
+              )}
             </ActionButton>
           </FlexRight>
         ) : (

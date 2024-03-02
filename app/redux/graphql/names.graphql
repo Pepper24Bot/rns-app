@@ -2,6 +2,10 @@ query GetNames {
   nameWrappeds {
     name
     id
+    domain {
+      labelName
+      name
+    }
   }
 }
 

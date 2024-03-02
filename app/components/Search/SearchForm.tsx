@@ -7,6 +7,7 @@ import {
   styled,
   Collapse,
   ClickAwayListener,
+  IconButton,
 } from "@mui/material";
 import {
   ActionButton,
@@ -116,8 +117,9 @@ export const SearchForm: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
 
+  // TODO: Normalize names -- validate
   const { data, isLoading } = useGetNamesByNameQuery(
-    { name: `${searchValue}.root` }, //`${searchValue}.root`
+    { name: `${searchValue}` }, //`${searchValue}.root`
     // Make sure not to call the api when the field is null
     { skip: searchValue === null }
   );
@@ -176,7 +178,13 @@ export const SearchForm: React.FC = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <SearchIcon />
+                        <IconButton
+                          onClick={() => {
+                            setAnchorEl(searchFieldRef.current);
+                          }}
+                        >
+                          <SearchIcon />
+                        </IconButton>
                       </InputAdornment>
                     ),
                   }}
