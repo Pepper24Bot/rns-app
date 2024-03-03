@@ -1,27 +1,42 @@
 import { formatUnits } from "ethers/lib/utils.js";
 import { BigNumber } from "ethers";
+import { formatEther } from "viem";
 
 export interface FeesProps {
-  rent?: BigNumber;
-  transaction?: BigNumber;
-
+  rent?: bigint;
+  gasFee?: bigint;
+  gasPrice?: bigint;
+  gasUsed?: bigint;
   enabled?: boolean;
 }
 
 export default function useFees(props: FeesProps) {
-  const { rent, transaction, enabled } = props;
+  const { rent, gasFee, gasPrice = BigInt(0), enabled } = props;
 
-  // TODO: Convert to USDC and ROOT (XRP)
+  // TODO: Research about Pricing Oracle
+  /**
+   * TODO: The rent is priced in USDC,
+   * so we need to convert it to ROOT if the user chose to pay in ROOT
+   * @returns
+   */
   const getRentFee = () => {
-    return rent ? formatUnits(rent, 18) : 0;
+    return rent ? formatEther(rent) : BigInt(0);
   };
 
-  // TODO: Convert to USDC and ROOT (XRP)
+  /**
+   * TODO: The gas fee is in XRP,
+   * convert it to ROOT or USDC
+   * @returns
+   */
   const getTransactionFee = () => {
-    return transaction ? formatUnits(transaction, 18) : 0;
+    const transactionFee = gasFee
+      ? BigNumber.from(gasFee).mul(gasPrice)
+      : BigNumber.from(0);
+
+    return formatEther(transactionFee.toBigInt());
   };
 
-  // TODO: Convert to USDC and ROOT (XRP)
+  // TODO: Convert to USDC and ROOT
   const getTotalFee = () => {
     const rent = getRentFee();
     const transaction = getTransactionFee();

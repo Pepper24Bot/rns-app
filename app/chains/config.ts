@@ -1,6 +1,7 @@
-import { http, createConfig } from 'wagmi'
+import { http, createConfig } from '@wagmi/core'
 import { porcini } from '@/chains/porcini'
 import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
+import { createPublicClient, createWalletClient } from 'viem'
 
 // TODO: Create an official RNS project in WalletConnect
 // TODO: Move this to .env
@@ -24,3 +25,7 @@ export const config = createConfig({
     },
 })
 
+export const publicClient = createPublicClient({
+    chain: porcini,
+    transport: http(),
+});

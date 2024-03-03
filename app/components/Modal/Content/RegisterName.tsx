@@ -22,10 +22,7 @@ import { Address } from "viem";
 import MenuField from "@/components/Reusables/MenuField";
 import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
-import useRegister from "@/hooks/useRegister";
 import useFees from "@/hooks/useFees";
-import { prepareTransactionRequest } from "@wagmi/core";
-import { isScalarType } from "graphql";
 
 const NameField = styled(InputField)(({ theme }) => ({
   ".MuiInputBase-root": {
@@ -91,12 +88,13 @@ export const RegisterName: React.FC = () => {
 
   const {
     controller,
-    availability,
+    rentPrice: { base },
+    estimatedGas,
+    estimatedGasPrice,
+    hash,
     duration,
-    rentPrice,
     nameHash,
     resolverAddr,
-    estimatedGas,
   } = useRegistrationDetails({
     name,
     action: "Registration",
@@ -104,31 +102,13 @@ export const RegisterName: React.FC = () => {
     owner: address,
   });
 
-  const { hash } = useRegister({
-    name,
-    owner: address as Address,
-    duration,
-    nameHash,
-    resolverAddr,
-    isAvailable: Boolean(availability),
-  });
-
-  // console.log(
-  //   "details:: ",
-  //   availability,
-  //   duration,
-  //   rentPrice,
-  //   nameHash,
-  //   resolverAddr
-  // );
-
-  // TODO: add hook and fix computation
   const { rentFee, transactionFee, totalFee } = useFees({
-    rent: rentPrice?.base,
-    transaction: estimatedGas,
+    rent: base,
+    gasFee: estimatedGas,
+    gasPrice: estimatedGasPrice,
   });
 
-  const handleRegister = async () => {
+  const handleCommit = async () => {
     if (hash) {
       await writeContractAsync({
         abi: controller.abi,
@@ -136,28 +116,43 @@ export const RegisterName: React.FC = () => {
         functionName: "commit",
         args: [hash],
       });
+    }
+  };
 
+  const handleRegister = async () => {
+    if (!isPending && isSuccess) {
+      // TODO: useWaitForTransaction
       setTimeout(() => {
         console.log("waiting for commitment age...");
       }, COMMITMENT_AGE);
+
+      // TODO: add prepareForTransaction
+      // await prepareTransactionRequest(config, {
+
+      // })
+
+      await writeContractAsync({
+        abi: controller.abi,
+        address: controller.address,
+        functionName: "register",
+        args: [
+          name,
+          address as Address,
+          duration,
+          nameHash,
+          resolverAddr,
+          [],
+          false,
+          0,
+        ],
+      });
+
+      closeModal();
     }
   };
 
   useEffect(() => {
-    const register = async () => {
-      if (!isPending && isSuccess) {
-        await writeContractAsync({
-          abi: controller.abi,
-          address: controller.address,
-          functionName: "register",
-          args: [hash],
-        });
-
-        closeModal();
-      }
-    };
-
-    register();
+    handleRegister();
   }, [isPending, isSuccess]);
 
   return (
@@ -226,7 +221,7 @@ export const RegisterName: React.FC = () => {
             <ActionButton
               variant="contained"
               onClick={() => {
-                handleRegister();
+                handleCommit();
               }}
             >
               Confirm
