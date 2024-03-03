@@ -22,7 +22,7 @@
     "@tanstack/react-query": "^5.20.1",
     "@types/lodash": "^4.14.202",
     "@types/pdfjs-dist": "^2.10.378",
-    "@wagmi/core": "^2.6.5",
+    "@wagmi/connectors": "^4.1.14",
     "encoding": "^0.1.13",
     "graphql": "^16.8.1",
     "lodash": "^4.17.21",
