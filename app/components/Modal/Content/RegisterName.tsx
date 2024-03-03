@@ -17,12 +17,14 @@ import { COMMITMENT_AGE, PAYMENT_METHOD } from "@/services/constants";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { useAccount, useWriteContract } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { Address } from "viem";
+import { Address, Client } from "viem";
 
 import MenuField from "@/components/Reusables/MenuField";
 import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
 import useFees from "@/hooks/useFees";
+import { simulateContract } from "viem/actions";
+import { config } from "@/chains/config";
 
 const NameField = styled(InputField)(({ theme }) => ({
   ".MuiInputBase-root": {
@@ -126,26 +128,35 @@ export const RegisterName: React.FC = () => {
         console.log("waiting for commitment age...");
       }, COMMITMENT_AGE);
 
-      // TODO: add prepareForTransaction
-      // await prepareTransactionRequest(config, {
+      /**
+       * prepare the transaction using simulateContract
+       * wagmi v2: https://wagmi.sh/react/guides/migrate-from-v1-to-v2#removed-prepare-hooks
+       */
+      const registerConfig = await simulateContract(
+        config as unknown as Client,
+        {
+          abi: controller.abi,
+          address: controller.address,
+          functionName: "register",
+          args: [
+            name,
+            address as Address,
+            duration,
+            nameHash,
+            resolverAddr,
+            [],
+            false,
+            0,
+          ],
+        }
+      );
 
-      // })
+      const registerResponse = await writeContractAsync(
+        registerConfig!.request
+      );
 
-      await writeContractAsync({
-        abi: controller.abi,
-        address: controller.address,
-        functionName: "register",
-        args: [
-          name,
-          address as Address,
-          duration,
-          nameHash,
-          resolverAddr,
-          [],
-          false,
-          0,
-        ],
-      });
+      console.log("config:: ", registerConfig);
+      console.log("response:: ", registerResponse);
 
       closeModal();
     }
