@@ -1,5 +1,4 @@
-import { useReadContract, useWriteContract } from "wagmi";
-import { formatUnits, namehash } from "ethers/lib/utils.js";
+import { formatUnits } from "ethers/lib/utils.js";
 import { BigNumber } from "ethers";
 
 export interface FeesProps {
@@ -22,8 +21,17 @@ export default function useFees(props: FeesProps) {
     return transaction ? formatUnits(transaction, 18) : 0;
   };
 
+  // TODO: Convert to USDC and ROOT (XRP)
+  const getTotalFee = () => {
+    const rent = getRentFee();
+    const transaction = getTransactionFee();
+
+    return rent && transaction ? Number(rent) + Number(transaction) : 0;
+  };
+
   return {
     rentFee: getRentFee(),
     transactionFee: getTransactionFee(),
+    totalFee: getTotalFee(),
   };
 }

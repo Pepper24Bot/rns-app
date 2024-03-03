@@ -1,5 +1,10 @@
-import { useGasPrice, useReadContract, useWriteContract } from "wagmi";
-import { formatUnits, namehash } from "ethers/lib/utils.js";
+import {
+  useConnections,
+  useEstimateGas,
+  useGasPrice,
+  useReadContract,
+} from "wagmi";
+import { namehash } from "ethers/lib/utils.js";
 import { isEmpty } from "lodash";
 import { Address } from "viem";
 import { SECONDS, MIN_REGISTRATION_TIME } from "@/services/constants";
@@ -37,19 +42,26 @@ export interface RegistrationProps {
 }
 
 export default function useRegistrationDetails(props: RegistrationProps) {
-  console.log("----------");
-  const { action, name, year } = props;
+  const { action, name, year, owner } = props;
 
   const controller = useContractDetails({ action });
   const resolver = useContractDetails({ action: "Resolver" });
 
-  const { data: gasFee } = useGasPrice({ chainId: porcini.id });
+  const connections = useConnections();
+
+  const { data: gasPrice } = useGasPrice({ chainId: porcini.id });
+  const { data: estimatedGas } = useEstimateGas({
+    connector: connections[0].connector,
+    to: owner,
+    chainId: porcini.id,
+    data: controller.address,
+  });
 
   const duration = year * SECONDS;
 
+  // #1. Check for the name's availability
   const shouldGetAvailability = !isEmpty(name);
 
-  // #1. Check for the name's availability
   const { data: availability, isLoading: availabilityLoading } =
     useReadContract({
       abi: controller.abi,
@@ -80,9 +92,8 @@ export default function useRegistrationDetails(props: RegistrationProps) {
   // #4. Get the resolver's address
   const resolverAddr = resolver.address;
 
-  console.log("gas fee:: ", gasFee && formatUnits(gasFee, 18));
-
   return {
+    estimatedGas: estimatedGas as unknown as BigNumber,
     controller,
     resolver,
     availability,

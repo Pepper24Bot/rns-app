@@ -13,22 +13,19 @@ import {
 import { CircularProgress, Grid, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 import { PaymentMethod, useDomainState } from "@/redux/domain/domainSlice";
-import {
-  COMMITMENT_AGE,
-  MIN_REGISTRATION_TIME,
-  PAYMENT_METHOD,
-} from "@/services/constants";
+import { COMMITMENT_AGE, PAYMENT_METHOD } from "@/services/constants";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { useAccount, useWriteContract } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { Address, formatUnits } from "viem";
+import { Address } from "viem";
 
 import MenuField from "@/components/Reusables/MenuField";
 import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
 import useRegister from "@/hooks/useRegister";
 import useFees from "@/hooks/useFees";
-import { BigNumber } from "ethers";
+import { prepareTransactionRequest } from "@wagmi/core";
+import { isScalarType } from "graphql";
 
 const NameField = styled(InputField)(({ theme }) => ({
   ".MuiInputBase-root": {
@@ -80,7 +77,6 @@ const Button = styled(BaseButton)(({ theme }) => ({
 }));
 
 export const RegisterName: React.FC = () => {
-  console.log("registration");
   const { address } = useAccount();
   const { useDomain } = useDomainState();
   const { name, payment } = useDomain();
@@ -91,7 +87,7 @@ export const RegisterName: React.FC = () => {
     payment?.method || "ROOT"
   );
 
-  const { writeContract, isPending, isSuccess } = useWriteContract();
+  const { writeContractAsync, isPending, isSuccess } = useWriteContract();
 
   const {
     controller,
@@ -100,6 +96,7 @@ export const RegisterName: React.FC = () => {
     rentPrice,
     nameHash,
     resolverAddr,
+    estimatedGas,
   } = useRegistrationDetails({
     name,
     action: "Registration",
@@ -116,21 +113,24 @@ export const RegisterName: React.FC = () => {
     isAvailable: Boolean(availability),
   });
 
-  console.log(
-    "details:: ",
-    availability,
-    duration,
-    rentPrice,
-    nameHash,
-    resolverAddr
-  );
+  // console.log(
+  //   "details:: ",
+  //   availability,
+  //   duration,
+  //   rentPrice,
+  //   nameHash,
+  //   resolverAddr
+  // );
 
   // TODO: add hook and fix computation
-  const { rentFee } = useFees({ rent: rentPrice?.base });
+  const { rentFee, transactionFee, totalFee } = useFees({
+    rent: rentPrice?.base,
+    transaction: estimatedGas,
+  });
 
   const handleRegister = async () => {
     if (hash) {
-      writeContract({
+      await writeContractAsync({
         abi: controller.abi,
         address: controller.address,
         functionName: "commit",
@@ -140,23 +140,25 @@ export const RegisterName: React.FC = () => {
       setTimeout(() => {
         console.log("waiting for commitment age...");
       }, COMMITMENT_AGE);
+    }
+  };
 
-      // if commit is success then proceed to registration
-      // TODO: bind this in useEffect
-      if (isSuccess) {
-        writeContract({
+  useEffect(() => {
+    const register = async () => {
+      if (!isPending && isSuccess) {
+        await writeContractAsync({
           abi: controller.abi,
           address: controller.address,
           functionName: "register",
           args: [hash],
         });
-      }
-    }
-  };
 
-  useEffect(() => {
-    console.log("isPending:: ", isPending);
-  }, [isPending]);
+        closeModal();
+      }
+    };
+
+    register();
+  }, [isPending, isSuccess]);
 
   return (
     <Grid mt={6} minWidth={350}>
@@ -195,11 +197,11 @@ export const RegisterName: React.FC = () => {
           </Transaction>
           <Transaction>
             <TransactionLabel>Transaction Fee</TransactionLabel>
-            <Value>{`${0} ${selectedOption}`}</Value>
+            <Value>{`${transactionFee} ${selectedOption}`}</Value>
           </Transaction>
           <Transaction>
             <TransactionLabel>Total</TransactionLabel>
-            <Value>{`${0} ${selectedOption}`}</Value>
+            <Value>{`${totalFee} ${selectedOption}`}</Value>
           </Transaction>
         </SummaryContainer>
       </FieldContainer>
