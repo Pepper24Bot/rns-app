@@ -13,3 +13,11 @@ export const COMMITMENT_AGE = 60;
 
 // year in seconds
 export const SECONDS = 31536000;
+
+// Dashboard Tabs
+export const DASHBOARD_TAB_ITEMS = [
+    "Names",
+    "Favorites",
+    "Notifications",
+    "LoyaltyPoints",
+]

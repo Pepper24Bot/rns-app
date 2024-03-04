@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, styled } from "@mui/material";
-import { FlexCenter } from "../Theme/StyledGlobal";
+import { FlexCenter } from "../../Theme/StyledGlobal";
 
 const Container = styled(FlexCenter)(({ theme }) => ({
   minHeight: "500px",

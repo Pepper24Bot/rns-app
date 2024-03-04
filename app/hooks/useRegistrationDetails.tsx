@@ -3,7 +3,6 @@ import { namehash } from "ethers/lib/utils.js";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData } from "viem";
 import { SECONDS } from "@/services/constants";
-import { BigNumber } from "ethers";
 import useContractDetails, { Contract } from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
 
@@ -37,7 +36,12 @@ export interface RegistrationProps {
 }
 
 export default function useRegistrationDetails(props: RegistrationProps) {
-  const { action, name, year, owner } = props;
+  const {
+    action,
+    name,
+    year,
+    owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account - dummy
+  } = props;
 
   const controller = useContractDetails({ action });
   const resolver = useContractDetails({ action: "Resolver" });

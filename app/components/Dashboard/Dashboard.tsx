@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   Collapse,
   Grid,
-  InputAdornment,
   Tab,
-  Tabs as MuiTabs,
   alpha,
   styled,
+  InputAdornment,
+  Tabs as MuiTabs,
 } from "@mui/material";
 import { useAccount } from "wagmi";
 import { debounce as _debounce, isEmpty } from "lodash";
@@ -18,11 +18,14 @@ import {
   Heading,
 } from "../Theme/StyledGlobal";
 import { Search as MuiSearchIcon, Settings, Tune } from "@mui/icons-material";
-import { DEFAULT_DEBOUNCE } from "@/services/constants";
-import Names from "./Names";
-import Favorites from "./Favorites";
-import LoyaltyPoints from "./Loyalty";
-import Notifications from "./Notifications";
+import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/services/constants";
+
+import Names from "./Tab/Names";
+import Favorites from "./Tab/Favorites";
+import LoyaltyPoints from "./Tab/Loyalty";
+import Notifications from "./Tab/Notifications";
+import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
+import FeatureToggle from "../Reusables/FeatureToggle";
 
 const Container = styled(FlexCenter)(({ theme }) => ({
   position: "relative",
@@ -102,6 +105,7 @@ const TabItem = styled(Tab)(({ theme }) => ({
 
 export const Dashboard: React.FC = () => {
   const { address } = useAccount();
+  const { isFeatureEnabled } = useFeatureToggle();
 
   const [activeTab, setActiveTab] = useState<number>(0); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");
@@ -169,18 +173,32 @@ export const Dashboard: React.FC = () => {
                   setActiveTab(value);
                 }}
               >
-                <TabItem label="Names" />
-                <TabItem label="Favorites" />
-                <TabItem label="Loyalty Points" />
-                <TabItem label="Notifications" />
+                {DASHBOARD_TAB_ITEMS.map((item, index) => {
+                  return (
+                    isFeatureEnabled(item) && (
+                      <TabItem key={item} label={item} />
+                    )
+                  );
+                })}
               </Tabs>
             </Grid>
             <Grid>
               {/* TODO: Add page routing */}
-              {activeTab === 0 && <Names />}
-              {activeTab === 1 && <Favorites />}
-              {activeTab === 2 && <LoyaltyPoints />}
-              {activeTab === 3 && <Notifications />}
+              <FeatureToggle feature={FeatureList.Names}>
+                {activeTab === 0 && <Names />}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.Names}>
+                {activeTab === 1 && <Favorites />}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.Names}>
+                {activeTab === 2 && <LoyaltyPoints />}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.Names}>
+                {activeTab === 3 && <Notifications />}
+              </FeatureToggle>
             </Grid>
           </Content>
         </DashboardContainer>

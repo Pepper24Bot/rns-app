@@ -4,13 +4,20 @@
  */
 
 export enum FeatureList {
-  Subscription = "true",
+  Names = "true",
   Favorites = "false",
+  Notifications = "false",
+  LoyaltyPoints = "false",
+  Subscription = "false",
 }
 
 export default function useFeatureToggle() {
   const isFeatureEnabled = (feature: string) => {
-    return feature === "true" || feature === undefined ? true : false;
+    if (feature === "true" || feature === "false") {
+      return feature === "true" || feature === undefined ? true : false;
+    } else {
+      return FeatureList[feature as keyof typeof FeatureList] === "true";
+    }
   };
 
   return { isFeatureEnabled, FeatureList };
