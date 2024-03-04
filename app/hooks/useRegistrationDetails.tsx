@@ -44,7 +44,7 @@ export default function useRegistrationDetails(props: RegistrationProps) {
   } = props;
 
   const controller = useContractDetails({ action });
-  const resolver = useContractDetails({ action: "Resolver" });
+  const resolver = useContractDetails({ action: "OwnedResolver" });
 
   const { abi, address } = controller;
 

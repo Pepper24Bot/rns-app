@@ -1,14 +1,60 @@
 import React from "react";
-import { Grid, styled } from "@mui/material";
-import { FlexCenter } from "../../Theme/StyledGlobal";
+import { Box, Grid, styled } from "@mui/material";
+import { NameWrapped, useGetNamesByIdQuery } from "@/redux/graphql/hooks";
+import { useAccount } from "wagmi";
+import { NameCard } from "./Names/NameCard";
+import { isEmpty } from "lodash";
+import { Address } from "viem";
+import { SecondaryLabel } from "@/components/Theme/StyledGlobal";
 
-const Container = styled(FlexCenter)(({ theme }) => ({
-  minHeight: "500px",
+const Container = styled(Grid)(({ theme }) => ({
   padding: "35px 0",
 }));
 
+const Label = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "24px",
+  fontWeight: 700,
+}));
+
+const Description = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "16px",
+  marginTop: "8px",
+  color: theme.palette.text.secondary,
+  fontWeight: 200,
+}));
+
 export const Names: React.FC = () => {
-  return <Container>TODO: Names Content</Container>;
+  const { address } = useAccount();
+  const { data, isLoading } = useGetNamesByIdQuery(
+    // TODO: Remove this - using figjam.eth addr temporarily
+    // { address: "0x7de397dbb8f314d4ed4b5e9a19e8c24080457b29" },
+    { address: address as Address },
+    { skip: address === null }
+  );
+
+  const nameList = data?.nameWrappeds;
+
+  return !isEmpty(nameList) ? (
+    <Container>
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid sx={{ flexGrow: 1 }} container spacing={2}>
+          {nameList?.map((name, index) => {
+            return (
+              <NameCard
+                item={name as NameWrapped}
+                key={`${name.name}-${index}`}
+              />
+            );
+          })}
+        </Grid>
+      </Box>
+    </Container>
+  ) : (
+    <Container>
+      <Label>No Names found</Label>
+      <Description>There is no registered name under your account.</Description>
+    </Container>
+  );
 };
 
 export default Names;

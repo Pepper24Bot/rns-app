@@ -4663,6 +4663,13 @@ export type GetNamesByNameQueryVariables = Exact<{
 
 export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, owner: { __typename?: 'Account', id: string } }> };
 
+export type GetNamesByIdQueryVariables = Exact<{
+  address: Scalars['ID']['input'];
+}>;
+
+
+export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, expiryDate: any, fuses: number, blockNumber: number, id: string, transactionID: any, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', labelhash?: any | null, labelName?: string | null, name?: string | null, isMigrated: boolean } }> };
+
 
 export const GetNamesDocument = `
     query GetNames {
@@ -4686,6 +4693,27 @@ export const GetNamesByNameDocument = `
   }
 }
     `;
+export const GetNamesByIdDocument = `
+    query GetNamesById($address: ID!) {
+  nameWrappeds(where: {owner_: {id: $address}}) {
+    name
+    owner {
+      id
+    }
+    expiryDate
+    fuses
+    blockNumber
+    id
+    domain {
+      labelhash
+      labelName
+      name
+      isMigrated
+    }
+    transactionID
+  }
+}
+    `;
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -4695,9 +4723,12 @@ const injectedRtkApi = api.injectEndpoints({
     GetNamesByName: build.query<GetNamesByNameQuery, GetNamesByNameQueryVariables>({
       query: (variables) => ({ document: GetNamesByNameDocument, variables })
     }),
+    GetNamesById: build.query<GetNamesByIdQuery, GetNamesByIdQueryVariables>({
+      query: (variables) => ({ document: GetNamesByIdDocument, variables })
+    }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useGetNamesQuery, useLazyGetNamesQuery, useGetNamesByNameQuery, useLazyGetNamesByNameQuery } = injectedRtkApi;
+export const { useGetNamesQuery, useLazyGetNamesQuery, useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery } = injectedRtkApi;
 
