@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Divider as MuiDivider,
   Grid,
@@ -26,6 +26,7 @@ import {
   getRemainingDays,
 } from "@/services/utils";
 import { useModalState } from "@/redux/modal/modalSlice";
+import { useDomainState } from "@/redux/domain/domainSlice";
 import DropDownMenu from "@/components/Reusables/DropDownMenu";
 
 export interface Name {
@@ -103,16 +104,20 @@ export const NameCard: React.FC<Name> = (props: Name) => {
   const { item } = props;
   const { address } = useAccount();
   const { toggleModal } = useModalState();
+  const { registerName } = useDomainState();
+
+  // Check if name is linked to the wallet address
+  const hasChecked = address === item.owner.id;
 
   const handleMenuSelect = (menuOption: string) => {
     toggleModal({
       id: menuOption,
       title: menuOption,
     });
-  };
 
-  // Check if name is linked to the wallet address
-  const hasChecked = address === item.owner.id;
+    // Store in global state so the other componenst will be able to access the value
+    registerName({ name: `${item.name}` });
+  };
 
   return (
     <Grid item xs={12} sm={6} md={4} key={item.name}>
@@ -157,8 +162,8 @@ export const NameCard: React.FC<Name> = (props: Name) => {
               options={[
                 { label: "Extend Expiry", icon: <ClockIcon /> },
                 { label: "Link Name", icon: <LinkIcon /> },
-                { label: "Update Image", icon: <PhotoIcon /> },
-                { label: "Transfer", icon: <TransferIcon /> },
+                // { label: "Update Image", icon: <PhotoIcon /> },
+                // { label: "Transfer", icon: <TransferIcon /> },
               ]}
               hasButton
               iconButton={<MoreIcon />}

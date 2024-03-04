@@ -94,9 +94,10 @@ export const ModalContainer: React.FC = () => {
         return <PolicyAndTerms type="Terms" />;
       case "Wallets":
         return <Wallets />;
-      case "Switch-Network":
+      case "Switch Network":
         return <SwitchNetwork />;
-      case "Register-Name":
+      case "Register Name":
+      case "Extend Expiry":
         return <RegisterName />;
       default:
         return;

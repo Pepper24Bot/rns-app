@@ -162,7 +162,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         variant="contained"
                         onClick={() => {
                           toggleModal({
-                            id: "Register-Name",
+                            id: "Register Name",
                             title: "Register",
                           });
                         }}
