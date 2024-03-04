@@ -10,7 +10,14 @@ import { NameWrapped } from "@/redux/graphql/hooks";
 import { green, grey } from "@mui/material/colors";
 
 import Image from "next/image";
-import { CheckCircle, MoreVert } from "@mui/icons-material";
+import {
+  CheckCircle,
+  MoreVert,
+  AccessTime,
+  Link,
+  CropOriginal,
+  SwapHoriz,
+} from "@mui/icons-material";
 import { Flex, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { useAccount } from "wagmi";
 import {
@@ -18,6 +25,8 @@ import {
   getMaskedAddress,
   getRemainingDays,
 } from "@/services/utils";
+import { useModalState } from "@/redux/modal/modalSlice";
+import DropDownMenu from "@/components/Reusables/DropDownMenu";
 
 export interface Name {
   item: NameWrapped;
@@ -42,16 +51,18 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 }));
 
 const NameLabel = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "16px",
   fontWeight: 700,
 }));
 
 const DetailLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontWeight: 400,
-  color: alpha(theme.palette.primary.contrastText, 0.6),
+  color: alpha(theme.palette.text.primary, 0.6),
   fontSize: "14px",
 }));
 
 const MoreIcon = styled(MoreVert)(({ theme }) => ({}));
+
 const CheckedIcon = styled(CheckCircle)(({ theme }) => ({
   color: green[500],
   width: "16px",
@@ -59,9 +70,46 @@ const CheckedIcon = styled(CheckCircle)(({ theme }) => ({
   marginLeft: "20px",
 }));
 
+const ClockIcon = styled(AccessTime)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  width: "18px",
+  height: "18px",
+  marginRight: "10px",
+}));
+
+const LinkIcon = styled(Link)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  width: "18px",
+  height: "18px",
+  marginRight: "10px",
+  transform: "rotate(-40deg)",
+}));
+
+const PhotoIcon = styled(CropOriginal)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  width: "18px",
+  height: "18px",
+  marginRight: "10px",
+}));
+
+const TransferIcon = styled(SwapHoriz)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  width: "20px",
+  height: "20px",
+  marginRight: "6px",
+}));
+
 export const NameCard: React.FC<Name> = (props: Name) => {
   const { item } = props;
   const { address } = useAccount();
+  const { toggleModal } = useModalState();
+
+  const handleMenuSelect = (menuOption: string) => {
+    toggleModal({
+      id: menuOption,
+      title: menuOption,
+    });
+  };
 
   // Check if name is linked to the wallet address
   const hasChecked = address === item.owner.id;
@@ -92,7 +140,7 @@ export const NameCard: React.FC<Name> = (props: Name) => {
               {hasChecked && <CheckedIcon />}
             </Flex>
             <DetailLabel>
-              {`Linked to ${getMaskedAddress(String(address), 4)}`}
+              {`Linked to ${getMaskedAddress(String(item.owner.id), 4)}`}
             </DetailLabel>
           </Grid>
           <Grid item xs>
@@ -104,7 +152,18 @@ export const NameCard: React.FC<Name> = (props: Name) => {
             </DetailLabel>
           </Grid>
           <Grid item xs={0.5}>
-            <MoreIcon />
+            <DropDownMenu
+              handleSelect={handleMenuSelect}
+              options={[
+                { label: "Extend Expiry", icon: <ClockIcon /> },
+                { label: "Link Name", icon: <LinkIcon /> },
+                { label: "Update Image", icon: <PhotoIcon /> },
+                { label: "Transfer", icon: <TransferIcon /> },
+              ]}
+              hasButton
+              iconButton={<MoreIcon />}
+              type="Menu"
+            />
           </Grid>
         </Details>
       </ItemContainer>

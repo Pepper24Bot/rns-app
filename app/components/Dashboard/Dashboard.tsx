@@ -66,7 +66,7 @@ const IconButton = styled(BaseIconButton)(({ theme }) => ({
 const Title = styled(Heading)(({ theme }) => ({}));
 
 const Tabs = styled(MuiTabs)(({ theme }) => ({
-  borderBottom: `solid 1px ${alpha(theme.palette.primary.contrastText, 0.25)}`,
+  borderBottom: `solid 1px ${alpha(theme.palette.text.primary, 0.25)}`,
 
   "&.MuiTabs-root": {
     minHeight: 0,
@@ -75,7 +75,7 @@ const Tabs = styled(MuiTabs)(({ theme }) => ({
 
 const TabItem = styled(Tab)(({ theme }) => ({
   textTransform: "capitalize",
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
 
   "&.MuiTab-root": {
     padding: "8px 30px",
@@ -97,7 +97,7 @@ const TabItem = styled(Tab)(({ theme }) => ({
     },
 
     "&.Mui-selected": {
-      color: theme.palette.primary.contrastText,
+      color: theme.palette.text.primary,
       backgroundColor: alpha(theme.palette.primary.dark, 0.5),
     },
   },

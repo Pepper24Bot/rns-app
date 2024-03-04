@@ -94,7 +94,7 @@ const ViewRnsText = styled(SubTitle)(({ theme }) => ({
 const ConnectButton = styled(ActionButton)(({ theme }) => ({
   fontFamily: "var(--default-font)",
   textTransform: "uppercase",
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
 
   "&.MuiButtonBase-root": {
     padding: "8px 24px",

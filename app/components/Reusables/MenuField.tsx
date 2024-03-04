@@ -6,18 +6,12 @@ import {
   FlexCenter,
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
-import {
-  styled,
-  alpha,
-  MenuItem,
-  Menu as MuiMenu,
-  Grid,
-  Divider,
-} from "@mui/material";
+import { styled, alpha, Menu as MuiMenu, Grid } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
+import DropDownMenu, { Option } from "./DropDownMenu";
 
 export interface Menu {
-  options: string[];
+  options: Option[];
   label: string;
   selectedOption: string;
   arrow?: boolean;
@@ -27,26 +21,11 @@ export interface Menu {
 const PaymentLabel = styled(SecondaryLabel)(({ theme }) => ({
   margin: "10px 0 0 5px",
   fontSize: "16px",
-  color: alpha(theme.palette.primary.contrastText, 0.5),
-}));
-
-const MenuLabel = styled(PaymentLabel, {
-  shouldForwardProp: (prop) => prop !== "isSelected",
-})<{ isSelected?: boolean }>(({ theme, isSelected }) => ({
-  minWidth: "100px",
-  color: isSelected
-    ? theme.palette.primary.main
-    : theme.palette.primary.contrastText,
+  color: alpha(theme.palette.text.primary, 0.5),
 }));
 
 const ArrowDownIcon = styled(ArrowDropDown)(({ theme }) => ({
   cursor: "pointer",
-}));
-
-const ArrowButton = styled(BaseIconButton)(({ theme }) => ({
-  borderRadius: "32px",
-  backgroundColor: "transparent",
-  padding: 0,
 }));
 
 const Menu = styled(MuiMenu, {
@@ -80,25 +59,7 @@ const Menu = styled(MuiMenu, {
 }));
 
 export const MenuField: React.FC<Menu> = (props: Menu) => {
-  const { label, options, selectedOption, arrow, handleOptionSelect } = props;
-
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
-
-  const handleToggle = () => {
-    setIsMenuOpen((prevOpen) => !prevOpen);
-  };
-
-  const handleClose = (event: Event | React.SyntheticEvent) => {
-    if (
-      anchorRef.current &&
-      anchorRef.current.contains(event.target as HTMLElement)
-    ) {
-      return;
-    }
-
-    setIsMenuOpen(false);
-  };
+  const { label, options, selectedOption, handleOptionSelect } = props;
 
   return (
     <Flex>
@@ -108,71 +69,15 @@ export const MenuField: React.FC<Menu> = (props: Menu) => {
         </Grid>
         <FieldContainer item xs>
           {selectedOption}
-          <ArrowButton onClick={handleToggle} ref={anchorRef}>
-            <ArrowDownIcon />
-          </ArrowButton>
+          <DropDownMenu
+            selectedOption={selectedOption}
+            options={options}
+            hasButton
+            iconButton={<ArrowDownIcon />}
+            handleSelect={handleOptionSelect}
+          />
         </FieldContainer>
       </FlexCenter>
-      <Menu
-        arrow={arrow}
-        anchorEl={anchorRef.current}
-        open={isMenuOpen}
-        onClose={handleClose}
-        slotProps={{
-          paper: arrow
-            ? {
-                elevation: 0,
-                sx: {
-                  backgroundColor: "black",
-                  overflow: "visible",
-                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                  mt: 1.5,
-                  "& .MuiAvatar-root": {
-                    width: 32,
-                    height: 32,
-                    ml: -0.5,
-                    mr: 1,
-                  },
-                  "&::before": {
-                    content: '""',
-                    display: "block",
-                    position: "absolute",
-                    top: 0,
-                    right: 10,
-                    width: 10,
-                    height: 10,
-                    bgcolor: "background.paper",
-                    transform: "translateY(-50%) rotate(45deg)",
-                    zIndex: 0,
-                  },
-                },
-              }
-            : {},
-        }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      >
-        {options?.map((option, index) => {
-          return (
-            <Grid key={`field-item-${option}`}>
-              <MenuItem
-                disabled={option === selectedOption}
-                onClick={(event) => {
-                  if (option !== selectedOption) {
-                    handleClose(event);
-                    handleOptionSelect(option);
-                  }
-                }}
-              >
-                <MenuLabel isSelected={option === selectedOption}>
-                  {option}
-                </MenuLabel>
-              </MenuItem>
-              {index !== options.length - 1 && <Divider />}
-            </Grid>
-          );
-        })}
-      </Menu>
     </Flex>
   );
 };

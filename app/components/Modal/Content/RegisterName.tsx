@@ -46,7 +46,7 @@ const Transaction = styled(FlexJustified)(({ theme }) => ({
 const TransactionLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
   fontWeight: FONT_WEIGHT.Light,
-  color: alpha(theme.palette.primary.contrastText, 0.5),
+  color: alpha(theme.palette.text.primary, 0.5),
 }));
 
 const Value = styled(SecondaryLabel)(({ theme }) => ({
@@ -55,13 +55,13 @@ const Value = styled(SecondaryLabel)(({ theme }) => ({
 
 const Tip = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "12px",
-  color: alpha(theme.palette.primary.contrastText, 0.25),
+  color: alpha(theme.palette.text.primary, 0.25),
   width: "calc(100% - 64px)",
   textAlign: "center",
 }));
 
 const Button = styled(BaseButton)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
   "&.MuiButtonBase-root": {
     backgroundColor: theme.palette.primary.dark,
     filter: `drop-shadow(0px 0px 15px ${alpha(

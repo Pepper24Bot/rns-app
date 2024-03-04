@@ -30,7 +30,7 @@ const SubTitle = styled(Title)(({ theme }) => ({
   fontWeight: 400,
   marginBottom: "36px",
   textTransform: "unset",
-  color: alpha(theme.palette.primary.contrastText, 0.75),
+  color: alpha(theme.palette.text.primary, 0.75),
 }));
 
 const SubscribeField = styled(InputField)(({ theme }) => ({
@@ -43,7 +43,7 @@ const SubscribeField = styled(InputField)(({ theme }) => ({
 }));
 
 const SubscribeButton = styled(ActionButton)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
 
   "&.MuiButtonBase-root": {
     padding: "9px 24px",

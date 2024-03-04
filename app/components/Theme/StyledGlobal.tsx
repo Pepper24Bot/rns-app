@@ -248,7 +248,7 @@ export const PrimaryLabel = styled(SubTitle, {
   textAlign: "start",
   marginBottom: 0,
   fontWeight: 400,
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.text.primary,
 }));
 
 export const SecondaryLabel = styled(PrimaryLabel, {

@@ -59,10 +59,10 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const CloseIcon = styled(Close)(({ theme }) => ({
-  color: alpha(theme.palette.primary.contrastText, 0.5),
+  color: alpha(theme.palette.text.primary, 0.5),
 
   "&:hover": {
-    color: alpha(theme.palette.primary.contrastText, 0.75),
+    color: alpha(theme.palette.text.primary, 0.75),
     cursor: "pointer",
   },
 }));
