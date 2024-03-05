@@ -5,9 +5,9 @@ import {
   Description,
   Flex,
   FlexRight,
-} from "../../Theme/StyledGlobal";
+} from "../Theme/StyledGlobal";
 
-import Paragraph from "../../Reusables/Paragraph";
+import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useSwitchChain } from "wagmi";

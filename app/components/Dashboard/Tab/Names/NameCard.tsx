@@ -119,6 +119,8 @@ export const NameCard: React.FC<Name> = (props: Name) => {
     registerName({ name: `${item.name}` });
   };
 
+  console.log("item:: ", item);
+
   return (
     <Grid item xs={12} sm={6} md={4} key={item.name}>
       <ItemContainer>

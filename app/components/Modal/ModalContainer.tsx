@@ -10,12 +10,12 @@ import {
 } from "@mui/material";
 import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
-import { PolicyAndTerms } from "./Content/PolicyAndTerms";
+import { PolicyAndTerms } from "../Reusables/PolicyAndTerms";
 import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
-import Wallets from "./Content/Wallets";
-import SwitchNetwork from "./Content/SwitchNetwork";
-import RegisterName from "./Content/RegisterName";
+import Wallets from "../Wallet/Wallets";
+import SwitchNetwork from "../Wallet/SwitchNetwork";
+import RegisterName from "../Registration/RegisterName";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {

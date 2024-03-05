@@ -2,9 +2,9 @@ import React from "react";
 import { Grid, Typography, alpha, styled } from "@mui/material";
 import { Description, useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
-import { ActionButton, Flex, FlexRight } from "../../Theme/StyledGlobal";
+import { ActionButton, Flex, FlexRight } from "../Theme/StyledGlobal";
 
-import Paragraph from "../../Reusables/Paragraph";
+import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 
