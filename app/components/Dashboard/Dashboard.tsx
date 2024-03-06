@@ -84,11 +84,11 @@ const TabItem = styled(Tab)(({ theme }) => ({
     fontFamily: "var(--secondary-font)",
     minHeight: 0,
 
-    "&:not(:first-child)": {
+    "&:not(:first-of-type)": {
       borderLeft: `solid 2px ${theme.palette.background.paper}`,
     },
 
-    "&:first-child": {
+    "&:first-of-type": {
       borderRadius: "8px 0 0 0",
     },
 

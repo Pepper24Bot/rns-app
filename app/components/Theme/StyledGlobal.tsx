@@ -179,6 +179,9 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
 
       "& fieldset": {
         borderColor: theme.palette.primary.dark,
+        "& legend": {
+          fontSize: "16px",
+        },
       },
       "&:hover fieldset": {
         borderColor: alpha(theme.palette.primary.main, 0.75),

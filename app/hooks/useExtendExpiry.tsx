@@ -2,10 +2,10 @@ import { useReadContract, useWriteContract } from "wagmi";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData } from "viem";
 import { SECONDS } from "@/services/constants";
+import { RentPrice, Response } from "@/services/interfaces";
 
 import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
-import { RentPrice, Response } from "@/services/interfaces";
 
 export interface ExtendProps {
   /**

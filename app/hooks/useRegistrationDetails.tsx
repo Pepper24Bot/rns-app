@@ -3,9 +3,10 @@ import { namehash } from "ethers/lib/utils.js";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData } from "viem";
 import { SECONDS } from "@/services/constants";
+import { RentPrice } from "@/services/interfaces";
+
 import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
-import { RentPrice } from "@/services/interfaces";
 
 export interface RegistrationProps {
   /**

@@ -22,11 +22,11 @@ import {
 import { grey } from "@mui/material/colors";
 import { KeyboardBackspace } from "@mui/icons-material";
 
-import Form from "../Registration/Form";
 import Image from "next/image";
+import Form from "../Registration/Form";
 import Summary from "./Summary";
 import useFees from "@/hooks/useFees";
-import useExtend from "@/hooks/useExtend";
+import useExtend from "@/hooks/useExtendExpiry";
 
 const ImageContainer = styled(Grid)(({ theme }) => ({
   paddingRight: "30px",
@@ -43,6 +43,7 @@ export const Expiry: React.FC = () => {
 
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1 } = useDomain();
+
   const { closeModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
 

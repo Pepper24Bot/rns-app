@@ -6,7 +6,7 @@ import {
   styled,
   alpha,
   IconButton,
-  Link,
+  Link as MuiLink,
 } from "@mui/material";
 import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
@@ -17,6 +17,7 @@ import Wallets from "../Wallet/Wallets";
 import SwitchNetwork from "../Wallet/SwitchNetwork";
 import Registration from "../Registration/Registration";
 import Expiry from "../Expiry/Expiry";
+import Link from "../Link/Link";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -44,7 +45,7 @@ const Content = styled(Grid)(({ theme }) => ({
   padding: "0px 45px 0px 45px",
 }));
 
-const DownloadButton = styled(Link)(({ theme }) => ({
+const DownloadButton = styled(MuiLink)(({ theme }) => ({
   border: "none",
   color: theme.palette.primary.main,
 
@@ -83,7 +84,7 @@ export const ModalContainer: React.FC = () => {
   /**
    * Storing a non-serializeable (e.g, react components)
    * in redux is not recommended, So instead of passing the components
-   * thru RTK Query, create a switch here instead to get the needed components.
+   * thru RTK Query, create a switch here to get the needed components.
    *
    * "reduxy way :("
    */
@@ -101,6 +102,8 @@ export const ModalContainer: React.FC = () => {
         return <Registration />;
       case "Extend Expiry":
         return <Expiry />;
+      case "Link Name":
+        return <Link />;
       default:
         return;
     }

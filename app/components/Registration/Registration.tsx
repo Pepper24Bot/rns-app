@@ -16,7 +16,7 @@ import { Address } from "viem";
 
 import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
-import useRegister from "@/hooks/useRegister";
+import useRegister from "@/hooks/useRegisterName";
 import Form from "./Form";
 
 export const RegisterName: React.FC = () => {

@@ -6,12 +6,12 @@ import {
   Flex,
   FlexRight,
 } from "../Theme/StyledGlobal";
-
-import Paragraph from "../Reusables/Paragraph";
-import Image from "next/image";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useSwitchChain } from "wagmi";
 import { porciniWalletConfig } from "@/chains/porcini";
+
+import Paragraph from "../Reusables/Paragraph";
+import Image from "next/image";
 
 const Container = styled(Grid)(({ theme }) => ({
   maxWidth: "360px",
