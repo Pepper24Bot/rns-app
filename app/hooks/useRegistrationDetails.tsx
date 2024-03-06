@@ -5,11 +5,7 @@ import { Address, encodeFunctionData } from "viem";
 import { SECONDS } from "@/services/constants";
 import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
-
-export interface RentPrice {
-  base: bigint;
-  premium: bigint;
-}
+import { RentPrice } from "@/services/interfaces";
 
 export interface RegistrationProps {
   /**

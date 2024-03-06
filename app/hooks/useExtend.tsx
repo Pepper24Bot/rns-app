@@ -5,11 +5,7 @@ import { SECONDS } from "@/services/constants";
 
 import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
-
-export interface RentPrice {
-  base: bigint;
-  premium: bigint;
-}
+import { RentPrice, Response } from "@/services/interfaces";
 
 export interface ExtendProps {
   /**
@@ -65,7 +61,7 @@ export default function useExtend(props: ExtendProps) {
   const handleExtend = async (props: RenewProps) => {
     console.log("entering renew:: ", props);
     const { name, duration } = props;
-    const response = { error: null, isSuccess: false };
+    const response: Response = { error: null, isSuccess: false };
 
     if (name && duration) {
       try {
@@ -80,7 +76,7 @@ export default function useExtend(props: ExtendProps) {
         response.isSuccess = true;
       } catch (error) {
         console.log("error:: ", error);
-        response.error = error?.message;
+        response.error = error as string;
       }
     }
 

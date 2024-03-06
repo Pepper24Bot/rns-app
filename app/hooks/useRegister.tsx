@@ -4,6 +4,7 @@ import { config } from "@/chains/config";
 import { useWriteContract } from "wagmi";
 import { simulateContract } from "viem/actions";
 import { Address, Client } from "viem";
+import { Response } from "@/services/interfaces";
 
 export interface RegisterProps {
   name: string;
@@ -24,7 +25,7 @@ export default function useRegister() {
 
   const handleCommit = async (props: CommitProps) => {
     const { hash, controller } = props;
-    const response = { error: null, isSuccess: false };
+    const response: Response = { error: null, isSuccess: false };
 
     if (hash) {
       try {
@@ -38,7 +39,7 @@ export default function useRegister() {
         console.log("response:: ", response);
         response.isSuccess = true;
       } catch (error) {
-        response.error = error?.message;
+        response.error = error as string;
       }
     }
 
