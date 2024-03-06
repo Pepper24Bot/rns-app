@@ -148,6 +148,10 @@ export const Heading = styled(Typography)(({ theme }) => ({
 export const BaseInputField = styled(TextField)(({ theme }) => ({
   ".MuiInputBase-input": {
     padding: "0",
+
+    "&.Mui-disabled": {
+      "-webkit-text-fill-color": theme.palette.text.primary,
+    },
   },
 
   ".MuiInputBase-root": {
@@ -188,6 +192,7 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
       },
       "&.Mui-focused fieldset": {
         borderColor: theme.palette.primary.main,
+        borderWidth: "1px",
       },
     },
   },

@@ -5,7 +5,7 @@ import { isEmpty } from "lodash";
 import useContractDetails from "./useContractDetails";
 
 export interface LinkName {
-  name: string;
+  name?: string;
   address?: Address;
 }
 
@@ -19,14 +19,14 @@ export default function useLinkName(props: LinkName) {
   const { writeContractAsync, isPending, isSuccess } = useWriteContract();
 
   const { abi, address } = controller;
-  const hashedName = namehash(name);
+  const hashedName = name ? namehash(name) : "";
 
   const { data: owner } = useReadContract({
     abi,
     address,
     functionName: "owner",
     args: [hashedName],
-    query: { enabled: !isEmpty(hashedName) },
+    query: { enabled: !isEmpty(name) },
   });
 
   const { data: resolver } = useReadContract({
@@ -34,13 +34,13 @@ export default function useLinkName(props: LinkName) {
     address,
     functionName: "resolver",
     args: [hashedName],
-    query: { enabled: !isEmpty(hashedName) },
+    query: { enabled: !isEmpty(name) },
   });
 
-  console.log(`
-  current-owner:: ${owner}
-  resolver:: ${resolver}
-  `);
+  //   console.log(`
+  //   current-owner:: ${owner}
+  //   resolver:: ${resolver}
+  //   `);
 
   const handleLinkname = async (props: LinkName) => {
     const { address } = props;
@@ -66,10 +66,14 @@ export default function useLinkName(props: LinkName) {
     return response;
   };
 
+  const handleRemoveResolver = () => {
+    // TODO: Make to add a sign transaction before proceeding
+  };
+
   return {
     setOwner: handleLinkname,
     owner,
-    resolver,
+    resolver: resolver as unknown as string,
     // TODO: Check if this will update even if the custom hook is loaded before completing the writeContract
     isSuccess,
   };

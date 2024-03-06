@@ -27,8 +27,8 @@ export const Names: React.FC = () => {
   const { address } = useAccount();
   const { data, isLoading } = useGetNamesByIdQuery(
     // TODO: Remove this - using figjam.eth addr temporarily
-    { address: "0x7de397dbb8f314d4ed4b5e9a19e8c24080457b29" },
-    // { address: address as Address },
+    // { address: "0x7de397dbb8f314d4ed4b5e9a19e8c24080457b29" },
+    { address: address as Address },
     { skip: address === null }
   );
 
