@@ -3,7 +3,7 @@ import { namehash } from "ethers/lib/utils.js";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData } from "viem";
 import { SECONDS } from "@/services/constants";
-import useContractDetails, { Contract } from "./useContractDetails";
+import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
 
 export interface RentPrice {
@@ -12,11 +12,6 @@ export interface RentPrice {
 }
 
 export interface RegistrationProps {
-  /**
-   * this is needed to get which abi and contract address to be used
-   */
-  action: Contract;
-
   /**
    * name to be registered.
    * raw name, without .root
@@ -28,22 +23,17 @@ export interface RegistrationProps {
    */
   year: number;
 
-  /**
-   * TODO: Validate this
-   * owner is the wallet address
-   */
   owner: Address | undefined;
 }
 
 export default function useRegistrationDetails(props: RegistrationProps) {
   const {
-    action,
     name,
     year,
     owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account - dummy
   } = props;
 
-  const controller = useContractDetails({ action });
+  const controller = useContractDetails({ action: "RegistrarController" });
   const resolver = useContractDetails({ action: "OwnedResolver" });
 
   const { abi, address } = controller;

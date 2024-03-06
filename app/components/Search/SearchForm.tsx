@@ -111,7 +111,7 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 export const SearchForm: React.FC = () => {
   const { address } = useAccount();
   const { toggleModal } = useModalState();
-  const { registerName } = useDomainState();
+  const { updateName } = useDomainState();
 
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
@@ -136,7 +136,7 @@ export const SearchForm: React.FC = () => {
     setSearchValue(value);
 
     // Store in global state so the other componenst will be able to access the value
-    registerName({ name: value });
+    updateName({ name: value });
   };
 
   const debounceFn = useCallback(

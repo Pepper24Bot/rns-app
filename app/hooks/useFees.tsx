@@ -10,6 +10,12 @@ export interface FeesProps {
   enabled?: boolean;
 }
 
+export interface FeesResponse {
+  rentFee: string | bigint;
+  transactionFee: string | bigint;
+  totalFee: number;
+}
+
 export default function useFees(props: FeesProps) {
   const { rent, gasFee, gasPrice = BigInt(0), enabled } = props;
 

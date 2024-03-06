@@ -193,6 +193,12 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
 export const InputField = styled(BaseInputField)(({ theme }) => ({
   "&.MuiFormControl-root": {
     width: "100%",
+    "& .MuiFormLabel-root": {
+      "&.MuiInputLabel-root": {
+        fontSize: "18px",
+        color: alpha(theme.palette.text.primary, 0.5),
+      },
+    },
   },
   ".MuiInputBase-root": {
     backgroundColor: alpha(theme.palette.primary.dark, 0.15),

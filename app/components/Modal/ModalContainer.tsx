@@ -15,7 +15,8 @@ import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
 import Wallets from "../Wallet/Wallets";
 import SwitchNetwork from "../Wallet/SwitchNetwork";
-import RegisterName from "../Registration/RegisterName";
+import Registration from "../Registration/Registration";
+import Expiry from "../Expiry/Expiry";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -97,8 +98,9 @@ export const ModalContainer: React.FC = () => {
       case "Switch Network":
         return <SwitchNetwork />;
       case "Register Name":
+        return <Registration />;
       case "Extend Expiry":
-        return <RegisterName />;
+        return <Expiry />;
       default:
         return;
     }

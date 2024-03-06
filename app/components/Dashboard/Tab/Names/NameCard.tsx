@@ -8,8 +8,6 @@ import {
 } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
 import { green, grey } from "@mui/material/colors";
-
-import Image from "next/image";
 import {
   CheckCircle,
   MoreVert,
@@ -29,9 +27,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { useDomainState } from "@/redux/domain/domainSlice";
 import DropDownMenu from "@/components/Reusables/DropDownMenu";
 
-export interface Name {
-  item: NameWrapped;
-}
+import Image from "next/image";
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
@@ -100,11 +96,15 @@ const TransferIcon = styled(SwapHoriz)(({ theme }) => ({
   marginRight: "6px",
 }));
 
+export interface Name {
+  item: NameWrapped;
+}
+
 export const NameCard: React.FC<Name> = (props: Name) => {
   const { item } = props;
   const { address } = useAccount();
   const { toggleModal } = useModalState();
-  const { registerName } = useDomainState();
+  const { updateName } = useDomainState();
 
   // Check if name is linked to the wallet address
   const hasChecked = address === item.owner.id;
@@ -116,10 +116,8 @@ export const NameCard: React.FC<Name> = (props: Name) => {
     });
 
     // Store in global state so the other componenst will be able to access the value
-    registerName({ name: `${item.name}` });
+    updateName({ name: `${item.name}` });
   };
-
-  console.log("item:: ", item);
 
   return (
     <Grid item xs={12} sm={6} md={4} key={item.name}>
