@@ -43,13 +43,6 @@ const Value = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
 }));
 
-const Tip = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "12px",
-  color: alpha(theme.palette.text.primary, 0.25),
-  width: "calc(100% - 64px)",
-  textAlign: "center",
-}));
-
 const Button = styled(BaseButton)(({ theme }) => ({
   color: theme.palette.text.primary,
   "&.MuiButtonBase-root": {
@@ -69,10 +62,11 @@ export interface Form {
   rent: bigint;
   gasFee: bigint;
   gasPrice: bigint;
+  name?: string;
 }
 
 export const Form: React.FC<Form> = (props: Form) => {
-  const { rent, gasFee, gasPrice } = props;
+  const { rent, gasFee, gasPrice, name: nameProp } = props;
 
   const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
     useDomainState();
@@ -91,7 +85,7 @@ export const Form: React.FC<Form> = (props: Form) => {
 
   return (
     <Grid minWidth={300}>
-      <NameField disabled value={`${name}.root`} />
+      <NameField disabled value={nameProp ? nameProp : `${name}.root`} />
       <FieldContainer sx={{ padding: "10px 25px" }}>
         <Button
           disabled={year === 1}
@@ -134,12 +128,6 @@ export const Form: React.FC<Form> = (props: Form) => {
           </Transaction>
         </SummaryContainer>
       </FieldContainer>
-      <FlexCenter marginY={2.5}>
-        <Tip>
-          Avoid paying yearly transaction fees by selecting a longer
-          registration period.
-        </Tip>
-      </FlexCenter>
     </Grid>
   );
 };

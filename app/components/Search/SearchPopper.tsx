@@ -113,7 +113,8 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
     !isEmpty(data?.nameWrappeds) && data?.nameWrappeds[0].owner.id !== address;
 
   const isRegisteredByYou =
-    !isEmpty(data?.nameWrappeds) && data?.nameWrappeds[0].owner.id === address;
+    !isEmpty(data?.nameWrappeds) &&
+    data?.nameWrappeds[0].owner.id === address?.toLowerCase();
 
   return (
     <Popper

@@ -56,33 +56,29 @@ export default function useRegister() {
     const { abi, address } = controller;
     const response: Response = { error: null, isSuccess: false, data: null };
 
-    setTimeout(async () => {
-      console.log("waiting for commitment age...");
-      try {
-        const registerResponse = await registerAsync({
-          abi,
-          address,
-          functionName: "register",
-          account: args.owner,
-          value: parseEther(fees.rent),
-          args: [
-            args.name,
-            args.owner,
-            args.duration,
-            args.nameHash,
-            args.resolverAddr,
-            [],
-            false,
-            0,
-          ],
-        });
-        response.isSuccess = true;
-        response.data = registerResponse;
-      } catch (error) {
-        console.log("error:: ", error);
-        response.error = error as string;
-      }
-    }, COMMITMENT_AGE);
+    try {
+      const registerResponse = await registerAsync({
+        abi,
+        address,
+        functionName: "register",
+        account: args.owner,
+        value: parseEther(fees.rent),
+        args: [
+          args.name,
+          args.owner,
+          args.duration,
+          args.nameHash,
+          args.resolverAddr,
+          [],
+          false,
+          0,
+        ],
+      });
+      response.isSuccess = true;
+      response.data = registerResponse;
+    } catch (error) {
+      response.error = error as string;
+    }
 
     return response;
   };
