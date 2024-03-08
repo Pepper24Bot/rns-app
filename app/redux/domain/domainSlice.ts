@@ -6,6 +6,7 @@ export type PaymentMethod = "ROOT" | "USDC"
 
 export interface DomainProps {
     name?: string
+    labelName?: string
     year?: number
     payment?: {
         method: PaymentMethod
@@ -21,6 +22,7 @@ export interface DomainState extends DomainProps { }
 
 export const initialState: DomainState = {
     name: '',
+    labelName: '',
     year: 1,
     payment: {
         method: 'ROOT'

@@ -1,6 +1,6 @@
 import { useReadContract, useWriteContract } from "wagmi";
 import { isEmpty } from "lodash";
-import { Address, encodeFunctionData } from "viem";
+import { Address, encodeFunctionData, parseEther } from "viem";
 import { SECONDS } from "@/services/constants";
 import { RentPrice, Response } from "@/services/interfaces";
 
@@ -25,13 +25,17 @@ export interface ExtendProps {
 export interface RenewProps {
   name: string;
   duration: number;
+  owner: Address | undefined;
+  fees: {
+    rent: string;
+  };
 }
 
 export default function useExtend(props: ExtendProps) {
   const { name, year, owner } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
-  const { writeContractAsync, isPending, isSuccess } = useWriteContract();
+  const { writeContractAsync: renewAsync } = useWriteContract();
 
   const { abi, address } = controller;
 
@@ -60,19 +64,22 @@ export default function useExtend(props: ExtendProps) {
 
   const handleExtend = async (props: RenewProps) => {
     console.log("entering renew:: ", props);
-    const { name, duration } = props;
-    const response: Response = { error: null, isSuccess: false };
+    const { name, duration, fees } = props;
+    const response: Response = { error: null, isSuccess: false, data: null };
 
     if (name && duration) {
       try {
-        await writeContractAsync({
+        const renewResponse = await renewAsync({
           abi,
           address,
           functionName: "renew",
+          account: owner,
+          value: parseEther(fees.rent),
           args: [name, duration],
         });
 
-        console.log("response:: ", response);
+        console.log("extend-response:: ", response);
+        response.data = renewResponse;
         response.isSuccess = true;
       } catch (error) {
         console.log("error:: ", error);

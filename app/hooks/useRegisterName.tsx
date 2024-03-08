@@ -1,4 +1,3 @@
-import { COMMITMENT_AGE } from "@/services/constants";
 import { ContractDetails } from "./useContractDetails";
 import { useWriteContract } from "wagmi";
 import { Address, parseEther } from "viem";

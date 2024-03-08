@@ -42,7 +42,7 @@ export const Expiry: React.FC = () => {
   const { address } = useAccount();
 
   const { useDomain, updateName } = useDomainState();
-  const { name = "", year = 1 } = useDomain();
+  const { labelName = "", name = "", year = 1 } = useDomain();
 
   const { closeModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
@@ -61,12 +61,12 @@ export const Expiry: React.FC = () => {
     estimatedGas,
     estimatedGasPrice,
   } = useExtend({
-    name,
+    name: labelName,
     year,
     owner: address,
   });
 
-  const { totalFee } = useFees({
+  const { rentFee, totalFee } = useFees({
     rent: base,
     gasFee: estimatedGas,
     gasPrice: estimatedGasPrice,
@@ -75,12 +75,16 @@ export const Expiry: React.FC = () => {
   const handleExtend = async () => {
     setIsPending(true);
 
-    const { isSuccess, error } = await renew({ name, duration });
+    const { isSuccess, error } = await renew({
+      name: labelName,
+      duration,
+      owner: address,
+      fees: { rent: rentFee as string },
+    });
 
     if (isSuccess) {
-      closeModal();
+      // closeModal();
     }
-
     setIsPending(false);
   };
 
@@ -112,6 +116,7 @@ export const Expiry: React.FC = () => {
         <Grid item xs>
           {extendPage === 1 ? (
             <Form
+              name={name}
               rent={base}
               gasFee={estimatedGas}
               gasPrice={estimatedGasPrice}
@@ -158,10 +163,10 @@ export const Expiry: React.FC = () => {
               }
             }}
           >
+            {extendPage === 1 ? "Next" : "Confirm"}
             {isPending && (
               <CircularProgress color="secondary" size={18} sx={{ ml: 1 }} />
             )}
-            {extendPage === 1 ? "Next" : "Confirm"}
           </ActionButton>
         </FlexRight>
       </Grid>
