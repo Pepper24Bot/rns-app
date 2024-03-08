@@ -9,6 +9,7 @@ import {
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
+
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
 
@@ -18,7 +19,9 @@ export const Toolbar: React.FC = () => {
   const { address, connector } = useAccount();
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
-  const ensName = useEnsName({ address });
+  const { data: ensName } = useEnsName({ address });
+
+  console.log("ensName:: ", ensName);
 
   /**
    * Move wallet label and icon path to useState/useEffect
@@ -31,7 +34,11 @@ export const Toolbar: React.FC = () => {
 
   useEffect(() => {
     // TODO: display ensName here of the connected address
-    const label = address ? getMaskedAddress(address) : "Connect Wallet";
+    const label = ensName
+      ? ensName
+      : address
+      ? getMaskedAddress(address)
+      : "Connect Wallet";
     setWalletLabel(label);
 
     const walletIcon = address ? path : "/icons/wallet.svg";

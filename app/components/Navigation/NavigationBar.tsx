@@ -8,11 +8,11 @@ import {
 } from "@mui/material";
 import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 import { useAccount } from "wagmi";
-import { porcini } from "@/chains/porcini";
 import { useModalState } from "@/redux/modal/modalSlice";
 
 import Image from "next/image";
 import Toolbar from "./Toolbar";
+import useNetworkConfig from "@/hooks/useNetworkConfig";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -73,10 +73,11 @@ export const HideOnScrollBar: React.FC<ScrollProps> = (props: ScrollProps) => {
 export const NavigationBar: React.FC = () => {
   const { address, chainId } = useAccount();
   const { toggleModal, closeModal } = useModalState();
+  const { config } = useNetworkConfig();
 
   // TODO: Mount this somewhere else
   useEffect(() => {
-    if (chainId !== undefined && chainId !== porcini.id) {
+    if (chainId !== undefined && chainId !== config.id) {
       toggleModal({
         id: "Switch Network",
         title: "Switch Network",

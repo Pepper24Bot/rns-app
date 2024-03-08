@@ -55,6 +55,8 @@ export default function useRegistrationDetails(props: RegistrationProps) {
     ],
   });
 
+  console.log("data:: ", data);
+
   const [availability, rentPrice] = data || [];
 
   // #3. Get the namehash

@@ -8,10 +8,10 @@ import {
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useSwitchChain } from "wagmi";
-import { porciniWalletConfig } from "@/chains/porcini";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
+import useNetworkConfig from "@/hooks/useNetworkConfig";
 
 const Container = styled(Grid)(({ theme }) => ({
   maxWidth: "360px",
@@ -61,6 +61,7 @@ const ConfirmButton = styled(CancelButton)(({ theme }) => ({
 export const SwitchNetwork: React.FC = () => {
   const { chains, switchChain } = useSwitchChain();
   const { closeModal } = useModalState();
+  const { walletConfig } = useNetworkConfig();
 
   // console.log("chains:: ", chains);
 
@@ -74,7 +75,7 @@ export const SwitchNetwork: React.FC = () => {
    */
   // switchChain({ chainId: chains[0].id });
   const switchNetwork = async () => {
-    const config = porciniWalletConfig;
+    const config = walletConfig;
 
     if (typeof window.ethereum !== "undefined") {
       try {
