@@ -1,18 +1,22 @@
 import { COMMITMENT_AGE } from "@/services/constants";
 import { ContractDetails } from "./useContractDetails";
-import { config } from "@/chains/config";
 import { useWriteContract } from "wagmi";
-import { simulateContract } from "viem/actions";
-import { Address, Client } from "viem";
+import { Address, parseEther } from "viem";
 import { Response } from "@/services/interfaces";
 
 export interface RegisterProps {
-  name: string;
-  duration: number;
-  nameHash: string;
-  resolverAddr: string;
-  address: Address;
   controller: ContractDetails;
+  fees: {
+    gasPrice: bigint;
+    rent: string;
+  };
+  args: {
+    name: string;
+    owner: Address;
+    duration: number;
+    nameHash: string;
+    resolverAddr: string;
+  };
 }
 
 export interface CommitProps {
@@ -21,7 +25,8 @@ export interface CommitProps {
 }
 
 export default function useRegister() {
-  const { writeContractAsync, isPending, isSuccess } = useWriteContract();
+  const { writeContractAsync: commitAsync } = useWriteContract();
+  const { writeContractAsync: registerAsync } = useWriteContract();
 
   const handleCommit = async (props: CommitProps) => {
     const { hash, controller } = props;
@@ -29,63 +34,57 @@ export default function useRegister() {
 
     if (hash) {
       try {
-        await writeContractAsync({
+        const commitResponse = await commitAsync({
           abi: controller.abi,
           address: controller.address,
           functionName: "commit",
           args: [hash],
         });
 
-        console.log("response:: ", response);
         response.isSuccess = true;
+        response.data = commitResponse;
       } catch (error) {
         response.error = error as string;
       }
     }
-
     return response;
   };
 
   const handleRegister = async (props: RegisterProps) => {
-    const { controller, name, address, duration, nameHash, resolverAddr } =
-      props;
+    console.log("-----entering registration-----");
+    const { controller, fees, args } = props;
+    const { abi, address } = controller;
+    const response: Response = { error: null, isSuccess: false, data: null };
 
-    if (!isPending && isSuccess) {
-      // TODO: useWaitForTransaction
-      setTimeout(() => {
-        console.log("waiting for commitment age...");
-      }, COMMITMENT_AGE);
-
-      /**
-       * prepare the transaction using simulateContract
-       * wagmi v2: https://wagmi.sh/react/guides/migrate-from-v1-to-v2#removed-prepare-hooks
-       */
-      const registerConfig = await simulateContract(
-        config as unknown as Client,
-        {
-          abi: controller.abi,
-          address: controller.address,
+    setTimeout(async () => {
+      console.log("waiting for commitment age...");
+      try {
+        const registerResponse = await registerAsync({
+          abi,
+          address,
           functionName: "register",
+          account: args.owner,
+          value: parseEther(fees.rent),
           args: [
-            name,
-            address as Address,
-            duration,
-            nameHash,
-            resolverAddr,
+            args.name,
+            args.owner,
+            args.duration,
+            args.nameHash,
+            args.resolverAddr,
             [],
             false,
             0,
           ],
-        }
-      );
+        });
+        response.isSuccess = true;
+        response.data = registerResponse;
+      } catch (error) {
+        console.log("error:: ", error);
+        response.error = error as string;
+      }
+    }, COMMITMENT_AGE);
 
-      const registerResponse = await writeContractAsync(
-        registerConfig!.request
-      );
-
-      console.log("config:: ", registerConfig);
-      console.log("response:: ", registerResponse);
-    }
+    return response;
   };
 
   return {

@@ -21,8 +21,6 @@ export const Toolbar: React.FC = () => {
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
   const { data: ensName } = useEnsName({ address });
 
-  console.log("ensName:: ", ensName);
-
   /**
    * Move wallet label and icon path to useState/useEffect
    * to fix nextjs hydration issue wherein the generated

@@ -4657,14 +4657,14 @@ export type GetNamesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetNamesQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, id: string, domain: { __typename?: 'Domain', labelName?: string | null, name?: string | null } }> };
 
 export type GetNamesByNameQueryVariables = Exact<{
-  name: Scalars['String']['input'];
+  labelName: Scalars['String']['input'];
 }>;
 
 
-export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, owner: { __typename?: 'Account', id: string } }> };
+export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', labelName?: string | null, labelhash?: any | null, id: string } }> };
 
 export type GetNamesByIdQueryVariables = Exact<{
-  address: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
 }>;
 
 
@@ -4684,18 +4684,23 @@ export const GetNamesDocument = `
 }
     `;
 export const GetNamesByNameDocument = `
-    query GetNamesByName($name: String!) {
-  nameWrappeds(where: {name: $name}) {
+    query GetNamesByName($labelName: String!) {
+  nameWrappeds(where: {domain_: {labelName: $labelName}}) {
     name
     owner {
+      id
+    }
+    domain {
+      labelName
+      labelhash
       id
     }
   }
 }
     `;
 export const GetNamesByIdDocument = `
-    query GetNamesById($address: ID!) {
-  nameWrappeds(where: {owner_: {id: $address}}) {
+    query GetNamesById($id: ID!) {
+  nameWrappeds(where: {owner_: {id: $id}}) {
     name
     owner {
       id

@@ -9,17 +9,22 @@ query GetNames {
   }
 }
 
-query GetNamesByName($name: String!) {
-  nameWrappeds(where: { name: $name }) {
+query GetNamesByName($labelName: String!) {
+  nameWrappeds(where: { domain_: { labelName: $labelName } }) {
     name
     owner {
+      id
+    }
+    domain {
+      labelName
+      labelhash
       id
     }
   }
 }
 
-query GetNamesById($address: ID!) {
-  nameWrappeds(where: { owner_: { id: $address } }) {
+query GetNamesById($id: ID!) {
+  nameWrappeds(where: { owner_: { id: $id } }) {
     name
     owner {
       id

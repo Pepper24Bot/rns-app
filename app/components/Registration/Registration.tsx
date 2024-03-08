@@ -18,6 +18,7 @@ import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
 import useRegister from "@/hooks/useRegisterName";
 import Form from "./Form";
+import useFees from "@/hooks/useFees";
 
 export const RegisterName: React.FC = () => {
   const { address } = useAccount();
@@ -27,6 +28,7 @@ export const RegisterName: React.FC = () => {
   const { isModalOpen } = useModal();
 
   const [isPending, setIsPending] = useState<boolean>(false);
+  const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
 
   const {
     controller,
@@ -44,29 +46,51 @@ export const RegisterName: React.FC = () => {
   });
 
   const { commit, register } = useRegister();
+  const { rentFee } = useFees({
+    rent: base,
+  });
 
-  const handleRegister = async () => {
+  const handleCommit = async () => {
     setIsPending(true);
     // TODO: Careful with type casting
     const hashStr = hash as unknown as string;
-    const { error, isSuccess } = await commit({ hash: hashStr, controller });
+    const { isSuccess } = await commit({ hash: hashStr, controller });
 
-    console.log("success:: ", isSuccess);
-
-    if (isSuccess) {
-      register({
-        controller,
-        name,
-        address: address as Address,
-        duration,
-        nameHash,
-        resolverAddr,
-      });
-      closeModal();
-    }
-
-    setIsPending(false);
+    setTimeout(() => {
+      setIsPending(false);
+      setIsCommitSuccess(isSuccess);
+      console.log("waiting...");
+    }, 60000);
   };
+
+  const handleRegister = async () => {
+    if (isCommitSuccess) {
+      setIsPending(true);
+      const { isSuccess } = await register({
+        controller,
+        fees: {
+          gasPrice: estimatedGasPrice,
+          rent: rentFee as string,
+        },
+        args: {
+          name,
+          owner: address as Address,
+          duration,
+          nameHash,
+          resolverAddr,
+        },
+      });
+
+      if (isSuccess) {
+        closeModal();
+      }
+      setIsPending(false);
+    }
+  };
+
+  useEffect(() => {
+    handleRegister();
+  }, [isCommitSuccess]);
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
@@ -94,7 +118,7 @@ export const RegisterName: React.FC = () => {
             <ActionButton
               variant="contained"
               onClick={() => {
-                handleRegister();
+                handleCommit();
               }}
             >
               Confirm

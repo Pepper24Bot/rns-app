@@ -50,7 +50,6 @@ const SearchContainer = styled(Grid)(({ theme }) => ({
     height: "80%",
     content: '""',
     background: "linear-gradient(transparent 0%,#000000 100%)",
-    // transform: "scale(1.2)",
     borderRadius: "16px",
   },
 }));
@@ -119,8 +118,7 @@ export const SearchForm: React.FC = () => {
 
   // TODO: Normalize names -- validate
   const { data, isLoading } = useGetNamesByNameQuery(
-    { name: `${searchValue}` }, //`${searchValue}.root`
-    // Make sure not to call the api when the field is null
+    { labelName: `${searchValue}` },
     { skip: searchValue === null }
   );
 
