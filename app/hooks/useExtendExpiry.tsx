@@ -63,7 +63,6 @@ export default function useExtend(props: ExtendProps) {
   });
 
   const handleExtend = async (props: RenewProps) => {
-    console.log("entering renew:: ", props);
     const { name, duration, fees } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
 
@@ -78,11 +77,9 @@ export default function useExtend(props: ExtendProps) {
           args: [name, duration],
         });
 
-        console.log("extend-response:: ", response);
         response.data = renewResponse;
         response.isSuccess = true;
       } catch (error) {
-        console.log("error:: ", error);
         response.error = error as string;
       }
     }

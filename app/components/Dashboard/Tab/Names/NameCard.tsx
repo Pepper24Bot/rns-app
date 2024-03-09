@@ -116,7 +116,13 @@ export const NameCard: React.FC<Name> = (props: Name) => {
     });
 
     // Store in global state so the other componenst will be able to access the value
-    updateName({ labelName: `${item.domain.labelName}`, name: `${item.name}` });
+    updateName({
+      labelName: `${item.domain.labelName}`,
+      name: `${item.name}`,
+      domain: {
+        owner: { address: item.owner.id },
+      },
+    });
   };
 
   return (

@@ -16,6 +16,14 @@ export interface DomainProps {
         transaction?: number
         total?: number
     }
+    domain?: {
+        owner?: {
+            address: string
+        },
+        resolver?: {
+            address: string
+        }
+    }
 }
 
 export interface DomainState extends DomainProps { }

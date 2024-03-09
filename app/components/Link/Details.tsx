@@ -10,7 +10,7 @@ import { useDomainState } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
 import { Close, Edit } from "@mui/icons-material";
-import useLinkName from "@/hooks/useLinkName";
+import useRecords from "@/hooks/useRecords";
 
 const InputField = styled(StyledInputField)(({ theme }) => ({
   ".MuiInputBase-root": {
@@ -44,8 +44,8 @@ const CloseIcon = styled(Close)(({ theme }) => ({}));
 export const Details: React.FC = () => {
   const { closeModal } = useModalState();
   const { useDomain } = useDomainState();
-  const { name = "" } = useDomain();
-  const { owner, resolver } = useLinkName({
+  const { name = "", domain } = useDomain();
+  const { resolver } = useRecords({
     name,
   });
 
@@ -54,14 +54,6 @@ export const Details: React.FC = () => {
   const [isResolverEnabled, setIsResolverEnabled] = useState<boolean>(false);
 
   const [inputValue, setInputResolver] = useState<string>(resolver || "");
-
-  const handleUpdateResolver = async () => {
-    // TODO: implement edit resolver
-  };
-
-  const handleRemoveResolver = async () => {
-    // TODO: remove resolver
-  };
 
   useEffect(() => {
     if (resolver) {
@@ -77,7 +69,7 @@ export const Details: React.FC = () => {
           label="Owner"
           disabled
           focused
-          value={getMaskedAddress(String(owner))}
+          value={getMaskedAddress(String(domain?.owner?.address || ""))}
         />
         <InputField
           label="Linked To / Resolver"
@@ -103,7 +95,6 @@ export const Details: React.FC = () => {
                   variant="contained"
                   onClick={() => {
                     setIsResolverEnabled(!isResolverEnabled);
-                    handleUpdateResolver();
                   }}
                 >
                   <EditIcon />
@@ -112,7 +103,6 @@ export const Details: React.FC = () => {
                   variant="contained"
                   onClick={() => {
                     setIsDeletingResolver(true);
-                    handleRemoveResolver();
                   }}
                 >
                   <CloseIcon />
@@ -134,12 +124,7 @@ export const Details: React.FC = () => {
             >
               Cancel
             </ActionButton>
-            <ActionButton
-              variant="contained"
-              onClick={() => {
-                handleRemoveResolver();
-              }}
-            >
+            <ActionButton variant="contained" onClick={() => {}}>
               {isPending && (
                 <CircularProgress color="secondary" size={18} sx={{ ml: 1 }} />
               )}

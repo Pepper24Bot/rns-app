@@ -8,7 +8,8 @@ import {
 import { Address } from "viem";
 import { useDomainState } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
-import useLinkName from "@/hooks/useLinkName";
+import { useAccount } from "wagmi";
+import useRecords from "@/hooks/useRecords";
 
 const InputField = styled(StyledInputField)(({ theme }) => ({
   ".MuiInputBase-root": {
@@ -27,28 +28,31 @@ const InputField = styled(StyledInputField)(({ theme }) => ({
 }));
 
 export const Form: React.FC = () => {
+  const { address } = useAccount();
   const { closeModal } = useModalState();
   const { useDomain } = useDomainState();
   const { name = "" } = useDomain();
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-
   const [futurePassAddr, setFuturePassAddr] = useState<string>("");
 
-  const { setOwner } = useLinkName({});
+  const { setFuturePass } = useRecords({});
 
-  const handleLinkName = async () => {
+  const handleSetFuturePass = async () => {
     setIsPending(true);
 
-    const { isSuccess, error } = await setOwner({
-      name,
-      address: futurePassAddr as Address,
-    });
-
-    if (isSuccess) {
-      closeModal();
+    if (futurePassAddr) {
+      const { isSuccess, error } = await setFuturePass({
+        owner: address as Address,
+        futurePassAddress: futurePassAddr as Address,
+        resolverAddress: "0xadf27dd9c31ab734f06bb5bd2d6b04eb10e4b5d5", // temp - just for the sake of setting up
+      });
     }
+
+    // if (isSuccess) {
+    //   closeModal();
+    // }
 
     setIsPending(false);
   };
@@ -82,7 +86,7 @@ export const Form: React.FC = () => {
           <ActionButton
             variant="contained"
             onClick={() => {
-              handleLinkName();
+              handleSetFuturePass();
             }}
           >
             {isPending && (

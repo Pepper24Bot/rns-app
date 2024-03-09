@@ -1,17 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { Form } from "./Form";
+
 import Image from "next/image";
 import Details from "./Details";
+import useRecords from "@/hooks/useRecords";
+import { useDomainState } from "@/redux/domain/domainSlice";
 
 const ImageContainer = styled(Grid)(({ theme }) => ({
   paddingRight: "30px",
 }));
 
 export const Link: React.FC = () => {
-  // TODO: This is just for component implementation
-  const [isFuturePassLinked, setIsFuturePassLinked] = useState<boolean>(true);
+  const { useDomain } = useDomainState();
+  const { name } = useDomain();
+  const { getTextRecord } = useRecords({});
+
+  const [isFuturePassLinked, setIsFuturePassLinked] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log("name:: ", name);
+    const response = getTextRecord({ name });
+
+    console.log("ens-response:: ", response);
+  }, []);
 
   return (
     <Grid container mt={6} minWidth={300}>

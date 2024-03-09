@@ -30,12 +30,15 @@ export const Names: React.FC = () => {
   );
 
   const nameList = data?.nameWrappeds;
+  const filteredList = data?.nameWrappeds.filter((item) => {
+    return item.name !== null;
+  });
 
-  return !isEmpty(nameList) ? (
+  return !isEmpty(filteredList) ? (
     <Container>
       <Box sx={{ flexGrow: 1 }}>
         <Grid sx={{ flexGrow: 1 }} container spacing={2}>
-          {nameList?.map((name, index) => {
+          {filteredList?.map((name, index) => {
             return (
               <NameCard
                 item={name as NameWrapped}
