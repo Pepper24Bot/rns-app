@@ -30,17 +30,17 @@ export const getMaskedAddress = (address: string, index = 6) => {
 }
 
 /**
- * 
+ * Adds 1 year
  * @param date 
  * @returns 
  */
-export const convertNumToDate = (date: number) => {
-    return new Date(date * 1000)
-        .toLocaleDateString('en-CA', {
-            year: "2-digit",
-            month: "2-digit",
-            day: "2-digit"
-        });
+export const getExpiryDate = (date: number) => {
+    const newDate = new Date(date * 1000)
+    const year = newDate.getFullYear() + 1
+    const month = (newDate.getMonth() + 1).toString().padStart(2, "0")
+    const day = newDate.getDate().toString().padStart(2, "0")
+
+    return `${month}-${day}-${year}`
 }
 
 /**
@@ -53,4 +53,54 @@ export const getRemainingDays = (date: number) => {
     const expiryDate = new Date(date * 1000)
 
     return formatDistanceStrict(expiryDate, currentDate, { unit: "day" })
+}
+
+/**
+ * 
+ * @param date 
+ * @returns string month-date-year
+ */
+export const getFormattedDate = (date: number) => {
+    const newDate = new Date(date * 1000)
+    const year = newDate.getFullYear()
+    const month = (newDate.getMonth() + 1).toString().padStart(2, "0")
+    const day = newDate.getDate().toString().padStart(2, "0")
+
+    return `${month}-${day}-${year}`
+}
+
+/**
+ * This util is very specific to get the dates of
+ * - expected expiration
+ * - grace period until the actual expiration
+ * - remaining datys until expiration
+ * 
+ * @param dateCreated 
+ * @param dateExpiration 
+ */
+export const getExpiration = (dateCreated: number, dateExpiration?: number) => {
+    const dates = {
+        expiration: "",
+        distanceToExpiration: "",
+        gracePeriod: "",
+        distanceToGracePeriod: ""
+    }
+
+    const currentDate = new Date()
+
+    const formattedExpiration = getExpiryDate(dateCreated)
+    dates.expiration = formattedExpiration
+
+    const distance = formatDistanceStrict(currentDate, formattedExpiration, { unit: "day" })
+    dates.distanceToExpiration = distance
+
+    if (dateExpiration) {
+        const gracePeriod = getFormattedDate(dateExpiration)
+        dates.gracePeriod = gracePeriod
+
+        const distance = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
+        dates.distanceToGracePeriod = distance
+    }
+
+    return dates
 }

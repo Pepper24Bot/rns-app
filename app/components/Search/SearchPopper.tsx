@@ -21,9 +21,10 @@ import {
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { Star, StarBorder } from "@mui/icons-material";
+import { useModalState } from "@/redux/modal/modalSlice";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 import Image from "next/image";
-import { useModalState } from "@/redux/modal/modalSlice";
 
 export interface SearchPopper {
   isLoading: boolean;
@@ -43,7 +44,7 @@ const Popper = styled(MuiPopper)(({ theme }) => ({
 }));
 
 const SearchText = styled(SubTitle)(({ theme }) => ({
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   marginBottom: 0,
   textAlign: "start",
 }));
@@ -171,7 +172,17 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         Register
                       </SearchButton>
                     ) : isRegisteredByYou ? (
-                      <SearchButton variant="contained">View</SearchButton>
+                      <SearchButton
+                        variant="contained"
+                        onClick={() => {
+                          toggleModal({
+                            id: "Registration Details",
+                            title: "Registration Details",
+                          });
+                        }}
+                      >
+                        View
+                      </SearchButton>
                     ) : (
                       <InformationTip
                         title="View on secondary marketplace."

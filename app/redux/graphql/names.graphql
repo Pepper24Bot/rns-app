@@ -16,29 +16,42 @@ query GetNamesByName($labelName: String!) {
       id
     }
     domain {
+      id
+      name
       labelName
       labelhash
-      id
+      isMigrated
+      expiryDate
+      createdAt
+      resolvedAddress {
+        id
+      }
     }
   }
 }
 
 query GetNamesById($id: ID!) {
   nameWrappeds(where: { owner_: { id: $id } }) {
+    id
     name
     owner {
       id
     }
-    expiryDate
-    fuses
-    blockNumber
-    id
     domain {
-      labelhash
-      labelName
+      id
       name
+      labelName
+      labelhash
       isMigrated
+      expiryDate
+      createdAt
+      resolvedAddress {
+        id
+      }
     }
+    fuses
     transactionID
+    expiryDate
+    blockNumber
   }
 }

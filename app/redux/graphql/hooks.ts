@@ -4661,14 +4661,14 @@ export type GetNamesByNameQueryVariables = Exact<{
 }>;
 
 
-export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', labelName?: string | null, labelhash?: any | null, id: string } }> };
+export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null } }> };
 
 export type GetNamesByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, expiryDate: any, fuses: number, blockNumber: number, id: string, transactionID: any, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', labelhash?: any | null, labelName?: string | null, name?: string | null, isMigrated: boolean } }> };
+export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null } }> };
 
 
 export const GetNamesDocument = `
@@ -4691,9 +4691,16 @@ export const GetNamesByNameDocument = `
       id
     }
     domain {
+      id
+      name
       labelName
       labelhash
-      id
+      isMigrated
+      expiryDate
+      createdAt
+      resolvedAddress {
+        id
+      }
     }
   }
 }
@@ -4701,21 +4708,27 @@ export const GetNamesByNameDocument = `
 export const GetNamesByIdDocument = `
     query GetNamesById($id: ID!) {
   nameWrappeds(where: {owner_: {id: $id}}) {
+    id
     name
     owner {
       id
     }
-    expiryDate
-    fuses
-    blockNumber
-    id
     domain {
-      labelhash
-      labelName
+      id
       name
+      labelName
+      labelhash
       isMigrated
+      expiryDate
+      createdAt
+      resolvedAddress {
+        id
+      }
     }
+    fuses
     transactionID
+    expiryDate
+    blockNumber
   }
 }
     `;
