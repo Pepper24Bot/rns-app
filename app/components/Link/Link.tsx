@@ -27,7 +27,7 @@ export const Link: React.FC = () => {
   }, []);
 
   return (
-    <Grid container mt={6} minWidth={300}>
+    <Grid container mt={6} minWidth={250}>
       <ImageContainer item>
         <Image
           src="/images/rns-image-placeholder.svg"

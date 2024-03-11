@@ -99,8 +99,8 @@ export default function useRegistrationDetails(props: RegistrationProps) {
   });
 
   const fallBackRent: RentPrice = {
-    base: BigInt(0),
-    premium: BigInt(0),
+    base: BigInt("0"),
+    premium: BigInt("0"),
   };
 
   const rentFee = rentPrice?.result

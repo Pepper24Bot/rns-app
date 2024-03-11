@@ -68,7 +68,7 @@ export const MenuField: React.FC<Menu> = (props: Menu) => {
           <PaymentLabel>{label}</PaymentLabel>
         </Grid>
         <FieldContainer item xs>
-          {selectedOption}
+          <SecondaryLabel>{selectedOption}</SecondaryLabel>
           <DropDownMenu
             selectedOption={selectedOption}
             options={options}

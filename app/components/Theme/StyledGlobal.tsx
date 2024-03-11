@@ -14,7 +14,7 @@ import {
   tooltipClasses,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { FONT_WEIGHT } from "./Global";
+import { FONT_SIZE, FONT_WEIGHT } from "./Global";
 
 export const Relative = styled(Grid)(({ theme }) => ({
   position: "relative",
@@ -54,6 +54,12 @@ export const BaseButton = styled(Button)(({ theme }) => ({
     borderRadius: "8px",
     minWidth: 0,
   },
+
+  "&.MuiButton-text": {
+    [theme.breakpoints.down("md")]: {
+      fontSize: "14px",
+    },
+  },
 }));
 
 export const ActionButton = styled(BaseButton)(({ theme }) => ({
@@ -70,6 +76,10 @@ export const ActionButton = styled(BaseButton)(({ theme }) => ({
     color: "white",
     border: "none",
     padding: "8px 16px",
+
+    [theme.breakpoints.down("md")]: {
+      fontSize: "14px",
+    },
   },
 }));
 
@@ -84,6 +94,12 @@ export const ToolbarButton = styled(Button)(({ theme }) => ({
     border: `solid 1px ${alpha(grey[50], 0.15)}`,
     fontSize: "14px",
     fontFamily: "var(--default-font)",
+  },
+
+  "&.MuiButton-text": {
+    [theme.breakpoints.down("md")]: {
+      fontSize: "14px",
+    },
   },
 }));
 
@@ -132,6 +148,10 @@ export const Title = styled(Typography)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Bold,
   textAlign: "center",
   marginBottom: "20px",
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: FONT_SIZE.Large,
+  },
 }));
 
 export const SubTitle = styled(Title)(({ theme }) => ({
@@ -182,6 +202,10 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
       fontSize: "18px",
       padding: "16px 25px",
 
+      [theme.breakpoints.down("md")]: {
+        fontSize: "14px",
+      },
+
       "& fieldset": {
         borderColor: theme.palette.primary.dark,
         "& legend": {
@@ -213,6 +237,10 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
     backgroundColor: alpha(theme.palette.primary.dark, 0.15),
     borderRadius: "8px",
 
+    [theme.breakpoints.down("md")]: {
+      fontSize: "14px",
+    },
+
     "&.MuiOutlinedInput-root": {
       fontStyle: "normal",
       fontFamily: "var(--secondary-font)",
@@ -231,7 +259,15 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
 
 export const ModalInputField = styled(InputField)(({ theme }) => ({
   ".MuiInputBase-root": {
+    [theme.breakpoints.down("md")]: {
+      fontSize: "14px",
+    },
+
     "&.MuiOutlinedInput-root": {
+      [theme.breakpoints.down("md")]: {
+        fontSize: "14px",
+      },
+
       fontSize: "16px",
       fontWeight: FONT_WEIGHT.Light,
       padding: "16px 25px",
@@ -280,6 +316,10 @@ export const PrimaryLabel = styled(SubTitle, {
   marginBottom: 0,
   fontWeight: FONT_WEIGHT.Regular,
   color: theme.palette.text.primary,
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: "14px",
+  },
 }));
 
 export const SecondaryLabel = styled(PrimaryLabel, {

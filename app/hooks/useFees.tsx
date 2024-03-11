@@ -8,6 +8,7 @@ export interface FeesProps {
   gasPrice?: bigint;
   gasUsed?: bigint;
   enabled?: boolean;
+  raw?: boolean;
 }
 
 export interface FeesResponse {
@@ -16,8 +17,12 @@ export interface FeesResponse {
   totalFee: number;
 }
 
+export interface Options {
+  raw?: boolean;
+}
+
 export default function useFees(props: FeesProps) {
-  const { rent, gasFee, gasPrice = BigInt(0), enabled } = props;
+  const { rent, gasFee, gasPrice = BigInt("0"), enabled, raw } = props;
 
   // TODO: Research about Pricing Oracle
   /**
@@ -26,7 +31,11 @@ export default function useFees(props: FeesProps) {
    * @returns
    */
   const getRentFee = () => {
-    return rent ? formatEther(rent) : BigInt(0);
+    if (raw) {
+      return rent ? formatEther(rent) : BigInt("0");
+    } else {
+      return rent ? Number(formatEther(rent)).toFixed(2) : BigInt("0");
+    }
   };
 
   /**
@@ -39,7 +48,11 @@ export default function useFees(props: FeesProps) {
       ? BigNumber.from(gasFee).mul(gasPrice)
       : BigNumber.from(0);
 
-    return formatEther(transactionFee.toBigInt());
+    if (raw) {
+      return formatEther(transactionFee.toBigInt());
+    } else {
+      return Number(formatEther(transactionFee.toBigInt())).toFixed(2);
+    }
   };
 
   // TODO: Convert to USDC and ROOT

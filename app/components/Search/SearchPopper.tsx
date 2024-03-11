@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Fade,
   Grid,
@@ -22,7 +22,7 @@ import {
 } from "../Theme/StyledGlobal";
 import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { FONT_WEIGHT } from "../Theme/Global";
+import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 
 import Image from "next/image";
 
@@ -40,13 +40,16 @@ const Popper = styled(MuiPopper)(({ theme }) => ({
   zIndex: 15,
   marginTop: "5px !important", //override inline styling
   width: "100%",
-  maxWidth: "500px",
 }));
 
 const SearchText = styled(SubTitle)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
   marginBottom: 0,
   textAlign: "start",
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: FONT_SIZE.Medium,
+  },
 }));
 
 const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
@@ -54,6 +57,10 @@ const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
   textTransform: "uppercase",
   marginTop: "5px",
   fontSize: "14px",
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: FONT_SIZE.Small,
+  },
 }));
 
 const NotAvailableText = styled(AvailableText)(({ theme }) => ({
@@ -68,11 +75,21 @@ const PopperContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
   padding: "25px 40px",
   borderRadius: "0 0 8px 8px",
+
+  [theme.breakpoints.down("md")]: {
+    padding: "10px 25px 15px 25px",
+  },
+}));
+
+const ButtonsContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down("md")]: {
+    paddingTop: "20px",
+  },
 }));
 
 const SearchButton = styled(BaseButton)(({ theme }) => ({
   textTransform: "uppercase",
-  marginLeft: "20px",
+  marginLeft: "10px",
 
   "&.MuiButtonBase-root": {
     backgroundColor: theme.palette.primary.dark,
@@ -87,11 +104,22 @@ const SearchButton = styled(BaseButton)(({ theme }) => ({
   },
 }));
 
+const SearchLabel = styled(SecondaryLabel)(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Regular,
+  fontSize: "14px",
+  padding: "4px 0",
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: FONT_SIZE.Small,
+  },
+}));
+
 const FavoriteButton = styled(BaseIconButton)(({ theme }) => ({
   borderRadius: "32px",
+  padding: "8px",
   backgroundColor: "#161616",
   color: "#FFB800",
-  marginRight: "20px",
+  margin: "0 10px",
 }));
 
 const FavoriteIcon = styled(Star)(({ theme }) => ({
@@ -108,6 +136,10 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   const { isLoading, data, address, anchorEl, searchValue } = props;
   const { toggleModal } = useModalState();
 
+  const [clientWidth, setClientWidth] = useState<number>(
+    anchorEl?.clientWidth || 500
+  );
+
   const isAvailable = isEmpty(data?.nameWrappeds);
 
   const isNotAvailable =
@@ -117,17 +149,26 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
     !isEmpty(data?.nameWrappeds) &&
     data?.nameWrappeds[0].owner.id === address?.toLowerCase();
 
+  useEffect(() => {
+    if (anchorEl?.clientWidth) {
+      setClientWidth(anchorEl?.clientWidth);
+    }
+  }, [anchorEl?.clientWidth]);
+
   return (
     <Popper
       open={!isEmpty(searchValue) && Boolean(anchorEl)}
       anchorEl={anchorEl}
       placement="bottom-start"
       transition
+      sx={{
+        maxWidth: `${clientWidth}px`,
+      }}
     >
       {({ TransitionProps }) => (
         <Fade {...TransitionProps} timeout={350}>
           <PopperContainer>
-            <FlexJustified>
+            <FlexJustified container>
               <Grid>
                 <SearchText>{`${searchValue}.root`}</SearchText>
                 <Relative>
@@ -147,7 +188,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                   )}
                 </Relative>
               </Grid>
-              <Grid>
+              <ButtonsContainer>
                 <Relative>
                   <Flex isloading={isLoading}>
                     <InformationTip title="Coming soon!" arrow>
@@ -169,7 +210,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                           });
                         }}
                       >
-                        Register
+                        <SearchLabel>Register</SearchLabel>
                       </SearchButton>
                     ) : isRegisteredByYou ? (
                       <SearchButton
@@ -204,7 +245,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                     isloading={isLoading}
                   />
                 </Relative>
-              </Grid>
+              </ButtonsContainer>
             </FlexJustified>
           </PopperContainer>
         </Fade>

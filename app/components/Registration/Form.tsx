@@ -78,7 +78,7 @@ export const Form: React.FC<Form> = (props: Form) => {
   };
 
   return (
-    <Grid minWidth={300}>
+    <Grid minWidth={250}>
       <NameField disabled value={nameProp ? nameProp : `${name}.root`} />
       <FieldContainer sx={{ padding: "10px 25px" }}>
         <Button

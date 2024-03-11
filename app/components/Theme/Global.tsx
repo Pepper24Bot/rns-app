@@ -128,7 +128,7 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
           xl: 1536,
           // custom
           mobile: 500,
-          tablet: 640,
+          tablet: 800,
           laptop: 1024,
           desktop: 1200,
         },

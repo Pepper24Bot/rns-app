@@ -146,7 +146,7 @@ export const RegisterName: React.FC = () => {
   }, []);
 
   return (
-    <Grid mt={6} minWidth={350}>
+    <Grid mt={6} minWidth={250} maxWidth={400}>
       <Form rent={base} gasFee={estimatedGas} gasPrice={estimatedGasPrice} />
       <FlexCenter marginY={2.5}>
         <Relative>

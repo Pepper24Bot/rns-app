@@ -1,22 +1,30 @@
 import React from "react";
-import { Grid, alpha, darken, styled } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import { Grid, styled } from "@mui/material";
 import { getExpiration, getMaskedAddress } from "@/services/utils";
 import {
   FieldContainer,
+  FlexCenter,
   FlexJustified,
   InformationTip,
   ModalInputField as InputField,
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
-
-import Image from "next/image";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
 import { useDomainState } from "@/redux/domain/domainSlice";
 
-const ImageContainer = styled(Grid)(({ theme }) => ({
-  paddingRight: "30px",
+import Image from "next/image";
+import EnsImage from "../Reusables/EnsImage";
+
+const DetailsContainer = styled(FlexCenter)(({ theme }) => ({
+  alignItems: "start",
+  [theme.breakpoints.between("sm", "tablet")]: {
+    width: "40vw",
+  },
+
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+  },
 }));
 
 const NameContainer = styled(FieldContainer)(({ theme }) => ({
@@ -46,70 +54,59 @@ export const Details: React.FC = () => {
   const details = data?.nameWrappeds[0];
 
   return (
-    <Grid container mt={6} minWidth={300}>
-      <ImageContainer item>
-        <Image
-          src="/images/rns-image-placeholder.svg"
-          alt="Wallet Icon"
-          width={290}
-          height={200}
-          style={{
-            height: "fit-content",
-            border: `solid 1px ${alpha(grey[50], 0.25)}`,
-            borderRadius: "4px",
-            boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
-          }}
-        />
-      </ImageContainer>
-      <Grid item maxWidth={350}>
-        <NameContainer>
-          <Grid>
-            <Label>{details?.domain.name}</Label>
-            <RegisteredLabel>Registered</RegisteredLabel>
-          </Grid>
-          <Grid>
-            <InformationTip title="View on secondary marketplace." arrow>
-              <Image
-                src="/icons/marketplace.svg"
-                alt="MarketPlace Icon"
-                width={36}
-                height={36}
-                style={{ marginLeft: "20px", cursor: "pointer" }}
-              />
-            </InformationTip>
-          </Grid>
-        </NameContainer>
-        <InputField
-          label="Owner"
-          disabled
-          focused
-          value={getMaskedAddress(String(details?.owner.id || ""))}
-        />
-        <InputField
-          label="Expiry"
-          disabled
-          focused
-          value={getExpiration(details?.domain.createdAt).expiration}
-          InputProps={{
-            inputComponent: () => {
-              // TODO: Fix warning here: React.forwardRef
-              return (
-                <FlexJustified width="100%">
-                  <Label>
-                    {getExpiration(details?.domain.createdAt).expiration}
-                  </Label>
-                  <Label>
-                    {`In ${
-                      getExpiration(details?.domain.createdAt)
-                        .distanceToExpiration
-                    }`}
-                  </Label>
-                </FlexJustified>
-              );
-            },
-          }}
-        />
-      </Grid>
+    <Grid container mt={6} minWidth={250}>
+      <EnsImage />
+      <DetailsContainer item>
+        <Grid maxWidth={350}>
+          <NameContainer>
+            <Grid>
+              <Label>{details?.domain.name}</Label>
+              <RegisteredLabel>Registered</RegisteredLabel>
+            </Grid>
+            <Grid>
+              <InformationTip title="View on secondary marketplace." arrow>
+                <Image
+                  src="/icons/marketplace.svg"
+                  alt="MarketPlace Icon"
+                  width={36}
+                  height={36}
+                  style={{ marginLeft: "20px", cursor: "pointer" }}
+                />
+              </InformationTip>
+            </Grid>
+          </NameContainer>
+          <InputField
+            label="Owner"
+            disabled
+            focused
+            value={getMaskedAddress(String(details?.owner.id || ""))}
+          />
+          <InputField
+            label="Expiry"
+            disabled
+            focused
+            value={getExpiration(details?.domain.createdAt).expiration}
+            InputProps={{
+              inputComponent: () => {
+                // TODO: Fix warning here: React.forwardRef
+                return (
+                  <FlexJustified width="100%">
+                    <Label>
+                      {getExpiration(details?.domain.createdAt).expiration}
+                    </Label>
+                    <Label>
+                      {`In ${
+                        getExpiration(details?.domain.createdAt)
+                          .distanceToExpiration
+                      }`}
+                    </Label>
+                  </FlexJustified>
+                );
+              },
+            }}
+          />
+        </Grid>
+      </DetailsContainer>
     </Grid>
   );
 };

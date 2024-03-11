@@ -22,17 +22,20 @@ import Link from "../Link/Link";
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
-    maxWidth: "900px",
+    maxWidth: "max-content",
     borderRadius: "8px",
     filter: `drop-shadow(0px 0px 15px ${alpha(
       theme.palette.primary.main,
       0.1
     )})`,
+
+    [theme.breakpoints.down("sm")]: {
+      margin: "16px",
+    },
   },
 }));
 
 const DialogContainer = styled(FlexCenter)(({ theme }) => ({
-  maxWidth: "900px",
   background: "linear-gradient(180deg, #000000 32.5%, #c2185b 100%)",
 }));
 
@@ -43,7 +46,11 @@ const ContentContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const Content = styled(Grid)(({ theme }) => ({
-  padding: "0px 45px 0px 45px",
+  padding: "0px 45px",
+
+  [theme.breakpoints.down("sm")]: {
+    padding: "40px 20px",
+  },
 }));
 
 const DownloadButton = styled(MuiLink)(({ theme }) => ({
@@ -59,6 +66,11 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
   right: 25,
   top: 25,
+
+  [theme.breakpoints.down("sm")]: {
+    right: 10,
+    top: 10,
+  },
 }));
 
 const CloseIcon = styled(Close)(({ theme }) => ({
