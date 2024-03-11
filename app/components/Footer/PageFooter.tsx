@@ -37,6 +37,11 @@ const Content = styled(Grid)(({ theme }) => ({
 
 const Terms = styled(FlexJustified)(({ theme }) => ({
   padding: "20px 50px",
+
+  [theme.breakpoints.down("sm")]: {
+    display: "block",
+    padding: "20px 30px",
+  },
 }));
 
 const Copyright = styled(Typography)(({ theme }) => ({
@@ -68,6 +73,11 @@ export const PageFooter: React.FC = () => {
               alt="RNS Icon"
               width={400}
               height={30}
+              style={{
+                height: "-webkit-fill-available",
+                width: "-webkit-fill-available",
+                maxWidth: "400px",
+              }}
             />
             <Content>
               <FlexCenter>

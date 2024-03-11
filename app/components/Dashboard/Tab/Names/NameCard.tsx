@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Divider as MuiDivider,
   Grid,
@@ -18,18 +18,13 @@ import {
 } from "@mui/icons-material";
 import { Flex, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { useAccount } from "wagmi";
-import {
-  getExpiration,
-  getFormattedDate,
-  getMaskedAddress,
-  getRemainingDays,
-} from "@/services/utils";
+import { getExpiration, getMaskedAddress } from "@/services/utils";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useDomainState } from "@/redux/domain/domainSlice";
-import DropDownMenu from "@/components/Reusables/DropDownMenu";
-
-import Image from "next/image";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
+
+import DropDownMenu from "@/components/Reusables/DropDownMenu";
+import Image from "next/image";
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
@@ -39,6 +34,12 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
 
 const ImageContainer = styled(Grid)(({ theme }) => ({
   padding: "25px",
+}));
+
+const Expiration = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down("md")]: {
+    paddingTop: "10px",
+  },
 }));
 
 const Details = styled(Grid)(({ theme }) => ({
@@ -147,7 +148,7 @@ export const NameCard: React.FC<Name> = (props: Name) => {
         </ImageContainer>
         <Divider flexItem />
         <Details container>
-          <Grid item xs={7}>
+          <Grid item xs={12} lg={7}>
             <Flex>
               <NameLabel>{item.name}</NameLabel>
               {hasChecked && <CheckedIcon />}
@@ -156,7 +157,7 @@ export const NameCard: React.FC<Name> = (props: Name) => {
               {`Linked to ${getMaskedAddress(String(item.owner.id), 4)}`}
             </DetailLabel>
           </Grid>
-          <Grid item xs>
+          <Expiration item xs={11} lg={4.5}>
             <DetailLabel>
               {`Expiry ${getExpiration(item.domain.createdAt).expiration}`}
             </DetailLabel>
@@ -165,7 +166,7 @@ export const NameCard: React.FC<Name> = (props: Name) => {
                 getExpiration(item.domain.createdAt).distanceToExpiration
               }`}
             </DetailLabel>
-          </Grid>
+          </Expiration>
           <Grid item xs={0.5}>
             <DropDownMenu
               handleSelect={handleMenuSelect}

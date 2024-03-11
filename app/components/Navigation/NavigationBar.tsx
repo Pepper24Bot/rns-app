@@ -5,6 +5,7 @@ import {
   Slide,
   AppBar as MuiAppBar,
   alpha,
+  Grid,
 } from "@mui/material";
 import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 import { useAccount } from "wagmi";
@@ -38,14 +39,18 @@ const NavigationContainer = styled(FlexCenter)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.dark, 0.15),
   borderRadius: "8px",
   border: `solid 1px ${alpha(theme.palette.primary.main, 0.5)}`,
-  height: "60px",
   margin: "10px",
 }));
 
 const Contents = styled(FlexJustified)(({ theme }) => ({
   maxWidth: "1420px",
   width: "100%",
-  padding: "10px 40px",
+  padding: "0 40px",
+
+  [theme.breakpoints.down("sm")]: {
+    padding: "0 20px",
+    justifyContent: "center",
+  },
 }));
 
 export type ScrollProps = {
@@ -92,12 +97,18 @@ export const NavigationBar: React.FC = () => {
     <HideOnScrollBar>
       <Navigation>
         <NavigationContainer>
-          <Contents>
+          <Contents container>
             <Image
               src="/images/rns-logo.svg"
               alt="RNS Icon"
               width={260}
               height={30}
+              style={{
+                height: "-webkit-fill-available",
+                width: "-webkit-fill-available",
+                maxWidth: "260px",
+                padding: "10px 0",
+              }}
             />
             <Toolbar />
           </Contents>

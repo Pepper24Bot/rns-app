@@ -34,6 +34,9 @@ export const Names: React.FC = () => {
     return item.name !== null;
   });
 
+  // For testing
+  // filteredList?.push(filteredList[0]);
+
   return !isEmpty(filteredList) ? (
     <Container>
       <Box sx={{ flexGrow: 1 }}>

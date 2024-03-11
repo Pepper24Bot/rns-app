@@ -19,6 +19,7 @@ import {
 } from "../Theme/StyledGlobal";
 import { Search as MuiSearchIcon, Settings, Tune } from "@mui/icons-material";
 import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/services/constants";
+import { FONT_SIZE } from "../Theme/Global";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -34,23 +35,34 @@ const Container = styled(FlexCenter)(({ theme }) => ({
 }));
 
 const DashboardContainer = styled(Grid)(({ theme }) => ({
-  maxWidth: "1240px",
+  maxWidth: "1400px",
   width: "100%",
   padding: "30px 80px",
+
+  [theme.breakpoints.down("sm")]: {
+    padding: "30px 40px",
+  },
 }));
 
 const Content = styled(Grid)(({ theme }) => ({
   marginTop: "30px",
 }));
 
+const Toolbar = styled(Grid)(({ theme }) => ({
+  paddingTop: "10px",
+}));
+
 const SearchField = styled(BaseInputField)(({ theme }) => ({
   ".MuiInputBase-input": {
     padding: "10px 16px 10px 25px",
-    width: "300px",
   },
 
   ".MuiInputBase-root": {
     backgroundColor: theme.palette.background.darker,
+  },
+
+  "&.MuiFormControl-root": {
+    width: "100%",
   },
 }));
 
@@ -63,7 +75,13 @@ const IconButton = styled(BaseIconButton)(({ theme }) => ({
   marginLeft: "8px",
 }));
 
-const Title = styled(Heading)(({ theme }) => ({}));
+const Title = styled(Heading)(({ theme }) => ({
+  fontSize: "36px",
+
+  [theme.breakpoints.down("lg")]: {
+    fontSize: FONT_SIZE.Xlarge,
+  },
+}));
 
 const Tabs = styled(MuiTabs)(({ theme }) => ({
   borderBottom: `solid 1px ${alpha(theme.palette.text.primary, 0.25)}`,
@@ -137,33 +155,39 @@ export const Dashboard: React.FC = () => {
     <Collapse in={isDashboardVisible}>
       <Container>
         <DashboardContainer>
-          <FlexJustified>
-            <Title>My Dashboard</Title>
+          <FlexJustified container>
             <Grid>
-              <SearchField
-                variant="filled"
-                placeholder="Search..."
-                value={inputValue}
-                onChange={(event) => {
-                  const { value } = event.target;
-                  setInputValue(value);
-                  debounceFn(value);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <IconButton>
-                <Settings />
-              </IconButton>
-              <IconButton>
-                <Tune />
-              </IconButton>
+              <Title>My Dashboard</Title>
             </Grid>
+            <Toolbar item md={6} lg={5} container>
+              <Grid item xs>
+                <SearchField
+                  variant="filled"
+                  placeholder="Search..."
+                  value={inputValue}
+                  onChange={(event) => {
+                    const { value } = event.target;
+                    setInputValue(value);
+                    debounceFn(value);
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item>
+                <IconButton>
+                  <Settings />
+                </IconButton>
+                <IconButton>
+                  <Tune />
+                </IconButton>
+              </Grid>
+            </Toolbar>
           </FlexJustified>
           <Content>
             <Grid>

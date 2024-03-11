@@ -26,10 +26,14 @@ import { SearchPopper } from "./SearchPopper";
 import { useDomainState } from "@/redux/domain/domainSlice";
 
 import Image from "next/image";
-import { FONT_WEIGHT } from "../Theme/Global";
+import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 
 const Container = styled(Grid)(({ theme }) => ({
-  margin: "50px 0 120px 0",
+  padding: "60px 10px 130px 10px",
+
+  [theme.breakpoints.down("sm")]: {
+    padding: "80px 10px 20px 10px",
+  },
 }));
 
 const SearchContainer = styled(Grid)(({ theme }) => ({
@@ -63,6 +67,10 @@ const Search = styled(Grid)(({ theme }) => ({
 
   position: "relative",
   zIndex: 2,
+
+  [theme.breakpoints.down("lg")]: {
+    padding: "40px 20px",
+  },
 }));
 
 const ViewContainer = styled(Grid)(({ theme }) => ({
@@ -72,6 +80,10 @@ const ViewContainer = styled(Grid)(({ theme }) => ({
 
 const SearchTitle = styled(Title)(({ theme }) => ({
   fontSize: "48px",
+
+  [theme.breakpoints.down("lg")]: {
+    fontSize: FONT_SIZE.Xxlarge,
+  },
 }));
 
 const SearchField = styled(BaseInputField)(({ theme }) => ({
@@ -84,7 +96,13 @@ const SearchIcon = styled(MuiSearchIcon)(({ theme }) => ({
   width: "24px",
 }));
 
-const SearchSubText = styled(SubTitle)(({ theme }) => ({}));
+const SearchSubText = styled(SubTitle)(({ theme }) => ({
+  fontSize: "18px",
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: FONT_SIZE.Medium,
+  },
+}));
 
 const ViewRnsText = styled(SubTitle)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,

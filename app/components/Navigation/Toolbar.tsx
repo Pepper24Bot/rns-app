@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, styled } from "@mui/material";
+import { Grid, Link, styled } from "@mui/material";
 import {
   Divider,
   ToolbarButton,
@@ -13,7 +13,21 @@ import { getMaskedAddress } from "@/services/utils";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
 
-const ToolbarContainer = styled(Flex)(({ theme }) => ({}));
+const ToolbarContainer = styled(Flex)(({ theme }) => ({
+  padding: "10px 0",
+
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    justifyContent: "center",
+  },
+}));
+
+const HorizontalDivider = styled(Divider)(({ theme }) => ({
+  margin: "8px 0 16px 0",
+  [theme.breakpoints.up("mobile")]: {
+    display: "none",
+  },
+}));
 
 export const Toolbar: React.FC = () => {
   const { address, connector } = useAccount();
@@ -45,35 +59,48 @@ export const Toolbar: React.FC = () => {
 
   return (
     <ToolbarContainer>
-      <Link href="https://twitter.com/RootNameService" target="_blank">
-        <SocialButton variant="outlined">
-          <i className="fa-brands fa-discord fa-xl" />
-        </SocialButton>
-      </Link>
-      <Link href="https://twitter.com/RootNameService" target="_blank">
-        <SocialButton variant="outlined">
-          <i className="fa-brands fa-x-twitter fa-xl" />
-        </SocialButton>
-      </Link>
-      <Divider orientation="vertical" flexItem />
-      <ToolbarButton
-        variant="contained"
-        onClick={() => {
-          toggleModal({
-            id: "Wallets",
-            title: address ? "Switch Wallet" : "Choose your Wallet",
-          });
+      <Flex
+        sx={{
+          display: {
+            xs: "none",
+            md: "flex",
+          },
         }}
       >
-        <Image
-          src={iconPath}
-          alt="Wallet Icon"
-          width={24}
-          height={24}
-          style={{ marginRight: "8px", color: "white" }}
-        />
-        {walletLabel}
-      </ToolbarButton>
+        <Link href="https://twitter.com/RootNameService" target="_blank">
+          <SocialButton variant="outlined">
+            <i className="fa-brands fa-discord fa-xl" />
+          </SocialButton>
+        </Link>
+        <Link href="https://twitter.com/RootNameService" target="_blank">
+          <SocialButton variant="outlined">
+            <i className="fa-brands fa-x-twitter fa-xl" />
+          </SocialButton>
+        </Link>
+        <Divider orientation="vertical" flexItem />
+      </Flex>
+      {/* TODO: Clean this */}
+      <Grid width="100%" textAlign="center">
+        <HorizontalDivider variant="fullWidth" />
+        <ToolbarButton
+          variant="contained"
+          onClick={() => {
+            toggleModal({
+              id: "Wallets",
+              title: address ? "Switch Wallet" : "Choose your Wallet",
+            });
+          }}
+        >
+          <Image
+            src={iconPath}
+            alt="Wallet Icon"
+            width={24}
+            height={24}
+            style={{ marginRight: "8px", color: "white" }}
+          />
+          {walletLabel}
+        </ToolbarButton>
+      </Grid>
     </ToolbarContainer>
   );
 };
