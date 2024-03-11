@@ -7,6 +7,7 @@ import {
   styled,
 } from "@mui/material";
 import React from "react";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 export interface ProgressBar extends LinearProgressProps {
   value: number;
@@ -15,7 +16,7 @@ export interface ProgressBar extends LinearProgressProps {
 
 const LoadingText = styled(Typography)(({ theme }) => ({
   fontSize: "12px",
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   marginBottom: "10px",
   textAlign: "center",
   color: alpha(theme.palette.text.primary, 0.5),

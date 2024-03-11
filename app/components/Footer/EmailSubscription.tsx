@@ -4,8 +4,9 @@ import {
   ActionButton,
   FlexCenter,
   Heading,
-  InputField,
+  ModalInputField,
 } from "../Theme/StyledGlobal";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 const Container = styled(FlexCenter)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.dark, 0.1),
@@ -27,13 +28,13 @@ const Title = styled(Heading)(({ theme }) => ({
 
 const SubTitle = styled(Title)(({ theme }) => ({
   fontSize: "14px",
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   marginBottom: "36px",
   textTransform: "unset",
   color: alpha(theme.palette.text.primary, 0.75),
 }));
 
-const SubscribeField = styled(InputField)(({ theme }) => ({
+const SubscribeField = styled(ModalInputField)(({ theme }) => ({
   position: "relative",
   zIndex: 2,
   ".MuiInputBase-root": {

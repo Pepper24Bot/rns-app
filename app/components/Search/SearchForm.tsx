@@ -26,6 +26,7 @@ import { SearchPopper } from "./SearchPopper";
 import { useDomainState } from "@/redux/domain/domainSlice";
 
 import Image from "next/image";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 const Container = styled(Grid)(({ theme }) => ({
   margin: "50px 0 120px 0",
@@ -86,7 +87,7 @@ const SearchIcon = styled(MuiSearchIcon)(({ theme }) => ({
 const SearchSubText = styled(SubTitle)(({ theme }) => ({}));
 
 const ViewRnsText = styled(SubTitle)(({ theme }) => ({
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   marginTop: "80px",
 }));
 

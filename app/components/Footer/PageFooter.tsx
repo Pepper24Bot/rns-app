@@ -15,6 +15,7 @@ import { FeatureList } from "@/hooks/useFeatureToggle";
 import Image from "next/image";
 import EmailSubscription from "./EmailSubscription";
 import FeatureToggle from "../Reusables/FeatureToggle";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 const Page = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -40,13 +41,13 @@ const Terms = styled(FlexJustified)(({ theme }) => ({
 
 const Copyright = styled(Typography)(({ theme }) => ({
   fontSize: "14px",
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   color: alpha(grey[50], 0.75),
 }));
 
 const TermsPolicy = styled(Link)(({ theme }) => ({
   fontSize: "14px",
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   color: alpha(grey[50], 0.35),
   padding: "0 8px",
 }));

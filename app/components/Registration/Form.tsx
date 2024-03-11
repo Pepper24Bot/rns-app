@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   BaseButton,
-  InputField,
+  ModalInputField,
   SecondaryLabel,
   FieldContainer,
   FlexJustified,
-  FlexCenter,
 } from "@/components/Theme/StyledGlobal";
 import { Grid, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
@@ -16,17 +15,12 @@ import { FONT_WEIGHT } from "@/components/Theme/Global";
 import MenuField from "@/components/Reusables/MenuField";
 import useFees from "@/hooks/useFees";
 
-const NameField = styled(InputField)(({ theme }) => ({
-  ".MuiInputBase-root": {
-    "&.MuiOutlinedInput-root": {
-      fontSize: "16px",
-      padding: "16px 25px",
-    },
-  },
-}));
-
 const SummaryContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
+}));
+
+const NameField = styled(ModalInputField)(({ theme }) => ({
+  maxWidth: "500px",
 }));
 
 const Transaction = styled(FlexJustified)(({ theme }) => ({

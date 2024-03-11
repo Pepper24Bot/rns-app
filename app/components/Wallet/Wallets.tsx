@@ -3,6 +3,7 @@ import { Grid, Typography, alpha, styled } from "@mui/material";
 import { Description, useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 import { ActionButton, Flex, FlexRight } from "../Theme/StyledGlobal";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -46,7 +47,7 @@ const WalletItem = styled(Flex, {
 
 const WalletName = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--default-font)",
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
   color: theme.palette.secondary.main,
   marginLeft: "20px",
 }));

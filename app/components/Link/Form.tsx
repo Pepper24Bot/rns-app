@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Grid, CircularProgress, styled } from "@mui/material";
 import {
-  InputField as StyledInputField,
+  ModalInputField as InputField,
   FlexRight,
   ActionButton,
 } from "../Theme/StyledGlobal";
@@ -10,22 +10,6 @@ import { useDomainState } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useAccount } from "wagmi";
 import useRecords from "@/hooks/useRecords";
-
-const InputField = styled(StyledInputField)(({ theme }) => ({
-  ".MuiInputBase-root": {
-    "&.MuiOutlinedInput-root": {
-      fontSize: "16px",
-      fontWeight: 200,
-      padding: "16px 25px",
-      color: theme.palette.text.primary,
-    },
-  },
-  maxWidth: "350px",
-
-  "&:not(:first-of-type)": {
-    marginTop: "20px",
-  },
-}));
 
 export const Form: React.FC = () => {
   const { address } = useAccount();

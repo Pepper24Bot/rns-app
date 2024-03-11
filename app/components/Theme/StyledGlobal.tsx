@@ -14,6 +14,7 @@ import {
   tooltipClasses,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import { FONT_WEIGHT } from "./Global";
 
 export const Relative = styled(Grid)(({ theme }) => ({
   position: "relative",
@@ -108,7 +109,7 @@ export const BaseIconButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const HighlightText = styled("span")(({ theme }) => ({
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
   color: theme.palette.text.primary,
 }));
 
@@ -121,28 +122,28 @@ export const Description = styled(Grid)(({ theme }) => ({
   fontFamily: "var(--default-font)",
   textAlign: "center",
   fontSize: "12px",
-  fontWeight: 200,
+  fontWeight: FONT_WEIGHT.Light,
   color: theme.palette.secondary.main,
 }));
 
 export const Title = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--default-font)",
   fontSize: "24px",
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
   textAlign: "center",
   marginBottom: "20px",
 }));
 
 export const SubTitle = styled(Title)(({ theme }) => ({
   fontSize: "18px",
-  fontWeight: 200,
+  fontWeight: FONT_WEIGHT.Light,
   letterSpacing: "normal",
 }));
 
 export const Heading = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--secondary-font)",
   fontSize: "36px",
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
 }));
 
 export const BaseInputField = styled(TextField)(({ theme }) => ({
@@ -228,6 +229,22 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
   },
 }));
 
+export const ModalInputField = styled(InputField)(({ theme }) => ({
+  ".MuiInputBase-root": {
+    "&.MuiOutlinedInput-root": {
+      fontSize: "16px",
+      fontWeight: FONT_WEIGHT.Light,
+      padding: "16px 25px",
+      color: theme.palette.text.primary,
+    },
+  },
+  maxWidth: "350px",
+
+  "&:not(:first-of-type)": {
+    marginTop: "20px",
+  },
+}));
+
 export const FieldContainer = styled(FlexJustified)(({ theme }) => ({
   borderRadius: "8px",
   backgroundColor: alpha(theme.palette.primary.dark, 0.15),
@@ -261,7 +278,7 @@ export const PrimaryLabel = styled(SubTitle, {
   lineHeight: "normal",
   textAlign: "start",
   marginBottom: 0,
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   color: theme.palette.text.primary,
 }));
 

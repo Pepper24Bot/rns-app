@@ -16,6 +16,7 @@ import ModalHeader from "./ModalHeader";
 import Wallets from "../Wallet/Wallets";
 import SwitchNetwork from "../Wallet/SwitchNetwork";
 import Registration from "../Registration/Registration";
+import RegistrationDetails from "../Registration/Details";
 import Expiry from "../Expiry/Expiry";
 import Link from "../Link/Link";
 
@@ -100,6 +101,8 @@ export const ModalContainer: React.FC = () => {
         return <SwitchNetwork />;
       case "Register Name":
         return <Registration />;
+      case "Registration Details":
+        return <RegistrationDetails />;
       case "Extend Expiry":
         return <Expiry />;
       case "Link Name":

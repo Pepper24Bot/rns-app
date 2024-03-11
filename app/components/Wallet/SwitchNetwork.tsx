@@ -8,6 +8,7 @@ import {
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useSwitchChain } from "wagmi";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -33,7 +34,7 @@ const RootNetwork = styled(Flex)(({ theme }) => ({
 
 const WalletName = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--default-font)",
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
   color: theme.palette.secondary.main,
   marginLeft: "20px",
 }));
@@ -43,7 +44,7 @@ const VideoLink = styled(Link)(({ theme }) => ({
 }));
 
 const VideoLabel = styled(Description)(({ theme }) => ({
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
   color: theme.palette.text.primary,
 }));
 

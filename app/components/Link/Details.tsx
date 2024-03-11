@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Grid, CircularProgress, styled } from "@mui/material";
 import {
-  InputField as StyledInputField,
+  ModalInputField as InputField,
   FlexRight,
   ActionButton,
   Flex,
@@ -11,22 +11,6 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
 import { Close, Edit } from "@mui/icons-material";
 import useRecords from "@/hooks/useRecords";
-
-const InputField = styled(StyledInputField)(({ theme }) => ({
-  ".MuiInputBase-root": {
-    "&.MuiOutlinedInput-root": {
-      fontSize: "16px",
-      fontWeight: 200,
-      padding: "16px 25px",
-      color: theme.palette.text.primary,
-    },
-  },
-  maxWidth: "350px",
-
-  "&:not(:first-of-type)": {
-    marginTop: "20px",
-  },
-}));
 
 const ResolverButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButton-contained": {

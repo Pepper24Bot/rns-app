@@ -19,7 +19,8 @@ import {
 import { Flex, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { useAccount } from "wagmi";
 import {
-  convertNumToDate,
+  getExpiration,
+  getFormattedDate,
   getMaskedAddress,
   getRemainingDays,
 } from "@/services/utils";
@@ -28,6 +29,7 @@ import { useDomainState } from "@/redux/domain/domainSlice";
 import DropDownMenu from "@/components/Reusables/DropDownMenu";
 
 import Image from "next/image";
+import { FONT_WEIGHT } from "@/components/Theme/Global";
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
@@ -49,11 +51,11 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 
 const NameLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
 }));
 
 const DetailLabel = styled(SecondaryLabel)(({ theme }) => ({
-  fontWeight: 400,
+  fontWeight: FONT_WEIGHT.Regular,
   color: alpha(theme.palette.text.primary, 0.6),
   fontSize: "14px",
 }));
@@ -156,10 +158,12 @@ export const NameCard: React.FC<Name> = (props: Name) => {
           </Grid>
           <Grid item xs>
             <DetailLabel>
-              {`Expiry ${convertNumToDate(item.expiryDate)}`}
+              {`Expiry ${getExpiration(item.domain.createdAt).expiration}`}
             </DetailLabel>
             <DetailLabel>
-              {`In ${getRemainingDays(item.expiryDate)}`}
+              {`In ${
+                getExpiration(item.domain.createdAt).distanceToExpiration
+              }`}
             </DetailLabel>
           </Grid>
           <Grid item xs={0.5}>

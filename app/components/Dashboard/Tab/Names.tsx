@@ -5,6 +5,7 @@ import { useAccount } from "wagmi";
 import { NameCard } from "./Names/NameCard";
 import { isEmpty } from "lodash";
 import { SecondaryLabel } from "@/components/Theme/StyledGlobal";
+import { FONT_WEIGHT } from "@/components/Theme/Global";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "35px 0",
@@ -12,14 +13,14 @@ const Container = styled(Grid)(({ theme }) => ({
 
 const Label = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
-  fontWeight: 700,
+  fontWeight: FONT_WEIGHT.Bold,
 }));
 
 const Description = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
   marginTop: "8px",
   color: theme.palette.text.secondary,
-  fontWeight: 200,
+  fontWeight: FONT_WEIGHT.Light,
 }));
 
 export const Names: React.FC = () => {
@@ -29,7 +30,6 @@ export const Names: React.FC = () => {
     { skip: address === null }
   );
 
-  const nameList = data?.nameWrappeds;
   const filteredList = data?.nameWrappeds.filter((item) => {
     return item.name !== null;
   });
