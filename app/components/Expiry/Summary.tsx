@@ -3,6 +3,14 @@ import { Grid, styled } from "@mui/material";
 import { ModalInputField as InputField } from "../Theme/StyledGlobal";
 import { useDomainState } from "@/redux/domain/domainSlice";
 
+const Container = styled(Grid)(({ theme }) => ({
+  width: "350px",
+
+  [theme.breakpoints.down("miniTablet")]: {
+    width: "100%",
+  },
+}));
+
 export interface Summary {
   title: React.ReactNode | string;
 }
@@ -18,12 +26,12 @@ export const Summary: React.FC<Summary> = (props: Summary) => {
   };
 
   return (
-    <Grid item maxWidth={350}>
+    <Container>
       {title}
       <InputField value={`${year} ${getYearLabel()}`} label="Duration" />
       <InputField value={payment?.method || "ROOT"} label="Payment Method" />
       <InputField value={fee?.total || 0} label="Total" />
-    </Grid>
+    </Container>
   );
 };
 

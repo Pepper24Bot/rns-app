@@ -37,7 +37,7 @@ const ImageContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const Expiration = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingTop: "10px",
   },
 }));

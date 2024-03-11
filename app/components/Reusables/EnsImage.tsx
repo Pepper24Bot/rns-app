@@ -6,13 +6,13 @@ import Image from "next/image";
 
 const ImageContainer = styled(Grid)(({ theme }) => ({
   paddingRight: "30px",
+  paddingBottom: "20px",
+  display: "flex",
+  justifyContent: "center",
 
   [theme.breakpoints.down("sm")]: {
     paddingRight: "0",
-    paddingBottom: "20px",
     width: "100%",
-    display: "flex",
-    justifyContent: "center",
   },
 }));
 

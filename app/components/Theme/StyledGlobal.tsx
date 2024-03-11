@@ -274,7 +274,6 @@ export const ModalInputField = styled(InputField)(({ theme }) => ({
       color: theme.palette.text.primary,
     },
   },
-  maxWidth: "350px",
 
   "&:not(:first-of-type)": {
     marginTop: "20px",

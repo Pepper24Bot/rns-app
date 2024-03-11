@@ -47,7 +47,7 @@ export const Details: React.FC = () => {
 
   return (
     <Grid item xs>
-      <Grid maxWidth={350}>
+      <Grid>
         <InputField disabled value={name} />
         <InputField
           label="Owner"

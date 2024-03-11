@@ -9,7 +9,6 @@ import {
   Grid,
   IconButton,
   alpha,
-  darken,
   styled,
   CircularProgress,
 } from "@mui/material";
@@ -19,23 +18,30 @@ import {
   SecondaryLabel,
   FlexLeft,
 } from "../Theme/StyledGlobal";
-import { grey } from "@mui/material/colors";
 import { KeyboardBackspace } from "@mui/icons-material";
 
-import Image from "next/image";
 import Form from "../Registration/Form";
 import Summary from "./Summary";
 import useFees from "@/hooks/useFees";
 import useExtend from "@/hooks/useExtendExpiry";
-
-const ImageContainer = styled(Grid)(({ theme }) => ({
-  paddingRight: "30px",
-}));
+import EnsImage from "../Reusables/EnsImage";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
   color: alpha(theme.palette.text.primary, 0.5),
   paddingLeft: "15px",
+}));
+
+const DetailsContainer = styled(Grid)(({ theme }) => ({
+  width: "350px",
+
+  [theme.breakpoints.between("miniTablet", "tablet")]: {
+    width: "max-content",
+  },
+
+  [theme.breakpoints.down("miniTablet")]: {
+    width: "100%",
+  },
 }));
 
 export const Expiry: React.FC = () => {
@@ -97,79 +103,64 @@ export const Expiry: React.FC = () => {
   }, [isModalOpen]);
 
   return (
-    <Grid>
-      <Grid container mt={6} minWidth={250}>
-        <ImageContainer item>
-          <Image
-            src="/images/rns-image-placeholder.svg"
-            alt="Wallet Icon"
-            width={290}
-            height={200}
-            style={{
-              height: "fit-content",
-              border: `solid 1px ${alpha(grey[50], 0.25)}`,
-              borderRadius: "4px",
-              boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
-            }}
+    <Grid container mt={6} minWidth={250} sx={{ placeContent: "center" }}>
+      <EnsImage />
+      <DetailsContainer item>
+        {extendPage === 1 ? (
+          <Form
+            name={name}
+            rent={base}
+            gasFee={estimatedGas}
+            gasPrice={estimatedGasPrice}
           />
-        </ImageContainer>
-        <Grid item xs>
-          {extendPage === 1 ? (
-            <Form
-              name={name}
-              rent={base}
-              gasFee={estimatedGas}
-              gasPrice={estimatedGasPrice}
-            />
-          ) : (
-            <Summary
-              title={
-                <FlexLeft>
-                  <IconButton
-                    onClick={() => {
-                      // Go back to the previous page
-                      setExtendPage(extendPage - 1);
-                    }}
-                  >
-                    <KeyboardBackspace />
-                  </IconButton>
-                  <SummaryLabel>Summary</SummaryLabel>
-                </FlexLeft>
-              }
-            />
-          )}
+        ) : (
+          <Summary
+            title={
+              <FlexLeft>
+                <IconButton
+                  onClick={() => {
+                    // Go back to the previous page
+                    setExtendPage(extendPage - 1);
+                  }}
+                >
+                  <KeyboardBackspace />
+                </IconButton>
+                <SummaryLabel>Summary</SummaryLabel>
+              </FlexLeft>
+            }
+          />
+        )}
+        <Grid mt={3}>
+          <FlexRight>
+            <ActionButton
+              sx={{ marginRight: 1 }}
+              variant="text"
+              onClick={() => {
+                closeModal();
+              }}
+            >
+              Cancel
+            </ActionButton>
+            <ActionButton
+              variant="contained"
+              onClick={() => {
+                if (extendPage === 1) {
+                  // Move to the next page
+                  setExtendPage(extendPage + 1);
+                  updateName({ fee: { total: totalFee } });
+                } else {
+                  handleExtend();
+                }
+              }}
+            >
+              {extendPage === 1 ? "Next" : "Confirm"}
+              {isPending && (
+                <CircularProgress color="secondary" size={18} sx={{ ml: 1 }} />
+              )}
+            </ActionButton>
+          </FlexRight>
         </Grid>
-      </Grid>
-      <Grid mt={3}>
-        <FlexRight>
-          <ActionButton
-            sx={{ marginRight: 1 }}
-            variant="text"
-            onClick={() => {
-              closeModal();
-            }}
-          >
-            Cancel
-          </ActionButton>
-          <ActionButton
-            variant="contained"
-            onClick={() => {
-              if (extendPage === 1) {
-                // Move to the next page
-                setExtendPage(extendPage + 1);
-                updateName({ fee: { total: totalFee } });
-              } else {
-                handleExtend();
-              }
-            }}
-          >
-            {extendPage === 1 ? "Next" : "Confirm"}
-            {isPending && (
-              <CircularProgress color="secondary" size={18} sx={{ ml: 1 }} />
-            )}
-          </ActionButton>
-        </FlexRight>
-      </Grid>
+      </DetailsContainer>
     </Grid>
   );
 };

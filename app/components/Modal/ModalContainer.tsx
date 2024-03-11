@@ -23,6 +23,7 @@ import Link from "../Link/Link";
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
     maxWidth: "max-content",
+    maxHeight: "max-content",
     borderRadius: "8px",
     filter: `drop-shadow(0px 0px 15px ${alpha(
       theme.palette.primary.main,

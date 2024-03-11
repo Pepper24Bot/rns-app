@@ -86,7 +86,9 @@ export const getExpiration = (dateCreated: number, dateExpiration?: number) => {
         distanceToGracePeriod: ""
     }
 
-    const currentDate = new Date()
+    // TODO: Check why does new Date fails sometimes
+    const currentDate = new Date().toLocaleDateString()
+    console.log("currentDate:: ", currentDate)
 
     const formattedExpiration = getExpiryDate(dateCreated)
     dates.expiration = formattedExpiration

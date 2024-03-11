@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Grid, alpha, darken, styled } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import { Grid } from "@mui/material";
 import { Form } from "./Form";
-
-import Image from "next/image";
-import Details from "./Details";
-import useRecords from "@/hooks/useRecords";
 import { useDomainState } from "@/redux/domain/domainSlice";
 
-const ImageContainer = styled(Grid)(({ theme }) => ({
-  paddingRight: "30px",
-}));
+import Details from "./Details";
+import useRecords from "@/hooks/useRecords";
+import EnsImage from "../Reusables/EnsImage";
 
 export const Link: React.FC = () => {
   const { useDomain } = useDomainState();
@@ -28,20 +23,7 @@ export const Link: React.FC = () => {
 
   return (
     <Grid container mt={6} minWidth={250}>
-      <ImageContainer item>
-        <Image
-          src="/images/rns-image-placeholder.svg"
-          alt="Wallet Icon"
-          width={290}
-          height={200}
-          style={{
-            height: "fit-content",
-            border: `solid 1px ${alpha(grey[50], 0.25)}`,
-            borderRadius: "4px",
-            boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
-          }}
-        />
-      </ImageContainer>
+      <EnsImage />
       {!isFuturePassLinked ? <Form /> : <Details />}
     </Grid>
   );

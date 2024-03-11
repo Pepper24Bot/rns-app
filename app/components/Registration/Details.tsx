@@ -19,7 +19,7 @@ import EnsImage from "../Reusables/EnsImage";
 const DetailsContainer = styled(FlexCenter)(({ theme }) => ({
   alignItems: "start",
   [theme.breakpoints.between("sm", "tablet")]: {
-    width: "40vw",
+    width: "35vw",
   },
 
   [theme.breakpoints.down("sm")]: {
@@ -29,7 +29,6 @@ const DetailsContainer = styled(FlexCenter)(({ theme }) => ({
 
 const NameContainer = styled(FieldContainer)(({ theme }) => ({
   marginTop: 0,
-  maxWidth: "350px",
 }));
 
 const Label = styled(SecondaryLabel)(({ theme }) => ({
@@ -57,7 +56,7 @@ export const Details: React.FC = () => {
     <Grid container mt={6} minWidth={250}>
       <EnsImage />
       <DetailsContainer item>
-        <Grid maxWidth={350}>
+        <Grid>
           <NameContainer>
             <Grid>
               <Label>{details?.domain.name}</Label>

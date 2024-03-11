@@ -46,6 +46,7 @@ declare module "@mui/material/styles" {
     lg: true;
     xl: true;
     mobile: true; // adds the `mobile` breakpoint
+    miniTablet: true;
     tablet: true;
     laptop: true;
     desktop: true;
@@ -128,6 +129,7 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
           xl: 1536,
           // custom
           mobile: 500,
+          miniTablet: 700,
           tablet: 800,
           laptop: 1024,
           desktop: 1200,
