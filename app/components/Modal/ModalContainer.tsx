@@ -11,6 +11,7 @@ import {
 import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
 import { PolicyAndTerms } from "../Reusables/PolicyAndTerms";
+
 import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
 import Wallets from "../Wallet/Wallets";
@@ -119,7 +120,7 @@ export const ModalContainer: React.FC = () => {
       case "Extend Expiry":
         return <Expiry />;
       case "Link Name":
-        return <Link />;
+        return <Link {...props?.data} />;
       default:
         return;
     }

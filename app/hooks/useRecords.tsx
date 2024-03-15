@@ -1,21 +1,21 @@
-import { useReadContract, useWriteContract } from "wagmi";
-import { Address, namehash } from "viem";
+import { useSendTransaction, useWalletClient, useWriteContract } from "wagmi";
+import { Address, encodeFunctionData, namehash } from "viem";
 import { Response } from "@/services/interfaces";
-import { isEmpty } from "lodash";
 import { getEnsText } from "viem/actions";
-import { publicClient } from "@/chains/config";
+import { publicClient, walletClient } from "@/chains/config";
 import { normalize } from "viem/ens";
 import useContractDetails from "./useContractDetails";
 
 export interface Record {
   name?: string;
   address?: Address;
+  key?: string;
+  resolverAddress?: Address;
+  owner?: Address;
 }
 
-export interface FuturePassRecord {
-  owner: Address;
+export interface FuturePassRecord extends Record {
   futurePassAddress: Address;
-  resolverAddress: Address;
 }
 
 export interface PrimaryName {
@@ -23,27 +23,21 @@ export interface PrimaryName {
   address?: Address;
 }
 
-export default function useRecords(props: Record) {
-  const { name } = props;
-
-  const controller = useContractDetails({ action: "ENS" });
+export default function useRecords() {
+  const ens = useContractDetails({ action: "ENS" });
   const reverse = useContractDetails({ action: "ReverseRegistrar" });
   const universal = useContractDetails({ action: "UniversalResolver" });
+  const ownedResolver = useContractDetails({ action: "OwnedResolver" });
+  const publicResolver = useContractDetails({ action: "PublicResolver" });
 
-  const { writeContractAsync: setFuturePassAsync } = useWriteContract();
+  const { writeContractAsync: setRecordAsync } = useWriteContract();
   const { writeContractAsync: setPrimaryNameAsync } = useWriteContract();
+  const { writeContractAsync: setFuturePassAsync } = useWriteContract();
 
-  const hashedName = name ? namehash(name) : "";
+  const { sendTransaction, error, data, failureReason } = useSendTransaction();
+  const wallet = useWalletClient();
+  // console.log("client:: ", result);
 
-  const { data: resolver } = useReadContract({
-    abi: controller.abi,
-    address: controller.address,
-    functionName: "resolver",
-    args: [hashedName],
-    query: { enabled: !isEmpty(name) },
-  });
-
-  // TODO: Move this somewhere else
   const handlePrimaryName = async (props: PrimaryName) => {
     const { name } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
@@ -69,30 +63,99 @@ export default function useRecords(props: Record) {
     return response;
   };
 
-  const handleFuturePassRecord = async (props: FuturePassRecord) => {
-    const { owner, futurePassAddress, resolverAddress } = props;
+  /**
+   *
+   * Writes Text Record
+   * https://github.com/ensdomains/ensjs-v3/blob/7e01ad8579c08b453fc64b1972b764b6d884b774/packages/ensjs/src/functions/wallet/deleteSubname.ts#L106
+   * @param props
+   * @returns
+   */
+  const handleRecord = async (props: Record) => {
+    const { owner, resolverAddress, name } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
 
-    try {
-      const futurePassResponse = await setFuturePassAsync({
-        abi: controller.abi,
-        address: controller.address,
-        functionName: "setRecord",
-        args: [
-          { key: "futurepass", value: futurePassAddress },
-          owner,
-          resolverAddress,
-          0, // ttl - set to 0, fetch every query
-        ],
+    if (name && owner && resolverAddress) {
+      const nameHash = namehash(name);
+      try {
+        const recordResponse = await setRecordAsync({
+          abi: ens.abi,
+          address: ens.address,
+          functionName: "setRecord",
+          args: [
+            nameHash,
+            owner,
+            resolverAddress,
+            BigInt(0), // ttl - set to 0, fetch every query
+          ],
+        });
+
+        console.log("record-response:: ", response);
+        response.isSuccess = true;
+        response.data = recordResponse;
+      } catch (error) {
+        console.log("error:: ", error);
+        response.error = error as string;
+      }
+    }
+
+    return response;
+  };
+
+  /**
+   *
+   * @param props
+   * @returns
+   */
+  const handleAddressRecord = async (props: FuturePassRecord) => {
+    const { name, futurePassAddress, owner, resolverAddress } = props;
+    const response: Response = { error: null, isSuccess: false, data: null };
+
+    console.log("props:: ", props);
+    // 0xFfFFFFff00000000000000000000000000038E08
+
+    if (name && resolverAddress) {
+      const nameHash = namehash(name);
+
+      // const encodedFunction = encodeFunctionData({
+      //   abi: ownedResolver.abi,
+      //   functionName: "setAddr",
+      //   args: [nameHash, 60, futurePassAddress],
+      // });
+
+      const encodedFunction = encodeFunctionData({
+        abi: ownedResolver.abi,
+        functionName: "setText",
+        args: [nameHash, "futurepass", futurePassAddress],
       });
 
-      console.log("futurePass-response:: ", response);
-      response.isSuccess = true;
-      response.data = futurePassResponse;
-    } catch (error) {
-      console.log("error:: ", error);
-      response.error = error as string;
+      console.log("encodedFunction:: ", encodedFunction);
+
+      try {
+        // const addressResponse = await setFuturePassAsync({
+        //   abi: ownedResolver.abi,
+        //   address: ownedResolver.address,
+        //   functionName: "setAddr",
+        //   args: [
+        //     nameHash,
+        //     60, // coin type -- 1 = all test net, 60 = eth
+        //     futurePassAddress, // address to link ens name to
+        //   ],
+        // });
+
+        const addressResponse = sendTransaction({
+          to: resolverAddress,
+          data: encodedFunction,
+        });
+
+        console.log("address-response:: ", addressResponse);
+        response.isSuccess = true;
+        response.data = addressResponse;
+      } catch (error) {
+        console.log("error:: ", error);
+        response.error = error as string;
+      }
     }
+
     return response;
   };
 
@@ -127,9 +190,12 @@ export default function useRecords(props: Record) {
   };
 
   return {
-    setFuturePass: handleFuturePassRecord,
+    setRecord: handleRecord,
+    setFuturePass: handleAddressRecord,
     setPrimaryName: handlePrimaryName,
     getTextRecord,
-    resolver: resolver as unknown as string,
+    failureReason,
+    error,
+    data,
   };
 }

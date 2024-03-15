@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
+import { Domain } from "../graphql/hooks"
 
 export type PaymentMethod = "ROOT" | "USDC"
 
 export interface DomainProps {
+    /** Used by the registration forms */
     name?: string
     labelName?: string
     year?: number
@@ -16,14 +18,12 @@ export interface DomainProps {
         transaction?: number
         total?: number
     }
-    domain?: {
-        owner?: {
-            address: string
-        },
-        resolver?: {
-            address: string
-        }
+
+    /** Follow the model structure of graphql */
+    owner?: {
+        id?: string
     }
+    domain?: Partial<Domain>
 }
 
 export interface DomainState extends DomainProps { }
@@ -66,7 +66,6 @@ export const domainState = createSlice({
             return state
         }
 
-        // TODO: Enable array of names
         // TODO: Add Extend Expiry Reducer
         // TODO: Add Link Name Reducer
         // TODO: Add Image

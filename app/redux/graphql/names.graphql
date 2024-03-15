@@ -1,16 +1,6 @@
-query GetNames {
-  nameWrappeds {
-    name
-    id
-    domain {
-      labelName
-      name
-    }
-  }
-}
-
 query GetNamesByName($labelName: String!) {
   nameWrappeds(where: { domain_: { labelName: $labelName } }) {
+    id
     name
     owner {
       id
@@ -26,7 +16,16 @@ query GetNamesByName($labelName: String!) {
       resolvedAddress {
         id
       }
+      resolver {
+        address
+        id
+        texts
+      }
     }
+    fuses
+    transactionID
+    expiryDate
+    blockNumber
   }
 }
 
@@ -47,6 +46,11 @@ query GetNamesById($id: ID!) {
       createdAt
       resolvedAddress {
         id
+      }
+      resolver {
+        address
+        id
+        texts
       }
     }
     fuses

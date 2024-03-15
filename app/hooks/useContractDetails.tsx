@@ -6,6 +6,7 @@ import * as ENSRegistry from "../abis/porcini/ENSRegistry.json";
 import * as OwnedResolver from "../abis/porcini/OwnedResolver.json";
 import * as UniversalResolver from "../abis/porcini/UniversalResolver.json";
 import * as ReverseRegistrar from "../abis/porcini/ReverseRegistrar.json";
+import * as PublicResolver from "../abis/porcini/PublicResolver.json";
 
 export type Contract =
   | "Registration"
@@ -17,6 +18,7 @@ export type Contract =
   | "ENS"
   | "Base"
   | "UniversalResolver"
+  | "PublicResolver"
   | "ReverseRegistrar";
 
 export interface ContractProps {
@@ -45,6 +47,8 @@ export const getContractAbi = (action: Contract) => {
       return UniversalResolver as ContractDetails;
     case "ReverseRegistrar":
       return ReverseRegistrar as ContractDetails;
+    case "PublicResolver":
+      return PublicResolver as ContractDetails;
     case "Registration":
     case "RegistrarController":
     default:

@@ -25,6 +25,7 @@ import { FONT_WEIGHT } from "@/components/Theme/Global";
 
 import DropDownMenu from "@/components/Reusables/DropDownMenu";
 import Image from "next/image";
+import EnsImage from "@/components/Reusables/EnsImage";
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
@@ -107,7 +108,6 @@ export const NameCard: React.FC<Name> = (props: Name) => {
   const { item } = props;
   const { address } = useAccount();
   const { toggleModal } = useModalState();
-  const { updateName } = useDomainState();
 
   // Check if name is linked to the wallet address
   const hasChecked = address === item.owner.id;
@@ -116,14 +116,9 @@ export const NameCard: React.FC<Name> = (props: Name) => {
     toggleModal({
       id: menuOption,
       title: menuOption,
-    });
-
-    // Store in global state so the other componenst will be able to access the value
-    updateName({
-      labelName: `${item.domain.labelName}`,
-      name: `${item.name}`,
-      domain: {
-        owner: { address: item.owner.id },
+      data: {
+        domain: item.domain,
+        owner: item.owner,
       },
     });
   };

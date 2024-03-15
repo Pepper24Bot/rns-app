@@ -105,9 +105,9 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
             return (
               <Page
                 className={type === "Policy" ? "Policy-Page" : ""}
-                renderAnnotationLayer={false} // creating a custom annotation
                 key={`pdf_page_${index + 1}`}
                 pageNumber={index + 1}
+                renderAnnotationLayer={false} // creating a custom annotation
                 canvasBackground="transparent"
                 customTextRenderer={(options) => {
                   return getTextRenderer(options);

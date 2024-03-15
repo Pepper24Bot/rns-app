@@ -28,22 +28,22 @@ const CloseIcon = styled(Close)(({ theme }) => ({}));
 export const Details: React.FC = () => {
   const { closeModal } = useModalState();
   const { useDomain } = useDomainState();
-  const { name = "", domain } = useDomain();
-  const { resolver } = useRecords({
-    name,
-  });
+  const { name = "", owner } = useDomain();
+  // const { resolver } = useRecords({
+  //   name,
+  // });
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isDeletingResolver, setIsDeletingResolver] = useState<boolean>(false);
   const [isResolverEnabled, setIsResolverEnabled] = useState<boolean>(false);
 
-  const [inputValue, setInputResolver] = useState<string>(resolver || "");
+  const [inputValue, setInputResolver] = useState<string>("");
 
-  useEffect(() => {
-    if (resolver) {
-      setInputResolver(resolver);
-    }
-  }, [resolver]);
+  // useEffect(() => {
+  //   if (resolver) {
+  //     setInputResolver(resolver);
+  //   }
+  // }, [resolver]);
 
   return (
     <Grid item xs>
@@ -53,7 +53,7 @@ export const Details: React.FC = () => {
           label="Owner"
           disabled
           focused
-          value={getMaskedAddress(String(domain?.owner?.address || ""))}
+          value={getMaskedAddress(String(owner?.id || ""))}
         />
         <InputField
           label="Linked To / Resolver"

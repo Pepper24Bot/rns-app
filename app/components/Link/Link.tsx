@@ -2,29 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import { Form } from "./Form";
 import { useDomainState } from "@/redux/domain/domainSlice";
+import { useAccount } from "wagmi";
+import { Domain } from "@/redux/graphql/hooks";
 
 import Details from "./Details";
 import useRecords from "@/hooks/useRecords";
 import EnsImage from "../Reusables/EnsImage";
 
-export const Link: React.FC = () => {
-  const { useDomain } = useDomainState();
-  const { name } = useDomain();
-  const { getTextRecord } = useRecords({});
+export interface Link {
+  domain?: Partial<Domain>;
+  owner?: {
+    id?: string;
+  };
+}
+
+export const Link: React.FC<Link> = (props: Link) => {
+  const { address } = useAccount();
+  const { getTextRecord } = useRecords();
 
   const [isFuturePassLinked, setIsFuturePassLinked] = useState<boolean>(false);
 
-  useEffect(() => {
-    console.log("name:: ", name);
-    const response = getTextRecord({ name });
-
-    console.log("ens-response:: ", response);
-  }, []);
-
   return (
-    <Grid container mt={6} minWidth={250}>
+    <Grid container mt={6} minWidth={250} maxWidth={700}>
       <EnsImage />
-      {!isFuturePassLinked ? <Form /> : <Details />}
+      {!isFuturePassLinked ? <Form {...props} /> : <Details />}
     </Grid>
   );
 };

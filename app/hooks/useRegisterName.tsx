@@ -50,7 +50,6 @@ export default function useRegister() {
   };
 
   const handleRegister = async (props: RegisterProps) => {
-    console.log("-----entering registration-----");
     const { controller, fees, args } = props;
     const { abi, address } = controller;
     const response: Response = { error: null, isSuccess: false, data: null };

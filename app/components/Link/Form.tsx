@@ -10,27 +10,30 @@ import { useDomainState } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useAccount } from "wagmi";
 import useRecords from "@/hooks/useRecords";
+import Link from "./Link";
 
-export const Form: React.FC = () => {
+export const Form: React.FC<Link> = (props: Link) => {
+  const { owner, domain } = props;
+
   const { address } = useAccount();
   const { closeModal } = useModalState();
-  const { useDomain } = useDomainState();
-  const { name = "" } = useDomain();
+  const { setFuturePass, error, data, failureReason } = useRecords();
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [futurePassAddr, setFuturePassAddr] = useState<string>("");
-
-  const { setFuturePass } = useRecords({});
+  const [futurePassAddr, setFuturePassAddr] = useState<string>(
+    "0xFfFFFFff00000000000000000000000000038E08"
+  );
 
   const handleSetFuturePass = async () => {
     setIsPending(true);
 
-    if (futurePassAddr) {
+    if (futurePassAddr && domain?.name) {
       const { isSuccess, error } = await setFuturePass({
-        owner: address as Address,
-        futurePassAddress: futurePassAddr as Address,
-        resolverAddress: "0xadf27dd9c31ab734f06bb5bd2d6b04eb10e4b5d5", // temp - just for the sake of setting up
+        name: domain?.labelName || "",
+        // futurePassAddress: futurePassAddr as Address,
+        futurePassAddress: "0xFfFFFFff00000000000000000000000000038E08",
+        resolverAddress: domain?.resolver?.address,
       });
     }
 
@@ -41,10 +44,14 @@ export const Form: React.FC = () => {
     setIsPending(false);
   };
 
+  React.useEffect(() => {
+    console.log("ERROR", error, data, failureReason);
+  }, [error, data, failureReason]);
+
   return (
     <Grid item xs>
       <Grid>
-        <InputField disabled value={name} />
+        <InputField disabled value={domain?.name} />
         <InputField
           label="FuturePass Address"
           placeholder="Enter FuturePass Address"
@@ -73,10 +80,10 @@ export const Form: React.FC = () => {
               handleSetFuturePass();
             }}
           >
+            Confirm
             {isPending && (
               <CircularProgress color="secondary" size={18} sx={{ ml: 1 }} />
             )}
-            Confirm
           </ActionButton>
         </FlexRight>
       </Grid>

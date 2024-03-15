@@ -4651,41 +4651,25 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type GetNamesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetNamesQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, id: string, domain: { __typename?: 'Domain', labelName?: string | null, name?: string | null } }> };
-
 export type GetNamesByNameQueryVariables = Exact<{
   labelName: Scalars['String']['input'];
 }>;
 
 
-export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', name?: string | null, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null } }> };
+export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
 
 export type GetNamesByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null } }> };
+export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
 
 
-export const GetNamesDocument = `
-    query GetNames {
-  nameWrappeds {
-    name
-    id
-    domain {
-      labelName
-      name
-    }
-  }
-}
-    `;
 export const GetNamesByNameDocument = `
     query GetNamesByName($labelName: String!) {
   nameWrappeds(where: {domain_: {labelName: $labelName}}) {
+    id
     name
     owner {
       id
@@ -4701,7 +4685,16 @@ export const GetNamesByNameDocument = `
       resolvedAddress {
         id
       }
+      resolver {
+        address
+        id
+        texts
+      }
     }
+    fuses
+    transactionID
+    expiryDate
+    blockNumber
   }
 }
     `;
@@ -4724,6 +4717,11 @@ export const GetNamesByIdDocument = `
       resolvedAddress {
         id
       }
+      resolver {
+        address
+        id
+        texts
+      }
     }
     fuses
     transactionID
@@ -4735,9 +4733,6 @@ export const GetNamesByIdDocument = `
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    GetNames: build.query<GetNamesQuery, GetNamesQueryVariables | void>({
-      query: (variables) => ({ document: GetNamesDocument, variables })
-    }),
     GetNamesByName: build.query<GetNamesByNameQuery, GetNamesByNameQueryVariables>({
       query: (variables) => ({ document: GetNamesByNameDocument, variables })
     }),
@@ -4748,5 +4743,5 @@ const injectedRtkApi = api.injectEndpoints({
 });
 
 export { injectedRtkApi as api };
-export const { useGetNamesQuery, useLazyGetNamesQuery, useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery } = injectedRtkApi;
+export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery } = injectedRtkApi;
 

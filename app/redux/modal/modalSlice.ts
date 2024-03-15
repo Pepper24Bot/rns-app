@@ -18,6 +18,7 @@ export interface ModalProps {
     isHeaderEnabled?: boolean
     isFooterEnabled?: boolean
     downloadFile?: string
+    data?: any
 
     // Implement as needed
     saveCallback?: () => void,
