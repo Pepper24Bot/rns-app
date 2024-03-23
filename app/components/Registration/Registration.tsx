@@ -53,7 +53,7 @@ export const RegisterName: React.FC = () => {
   const [isRegisterSuccess, setIsRegisterSuccess] = useState<boolean>(false);
   const [isRegisterError, setIsRegisterError] = useState<boolean>(false);
 
-  const [progress, setProgress] = useState<number>(1);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
 
   const {
     controller,
@@ -76,12 +76,14 @@ export const RegisterName: React.FC = () => {
   });
 
   const handleCommit = async () => {
+    setIsProgressVisible(true);
+    setIsPaused(true);
+
     const hashStr = hash as unknown as string;
     const { isSuccess } = await commit({ hash: hashStr, controller });
 
-    if (isSuccess) {
-      setProgress(1);
-      setIsProgressVisible(true);
+    if (!isSuccess) {
+      setIsRegisterError(true);
     }
 
     setTimeout(() => {
@@ -93,7 +95,8 @@ export const RegisterName: React.FC = () => {
 
   const handleRegister = async () => {
     if (isCommitSuccess) {
-      setIsProgressVisible(true);
+      console.log("entering handleRegister...");
+      setIsPaused(true);
       const { isSuccess } = await register({
         controller,
         fees: {
@@ -110,7 +113,8 @@ export const RegisterName: React.FC = () => {
       });
 
       if (isSuccess) {
-        setProgress(100);
+        setIsRegisterSuccess(true);
+        setIsPaused(false);
       } else {
         setIsRegisterError(true);
       }
@@ -123,36 +127,32 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
-    // TODO: Find a way to reset the values when the modal is closed
+    // TODO: Find a way to reset the values when the modal closes
     if (!isModalOpen) {
       updateName({ ...nameInitialState, name });
     }
   }, [isModalOpen]);
 
-  // TODO: Fix this
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prevProgress) => {
-        return prevProgress >= 95 && !isRegisterSuccess
-          ? 95
-          : isRegisterSuccess
-          ? 100
-          : prevProgress + 1;
-      });
-    }, 1350);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
-
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
-      <Form rent={base} gasFee={estimatedGas} gasPrice={estimatedGasPrice} />
+      <Form
+        rent={base}
+        gasFee={estimatedGas}
+        gasPrice={estimatedGasPrice}
+        isShowing={!isRegisterSuccess}
+      />
       <FlexCenter marginY={2.5}>
         <Relative>
           <BoxContainer isVisible={isProgressVisible}>
-            <ProgressBar value={progress} isError={isRegisterError} />
+            <ProgressBar
+              isError={isRegisterError}
+              isPaused={isPaused}
+              isVisible={isProgressVisible}
+            />
           </BoxContainer>
+          <FlexCenter>
+            <Tip isVisible={isProgressVisible}>View Transaction</Tip>
+          </FlexCenter>
           <FlexCenter>
             <Tip isVisible={!isProgressVisible}>
               Avoid paying yearly transaction fees by selecting a longer
@@ -165,6 +165,7 @@ export const RegisterName: React.FC = () => {
         {address ? (
           <FlexRight>
             <ActionButton
+              disabled={isProgressVisible}
               sx={{ marginRight: 1 }}
               variant="text"
               onClick={() => {
@@ -174,6 +175,7 @@ export const RegisterName: React.FC = () => {
               Cancel
             </ActionButton>
             <ActionButton
+              disabled={isProgressVisible}
               variant="contained"
               onClick={() => {
                 handleCommit();

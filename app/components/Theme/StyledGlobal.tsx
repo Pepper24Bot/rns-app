@@ -343,3 +343,21 @@ export const InformationTip = styled(
     filter: `drop-shadow(-1px 0px 0px rgb(0, 0, 0, 0.25))`,
   },
 }));
+
+export const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
+  color: "#24FF00",
+  textTransform: "uppercase",
+  fontSize: "14px",
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: FONT_SIZE.Small,
+  },
+}));
+
+export const NotAvailableText = styled(AvailableText)(({ theme }) => ({
+  color: "#FF0000",
+}));
+
+export const RegisteredText = styled(AvailableText)(({ theme }) => ({
+  color: theme.palette.primary.main,
+}));

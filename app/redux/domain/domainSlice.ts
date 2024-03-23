@@ -4,11 +4,13 @@ import { RootState } from "../store"
 import { Domain } from "../graphql/hooks"
 
 export type PaymentMethod = "ROOT" | "USDC"
+export type NameStatus = "Available" | "Not Available" | "Registered"
 
 export interface DomainProps {
     /** Used by the registration forms */
     name?: string
     labelName?: string
+    status?: NameStatus
     year?: number
     payment?: {
         method: PaymentMethod

@@ -144,6 +144,20 @@ export const SearchForm: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const searchFieldRef = React.useRef(null);
 
+  const getNameStatus = () => {
+    const isAvailable = isEmpty(data?.nameWrappeds);
+
+    const isNotAvailable =
+      !isEmpty(data?.nameWrappeds) &&
+      data?.nameWrappeds[0].owner.id !== address;
+
+    return isAvailable
+      ? "Available"
+      : isNotAvailable
+      ? "Not Available"
+      : "Registered";
+  };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -153,7 +167,7 @@ export const SearchForm: React.FC = () => {
     setSearchValue(value);
 
     // Store in global state so the other componenst will be able to access the value
-    updateName({ name: value });
+    updateName({ name: value, status: getNameStatus() });
   };
 
   const debounceFn = useCallback(
@@ -208,10 +222,9 @@ export const SearchForm: React.FC = () => {
                 />
                 <SearchPopper
                   isLoading={isLoading}
-                  address={address}
                   anchorEl={anchorEl}
                   searchValue={searchValue}
-                  data={data}
+                  status={getNameStatus()}
                 />
               </FlexCenter>
             </ClickAwayListener>

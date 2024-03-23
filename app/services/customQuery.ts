@@ -5,18 +5,18 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 
 export const client = new GraphQLClient(GRAPHQL_URL)
 
-export interface CustomQueryOptions {
+export interface CustomRequestOptions {
     baseUrl?: string,
     client?: GraphQLClient
 }
 
-export interface CustomQueryConfig extends AxiosRequestConfig {
+export interface CustomRequestConfig extends AxiosRequestConfig {
     document?: string,
     variables?: any
 }
 
-export const customBaseQuery = (options: CustomQueryOptions): BaseQueryFn<any> => {
-    return async (axiosRequestConfig: CustomQueryConfig) => {
+export const customBaseQuery = (options: CustomRequestOptions): BaseQueryFn<any> => {
+    return async (axiosRequestConfig: CustomRequestConfig) => {
         let responseData = null
 
         try {

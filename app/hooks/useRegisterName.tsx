@@ -53,6 +53,7 @@ export default function useRegister() {
     const { controller, fees, args } = props;
     const { abi, address } = controller;
     const response: Response = { error: null, isSuccess: false, data: null };
+    console.log("entering registration hook...");
 
     try {
       const registerResponse = await registerAsync({
@@ -78,6 +79,7 @@ export default function useRegister() {
       response.error = error as string;
     }
 
+    console.log("response:: ", response);
     return response;
   };
 

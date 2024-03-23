@@ -19,10 +19,14 @@ import {
   SubTitle,
   InformationTip,
   SecondaryLabel,
+  AvailableText,
+  NotAvailableText,
+  RegisteredText,
 } from "../Theme/StyledGlobal";
 import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
+import { NameStatus } from "@/redux/domain/domainSlice";
 
 import Image from "next/image";
 
@@ -31,9 +35,10 @@ export interface SearchPopper {
   anchorEl: HTMLElement | null;
   searchValue: string | null;
   address?: `0x${string}`;
+  status?: NameStatus;
 
   // TODO: Fix any type
-  data: any;
+  data?: any;
 }
 
 const Popper = styled(MuiPopper)(({ theme }) => ({
@@ -50,25 +55,6 @@ const SearchText = styled(SubTitle)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     fontSize: FONT_SIZE.Medium,
   },
-}));
-
-const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
-  color: "#24FF00",
-  textTransform: "uppercase",
-  marginTop: "5px",
-  fontSize: "14px",
-
-  [theme.breakpoints.down("md")]: {
-    fontSize: FONT_SIZE.Small,
-  },
-}));
-
-const NotAvailableText = styled(AvailableText)(({ theme }) => ({
-  color: "#FF0000",
-}));
-
-const RegisteredText = styled(AvailableText)(({ theme }) => ({
-  color: theme.palette.primary.main,
 }));
 
 const PopperContainer = styled(Grid)(({ theme }) => ({
@@ -133,21 +119,12 @@ const StarIcon = styled(StarBorder)(({ theme }) => ({
 }));
 
 export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
-  const { isLoading, data, address, anchorEl, searchValue } = props;
+  const { isLoading, anchorEl, searchValue, status } = props;
   const { toggleModal } = useModalState();
 
   const [clientWidth, setClientWidth] = useState<number>(
     anchorEl?.clientWidth || 500
   );
-
-  const isAvailable = isEmpty(data?.nameWrappeds);
-
-  const isNotAvailable =
-    !isEmpty(data?.nameWrappeds) && data?.nameWrappeds[0].owner.id !== address;
-
-  const isRegisteredByYou =
-    !isEmpty(data?.nameWrappeds) &&
-    data?.nameWrappeds[0].owner.id === address?.toLowerCase();
 
   useEffect(() => {
     if (anchorEl?.clientWidth) {
@@ -173,17 +150,17 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                 <SearchText>{`${searchValue}.root`}</SearchText>
                 <Relative>
                   <SkeletonTypography isloading={isLoading} />
-                  {isAvailable ? (
+                  {status === "Available" ? (
                     <AvailableText isloading={isLoading}>
-                      Available
+                      {status}
                     </AvailableText>
-                  ) : isRegisteredByYou ? (
+                  ) : status === "Registered" ? (
                     <RegisteredText isloading={isLoading}>
                       Registered By You
                     </RegisteredText>
                   ) : (
                     <NotAvailableText isloading={isLoading}>
-                      Not Available
+                      {status}
                     </NotAvailableText>
                   )}
                 </Relative>
@@ -200,7 +177,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                       </FavoriteButton>
                     </InformationTip>
                     <Divider orientation="vertical" flexItem />
-                    {isAvailable ? (
+                    {status === "Available" ? (
                       <SearchButton
                         variant="contained"
                         onClick={() => {
@@ -212,7 +189,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                       >
                         <SearchLabel>Register</SearchLabel>
                       </SearchButton>
-                    ) : isRegisteredByYou ? (
+                    ) : status === "Registered" ? (
                       <SearchButton
                         variant="contained"
                         onClick={() => {

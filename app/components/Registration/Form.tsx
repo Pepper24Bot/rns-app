@@ -5,8 +5,11 @@ import {
   SecondaryLabel,
   FieldContainer,
   FlexJustified,
+  AvailableText,
+  NotAvailableText,
+  RegisteredText,
 } from "@/components/Theme/StyledGlobal";
-import { Grid, alpha, styled } from "@mui/material";
+import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 import { PaymentMethod, useDomainState } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
@@ -57,15 +60,18 @@ export interface Form {
   gasFee: bigint;
   gasPrice: bigint;
   name?: string;
+
+  /** hide form when transaction is successful */
+  isShowing?: boolean;
 }
 
 export const Form: React.FC<Form> = (props: Form) => {
-  const { rent, gasFee, gasPrice, name: nameProp } = props;
+  const { rent, gasFee, gasPrice, name: nameProp, isShowing = true } = props;
 
   const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
     useDomainState();
 
-  const { name, payment, year } = useDomain();
+  const { name, payment, year, status } = useDomain();
 
   const { rentFee, transactionFee, totalFee } = useFees({
     rent,
@@ -79,49 +85,67 @@ export const Form: React.FC<Form> = (props: Form) => {
 
   return (
     <Grid minWidth={250}>
-      <NameField disabled value={nameProp ? nameProp : `${name}.root`} />
-      <FieldContainer sx={{ padding: "10px 25px" }}>
-        <Button
-          disabled={year === 1}
-          onClick={() => {
-            decreaseYear();
-          }}
-        >
-          <Remove />
-        </Button>
-        <Value>{`${year} ${getYearLabel()}`}</Value>
-        <Button
-          onClick={() => {
-            increaseYear();
-          }}
-        >
-          <Add />
-        </Button>
-      </FieldContainer>
-      <MenuField
-        label="Payment Method"
-        selectedOption={payment?.method as PaymentMethod}
-        options={PAYMENT_METHOD}
-        handleOptionSelect={(option) => {
-          updatePaymentOption(option as PaymentMethod);
+      <NameField
+        disabled
+        value={nameProp ? nameProp : `${name}.root`}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              {status === "Available" ? (
+                <AvailableText>{status}</AvailableText>
+              ) : status === "Registered" ? (
+                <RegisteredText>Registered By You</RegisteredText>
+              ) : (
+                <NotAvailableText>{status}</NotAvailableText>
+              )}
+            </InputAdornment>
+          ),
         }}
       />
-      <FieldContainer>
-        <SummaryContainer>
-          <Transaction>
-            <TransactionLabel>{`${year} ${getYearLabel()} Registration`}</TransactionLabel>
-            <Value>{`${rentFee} ${payment?.method}`}</Value>
-          </Transaction>
-          <Transaction>
-            <TransactionLabel>Transaction Fee</TransactionLabel>
-            <Value>{`${transactionFee} ${payment?.method}`}</Value>
-          </Transaction>
-          <Transaction>
-            <TransactionLabel>Total</TransactionLabel>
-            <Value>{`${totalFee} ${payment?.method}`}</Value>
-          </Transaction>
-        </SummaryContainer>
-      </FieldContainer>
+      <Collapse in={isShowing}>
+        <FieldContainer sx={{ padding: "10px 25px" }}>
+          <Button
+            disabled={year === 1}
+            onClick={() => {
+              decreaseYear();
+            }}
+          >
+            <Remove />
+          </Button>
+          <Value>{`${year} ${getYearLabel()}`}</Value>
+          <Button
+            onClick={() => {
+              increaseYear();
+            }}
+          >
+            <Add />
+          </Button>
+        </FieldContainer>
+        <MenuField
+          label="Payment Method"
+          selectedOption={payment?.method as PaymentMethod}
+          options={PAYMENT_METHOD}
+          handleOptionSelect={(option) => {
+            updatePaymentOption(option as PaymentMethod);
+          }}
+        />
+        <FieldContainer>
+          <SummaryContainer>
+            <Transaction>
+              <TransactionLabel>{`${year} ${getYearLabel()} Registration`}</TransactionLabel>
+              <Value>{`${rentFee} ${payment?.method}`}</Value>
+            </Transaction>
+            <Transaction>
+              <TransactionLabel>Transaction Fee</TransactionLabel>
+              <Value>{`${transactionFee} ${payment?.method}`}</Value>
+            </Transaction>
+            <Transaction>
+              <TransactionLabel>Total</TransactionLabel>
+              <Value>{`${totalFee} ${payment?.method}`}</Value>
+            </Transaction>
+          </SummaryContainer>
+        </FieldContainer>
+      </Collapse>
     </Grid>
   );
 };

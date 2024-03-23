@@ -1,10 +1,7 @@
 
-import { BASE_URL, GRAPHQL_URL } from '@/services/api'
+import { BASE_URL } from '@/services/api'
 import { customBaseQuery } from '@/services/customQuery'
 import { createApi } from '@reduxjs/toolkit/query/react'
-import { GraphQLClient } from 'graphql-request'
-
-export const client = new GraphQLClient(GRAPHQL_URL)
 
 export const api = createApi({
     reducerPath: 'RnsApi',
