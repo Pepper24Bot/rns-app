@@ -2,7 +2,7 @@ import { useSendTransaction, useWalletClient, useWriteContract } from "wagmi";
 import { Address, encodeFunctionData, namehash } from "viem";
 import { Response } from "@/services/interfaces";
 import { getEnsText } from "viem/actions";
-import { publicClient, walletClient } from "@/chains/config";
+import { publicClient } from "@/chains/config";
 import { normalize } from "viem/ens";
 import useContractDetails from "./useContractDetails";
 
