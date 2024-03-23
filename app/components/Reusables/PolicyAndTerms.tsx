@@ -8,10 +8,13 @@
  */
 
 import React, { useState } from "react";
-import { Grid, styled } from "@mui/material";
+import { Grid, Typography, styled } from "@mui/material";
 import { pdfjs, Document, Page } from "react-pdf";
 
 import "react-pdf/dist/esm/Page/TextLayer.css";
+import { BaseButton, FlexCenter, SecondaryLabel } from "../Theme/StyledGlobal";
+import { FONT_WEIGHT } from "../Theme/Global";
+import { grey } from "@mui/material/colors";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
@@ -23,11 +26,27 @@ interface PolicyAndTerms {
   type: "Policy" | "Terms";
 }
 
-const PdfContainer = styled(Grid)(({ theme }) => ({
+const PdfContainer = styled(Grid)(({ theme }) => ({}));
+
+const Content = styled(Grid)(({ theme }) => ({
   height: "400px",
-  maxWidth: "560px",
   width: "100%",
   overflow: "auto",
+}));
+
+const PageSteps = styled(FlexCenter)(({ theme }) => ({}));
+
+const PageLabel = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "16px",
+  fontWeight: FONT_WEIGHT.Bold,
+  padding: "16px",
+}));
+
+const ButtonLabel = styled(SecondaryLabel, {
+  shouldForwardProp: (prop) => prop !== "isDisabled",
+})<{ isDisabled?: boolean }>(({ theme, isDisabled }) => ({
+  fontSize: "14px",
+  color: isDisabled ? grey[500] : theme.palette.primary.main,
 }));
 
 export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
@@ -35,18 +54,31 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
 ) => {
   const { type } = props;
 
-  const [numPages, setNumPages] = useState<number | null>(null);
+  const [numPages, setNumPages] = useState<number>(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
 
   const onDocumentLoadSuccess = ({ numPages }: any) => {
     setNumPages(numPages);
   };
 
+  const changePage = (offset: number) => {
+    setPageNumber((prevPageNumber) => prevPageNumber + offset);
+  };
+
+  const previousPage = () => {
+    changePage(-1);
+  };
+
+  const nextPage = () => {
+    changePage(1);
+  };
+
   const getFileName = () => {
     switch (type) {
       case "Policy":
-        return "/documents/rns-privacy-view.pdf";
+        return "/documents/rns-privacy-policy.pdf";
       case "Terms":
-        return "/documents/rns-terms-view.pdf";
+        return "/documents/rns-terms-of-service.pdf";
       default:
         return "";
     }
@@ -62,10 +94,7 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
 
   const getTextRenderer = (options: any) => {
     const text = options.str;
-    const pageNumber = options.pageNumber;
     const height = options.height;
-
-    console.log("options:: ", options);
 
     // TODO: Enable case insensitivity
     // (?i:.rootnameservice.com) -- fix this
@@ -74,34 +103,30 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
     );
 
     // this means it is a header
-    if (height === 16) {
-      return `<span class="${
-        pageNumber > 1 ? "custom_heading" : "custom_top_heading"
-      }">${text}</span>`;
+    if (height > 12) {
+      return `<span class="custom_heading">${text}</span>`;
     } else if (text.match(pattern)) {
       return `
         <a class="custom-link" href="${getHref(text)}" target="_blank">
-          <span class="${
-            pageNumber > 1 ? "custom_span" : "top_page_span"
-          }">${text}</span>
+          <span class="custom_span">${text}</span>
         </a>
       `;
-    } else if (pageNumber > 1) {
-      return `<span style="top: -75px; left: -40px;">${text}</span>`;
     } else {
-      return `<span style="left: -40px">${text}</span>`;
+      return `<span>${text}</span>`;
     }
   };
 
   return (
     <PdfContainer>
       <div className="document-container">
-        <Document
-          file={getFileName()}
-          onLoadSuccess={onDocumentLoadSuccess}
-          options={options}
-        >
-          {Array.from(new Array(numPages), (_, index) => {
+        <Content>
+          <Document
+            file={getFileName()}
+            onLoadSuccess={onDocumentLoadSuccess}
+            options={options}
+            renderMode="canvas"
+          >
+            {/* {Array.from(new Array(numPages), (_, index) => {
             return (
               <Page
                 className={type === "Policy" ? "Policy-Page" : ""}
@@ -114,8 +139,42 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
                 }}
               />
             );
-          })}
-        </Document>
+          })} */}
+            <Page
+              pageNumber={pageNumber}
+              renderAnnotationLayer={false} // creating a custom annotation
+              canvasBackground="transparent"
+              customTextRenderer={(options) => {
+                return getTextRenderer(options);
+              }}
+            />
+          </Document>
+        </Content>
+        <FlexCenter>
+          <PageSteps>
+            <BaseButton
+              disabled={pageNumber <= 1}
+              onClick={() => {
+                previousPage();
+              }}
+            >
+              <ButtonLabel isDisabled={pageNumber <= 1}>Previous</ButtonLabel>
+            </BaseButton>
+            <PageLabel>
+              Page {pageNumber || (numPages ? 1 : "--")} of {numPages || "--"}
+            </PageLabel>
+            <BaseButton
+              disabled={pageNumber >= numPages}
+              onClick={() => {
+                nextPage();
+              }}
+            >
+              <ButtonLabel isDisabled={pageNumber >= numPages}>
+                Next
+              </ButtonLabel>
+            </BaseButton>
+          </PageSteps>
+        </FlexCenter>
       </div>
     </PdfContainer>
   );

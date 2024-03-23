@@ -171,7 +171,7 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
     padding: "0",
 
     "&.Mui-disabled": {
-      "-webkit-text-fill-color": theme.palette.text.primary,
+      WebkitTextFillColor: theme.palette.text.primary,
     },
   },
 
