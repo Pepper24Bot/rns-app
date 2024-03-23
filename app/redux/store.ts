@@ -11,7 +11,7 @@ const store = configureStore({
         // TODO: Add states here
         themeState: themeState.reducer,
         modalState: modalState.reducer,
-        domainState: domainState.reducer
+        domainState: domainState.reducer,
     },
 
     // Add middleware to handle api queries

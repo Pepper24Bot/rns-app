@@ -30,7 +30,7 @@ export const Names: React.FC = () => {
     { skip: address === null }
   );
 
-  const filteredList = data?.nameWrappeds.filter((item) => {
+  const filteredList = data?.nameWrappeds?.filter((item) => {
     return item.name !== null;
   });
 

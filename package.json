@@ -25,6 +25,8 @@
     "@types/lodash": "^4.14.202",
     "@types/pdfjs-dist": "^2.10.378",
     "@wagmi/connectors": "^4.1.14",
+    "airtable": "^0.12.2",
+    "axios": "^1.6.8",
     "date-fns": "^3.3.1",
     "encoding": "^0.1.13",
     "graphql": "^16.8.1",
