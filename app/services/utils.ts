@@ -1,4 +1,5 @@
 import { formatDistance, formatDistanceStrict } from "date-fns";
+import { isEmpty } from "lodash";
 
 /**
  * This will get the value of the provided key
@@ -104,4 +105,28 @@ export const getExpiration = (dateCreated: number, dateExpiration?: number) => {
     }
 
     return dates
+}
+
+/**
+ * 
+ * @param email 
+ * @returns 
+ */
+export const isEmailValid = (email: string) => {
+    const pattern = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g)
+
+    const match = email.toLowerCase().match(pattern)
+
+    return !isEmpty(match)
+}
+
+
+export const isUrlGraphql = (url: string = "") => {
+    const pattern = new RegExp(
+        /(?:subgraphs|graphql)/g
+    );
+
+    const match = url.toLowerCase().match(pattern)
+
+    return !isEmpty(match)
 }

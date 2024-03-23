@@ -1,12 +1,18 @@
-import React, { useState } from "react";
-import { Grid, Typography, alpha, styled } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import { CircularProgress, Grid, alpha, styled } from "@mui/material";
 import {
   ActionButton,
   FlexCenter,
   Heading,
   ModalInputField,
 } from "../Theme/StyledGlobal";
+import { DEFAULT_DEBOUNCE } from "@/services/constants";
+import { debounce as _debounce } from "lodash";
 import { FONT_WEIGHT } from "../Theme/Global";
+import { isEmailValid } from "@/services/utils";
+import { useSubscribesEmailMutation } from "@/redux/airtable/airtableSlice";
+import { green } from "@mui/material/colors";
+import { Check } from "@mui/icons-material";
 
 const Container = styled(FlexCenter)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.dark, 0.1),
@@ -40,6 +46,10 @@ const SubscribeField = styled(ModalInputField)(({ theme }) => ({
   ".MuiInputBase-root": {
     borderRadius: "8px 0 0 8px",
     boxShadow: `0px 0px 20px 0px ${theme.palette.background.paper}`,
+
+    "&.MuiOutlinedInput-root": {
+      padding: "10px 24px",
+    },
   },
 }));
 
@@ -58,13 +68,43 @@ const SubscribeButton = styled(ActionButton)(({ theme }) => ({
 }));
 
 export const EmailSubscription: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [success, setIsSuccess] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(true);
 
-  const handleOnSubscribe = () => {
-    console.log("inputValue:: ", inputValue);
-    // TODO: Add field validation here -- implement validator (e.g yup)
-    // TODO: Call API here to submit
+  const [subscribesEmail, result] = useSubscribesEmailMutation();
+
+  const handleOnSubscribe = async () => {
+    const isValid = isEmailValid(email);
+    setIsValid(isValid);
+
+    if (email && isValid) {
+      setIsLoading(true);
+      await subscribesEmail({ email });
+      setIsLoading(false);
+    }
   };
+
+  const handleDebounceOnChange = (value: string) => {
+    setEmail(value);
+    setIsValid(true);
+
+    // TODO: result.reset() does not work, why?
+    setIsSuccess(false);
+  };
+
+  const debounceFn = useCallback(
+    _debounce(handleDebounceOnChange, DEFAULT_DEBOUNCE),
+    []
+  );
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      setIsSuccess(true);
+    }
+  }, [result]);
 
   return (
     <Container>
@@ -74,15 +114,29 @@ export const EmailSubscription: React.FC = () => {
           Join our mailing list to stay in the loop with our newest feature
           releases, Partnership Announcements and special offers.{" "}
         </SubTitle>
-        <FlexCenter>
+        <FlexCenter sx={{ alignItems: "start" }}>
           <SubscribeField
+            error={!isValid}
+            helperText={!isValid ? "Email is not valid!" : ""}
             required
             variant="outlined"
             placeholder="Your Email Address here..."
             fullWidth
+            value={inputValue}
             onChange={(event) => {
               const { value } = event.target;
               setInputValue(value);
+              debounceFn(value);
+            }}
+            InputProps={{
+              endAdornment:
+                isLoading && !success ? (
+                  <CircularProgress size={24} sx={{ ml: 2 }} />
+                ) : success ? (
+                  <Check sx={{ color: green[800] }} />
+                ) : (
+                  <></>
+                ),
             }}
           />
           <SubscribeButton
