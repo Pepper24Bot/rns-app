@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
 import {
   ActionButton,
@@ -8,6 +8,9 @@ import {
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
+import { useSearchParams } from "next/navigation";
+import { useCreateAccessTokenMutation } from "@/redux/twitter/twitterSlice";
+import { isEmpty } from "lodash";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "50px 30px 40px 30px",
@@ -79,19 +82,29 @@ const Bullet: React.FC<BulletProps> = (props: BulletProps) => {
 export const ShareRegistration: React.FC = () => {
   const [link, setLink] = useState<string>("");
 
+  const [createAccessToken, result] = useCreateAccessTokenMutation();
+  const params = useSearchParams();
+
   const handleRedirect = () => {
     // TODO: Move these constants in an env file
     const twitterUrl = "https://twitter.com/i/oauth2/authorize";
     const clientId = "QmczejlDYjJkT25wWEpKN3Fyb1A6MTpjaQ";
-    const redirect_uri = "http://localhost:3000";
+    const redirectUri = "http://localhost:3000";
     const scope = "tweet.read%20tweet.write%20users.read";
 
-    const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirect_uri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
+    const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
 
     if (typeof window !== "undefined") {
       window.open(url, "_self");
     }
   };
+
+  useEffect(() => {
+    console.log("params:: ", params.get("code"));
+    if (!isEmpty(params.get("code"))) {
+      createAccessToken({ code: params.get("code") || "" });
+    }
+  }, [params.get("code")]);
 
   return (
     <FlexCenter container position="relative">
