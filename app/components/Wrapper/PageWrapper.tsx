@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Grid, styled } from "@mui/material";
 import { Provider } from "react-redux";
 
@@ -48,7 +48,9 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
             <WrapperContainer>
               <ContentContainer>
                 <PageNavigation />
-                <PageModal />
+                <Suspense fallback={<></>}>
+                  <PageModal />
+                </Suspense>
                 {/* TODO: Mount PageSnackbars */}
                 {children}
               </ContentContainer>
