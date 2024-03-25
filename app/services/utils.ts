@@ -120,7 +120,11 @@ export const isEmailValid = (email: string) => {
     return !isEmpty(match)
 }
 
-
+/**
+ * 
+ * @param url 
+ * @returns 
+ */
 export const isUrlGraphql = (url: string = "") => {
     const pattern = new RegExp(
         /(?:subgraphs|graphql)/g
@@ -129,4 +133,23 @@ export const isUrlGraphql = (url: string = "") => {
     const match = url.toLowerCase().match(pattern)
 
     return !isEmpty(match)
+}
+
+/**
+ * 
+ * @param params 
+ * @returns 
+ */
+export const getModal = (params: string = "") => {
+    const pattern = new RegExp(
+        /(?:modal-)/g
+    );
+
+    const match = params.toLowerCase().match(pattern)
+    const type = params.split(pattern)
+
+    return {
+        isModalOpen: !isEmpty(match),
+        modalType: type[1]
+    }
 }

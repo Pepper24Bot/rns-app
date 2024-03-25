@@ -1,9 +1,17 @@
 import React from "react";
-import { Grid, Typography, alpha, styled } from "@mui/material";
+import { Divider, Grid, Typography, alpha, styled } from "@mui/material";
 import { Description, useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
-import { ActionButton, Flex, FlexRight } from "../Theme/StyledGlobal";
+import {
+  ActionButton,
+  Flex,
+  FlexLeft,
+  FlexRight,
+  PrimaryLabel,
+  SecondaryLabel,
+} from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
+import { X } from "@mui/icons-material";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -15,7 +23,7 @@ const Container = styled(Grid)(({ theme }) => ({
 }));
 
 const WalletsContainer = styled(Grid)(({ theme }) => ({
-  marginTop: "50px",
+  margin: "10px 0px",
 }));
 
 const WalletItem = styled(Flex, {
@@ -52,6 +60,22 @@ const WalletName = styled(Typography)(({ theme }) => ({
   marginLeft: "20px",
 }));
 
+const HeaderLabel = styled(PrimaryLabel)(({ theme }) => ({
+  padding: "10px 0",
+}));
+
+const Label = styled(PrimaryLabel)(({ theme }) => ({
+  fontSize: "14px",
+  padding: "0px 16px",
+  color: alpha(theme.palette.text.primary, 0.75),
+}));
+
+const AccountLabel = styled(PrimaryLabel)(({ theme }) => ({
+  fontSize: "12px",
+  padding: "0px 16px",
+  color: alpha(theme.palette.text.primary, 0.25),
+}));
+
 const DisconnectButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButtonBase-root": {
     marginTop: "35px",
@@ -85,43 +109,63 @@ export const Wallets: React.FC = () => {
   return (
     <Container>
       {!activeConnector?.name && !isDisconnecting && (
-        <Paragraph description={description} />
+        <Grid mb={5}>
+          <Paragraph description={description} />
+        </Grid>
       )}
       <WalletsContainer>
-        {connectors?.map((connector) => {
-          return (
-            connector.name !== "MetaMask" && (
-              <WalletItem
-                key={connector.id}
+        <Grid>
+          {activeConnector?.name && <HeaderLabel>Switch Wallet</HeaderLabel>}
+          {connectors?.map((connector) => {
+            return (
+              connector.name !== "MetaMask" && (
+                <WalletItem
+                  key={connector.id}
+                  onClick={() => {
+                    connect({ connector });
+                    closeModal();
+                  }}
+                  isActive={activeConnector?.name === connector.name}
+                >
+                  <Image
+                    src={getIcon(connector.name as Wallet)}
+                    alt={connector.name}
+                    width={32}
+                    height={32}
+                  />
+                  <WalletName>{getWalletName(connector.name)}</WalletName>
+                </WalletItem>
+              )
+            );
+          })}
+          {activeConnector?.name && (
+            <FlexRight>
+              <DisconnectButton
+                variant="contained"
                 onClick={() => {
-                  connect({ connector });
+                  disconnect();
                   closeModal();
                 }}
-                isActive={activeConnector?.name === connector.name}
               >
-                <Image
-                  src={getIcon(connector.name as Wallet)}
-                  alt={connector.name}
-                  width={32}
-                  height={32}
-                />
-                <WalletName>{getWalletName(connector.name)}</WalletName>
-              </WalletItem>
-            )
-          );
-        })}
+                Disconnect
+              </DisconnectButton>
+            </FlexRight>
+          )}
+        </Grid>
         {activeConnector?.name && (
-          <FlexRight>
-            <DisconnectButton
-              variant="contained"
-              onClick={() => {
-                disconnect();
-                closeModal();
-              }}
-            >
-              Disconnect
-            </DisconnectButton>
-          </FlexRight>
+          <>
+            <Divider sx={{ mt: 4, mb: 2, backgroundColor: "primary.dark" }} />
+            <Grid mb={4}>
+              <HeaderLabel>Social Accounts</HeaderLabel>
+              <FlexLeft>
+                <X />
+                <Grid>
+                  <Label>X (Twitter)</Label>
+                  <AccountLabel>X (Twitter)</AccountLabel>
+                </Grid>
+              </FlexLeft>
+            </Grid>
+          </>
         )}
       </WalletsContainer>
     </Container>

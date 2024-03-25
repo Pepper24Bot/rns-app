@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import {
   Dialog as MuiDialog,
@@ -11,6 +11,8 @@ import {
 import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
 import { PolicyAndTerms } from "../Reusables/PolicyAndTerms";
+import { useSearchParams } from "next/navigation";
+import { getModal } from "@/services/utils";
 
 import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
@@ -113,8 +115,14 @@ export const ModalContainer: React.FC = () => {
   const { useModal, closeModal } = useModalState();
   const { isModalOpen, props } = useModal();
 
+  const [hasPathModal, setHasPathModal] = useState(false);
+  const [isFullSize, setIsFullSize] = useState(false);
+
+  const params = useSearchParams();
+
+  const modalProps = getModal(params.get("state") || "");
   const isCloseDisabled = props?.isCloseDisabled || false;
-  const type = props?.id || "";
+  const type = props?.id || modalProps.modalType || "";
 
   /**
    * Storing a non-serializeable (e.g, react components)
@@ -148,14 +156,25 @@ export const ModalContainer: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    setHasPathModal(modalProps.isModalOpen);
+
+    // TODO: This is very specific to share twitter - PLS FIX!!!
+    const fullSize =
+      modalProps.isModalOpen && modalProps.modalType === "Share RNS";
+    setIsFullSize(fullSize);
+  }, []);
+
   return (
     <Dialog
-      open={isModalOpen}
+      open={isModalOpen || hasPathModal}
       onClose={() => {
         if (isCloseDisabled) {
           // do not allow modal to be closed
         } else {
-          return closeModal();
+          closeModal();
+          setHasPathModal(false);
+          setIsFullSize(false);
         }
       }}
       disableEscapeKeyDown={isCloseDisabled}
@@ -166,15 +185,17 @@ export const ModalContainer: React.FC = () => {
           {/* TODO: Move the styling to styledcomponents */}
           <Content
             props={{
-              fullHeight: props?.fullHeight,
-              fullWidth: props?.fullWidth,
+              fullHeight: props?.fullHeight || isFullSize,
+              fullWidth: props?.fullWidth || isFullSize,
               isHeaderEnabled: props?.isHeaderEnabled,
             }}
           >
             {!props?.isXDisabled && (
               <CloseButton
                 onClick={() => {
-                  return closeModal();
+                  closeModal();
+                  setHasPathModal(false);
+                  setIsFullSize(false);
                 }}
               >
                 <CloseIcon />

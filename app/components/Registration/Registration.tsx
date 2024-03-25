@@ -264,7 +264,8 @@ export const RegisterName: React.FC = () => {
       )}
 
       {/* Only show the share button when the registration is successful */}
-      {isRegisterSuccess && data?.blockHash && (
+      {/* {isRegisterSuccess && data?.blockHash && ( */}
+      {true && (
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip>

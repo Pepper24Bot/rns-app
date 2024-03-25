@@ -14,7 +14,7 @@ const Container = styled(Grid)(({ theme }) => ({
 }));
 
 const Content = styled(Grid)(({ theme }) => ({
-  minHeight: "260px", // fixed width
+  minHeight: "235px", // fixed width
   maxWidth: "225px",
   alignContent: "space-between",
 }));
@@ -25,7 +25,7 @@ const TweetContainer = styled(Container)(({ theme }) => ({
 
 const StepLabel = styled(SecondaryLabel)(({ theme }) => ({
   textAlign: "center",
-  fontSize: "14px",
+  fontSize: "20px",
 }));
 
 const ButtonLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -79,6 +79,20 @@ const Bullet: React.FC<BulletProps> = (props: BulletProps) => {
 export const ShareRegistration: React.FC = () => {
   const [link, setLink] = useState<string>("");
 
+  const handleRedirect = () => {
+    // TODO: Move these constants in an env file
+    const twitterUrl = "https://twitter.com/i/oauth2/authorize";
+    const clientId = "QmczejlDYjJkT25wWEpKN3Fyb1A6MTpjaQ";
+    const redirect_uri = "http://localhost:3000";
+    const scope = "tweet.read%20tweet.write%20users.read";
+
+    const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirect_uri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
+
+    if (typeof window !== "undefined") {
+      window.open(url, "_self");
+    }
+  };
+
   return (
     <FlexCenter container position="relative">
       <Container item xs={4}>
@@ -88,7 +102,12 @@ export const ShareRegistration: React.FC = () => {
             <StepLabel>Link your Twitter Account</StepLabel>
           </Grid>
           <ButtonContainer item xs={12}>
-            <ShareButton variant="contained" onClick={() => {}}>
+            <ShareButton
+              variant="contained"
+              onClick={() => {
+                handleRedirect();
+              }}
+            >
               <ButtonLabel>Link</ButtonLabel>
             </ShareButton>
           </ButtonContainer>

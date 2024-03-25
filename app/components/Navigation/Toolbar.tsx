@@ -9,6 +9,7 @@ import {
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
+import { isEmpty } from "lodash";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
@@ -87,7 +88,11 @@ export const Toolbar: React.FC = () => {
           onClick={() => {
             toggleModal({
               id: "Wallets",
-              title: address ? "Switch Wallet" : "Choose your Wallet",
+              // title: address ? "Switch Wallet" : "Choose your Wallet",
+              // isHeaderEnabled: true
+              title: address ? "Manage Account" : "Choose your Wallet",
+              isHeaderEnabled: !isEmpty(address),
+              isXDisabled: true,
             });
           }}
         >
