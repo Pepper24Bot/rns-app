@@ -12,7 +12,7 @@ import {
   initialState as nameInitialState,
   useDomainState,
 } from "@/redux/domain/domainSlice";
-import { useAccount } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address } from "viem";
 import { COMMITMENT_AGE } from "@/services/constants";
@@ -72,7 +72,7 @@ const TwitterIcon = styled(X)(({ theme }) => ({
 export const RegisterName: React.FC = () => {
   const { address } = useAccount();
   const { useDomain, updateName } = useDomainState();
-  const { name = "", year = 1 } = useDomain();
+  const { name = "", year = 1, status } = useDomain();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
 
@@ -80,8 +80,15 @@ export const RegisterName: React.FC = () => {
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
   const [isRegisterSuccess, setIsRegisterSuccess] = useState<boolean>(false);
   const [isRegisterError, setIsRegisterError] = useState<boolean>(false);
-
   const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  const [registrationHash, setRegistrationHash] = useState<Address | undefined>(
+    undefined
+  );
+
+  const { data } = useWaitForTransactionReceipt({
+    hash: registrationHash,
+  });
 
   const {
     controller,
@@ -129,7 +136,7 @@ export const RegisterName: React.FC = () => {
     if (isCommitSuccess) {
       console.log("entering handleRegister...");
       setIsPaused(true);
-      const { isSuccess } = await register({
+      const { isSuccess, data } = await register({
         controller,
         fees: {
           gasPrice: estimatedGasPrice,
@@ -148,9 +155,8 @@ export const RegisterName: React.FC = () => {
       console.log("isSuccess:: ", isSuccess);
 
       if (isSuccess) {
-        setIsRegisterSuccess(true);
         setIsPaused(false);
-        updateName({ status: "Registered" });
+        setRegistrationHash(data);
       } else {
         setIsRegisterError(true);
       }
@@ -168,6 +174,13 @@ export const RegisterName: React.FC = () => {
       updateName({ ...nameInitialState, name });
     }
   }, [isModalOpen]);
+
+  useEffect(() => {
+    if (data?.blockHash) {
+      setIsRegisterSuccess(true);
+      updateName({ status: "Registered" });
+    }
+  }, [data?.blockHash]);
 
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
@@ -205,7 +218,7 @@ export const RegisterName: React.FC = () => {
           {address ? (
             <FlexRight>
               <ActionButton
-                disabled={isProgressVisible}
+                disabled={isProgressVisible && isRegisterSuccess}
                 sx={{ marginRight: 1 }}
                 variant="text"
                 onClick={() => {
@@ -215,7 +228,7 @@ export const RegisterName: React.FC = () => {
                 Cancel
               </ActionButton>
               <ActionButton
-                disabled={isProgressVisible}
+                disabled={isProgressVisible && isRegisterSuccess}
                 variant="contained"
                 onClick={() => {
                   handleCommit();
@@ -251,7 +264,7 @@ export const RegisterName: React.FC = () => {
       )}
 
       {/* Only show the share button when the registration is successful */}
-      {isRegisterSuccess && (
+      {isRegisterSuccess && data?.blockHash && (
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip>

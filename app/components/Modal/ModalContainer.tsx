@@ -148,8 +148,6 @@ export const ModalContainer: React.FC = () => {
     }
   };
 
-  console.log("props:: ", props);
-
   return (
     <Dialog
       open={isModalOpen}
