@@ -31,10 +31,14 @@ export default function useFees(props: FeesProps) {
    * @returns
    */
   const getRentFee = () => {
+    const rentFee = rent ? BigNumber.from(rent) : BigNumber.from(0);
+
     if (raw) {
-      return rent ? formatEther(rent) : BigInt("0");
+      // return rent ? formatEther(rent) : BigInt("0");
+      return formatEther(rentFee.toBigInt());
     } else {
-      return rent ? Number(formatEther(rent)).toFixed(2) : BigInt("0");
+      // return rent ? Number(formatEther(rent)).toFixed(2) : BigInt("0");
+      return Number(formatEther(rentFee.toBigInt())).toFixed(2);
     }
   };
 

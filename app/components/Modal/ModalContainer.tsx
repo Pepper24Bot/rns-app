@@ -20,6 +20,13 @@ import Registration from "../Registration/Registration";
 import RegistrationDetails from "../Registration/Details";
 import Expiry from "../Expiry/Expiry";
 import Link from "../Link/Link";
+import ShareRegistration from "../Share/ShareRegistration";
+
+interface ContentProps {
+  fullWidth?: boolean;
+  fullHeight?: boolean;
+  isHeaderEnabled?: boolean;
+}
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
@@ -47,11 +54,24 @@ const ContentContainer = styled(Grid)(({ theme }) => ({
   borderRadius: "8px",
 }));
 
-const Content = styled(Grid)(({ theme }) => ({
-  padding: "0px 45px",
+const Content = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "props",
+})<{ props?: ContentProps }>(({ props, theme }) => ({
+  paddingTop: props?.isHeaderEnabled ? "10px" : props?.fullHeight ? 0 : "50px",
+  paddingBottom: props?.isHeaderEnabled
+    ? "10px"
+    : props?.fullHeight
+    ? 0
+    : "40px",
+  paddingLeft: props?.fullWidth ? 0 : "45px",
+  paddingRight: props?.fullWidth ? 0 : "45px",
 
   [theme.breakpoints.down("sm")]: {
-    padding: "40px 20px",
+    // TODO: Clean this up
+    paddingTop: props?.fullHeight ? 0 : "40px",
+    paddingBottom: props?.fullHeight ? 0 : "40px",
+    paddingLeft: props?.fullWidth ? 0 : "20px",
+    paddingRight: props?.fullWidth ? 0 : "20px",
   },
 }));
 
@@ -121,10 +141,14 @@ export const ModalContainer: React.FC = () => {
         return <Expiry />;
       case "Link Name":
         return <Link {...props?.data} />;
+      case "Share RNS":
+        return <ShareRegistration />;
       default:
         return;
     }
   };
+
+  console.log("props:: ", props);
 
   return (
     <Dialog
@@ -143,9 +167,10 @@ export const ModalContainer: React.FC = () => {
           {props?.isHeaderEnabled && <ModalHeader />}
           {/* TODO: Move the styling to styledcomponents */}
           <Content
-            sx={{
-              paddingTop: props?.isHeaderEnabled ? "10px" : "50px",
-              paddingBottom: props?.isHeaderEnabled ? "10px" : "40px",
+            props={{
+              fullHeight: props?.fullHeight,
+              fullWidth: props?.fullWidth,
+              isHeaderEnabled: props?.isHeaderEnabled,
             }}
           >
             {!props?.isXDisabled && (
@@ -157,7 +182,9 @@ export const ModalContainer: React.FC = () => {
                 <CloseIcon />
               </CloseButton>
             )}
-            {!props?.isHeaderEnabled && <Title>{props?.title}</Title>}
+            {!props?.isHeaderEnabled && props?.title && (
+              <Title>{props?.title}</Title>
+            )}
             {props?.description && (
               <Paragraph description={props?.description} />
             )}

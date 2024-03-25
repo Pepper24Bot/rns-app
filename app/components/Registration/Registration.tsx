@@ -7,7 +7,7 @@ import {
   SecondaryLabel,
   Relative,
 } from "@/components/Theme/StyledGlobal";
-import { Box, Grid, alpha, styled } from "@mui/material";
+import { Box, Divider, Grid, alpha, styled } from "@mui/material";
 import {
   initialState as nameInitialState,
   useDomainState,
@@ -23,6 +23,8 @@ import useRegister from "@/hooks/useRegisterName";
 import Form from "./Form";
 import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
+import { X } from "@mui/icons-material";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 const Tip = styled(SecondaryLabel, {
   shouldForwardProp: (prop) => prop !== "isVisible",
@@ -39,6 +41,32 @@ const BoxContainer = styled(Box, {
 })<{ isVisible?: boolean }>(({ isVisible }) => ({
   width: "100%",
   visibility: isVisible ? "visible" : "hidden",
+}));
+
+const ShareButton = styled(ActionButton)(({ theme }) => ({
+  "&.MuiButton-contained": {
+    border: `solid 1px ${alpha(theme.palette.primary.dark, 0.75)}`,
+    backgroundColor: theme.palette.background.paper,
+    padding: 0,
+  },
+}));
+
+const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
+  padding: "8px 16px",
+  textTransform: "uppercase",
+  fontWeight: FONT_WEIGHT.Bold,
+}));
+
+const ShareTip = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "14px",
+  color: alpha(theme.palette.text.primary, 0.75),
+  width: "calc(100% - 64px)",
+  textAlign: "center",
+  paddingBottom: "16px",
+}));
+
+const TwitterIcon = styled(X)(({ theme }) => ({
+  margin: "8px 16px",
 }));
 
 export const RegisterName: React.FC = () => {
@@ -71,8 +99,10 @@ export const RegisterName: React.FC = () => {
   });
 
   const { commit, register } = useRegister();
-  const { rentFee } = useFees({
+  const { rentFee, totalFee } = useFees({
     rent: base,
+    gasPrice: estimatedGasPrice,
+    gasFee: estimatedGas,
   });
 
   const handleCommit = async () => {
@@ -84,6 +114,8 @@ export const RegisterName: React.FC = () => {
 
     if (!isSuccess) {
       setIsRegisterError(true);
+    } else {
+      setIsPaused(false);
     }
 
     setTimeout(() => {
@@ -102,6 +134,7 @@ export const RegisterName: React.FC = () => {
         fees: {
           gasPrice: estimatedGasPrice,
           rent: rentFee as string,
+          totalFee: totalFee.toString(),
         },
         args: {
           name,
@@ -112,9 +145,12 @@ export const RegisterName: React.FC = () => {
         },
       });
 
+      console.log("isSuccess:: ", isSuccess);
+
       if (isSuccess) {
         setIsRegisterSuccess(true);
         setIsPaused(false);
+        updateName({ status: "Registered" });
       } else {
         setIsRegisterError(true);
       }
@@ -161,52 +197,87 @@ export const RegisterName: React.FC = () => {
           </FlexCenter>
         </Relative>
       </FlexCenter>
-      <Grid mt={3}>
-        {address ? (
-          <FlexRight>
-            <ActionButton
-              disabled={isProgressVisible}
-              sx={{ marginRight: 1 }}
-              variant="text"
-              onClick={() => {
-                closeModal();
-              }}
-            >
-              Cancel
-            </ActionButton>
-            <ActionButton
-              disabled={isProgressVisible}
-              variant="contained"
-              onClick={() => {
-                handleCommit();
-              }}
-            >
-              Confirm
-            </ActionButton>
-          </FlexRight>
-        ) : (
+
+      {/* Hide these action buttons after the registration */}
+      {isRegisterSuccess && (
+        <Grid mt={3}>
+          {address ? (
+            <FlexRight>
+              <ActionButton
+                disabled={isProgressVisible}
+                sx={{ marginRight: 1 }}
+                variant="text"
+                onClick={() => {
+                  closeModal();
+                }}
+              >
+                Cancel
+              </ActionButton>
+              <ActionButton
+                disabled={isProgressVisible}
+                variant="contained"
+                onClick={() => {
+                  handleCommit();
+                  // handleRegister();
+                }}
+              >
+                Confirm
+              </ActionButton>
+            </FlexRight>
+          ) : (
+            <FlexCenter>
+              <ToolbarButton
+                variant="contained"
+                onClick={() => {
+                  toggleModal({
+                    id: "Wallets",
+                    title: address ? "Switch Wallet" : "Choose your Wallet",
+                  });
+                }}
+              >
+                <Image
+                  src="/icons/wallet.svg"
+                  alt="Wallet Icon"
+                  width={24}
+                  height={24}
+                  style={{ marginRight: "8px", color: "white" }}
+                />
+                Connect Wallet
+              </ToolbarButton>
+            </FlexCenter>
+          )}
+        </Grid>
+      )}
+
+      {/* Only show the share button when the registration is successful */}
+      {!isRegisterSuccess && (
+        <Grid mt={3}>
           <FlexCenter>
-            <ToolbarButton
+            <ShareTip>
+              Help us spread the word by sharing your new RNS on X and earn RNS
+              Loyalty Points while you’re at it!
+            </ShareTip>
+          </FlexCenter>
+          <FlexCenter>
+            <ShareButton
+              disabled={isProgressVisible}
               variant="contained"
               onClick={() => {
                 toggleModal({
-                  id: "Wallets",
-                  title: address ? "Switch Wallet" : "Choose your Wallet",
+                  id: "Share RNS",
+                  title: "",
+                  fullHeight: true,
+                  fullWidth: true,
                 });
               }}
             >
-              <Image
-                src="/icons/wallet.svg"
-                alt="Wallet Icon"
-                width={24}
-                height={24}
-                style={{ marginRight: "8px", color: "white" }}
-              />
-              Connect Wallet
-            </ToolbarButton>
+              <TwitterIcon fontSize="small" />
+              <Divider orientation="vertical" flexItem />
+              <ShareLabel>Share</ShareLabel>
+            </ShareButton>
           </FlexCenter>
-        )}
-      </Grid>
+        </Grid>
+      )}
     </Grid>
   );
 };

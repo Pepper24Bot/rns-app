@@ -8,6 +8,7 @@ export interface RegisterProps {
   fees: {
     gasPrice: bigint;
     rent: string;
+    totalFee: string;
   };
   args: {
     name: string;
@@ -61,7 +62,7 @@ export default function useRegister() {
         address,
         functionName: "register",
         account: args.owner,
-        value: parseEther(fees.rent),
+        value: parseEther(fees.totalFee),
         args: [
           args.name,
           args.owner,

@@ -58,13 +58,15 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
           variant="determinate"
           value={progress}
           sx={{
+            ".MuiLinearProgress-bar": {
+              backgroundColor:
+                progress === 100
+                  ? green[700]
+                  : isError
+                  ? red[900]
+                  : "primary.main",
+            },
             marginY: 1,
-            backgroundColor:
-              progress === 100
-                ? green[700]
-                : isError
-                ? red[900]
-                : "primary.main",
           }}
         />
       </Box>

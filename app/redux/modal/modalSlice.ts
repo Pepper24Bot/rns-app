@@ -17,6 +17,8 @@ export interface ModalProps {
     isXDisabled?: boolean
     isHeaderEnabled?: boolean
     isFooterEnabled?: boolean
+    fullWidth?: boolean
+    fullHeight?: boolean
     downloadFile?: string
     data?: any
 
@@ -32,7 +34,7 @@ export interface ModalState {
 }
 
 const initialState: ModalState = {
-    isModalOpen: false
+    isModalOpen: false,
 }
 
 export const modalState = createSlice({
