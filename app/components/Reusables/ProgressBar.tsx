@@ -15,6 +15,7 @@ export interface ProgressBar extends LinearProgressProps {
   isError?: boolean;
   isPaused?: boolean;
   isVisible?: boolean;
+  isSuccess?: boolean;
 }
 
 const LoadingText = styled(Typography)(({ theme }) => ({
@@ -25,7 +26,13 @@ const LoadingText = styled(Typography)(({ theme }) => ({
 }));
 
 export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
-  const { isError, isPaused, isVisible = true, ...progressProps } = props;
+  const {
+    isSuccess,
+    isError,
+    isPaused,
+    isVisible = true,
+    ...progressProps
+  } = props;
 
   const [progress, setProgress] = useState<number>(0);
 
@@ -44,6 +51,12 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
       };
     }
   }, [isPaused, isVisible]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setProgress(100);
+    }
+  }, [isSuccess]);
 
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>

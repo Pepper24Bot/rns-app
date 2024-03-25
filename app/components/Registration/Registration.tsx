@@ -184,6 +184,7 @@ export const RegisterName: React.FC = () => {
               isError={isRegisterError}
               isPaused={isPaused}
               isVisible={isProgressVisible}
+              isSuccess={isRegisterSuccess}
             />
           </BoxContainer>
           <FlexCenter>
@@ -199,7 +200,7 @@ export const RegisterName: React.FC = () => {
       </FlexCenter>
 
       {/* Hide these action buttons after the registration */}
-      {isRegisterSuccess && (
+      {!isRegisterSuccess && (
         <Grid mt={3}>
           {address ? (
             <FlexRight>
@@ -250,7 +251,7 @@ export const RegisterName: React.FC = () => {
       )}
 
       {/* Only show the share button when the registration is successful */}
-      {!isRegisterSuccess && (
+      {isRegisterSuccess && (
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip>
@@ -260,7 +261,6 @@ export const RegisterName: React.FC = () => {
           </FlexCenter>
           <FlexCenter>
             <ShareButton
-              disabled={isProgressVisible}
               variant="contained"
               onClick={() => {
                 toggleModal({
