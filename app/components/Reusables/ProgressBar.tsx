@@ -8,7 +8,7 @@ import {
   styled,
 } from "@mui/material";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { green, red } from "@mui/material/colors";
+import { green, lightGreen, red } from "@mui/material/colors";
 
 export interface ProgressBar extends LinearProgressProps {
   // value: number;
@@ -71,12 +71,20 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
           variant="determinate"
           value={progress}
           sx={{
+            "&.MuiLinearProgress-root": {
+              backgroundColor:
+                progress === 100
+                  ? alpha(green[900], 0.25)
+                  : isError
+                  ? alpha(red[900], 0.25)
+                  : "primary.dark",
+            },
             ".MuiLinearProgress-bar": {
               backgroundColor:
                 progress === 100
-                  ? green[700]
+                  ? lightGreen[900]
                   : isError
-                  ? red[900]
+                  ? red.A700
                   : "primary.main",
             },
             marginY: 1,

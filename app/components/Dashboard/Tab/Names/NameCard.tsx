@@ -154,11 +154,15 @@ export const NameCard: React.FC<Name> = (props: Name) => {
           </Grid>
           <Expiration item xs={11} lg={4.5}>
             <DetailLabel>
-              {`Expiry ${getExpiration(item.domain.createdAt).expiration}`}
+              {`Expiry ${
+                getExpiration(item.domain.createdAt, item.domain.expiryDate)
+                  .expiration
+              }`}
             </DetailLabel>
             <DetailLabel>
               {`In ${
-                getExpiration(item.domain.createdAt).distanceToExpiration
+                getExpiration(item.domain.createdAt, item.domain.expiryDate)
+                  .distanceToExpiration
               }`}
             </DetailLabel>
           </Expiration>

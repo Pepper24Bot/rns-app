@@ -149,7 +149,7 @@ export const SearchForm: React.FC = () => {
 
     const isNotAvailable =
       !isEmpty(data?.nameWrappeds) &&
-      data?.nameWrappeds[0].owner.id !== address;
+      data?.nameWrappeds[0].owner.id !== address?.toLowerCase();
 
     return isAvailable
       ? "Available"

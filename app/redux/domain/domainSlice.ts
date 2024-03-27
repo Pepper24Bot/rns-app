@@ -25,7 +25,7 @@ export interface DomainProps {
     owner?: {
         id?: string
     }
-    domain?: Partial<Domain>
+    domain?: Partial<Domain>,
 }
 
 export interface DomainState extends DomainProps { }

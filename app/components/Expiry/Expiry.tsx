@@ -4,27 +4,28 @@ import {
   useDomainState,
 } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useAccount } from "wagmi";
-import {
-  Grid,
-  IconButton,
-  alpha,
-  styled,
-  CircularProgress,
-} from "@mui/material";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import { Grid, IconButton, alpha, styled } from "@mui/material";
 import {
   FlexRight,
   ActionButton,
   SecondaryLabel,
   FlexLeft,
+  BoxContainer,
+  FlexCenter,
+  Relative,
+  Tip,
 } from "../Theme/StyledGlobal";
 import { KeyboardBackspace } from "@mui/icons-material";
+import { Domain } from "@/redux/graphql/hooks";
+import { Address } from "viem";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
 import useFees from "@/hooks/useFees";
 import useExtend from "@/hooks/useExtendExpiry";
 import EnsImage from "../Reusables/EnsImage";
+import ProgressBar from "../Reusables/ProgressBar";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -34,6 +35,9 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
   width: "350px",
+  height: "420px",
+  display: "grid",
+  alignContent: "space-between",
 
   [theme.breakpoints.between("miniTablet", "tablet")]: {
     width: "max-content",
@@ -44,14 +48,24 @@ const DetailsContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
-export const Expiry: React.FC = () => {
-  const { address } = useAccount();
+export interface Expiry {
+  domain?: Partial<Domain>;
+  owner?: {
+    id?: string;
+  };
+}
 
+export const Expiry: React.FC<Expiry> = (props: Expiry) => {
+  const { domain } = props;
+
+  const { address } = useAccount();
   const { useDomain, updateName } = useDomainState();
-  const { labelName = "", name = "", year = 1 } = useDomain();
+  const { year = 1 } = useDomain();
 
   const { closeModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
+
+  const labelName = domain?.labelName || "";
 
   /**
    * Page 01 = Extend Expiry Form
@@ -59,6 +73,16 @@ export const Expiry: React.FC = () => {
    */
   const [extendPage, setExtendPage] = useState<number>(1);
   const [isPending, setIsPending] = useState<boolean>(false);
+
+  const [isExtendSuccess, setIsExtendSuccess] = useState<boolean>(false);
+  const [isExtendError, setIsExtendError] = useState<boolean>(false);
+
+  const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
+  const [expiryHash, setExpiryHash] = useState<Address | undefined>(undefined);
+
+  const { data } = useWaitForTransactionReceipt({
+    hash: expiryHash,
+  });
 
   const {
     renew,
@@ -79,28 +103,37 @@ export const Expiry: React.FC = () => {
   });
 
   const handleExtend = async () => {
+    setIsProgressVisible(true);
     setIsPending(true);
 
-    const { isSuccess, error } = await renew({
+    const { isSuccess, error, data } = await renew({
       name: labelName,
       duration,
       owner: address,
-      fees: { rent: rentFee as string },
+      fees: { rent: rentFee as string, totalFee: totalFee.toString() },
     });
 
     if (isSuccess) {
-      // closeModal();
+      setIsPending(false);
+      setExpiryHash(data);
+    } else {
+      setIsExtendError(true);
     }
-    setIsPending(false);
   };
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
     // TODO: Find a way to reset the values when the modal is closed
     if (!isModalOpen) {
-      updateName({ ...nameInitialState, name });
+      updateName({ ...nameInitialState, name: labelName });
     }
   }, [isModalOpen]);
+
+  useEffect(() => {
+    if (data?.blockHash) {
+      setIsExtendSuccess(true);
+    }
+  }, [data?.blockHash]);
 
   return (
     <Grid container mt={6} minWidth={250} sx={{ placeContent: "center" }}>
@@ -108,56 +141,83 @@ export const Expiry: React.FC = () => {
       <DetailsContainer item>
         {extendPage === 1 ? (
           <Form
-            name={name}
+            name={domain?.name || ""}
             rent={base}
             gasFee={estimatedGas}
             gasPrice={estimatedGasPrice}
           />
         ) : (
-          <Summary
-            title={
-              <FlexLeft>
-                <IconButton
-                  onClick={() => {
-                    // Go back to the previous page
-                    setExtendPage(extendPage - 1);
-                  }}
-                >
-                  <KeyboardBackspace />
-                </IconButton>
-                <SummaryLabel>Summary</SummaryLabel>
-              </FlexLeft>
-            }
-          />
+          <>
+            <Summary
+              title={
+                <FlexLeft>
+                  <IconButton
+                    onClick={() => {
+                      // Go back to the previous page
+                      setExtendPage(extendPage - 1);
+                    }}
+                  >
+                    <KeyboardBackspace />
+                  </IconButton>
+                  <SummaryLabel>Summary</SummaryLabel>
+                </FlexLeft>
+              }
+            />
+            <FlexCenter marginY={2.5}>
+              <Relative width="100%">
+                <BoxContainer isVisible={isProgressVisible}>
+                  <ProgressBar
+                    isError={isExtendError}
+                    isPaused={isPending}
+                    isVisible={isProgressVisible}
+                    isSuccess={isExtendSuccess}
+                  />
+                </BoxContainer>
+                <FlexCenter>
+                  <Tip isVisible={isProgressVisible}>View Transaction</Tip>
+                </FlexCenter>
+              </Relative>
+            </FlexCenter>
+          </>
         )}
         <Grid mt={3}>
           <FlexRight>
-            <ActionButton
-              sx={{ marginRight: 1 }}
-              variant="text"
-              onClick={() => {
-                closeModal();
-              }}
-            >
-              Cancel
-            </ActionButton>
-            <ActionButton
-              variant="contained"
-              onClick={() => {
-                if (extendPage === 1) {
-                  // Move to the next page
-                  setExtendPage(extendPage + 1);
-                  updateName({ fee: { total: totalFee } });
-                } else {
-                  handleExtend();
-                }
-              }}
-            >
-              {extendPage === 1 ? "Next" : "Confirm"}
-              {isPending && (
-                <CircularProgress color="secondary" size={18} sx={{ ml: 1 }} />
-              )}
-            </ActionButton>
+            {!isExtendSuccess && (
+              <ActionButton
+                sx={{ marginRight: 1 }}
+                variant="text"
+                onClick={() => {
+                  closeModal();
+                }}
+              >
+                Cancel
+              </ActionButton>
+            )}
+            {isExtendSuccess ? (
+              <ActionButton
+                variant="contained"
+                onClick={() => {
+                  closeModal();
+                }}
+              >
+                Close
+              </ActionButton>
+            ) : (
+              <ActionButton
+                variant="contained"
+                onClick={() => {
+                  if (extendPage === 1) {
+                    // Move to the next page
+                    setExtendPage(extendPage + 1);
+                    updateName({ fee: { total: totalFee } });
+                  } else {
+                    handleExtend();
+                  }
+                }}
+              >
+                {extendPage === 1 ? "Next" : "Confirm"}
+              </ActionButton>
+            )}
           </FlexRight>
         </Grid>
       </DetailsContainer>

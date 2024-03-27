@@ -1,4 +1,4 @@
-import { useSendTransaction, useWalletClient, useWriteContract } from "wagmi";
+import { useSendTransaction, useWriteContract } from "wagmi";
 import { Address, encodeFunctionData, namehash } from "viem";
 import { Response } from "@/services/interfaces";
 import { getEnsText } from "viem/actions";
@@ -10,6 +10,7 @@ export interface Record {
   name?: string;
   address?: Address;
   key?: string;
+  value?: string;
   resolverAddress?: Address;
   owner?: Address;
 }
@@ -28,15 +29,12 @@ export default function useRecords() {
   const reverse = useContractDetails({ action: "ReverseRegistrar" });
   const universal = useContractDetails({ action: "UniversalResolver" });
   const ownedResolver = useContractDetails({ action: "OwnedResolver" });
-  const publicResolver = useContractDetails({ action: "PublicResolver" });
 
   const { writeContractAsync: setRecordAsync } = useWriteContract();
   const { writeContractAsync: setPrimaryNameAsync } = useWriteContract();
   const { writeContractAsync: setFuturePassAsync } = useWriteContract();
 
   const { sendTransaction, error, data, failureReason } = useSendTransaction();
-  const wallet = useWalletClient();
-  // console.log("client:: ", result);
 
   const handlePrimaryName = async (props: PrimaryName) => {
     const { name } = props;
@@ -70,23 +68,18 @@ export default function useRecords() {
    * @param props
    * @returns
    */
-  const handleRecord = async (props: Record) => {
-    const { owner, resolverAddress, name } = props;
+  const handleTextRecord = async (props: Record) => {
+    const { name, key, value } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
 
-    if (name && owner && resolverAddress) {
+    if (name && key && value) {
       const nameHash = namehash(name);
       try {
         const recordResponse = await setRecordAsync({
-          abi: ens.abi,
-          address: ens.address,
-          functionName: "setRecord",
-          args: [
-            nameHash,
-            owner,
-            resolverAddress,
-            BigInt(0), // ttl - set to 0, fetch every query
-          ],
+          abi: ownedResolver.abi,
+          address: ownedResolver.address,
+          functionName: "setText",
+          args: [nameHash, key, value],
         });
 
         console.log("record-response:: ", response);
@@ -107,45 +100,31 @@ export default function useRecords() {
    * @returns
    */
   const handleAddressRecord = async (props: FuturePassRecord) => {
-    const { name, futurePassAddress, owner, resolverAddress } = props;
+    const { name, futurePassAddress, resolverAddress } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
-
-    console.log("props:: ", props);
-    // 0xFfFFFFff00000000000000000000000000038E08
 
     if (name && resolverAddress) {
       const nameHash = namehash(name);
 
-      // const encodedFunction = encodeFunctionData({
-      //   abi: ownedResolver.abi,
-      //   functionName: "setAddr",
-      //   args: [nameHash, 60, futurePassAddress],
-      // });
-
-      const encodedFunction = encodeFunctionData({
-        abi: ownedResolver.abi,
-        functionName: "setText",
-        args: [nameHash, "futurepass", futurePassAddress],
-      });
-
-      console.log("encodedFunction:: ", encodedFunction);
-
       try {
-        // const addressResponse = await setFuturePassAsync({
+        const addressResponse = await setFuturePassAsync({
+          abi: ownedResolver.abi,
+          address: ownedResolver.address,
+          functionName: "setAddr",
+          args: [nameHash, futurePassAddress],
+        });
+
+        // TODO:
+        // const encodedFunction = encodeFunctionData({
         //   abi: ownedResolver.abi,
-        //   address: ownedResolver.address,
         //   functionName: "setAddr",
-        //   args: [
-        //     nameHash,
-        //     60, // coin type -- 1 = all test net, 60 = eth
-        //     futurePassAddress, // address to link ens name to
-        //   ],
+        //   args: [nameHash, futurePassAddress],
         // });
 
-        const addressResponse = sendTransaction({
-          to: resolverAddress,
-          data: encodedFunction,
-        });
+        // const addressResponse = sendTransaction({
+        //   to: resolverAddress,
+        //   data: encodedFunction,
+        // });
 
         console.log("address-response:: ", addressResponse);
         response.isSuccess = true;
@@ -190,8 +169,9 @@ export default function useRecords() {
   };
 
   return {
-    setRecord: handleRecord,
-    setFuturePass: handleAddressRecord,
+    setTextRecord: handleTextRecord,
+    setAddressRecord: handleAddressRecord,
+    setFuturePassRecord: handleAddressRecord,
     setPrimaryName: handlePrimaryName,
     getTextRecord,
     failureReason,

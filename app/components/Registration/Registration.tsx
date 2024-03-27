@@ -6,8 +6,10 @@ import {
   ActionButton,
   SecondaryLabel,
   Relative,
+  BoxContainer,
+  Tip,
 } from "@/components/Theme/StyledGlobal";
-import { Box, Divider, Grid, alpha, styled } from "@mui/material";
+import { Divider, Grid, alpha, styled } from "@mui/material";
 import {
   initialState as nameInitialState,
   useDomainState,
@@ -16,6 +18,8 @@ import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address } from "viem";
 import { COMMITMENT_AGE } from "@/services/constants";
+import { X } from "@mui/icons-material";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
@@ -23,25 +27,6 @@ import useRegister from "@/hooks/useRegisterName";
 import Form from "./Form";
 import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
-import { X } from "@mui/icons-material";
-import { FONT_WEIGHT } from "../Theme/Global";
-
-const Tip = styled(SecondaryLabel, {
-  shouldForwardProp: (prop) => prop !== "isVisible",
-})<{ isVisible?: boolean }>(({ isVisible, theme }) => ({
-  fontSize: "12px",
-  color: alpha(theme.palette.text.primary, 0.25),
-  width: "calc(100% - 64px)",
-  textAlign: "center",
-  visibility: isVisible ? "visible" : "hidden",
-}));
-
-const BoxContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "isVisible",
-})<{ isVisible?: boolean }>(({ isVisible }) => ({
-  width: "100%",
-  visibility: isVisible ? "visible" : "hidden",
-}));
 
 const ShareButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButton-contained": {
@@ -80,7 +65,7 @@ export const RegisterName: React.FC = () => {
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
   const [isRegisterSuccess, setIsRegisterSuccess] = useState<boolean>(false);
   const [isRegisterError, setIsRegisterError] = useState<boolean>(false);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState<boolean>(false);
 
   const [registrationHash, setRegistrationHash] = useState<Address | undefined>(
     undefined
@@ -114,7 +99,7 @@ export const RegisterName: React.FC = () => {
 
   const handleCommit = async () => {
     setIsProgressVisible(true);
-    setIsPaused(true);
+    setIsPending(true);
 
     const hashStr = hash as unknown as string;
     const { isSuccess } = await commit({ hash: hashStr, controller });
@@ -122,7 +107,7 @@ export const RegisterName: React.FC = () => {
     if (!isSuccess) {
       setIsRegisterError(true);
     } else {
-      setIsPaused(false);
+      setIsPending(false);
     }
 
     setTimeout(() => {
@@ -135,7 +120,7 @@ export const RegisterName: React.FC = () => {
   const handleRegister = async () => {
     if (isCommitSuccess) {
       console.log("entering handleRegister...");
-      setIsPaused(true);
+      setIsPending(true);
       const { isSuccess, data } = await register({
         controller,
         fees: {
@@ -152,10 +137,8 @@ export const RegisterName: React.FC = () => {
         },
       });
 
-      console.log("isSuccess:: ", isSuccess);
-
       if (isSuccess) {
-        setIsPaused(false);
+        setIsPending(false);
         setRegistrationHash(data);
       } else {
         setIsRegisterError(true);
@@ -195,7 +178,7 @@ export const RegisterName: React.FC = () => {
           <BoxContainer isVisible={isProgressVisible}>
             <ProgressBar
               isError={isRegisterError}
-              isPaused={isPaused}
+              isPaused={isPending}
               isVisible={isProgressVisible}
               isSuccess={isRegisterSuccess}
             />
@@ -232,7 +215,6 @@ export const RegisterName: React.FC = () => {
                 variant="contained"
                 onClick={() => {
                   handleCommit();
-                  // handleRegister();
                 }}
               >
                 Confirm
@@ -264,8 +246,7 @@ export const RegisterName: React.FC = () => {
       )}
 
       {/* Only show the share button when the registration is successful */}
-      {/* {isRegisterSuccess && data?.blockHash && ( */}
-      {true && (
+      {isRegisterSuccess && data?.blockHash && (
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip>

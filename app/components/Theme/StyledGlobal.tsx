@@ -12,8 +12,9 @@ import {
   Tooltip,
   TooltipProps,
   tooltipClasses,
+  Box,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
 
 export const Relative = styled(Grid)(({ theme }) => ({
@@ -272,6 +273,11 @@ export const ModalInputField = styled(InputField)(({ theme }) => ({
       fontWeight: FONT_WEIGHT.Light,
       padding: "16px 25px",
       color: theme.palette.text.primary,
+
+      "&.Mui-error fieldset": {
+        borderColor: red[800],
+        borderWidth: "1px",
+      },
     },
   },
 
@@ -360,4 +366,21 @@ export const NotAvailableText = styled(AvailableText)(({ theme }) => ({
 
 export const RegisteredText = styled(AvailableText)(({ theme }) => ({
   color: theme.palette.primary.main,
+}));
+
+export const BoxContainer = styled(Box, {
+  shouldForwardProp: (prop) => prop !== "isVisible",
+})<{ isVisible?: boolean }>(({ isVisible }) => ({
+  width: "100%",
+  visibility: isVisible ? "visible" : "hidden",
+}));
+
+export const Tip = styled(SecondaryLabel, {
+  shouldForwardProp: (prop) => prop !== "isVisible",
+})<{ isVisible?: boolean }>(({ isVisible, theme }) => ({
+  fontSize: "12px",
+  color: alpha(theme.palette.text.primary, 0.25),
+  width: "calc(100% - 64px)",
+  textAlign: "center",
+  visibility: isVisible ? "visible" : "hidden",
 }));

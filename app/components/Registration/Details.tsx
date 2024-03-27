@@ -84,19 +84,31 @@ export const Details: React.FC = () => {
             label="Expiry"
             disabled
             focused
-            value={getExpiration(details?.domain.createdAt).expiration}
+            value={
+              getExpiration(
+                details?.domain.createdAt,
+                details?.domain.expiryDate
+              ).expiration
+            }
             InputProps={{
               inputComponent: () => {
                 // TODO: Fix warning here: React.forwardRef
                 return (
                   <FlexJustified width="100%">
                     <Label>
-                      {getExpiration(details?.domain.createdAt).expiration}
+                      {
+                        getExpiration(
+                          details?.domain.createdAt,
+                          details?.domain.expiryDate
+                        ).expiration
+                      }
                     </Label>
                     <Label>
                       {`In ${
-                        getExpiration(details?.domain.createdAt)
-                          .distanceToExpiration
+                        getExpiration(
+                          details?.domain.createdAt,
+                          details?.domain.expiryDate
+                        ).distanceToExpiration
                       }`}
                     </Label>
                   </FlexJustified>

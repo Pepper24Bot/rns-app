@@ -17,9 +17,6 @@ export interface Link {
 }
 
 export const Link: React.FC<Link> = (props: Link) => {
-  const { address } = useAccount();
-  const { getTextRecord } = useRecords();
-
   const [isFuturePassLinked, setIsFuturePassLinked] = useState<boolean>(false);
 
   return (

@@ -1,4 +1,4 @@
-import { formatDistance, formatDistanceStrict } from "date-fns";
+import { formatDistanceStrict } from "date-fns";
 import { isEmpty } from "lodash";
 
 /**
@@ -31,17 +31,35 @@ export const getMaskedAddress = (address: string, index = 6) => {
 }
 
 /**
- * Adds 1 year
+ * 
  * @param date 
- * @returns 
+ * @returns string month-date-year
  */
-export const getExpiryDate = (date: number) => {
+export const getFormattedDate = (date: number) => {
     const newDate = new Date(date * 1000)
-    const year = newDate.getFullYear() + 1
+    const year = newDate.getFullYear()
     const month = (newDate.getMonth() + 1).toString().padStart(2, "0")
     const day = newDate.getDate().toString().padStart(2, "0")
 
     return `${month}-${day}-${year}`
+}
+
+/**
+ * 
+ * @param date 
+ * @returns 
+ */
+export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
+    // Get the year of expiration
+    const expiryDate = new Date(dateExpiration * 1000)
+    const yearExpiry = expiryDate.getFullYear()
+
+    // Get the date created
+    const createdDate = new Date(dateCreated * 1000)
+    const monthCreated = (createdDate.getMonth() + 1).toString().padStart(2, "0")
+    const dayCreated = createdDate.getDate().toString().padStart(2, "0")
+
+    return `${monthCreated}-${dayCreated}-${yearExpiry}`
 }
 
 /**
@@ -57,20 +75,6 @@ export const getRemainingDays = (date: number) => {
 }
 
 /**
- * 
- * @param date 
- * @returns string month-date-year
- */
-export const getFormattedDate = (date: number) => {
-    const newDate = new Date(date * 1000)
-    const year = newDate.getFullYear()
-    const month = (newDate.getMonth() + 1).toString().padStart(2, "0")
-    const day = newDate.getDate().toString().padStart(2, "0")
-
-    return `${month}-${day}-${year}`
-}
-
-/**
  * This util is very specific to get the dates of
  * - expected expiration
  * - grace period until the actual expiration
@@ -79,7 +83,7 @@ export const getFormattedDate = (date: number) => {
  * @param dateCreated 
  * @param dateExpiration 
  */
-export const getExpiration = (dateCreated: number, dateExpiration?: number) => {
+export const getExpiration = (dateCreated: number, dateExpiration: number) => {
     const dates = {
         expiration: "",
         distanceToExpiration: "",
@@ -89,20 +93,17 @@ export const getExpiration = (dateCreated: number, dateExpiration?: number) => {
 
     // TODO: Check why does new Date fails sometimes
     const currentDate = new Date().toLocaleDateString()
+    const formattedExpiry = getExpiryDate(dateCreated, dateExpiration)
+    dates.expiration = formattedExpiry
 
-    const formattedExpiration = getExpiryDate(dateCreated)
-    dates.expiration = formattedExpiration
+    const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
+    dates.distanceToExpiration = distanceToExpiration
 
-    const distance = formatDistanceStrict(currentDate, formattedExpiration, { unit: "day" })
-    dates.distanceToExpiration = distance
+    const gracePeriod = getFormattedDate(dateExpiration)
+    dates.gracePeriod = gracePeriod
 
-    if (dateExpiration) {
-        const gracePeriod = getFormattedDate(dateExpiration)
-        dates.gracePeriod = gracePeriod
-
-        const distance = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
-        dates.distanceToGracePeriod = distance
-    }
+    const distanceToGracePeriod = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
+    dates.distanceToGracePeriod = distanceToGracePeriod
 
     return dates
 }
@@ -152,4 +153,18 @@ export const getModal = (params: string = "") => {
         isModalOpen: !isEmpty(match),
         modalType: type[1]
     }
+}
+
+/**
+ * 
+ * @param url 
+ * @returns 
+ */
+export const isAddressFuturePass = (url: string = "") => {
+    const pattern = new RegExp(
+        /(?:0xffff)/g
+    );
+
+    const match = url.toLowerCase().match(pattern)
+    return !isEmpty(match)
 }

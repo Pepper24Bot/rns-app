@@ -10,7 +10,6 @@ import { useDomainState } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
 import { Close, Edit } from "@mui/icons-material";
-import useRecords from "@/hooks/useRecords";
 
 const ResolverButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButton-contained": {
@@ -29,21 +28,12 @@ export const Details: React.FC = () => {
   const { closeModal } = useModalState();
   const { useDomain } = useDomainState();
   const { name = "", owner } = useDomain();
-  // const { resolver } = useRecords({
-  //   name,
-  // });
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isDeletingResolver, setIsDeletingResolver] = useState<boolean>(false);
   const [isResolverEnabled, setIsResolverEnabled] = useState<boolean>(false);
 
   const [inputValue, setInputResolver] = useState<string>("");
-
-  // useEffect(() => {
-  //   if (resolver) {
-  //     setInputResolver(resolver);
-  //   }
-  // }, [resolver]);
 
   return (
     <Grid item xs>

@@ -28,6 +28,7 @@ export interface RenewProps {
   owner: Address | undefined;
   fees: {
     rent: string;
+    totalFee: string;
   };
 }
 
@@ -73,7 +74,7 @@ export default function useExtend(props: ExtendProps) {
           address,
           functionName: "renew",
           account: owner,
-          value: parseEther(fees.rent),
+          value: parseEther(fees.totalFee),
           args: [name, duration],
         });
 
