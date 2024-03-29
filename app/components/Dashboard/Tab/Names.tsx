@@ -32,12 +32,12 @@ const Description = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 const PaginationContainer = styled(FlexCenter)(({ theme }) => ({
-  padding: "5px",
+  padding: "10px",
   borderRadius: "4px",
-  backgroundColor: theme.palette.background.darker,
+  backgroundColor: alpha(theme.palette.background.darker, 0.5),
   filter: `drop-shadow(0px 0px 10px ${alpha(
     theme.palette.background.paper,
-    0.5
+    0.75
   )})`,
 }));
 
@@ -73,7 +73,7 @@ const PageNumberText = styled(PaginationText, {
   shouldForwardProp: (prop) => prop !== "isActive",
 })<{ isActive?: boolean }>(({ theme, isActive }) => ({
   color: isActive ? theme.palette.primary.main : theme.palette.text.primary,
-  // fontWeight: isActive ? FONT_WEIGHT.Bold : FONT_WEIGHT.Regular,
+  fontWeight: isActive ? FONT_WEIGHT.Bold : FONT_WEIGHT.Regular,
   textDecoration: isActive ? "underline" : "",
   fontSize: isActive ? "14px" : "14px",
   padding: "4px",

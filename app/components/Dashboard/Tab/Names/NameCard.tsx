@@ -20,7 +20,6 @@ import { Flex, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { useAccount } from "wagmi";
 import { getExpiration, getMaskedAddress } from "@/services/utils";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useDomainState } from "@/redux/domain/domainSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 
 import DropDownMenu from "@/components/Reusables/DropDownMenu";
@@ -28,7 +27,7 @@ import Image from "next/image";
 import EnsImage from "@/components/Reusables/EnsImage";
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.background.darker,
+  backgroundColor: alpha(theme.palette.background.darker, 0.75),
   borderRadius: "8px",
   boxShadow: `0px 0px 15px 0px ${theme.palette.background.paper}`,
 }));
