@@ -22,7 +22,7 @@ export const Form: React.FC<Link> = (props: Link) => {
   const { domain } = props;
 
   const { closeModal } = useModalState();
-  const { setAddressRecord } = useRecords();
+  const { setAddressRecord, setTextRecord } = useRecords();
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
@@ -47,14 +47,14 @@ export const Form: React.FC<Link> = (props: Link) => {
       setIsProgressVisible(true);
       setIsPending(true);
 
-      // const { isSuccess, error } = await setTextRecord({
-      //   name: domain?.labelName || "",
+      // const { isSuccess, error, data } = await setTextRecord({
+      //   name: domain?.name || "",
       //   key: "futurepass",
       //   value: futurePassAddr,
       // });
 
       const { isSuccess, error, data } = await setAddressRecord({
-        name: domain?.labelName || "",
+        name: domain?.name || "",
         key: "futurepass",
         futurePassAddress: futurePassAddr as Address,
         resolverAddress: domain?.resolver?.address,

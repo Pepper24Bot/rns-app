@@ -1,10 +1,11 @@
 import { useSendTransaction, useWriteContract } from "wagmi";
-import { Address, encodeFunctionData, namehash } from "viem";
+import { Address, encodeFunctionData, namehash, toBytes } from "viem";
 import { Response } from "@/services/interfaces";
-import { getEnsText } from "viem/actions";
-import { publicClient } from "@/chains/config";
+import { getEnsText, simulateContract } from "viem/actions";
+import { config, publicClient } from "@/chains/config";
 import { normalize } from "viem/ens";
 import useContractDetails from "./useContractDetails";
+import { estimateGas } from "@wagmi/core/dist/types/exports";
 
 export interface Record {
   name?: string;
@@ -102,29 +103,43 @@ export default function useRecords() {
   const handleAddressRecord = async (props: FuturePassRecord) => {
     const { name, futurePassAddress, resolverAddress } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
+    console.log("props:: ", props);
 
     if (name && resolverAddress) {
       const nameHash = namehash(name);
 
       try {
+        // const addressResponse = await simulateContract(config, {
+        //   abi: ownedResolver.abi,
+        //   address: ownedResolver.address,
+        //   functionName: "setAddr",
+        //   args: [nameHash, 60, futurePassAddress],
+        // });
+
+        const encodedFunction = encodeFunctionData({
+          abi: ownedResolver.abi,
+          functionName: "setAddr",
+          args: [nameHash, futurePassAddress],
+          // args: [nameHash, 60, futurePassAddress],
+        });
+
+        const gas = await publicClient.estimateGas({
+          account: "0x8f8faa9ebb54deda91a62b4fc33550b19b9d33bf",
+          to: "0x8f8faa9ebb54deda91a62b4fc33550b19b9d33bf",
+          data: encodedFunction, // 60 = ETH
+          // args: [nameHash, 60, futurePassAddress], // 60 = ETH
+        });
+
+        console.log("gas-response:: ", gas);
+
         const addressResponse = await setFuturePassAsync({
           abi: ownedResolver.abi,
           address: ownedResolver.address,
           functionName: "setAddr",
+          // args: [nameHash, 60, futurePassAddress], // 60 = ETH
           args: [nameHash, futurePassAddress],
+          gas,
         });
-
-        // TODO:
-        // const encodedFunction = encodeFunctionData({
-        //   abi: ownedResolver.abi,
-        //   functionName: "setAddr",
-        //   args: [nameHash, futurePassAddress],
-        // });
-
-        // const addressResponse = sendTransaction({
-        //   to: resolverAddress,
-        //   data: encodedFunction,
-        // });
 
         console.log("address-response:: ", addressResponse);
         response.isSuccess = true;

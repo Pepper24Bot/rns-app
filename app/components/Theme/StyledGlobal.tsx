@@ -202,6 +202,10 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
       fontFamily: "var(--default-font)",
       fontSize: "18px",
       padding: "16px 25px",
+      filter: `drop-shadow(0px 0px 10px ${alpha(
+        theme.palette.background.paper,
+        1
+      )})`,
 
       [theme.breakpoints.down("md")]: {
         fontSize: "14px",
@@ -209,6 +213,7 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
 
       "& fieldset": {
         borderColor: theme.palette.primary.dark,
+
         "& legend": {
           fontSize: "16px",
         },

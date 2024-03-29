@@ -168,3 +168,16 @@ export const isAddressFuturePass = (url: string = "") => {
     const match = url.toLowerCase().match(pattern)
     return !isEmpty(match)
 }
+
+/**
+ * 
+ * @param elementId 
+ */
+export const scrollIntoElement = (elementId: string) => {
+    const element = document.getElementById(elementId)
+    element?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+    });
+}

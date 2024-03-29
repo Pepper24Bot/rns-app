@@ -153,7 +153,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Collapse in={isDashboardVisible}>
-      <Container>
+      <Container id="Dashboard-Container">
         <DashboardContainer>
           <FlexJustified container>
             <Grid>
