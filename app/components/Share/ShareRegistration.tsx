@@ -85,11 +85,12 @@ export const ShareRegistration: React.FC = () => {
   const [createAccessToken, result] = useCreateAccessTokenMutation();
   const params = useSearchParams();
 
-  const handleRedirect = () => {
+  const handleLink = () => {
     // TODO: Move these constants in an env file
     const twitterUrl = "https://twitter.com/i/oauth2/authorize";
     const clientId = "QmczejlDYjJkT25wWEpKN3Fyb1A6MTpjaQ";
-    const redirectUri = "http://localhost:3000";
+    // const redirectUri = "http://localhost:3000"; //
+    const redirectUri = "http://127.0.0.1:3001/auth/twitter?path=`/`";
     const scope = "tweet.read%20tweet.write%20users.read";
 
     const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
@@ -99,12 +100,24 @@ export const ShareRegistration: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("params:: ", params.get("code"));
-    if (!isEmpty(params.get("code"))) {
-      createAccessToken({ code: params.get("code") || "" });
+  const handleTweet = () => {
+    const content = `I just registered my new @RootNameService (RNS) Cross Platform, Social and Data Identity on @therootnetwork.
+    %0D%0DSecure your RNS Idenity today and be eligible for @Futureverse Quest Rewards.
+    %0D%0DMore info  https://futureverse.com/futurepass/quests/ `;
+
+    const url = `http://twitter.com/intent/tweet?text=${content}`;
+
+    if (typeof window !== "undefined") {
+      window.open(url, "_blank");
     }
-  }, [params.get("code")]);
+  };
+
+  // useEffect(() => {
+  //   console.log("params:: ", params.get("code"));
+  //   if (!isEmpty(params.get("code"))) {
+  //     createAccessToken({ code: params.get("code") || "" });
+  //   }
+  // }, [params.get("code")]);
 
   return (
     <FlexCenter container position="relative">
@@ -118,7 +131,7 @@ export const ShareRegistration: React.FC = () => {
             <ShareButton
               variant="contained"
               onClick={() => {
-                handleRedirect();
+                handleLink();
               }}
             >
               <ButtonLabel>Link</ButtonLabel>
@@ -133,7 +146,12 @@ export const ShareRegistration: React.FC = () => {
             <StepLabel>Tweet your newly registered RNS! </StepLabel>
           </Grid>
           <ButtonContainer item xs={12}>
-            <ShareButton variant="contained" onClick={() => {}}>
+            <ShareButton
+              variant="contained"
+              onClick={() => {
+                handleTweet();
+              }}
+            >
               <ButtonLabel>Tweet</ButtonLabel>
             </ShareButton>
           </ButtonContainer>
