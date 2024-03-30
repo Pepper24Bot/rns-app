@@ -1,5 +1,5 @@
 query GetNamesByName($labelName: String!) {
-  nameWrappeds(where: { domain_: { labelName: $labelName } }) {
+  nameWrappeds(where: { domain_: { labelName_contains: $labelName } }) {
     id
     name
     owner {

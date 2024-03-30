@@ -4668,7 +4668,7 @@ export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __
 
 export const GetNamesByNameDocument = `
     query GetNamesByName($labelName: String!) {
-  nameWrappeds(where: {domain_: {labelName: $labelName}}) {
+  nameWrappeds(where: {domain_: {labelName_contains: $labelName}}) {
     id
     name
     owner {

@@ -38,7 +38,7 @@ const initialState: ModalState = {
 }
 
 export const modalState = createSlice({
-    name: 'modal',
+    name: "modal",
     initialState,
     reducers: {
         toggleModal: (state, { payload }: { payload: ModalProps }): void => {

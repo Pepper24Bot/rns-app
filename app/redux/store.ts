@@ -3,6 +3,7 @@ import { api } from './baseSlice'
 import { themeState } from './theme/themeSlice'
 import { modalState } from './modal/modalSlice'
 import { domainState } from './domain/domainSlice'
+import { dashboardState } from './dashboard/dashboardSlice'
 
 const store = configureStore({
     // Add reducers here
@@ -12,6 +13,7 @@ const store = configureStore({
         themeState: themeState.reducer,
         modalState: modalState.reducer,
         domainState: domainState.reducer,
+        dashboardState: dashboardState.reducer
     },
 
     // Add middleware to handle api queries

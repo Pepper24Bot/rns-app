@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Divider, Grid, IconButton, alpha, styled } from "@mui/material";
-import { NameWrapped, useGetNamesByIdQuery } from "@/redux/graphql/hooks";
-import { useAccount } from "wagmi";
+import { NameWrapped } from "@/redux/graphql/hooks";
 import { NameCard } from "./Names/NameCard";
 import {
   Flex,
@@ -14,6 +13,7 @@ import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { DEFAULT_DEBOUNCE } from "@/services/constants";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { scrollIntoElement } from "@/services/utils";
+import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "35px 0",
@@ -84,24 +84,13 @@ const PageButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const Names: React.FC = () => {
-  const { address } = useAccount();
+  const { useDashboard } = useDashboardState();
+  const { names } = useDashboard();
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [itemCountField, setItemCountField] = useState(3);
   const [pageCount, setPageCount] = useState(1);
-
-  const { data, isLoading } = useGetNamesByIdQuery(
-    { id: address?.toLowerCase() || "" },
-    { skip: address === null }
-  );
-
-  const filteredList = data?.nameWrappeds?.filter((item) => {
-    return item.name !== null;
-  });
-
-  // For testing
-  // filteredList?.push(filteredList[0]);
 
   const handleDebounceOnChange = (value: number) => {
     setItemsPerPage(value);
@@ -117,7 +106,7 @@ export const Names: React.FC = () => {
   );
 
   const getNumberOfPages = () => {
-    const pages = Math.ceil((filteredList?.length || 0) / itemsPerPage);
+    const pages = Math.ceil((names?.length || 0) / itemsPerPage);
     return pages;
   };
 
@@ -132,13 +121,13 @@ export const Names: React.FC = () => {
   useEffect(() => {
     const count = getNumberOfPages();
     setPageCount(count);
-  }, [filteredList, itemsPerPage]);
+  }, [names, itemsPerPage]);
 
-  return !isEmpty(filteredList) ? (
+  return !isEmpty(names) ? (
     <Container id="Names-Container">
       <Box sx={{ flexGrow: 1 }}>
         <Grid sx={{ flexGrow: 1 }} container spacing={2}>
-          {filteredList?.map((name, index) => {
+          {names?.map((name, index) => {
             return (
               <React.Fragment key={name.name}>
                 {shouldItemShow(index) ? (
@@ -214,7 +203,7 @@ export const Names: React.FC = () => {
           </FlexCenter>
           <Divider flexItem orientation="vertical" />
           <Grid px={1}>
-            <PaginationText>{`${itemsPerPage} out of ${filteredList?.length}`}</PaginationText>
+            <PaginationText>{`${itemsPerPage} out of ${names?.length}`}</PaginationText>
           </Grid>
         </PaginationContainer>
       </FlexCenter>

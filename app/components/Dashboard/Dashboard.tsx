@@ -20,6 +20,11 @@ import {
 import { Search as MuiSearchIcon, Settings, Tune } from "@mui/icons-material";
 import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/services/constants";
 import { FONT_SIZE } from "../Theme/Global";
+import {
+  useGetNamesByIdQuery,
+  useGetNamesByNameQuery,
+} from "@/redux/graphql/hooks";
+import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -124,20 +129,24 @@ const TabItem = styled(Tab)(({ theme }) => ({
 export const Dashboard: React.FC = () => {
   const { address } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
+  const { updateNameList } = useDashboardState();
 
   const [activeTab, setActiveTab] = useState<number>(0); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
   const [isDashboardVisible, setIsDashboardVisible] = useState<boolean>(false);
 
-  /**
-   * TODO:
-   * Use RTK Query
-   * This is an API call -- pending
-   *
-   * Should call api and search for the name inputted
-   * @param value
-   */
+  const { data: searchedName, isLoading: searchedNameLoading } =
+    useGetNamesByNameQuery(
+      { labelName: searchValue },
+      { skip: searchValue === "" }
+    );
+
+  const { data: namesList, isLoading: namesListLoading } = useGetNamesByIdQuery(
+    { id: address?.toLowerCase() || "" },
+    { skip: address === null || activeTab !== 0 }
+  );
+
   const handleDebounceOnChange = (value: string) => {
     setSearchValue(value);
   };
@@ -150,6 +159,18 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     setIsDashboardVisible(!isEmpty(address));
   }, [address]);
+
+  useEffect(() => {
+    if (searchValue !== "") {
+      updateNameList((searchedName?.nameWrappeds as Name[]) || []);
+    } else {
+      const filteredList = namesList?.nameWrappeds?.filter((item) => {
+        return item.name !== null;
+      }) as Name[];
+
+      updateNameList(filteredList);
+    }
+  }, [namesListLoading, searchValue]);
 
   return (
     <Collapse in={isDashboardVisible}>
