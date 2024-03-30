@@ -4653,6 +4653,7 @@ export enum _SubgraphErrorPolicy_ {
 
 export type GetNamesByNameQueryVariables = Exact<{
   labelName: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
 }>;
 
 
@@ -4667,8 +4668,10 @@ export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __
 
 
 export const GetNamesByNameDocument = `
-    query GetNamesByName($labelName: String!) {
-  nameWrappeds(where: {domain_: {labelName_contains: $labelName}}) {
+    query GetNamesByName($labelName: String!, $id: ID!) {
+  nameWrappeds(
+    where: {domain_: {labelName_contains: $labelName}, owner_: {id: $id}}
+  ) {
     id
     name
     owner {

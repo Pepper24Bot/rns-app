@@ -25,6 +25,7 @@ import {
   useGetNamesByNameQuery,
 } from "@/redux/graphql/hooks";
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
+import { Address } from "viem";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -138,8 +139,11 @@ export const Dashboard: React.FC = () => {
 
   const { data: searchedName, isLoading: searchedNameLoading } =
     useGetNamesByNameQuery(
-      { labelName: searchValue },
-      { skip: searchValue === "", refetchOnMountOrArgChange: true }
+      { labelName: searchValue, id: address?.toLowerCase() as Address },
+      {
+        skip: isEmpty(searchValue) || isEmpty(address),
+        refetchOnMountOrArgChange: true,
+      }
     );
 
   const { data: namesList, isLoading: namesListLoading } = useGetNamesByIdQuery(
@@ -185,8 +189,8 @@ export const Dashboard: React.FC = () => {
   }, [address, status]);
 
   useEffect(() => {
-    toggleNamesLoading(namesListLoading);
-  }, [namesListLoading]);
+    toggleNamesLoading(namesListLoading || searchedNameLoading);
+  }, [namesListLoading, searchedNameLoading]);
 
   useEffect(() => {
     getList();

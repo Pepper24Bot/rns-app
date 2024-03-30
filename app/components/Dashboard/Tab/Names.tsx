@@ -127,9 +127,9 @@ export const Names: React.FC = () => {
   }, [names, itemsPerPage]);
 
   // Set itemsPerPage based on the client width
+  // TODO: Clean this
   useEffect(() => {
     const clientWidth = document?.documentElement?.clientWidth;
-    console.log("clientWidth:: ", clientWidth);
     if (clientWidth >= 900 && clientWidth <= 1200) {
       setItemsPerPage(3);
       setItemCountField(3);
