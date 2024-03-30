@@ -127,19 +127,19 @@ const TabItem = styled(Tab)(({ theme }) => ({
 }));
 
 export const Dashboard: React.FC = () => {
-  const { address } = useAccount();
+  const { address, status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
-  const { updateNameList } = useDashboardState();
+  const { updateNameList, toggleNamesLoading } = useDashboardState();
 
   const [activeTab, setActiveTab] = useState<number>(0); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
-  const [isDashboardVisible, setIsDashboardVisible] = useState<boolean>(false);
+  const [isDashboardVisible, setIsDashboardVisible] = useState<boolean>(true); // show by default
 
   const { data: searchedName, isLoading: searchedNameLoading } =
     useGetNamesByNameQuery(
       { labelName: searchValue },
-      { skip: searchValue === "" }
+      { skip: searchValue === "", refetchOnMountOrArgChange: true }
     );
 
   const { data: namesList, isLoading: namesListLoading } = useGetNamesByIdQuery(
@@ -156,11 +156,7 @@ export const Dashboard: React.FC = () => {
     []
   );
 
-  useEffect(() => {
-    setIsDashboardVisible(!isEmpty(address));
-  }, [address]);
-
-  useEffect(() => {
+  const getFilteredNames = () => {
     if (searchValue !== "") {
       updateNameList((searchedName?.nameWrappeds as Name[]) || []);
     } else {
@@ -170,7 +166,37 @@ export const Dashboard: React.FC = () => {
 
       updateNameList(filteredList);
     }
-  }, [namesListLoading, searchValue]);
+  };
+
+  const getList = () => {
+    switch (activeTab) {
+      // Names Tab
+      case 0:
+        getFilteredNames();
+      // Favorites Tab
+      case 1:
+      default:
+        return getFilteredNames();
+    }
+  };
+
+  useEffect(() => {
+    setIsDashboardVisible(!isEmpty(address));
+  }, [address, status]);
+
+  useEffect(() => {
+    toggleNamesLoading(namesListLoading);
+  }, [namesListLoading]);
+
+  useEffect(() => {
+    getList();
+  }, [
+    namesListLoading,
+    namesList,
+    searchedNameLoading,
+    searchValue,
+    searchedName,
+  ]);
 
   return (
     <Collapse in={isDashboardVisible}>

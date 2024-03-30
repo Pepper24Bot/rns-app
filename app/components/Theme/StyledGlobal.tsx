@@ -17,6 +17,12 @@ import {
 import { grey, red } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
 
+export const Container = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "isLoading",
+})<{ isLoading?: boolean }>(({ theme, isLoading }) => ({
+  visibility: isLoading ? "visible" : "hidden",
+}));
+
 export const Relative = styled(Grid)(({ theme }) => ({
   position: "relative",
 }));

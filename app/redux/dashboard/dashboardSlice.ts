@@ -33,6 +33,8 @@ export interface Options {
 
 export interface DashboardState {
     names?: Name[]
+    isNameListLoading?: boolean,
+
     options?: Options
 
     // TODO: Implement this
@@ -40,6 +42,9 @@ export interface DashboardState {
 
     // TODO: Implement this
     notifications?: {}
+
+    // TODO: Implement this
+    loyalty?: {}
 }
 
 const initialState: DashboardState = {
@@ -54,7 +59,10 @@ export const dashboardState = createSlice({
             state = { ...state, names: payload }
             return state
         },
-
+        toggleNamesLoading: (state, { payload }: { payload: boolean }): DashboardState => {
+            state = { ...state, isNameListLoading: payload }
+            return state
+        },
     }
 })
 
@@ -65,6 +73,10 @@ export const useDashboardState = () => {
     return {
         updateNameList: (props: Name[]) => {
             dispatch(actions.updateNames(props))
+        },
+
+        toggleNamesLoading: (isLoading: boolean = false) => {
+            dispatch(actions.toggleNamesLoading(isLoading))
         },
 
         useDashboard: () => {

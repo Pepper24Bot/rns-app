@@ -181,3 +181,12 @@ export const scrollIntoElement = (elementId: string) => {
         inline: 'nearest'
     });
 }
+
+/**
+ * 
+ * @param status 
+ * @returns 
+ */
+export const isAccountLoading = (status: string) => {
+    return status !== "connected" && status !== "disconnected";
+}

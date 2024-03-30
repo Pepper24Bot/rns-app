@@ -5,10 +5,12 @@ import {
   ToolbarButton,
   Flex,
   SocialButton,
+  Relative,
+  SkeletonTypography,
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { getMaskedAddress } from "@/services/utils";
+import { getMaskedAddress, isAccountLoading } from "@/services/utils";
 import { isEmpty } from "lodash";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
@@ -30,8 +32,14 @@ const HorizontalDivider = styled(Divider)(({ theme }) => ({
   },
 }));
 
+const ActionLabel = styled("span", {
+  shouldForwardProp: (prop) => prop !== "isLoading",
+})<{ isLoading?: boolean }>(({ theme, isLoading }) => ({
+  visibility: isLoading ? "hidden" : "visible",
+}));
+
 export const Toolbar: React.FC = () => {
-  const { address, connector } = useAccount();
+  const { address, connector, status } = useAccount();
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
   const { data: ensName } = useEnsName({ address });
@@ -44,6 +52,8 @@ export const Toolbar: React.FC = () => {
    */
   const [walletLabel, setWalletLabel] = useState<string>("Connect Wallet");
   const [iconPath, setIconPath] = useState<string>("/icons/wallet.svg");
+
+  const isLabelLoading = isAccountLoading(status);
 
   useEffect(() => {
     // TODO: display ensName here of the connected address
@@ -103,7 +113,13 @@ export const Toolbar: React.FC = () => {
             height={24}
             style={{ marginRight: "8px", color: "white" }}
           />
-          {walletLabel}
+          <Relative>
+            <SkeletonTypography
+              isloading={isLabelLoading}
+              sx={{ bgcolor: "primary.light" }}
+            />
+            <ActionLabel isLoading={isLabelLoading}>{walletLabel}</ActionLabel>
+          </Relative>
         </ToolbarButton>
       </Grid>
     </ToolbarContainer>

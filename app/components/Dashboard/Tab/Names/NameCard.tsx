@@ -33,16 +33,10 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const ImageContainer = styled(Grid)(({ theme }) => ({
-  padding: "25px",
+  padding: "20px",
 }));
 
-const Expiration = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("lg")]: {
-    paddingTop: "10px",
-  },
-}));
-
-const Details = styled(Grid)(({ theme }) => ({
+const Summary = styled(Grid)(({ theme }) => ({
   padding: "20px 30px",
 }));
 
@@ -50,15 +44,25 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
   borderColor: alpha(theme.palette.primary.main, 0.5),
 }));
 
-const NameLabel = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "16px",
+const NameDetails = styled(Grid)(({ theme }) => ({
+  paddingTop: "8px",
+}));
+
+const Name = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "18px",
   fontWeight: FONT_WEIGHT.Bold,
 }));
 
-const DetailLabel = styled(SecondaryLabel)(({ theme }) => ({
+const Detail = styled(SecondaryLabel)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
-  color: alpha(theme.palette.text.primary, 0.6),
+  color: alpha(theme.palette.text.primary, 0.85),
   fontSize: "14px",
+  paddingTop: "2px",
+}));
+
+const Label = styled("span")(({ theme }) => ({
+  color: alpha(theme.palette.text.primary, 0.25),
+  paddingRight: "8px",
 }));
 
 const MoreIcon = styled(MoreVert)(({ theme }) => ({}));
@@ -123,7 +127,7 @@ export const NameCard: React.FC<Name> = (props: Name) => {
   };
 
   return (
-    <Grid item xs={12} sm={6} md={4} key={item.name}>
+    <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
       <ItemContainer>
         <ImageContainer>
           <Image
@@ -141,30 +145,37 @@ export const NameCard: React.FC<Name> = (props: Name) => {
           />
         </ImageContainer>
         <Divider flexItem />
-        <Details container>
-          <Grid item xs={12} lg={7}>
-            <Flex>
-              <NameLabel>{item.name}</NameLabel>
-              {hasChecked && <CheckedIcon />}
-            </Flex>
-            <DetailLabel>
-              {`Linked to ${getMaskedAddress(String(item.owner.id), 4)}`}
-            </DetailLabel>
+        <Summary container>
+          <Grid item xs={11}>
+            <Grid>
+              <Flex>
+                <Name>{item.name}</Name>
+                {hasChecked && <CheckedIcon />}
+              </Flex>
+            </Grid>
+            <NameDetails>
+              <Detail>
+                <Label>Linked to</Label>
+                {getMaskedAddress(String(item.owner.id), 4)}
+              </Detail>
+              <Grid container>
+                <Detail mr={1}>
+                  <Label>Expiry</Label>
+                  {
+                    getExpiration(item.domain.createdAt, item.domain.expiryDate)
+                      .expiration
+                  }
+                </Detail>
+                <Detail>
+                  <Label>In</Label>
+                  {
+                    getExpiration(item.domain.createdAt, item.domain.expiryDate)
+                      .distanceToExpiration
+                  }
+                </Detail>
+              </Grid>
+            </NameDetails>
           </Grid>
-          <Expiration item xs={11} lg={4.5}>
-            <DetailLabel>
-              {`Expiry ${
-                getExpiration(item.domain.createdAt, item.domain.expiryDate)
-                  .expiration
-              }`}
-            </DetailLabel>
-            <DetailLabel>
-              {`In ${
-                getExpiration(item.domain.createdAt, item.domain.expiryDate)
-                  .distanceToExpiration
-              }`}
-            </DetailLabel>
-          </Expiration>
           <Grid item xs={0.5}>
             <DropDownMenu
               handleSelect={handleMenuSelect}
@@ -179,7 +190,7 @@ export const NameCard: React.FC<Name> = (props: Name) => {
               type="Menu"
             />
           </Grid>
-        </Details>
+        </Summary>
       </ItemContainer>
     </Grid>
   );

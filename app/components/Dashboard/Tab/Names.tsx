@@ -12,8 +12,10 @@ import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { DEFAULT_DEBOUNCE } from "@/services/constants";
 import { debounce as _debounce, isEmpty } from "lodash";
-import { scrollIntoElement } from "@/services/utils";
+import { isAccountLoading, scrollIntoElement } from "@/services/utils";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
+import { useAccount } from "wagmi";
+import SkeletonNames from "./Names/SkeletonNames";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "35px 0",
@@ -84,12 +86,13 @@ const PageButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const Names: React.FC = () => {
+  const { status } = useAccount();
   const { useDashboard } = useDashboardState();
-  const { names } = useDashboard();
+  const { names, isNameListLoading } = useDashboard();
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(3);
-  const [itemCountField, setItemCountField] = useState(3);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
+  const [itemCountField, setItemCountField] = useState(4);
   const [pageCount, setPageCount] = useState(1);
 
   const handleDebounceOnChange = (value: number) => {
@@ -123,96 +126,117 @@ export const Names: React.FC = () => {
     setPageCount(count);
   }, [names, itemsPerPage]);
 
-  return !isEmpty(names) ? (
-    <Container id="Names-Container">
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid sx={{ flexGrow: 1 }} container spacing={2}>
-          {names?.map((name, index) => {
-            return (
-              <React.Fragment key={name.name}>
-                {shouldItemShow(index) ? (
-                  <NameCard item={name as NameWrapped} />
-                ) : (
-                  <></>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </Grid>
-      </Box>
-      {/* TODO: Make this a reusable component */}
-      <FlexCenter pt="100px">
-        <PaginationContainer>
-          <Flex px={1}>
-            <PageField
-              value={itemCountField}
-              onChange={(event) => {
-                const { value } = event.target;
-                const itemCount = Number(value);
-                if (itemCount) {
-                  debounceFn(itemCount);
-                  setItemCountField(itemCount);
-                }
-              }}
-            />
-            <PaginationText>Items per page</PaginationText>
-          </Flex>
-          <Divider flexItem orientation="vertical" />
-          <FlexCenter px={1}>
-            <Flex>
-              <PageButton
-                disabled={page === 1}
-                onClick={() => {
-                  setPage(page - 1);
-                }}
-              >
-                <KeyboardArrowLeft />
-              </PageButton>
-              <PaginationText isEnabled={page !== 1}>Prev</PaginationText>
-            </Flex>
-            <Flex px={1}>
-              {[...Array(pageCount)].map((_, index) => {
+  // Set itemsPerPage based on the client width
+  useEffect(() => {
+    const clientWidth = document?.documentElement?.clientWidth;
+    console.log("clientWidth:: ", clientWidth);
+    if (clientWidth >= 900 && clientWidth <= 1200) {
+      setItemsPerPage(3);
+      setItemCountField(3);
+    }
+  }, []);
+
+  return (
+    <>
+      {(isNameListLoading || isAccountLoading(status)) && (
+        <SkeletonNames count={itemsPerPage} />
+      )}
+      {!isEmpty(names) && !isAccountLoading(status) && (
+        <Container id="Names-Container">
+          <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={2}>
+              {names?.map((name, index) => {
                 return (
-                  <PageButton
-                    key={`page-${index + 1}`}
-                    sx={{ py: 0 }}
-                    onClick={() => {
-                      setPage(index + 1);
-                    }}
-                  >
-                    <PageNumberText isActive={index + 1 === page}>
-                      {index + 1}
-                    </PageNumberText>
-                  </PageButton>
+                  <React.Fragment key={name.name}>
+                    {shouldItemShow(index) ? (
+                      <NameCard item={name as NameWrapped} />
+                    ) : (
+                      <></>
+                    )}
+                  </React.Fragment>
                 );
               })}
-            </Flex>
-            <Flex>
-              <PaginationText isEnabled={page !== pageCount}>
-                Next
-              </PaginationText>
-              <PageButton
-                disabled={page === pageCount}
-                onClick={() => {
-                  setPage(page + 1);
-                }}
-              >
-                <KeyboardArrowRight />
-              </PageButton>
-            </Flex>
+            </Grid>
+          </Box>
+          {/* TODO: Make this a reusable component */}
+          <FlexCenter pt="100px">
+            <PaginationContainer>
+              <Flex px={1}>
+                <PageField
+                  value={itemCountField}
+                  onChange={(event) => {
+                    const { value } = event.target;
+                    const itemCount = Number(value);
+                    if (itemCount) {
+                      debounceFn(itemCount);
+                      setItemCountField(itemCount);
+                    }
+                  }}
+                />
+                <PaginationText>Items per page</PaginationText>
+              </Flex>
+              <Divider flexItem orientation="vertical" />
+              <FlexCenter px={1}>
+                <Flex>
+                  <PageButton
+                    disabled={page === 1}
+                    onClick={() => {
+                      setPage(page - 1);
+                    }}
+                  >
+                    <KeyboardArrowLeft />
+                  </PageButton>
+                  <PaginationText isEnabled={page !== 1}>Prev</PaginationText>
+                </Flex>
+                <Flex px={1}>
+                  {[...Array(pageCount)].map((_, index) => {
+                    return (
+                      <PageButton
+                        key={`page-${index + 1}`}
+                        sx={{ py: 0 }}
+                        onClick={() => {
+                          setPage(index + 1);
+                        }}
+                      >
+                        <PageNumberText isActive={index + 1 === page}>
+                          {index + 1}
+                        </PageNumberText>
+                      </PageButton>
+                    );
+                  })}
+                </Flex>
+                <Flex>
+                  <PaginationText isEnabled={page !== pageCount}>
+                    Next
+                  </PaginationText>
+                  <PageButton
+                    disabled={page === pageCount}
+                    onClick={() => {
+                      setPage(page + 1);
+                    }}
+                  >
+                    <KeyboardArrowRight />
+                  </PageButton>
+                </Flex>
+              </FlexCenter>
+              <Divider flexItem orientation="vertical" />
+              <Grid px={1}>
+                <PaginationText>{`${itemsPerPage} out of ${names?.length}`}</PaginationText>
+              </Grid>
+            </PaginationContainer>
           </FlexCenter>
-          <Divider flexItem orientation="vertical" />
-          <Grid px={1}>
-            <PaginationText>{`${itemsPerPage} out of ${names?.length}`}</PaginationText>
-          </Grid>
-        </PaginationContainer>
-      </FlexCenter>
-    </Container>
-  ) : (
-    <Container>
-      <Label>No Names found</Label>
-      <Description>There is no registered name under your account.</Description>
-    </Container>
+        </Container>
+      )}
+
+      {isEmpty(names) && !isAccountLoading(status) && !isNameListLoading && (
+        <Container>
+          <Label>No Names found</Label>
+          <Description>
+            There is no registered name under your account.
+          </Description>
+        </Container>
+      )}
+    </>
   );
 };
 

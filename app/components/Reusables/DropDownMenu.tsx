@@ -90,7 +90,7 @@ const Label = styled(SecondaryLabel, {
 const ArrowButton = styled(BaseIconButton)(({ theme }) => ({
   borderRadius: "32px",
   backgroundColor: "transparent",
-  padding: 0,
+  padding: "4px",
 }));
 
 export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {

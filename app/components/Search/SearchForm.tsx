@@ -24,9 +24,10 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
 import { SearchPopper } from "./SearchPopper";
 import { useDomainState } from "@/redux/domain/domainSlice";
+import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
+import { isAccountLoading } from "@/services/utils";
 
 import Image from "next/image";
-import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "60px 10px 130px 10px",
@@ -127,7 +128,7 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 }));
 
 export const SearchForm: React.FC = () => {
-  const { address } = useAccount();
+  const { address, status } = useAccount();
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
 
@@ -143,6 +144,7 @@ export const SearchForm: React.FC = () => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const searchFieldRef = React.useRef(null);
+  const isWalletLoading = isAccountLoading(status);
 
   const getNameStatus = () => {
     const isAvailable = isEmpty(data?.nameWrappeds);
@@ -176,8 +178,8 @@ export const SearchForm: React.FC = () => {
   );
 
   useEffect(() => {
-    setIsViewRnsVisible(isEmpty(address));
-  }, [address]);
+    setIsViewRnsVisible(isEmpty(address) && !isWalletLoading);
+  }, [address, isWalletLoading]);
 
   return (
     <Container>
