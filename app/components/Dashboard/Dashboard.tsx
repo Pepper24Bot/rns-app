@@ -23,7 +23,7 @@ import { FONT_SIZE } from "../Theme/Global";
 import {
   useGetNamesByIdQuery,
   useGetNamesByUserAndLabelQuery,
-} from "@/redux/graphql/hooks";
+} from "@/redux/graphql/graphqlSlice";
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { Address } from "viem";
 

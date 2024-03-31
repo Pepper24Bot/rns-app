@@ -21,11 +21,11 @@ import { DEFAULT_DEBOUNCE } from "@/services/constants";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
 import { SearchPopper } from "./SearchPopper";
 import { useDomainState } from "@/redux/domain/domainSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { isAccountLoading } from "@/services/utils";
+import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlSlice";
 
 import Image from "next/image";
 

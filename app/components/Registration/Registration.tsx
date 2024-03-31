@@ -21,7 +21,7 @@ import { COMMITMENT_AGE } from "@/services/constants";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
-import { graphQlApi } from "@/redux/graphql/hooks";
+import { graphqlApi } from "@/redux/graphql/graphqlSlice";
 
 import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
@@ -165,7 +165,7 @@ export const RegisterName: React.FC = () => {
   useEffect(() => {
     if (data?.blockHash) {
       setIsRegisterSuccess(true);
-      dispatch(graphQlApi.util.invalidateTags(["Name"]));
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       updateName({ status: "Registered" });
     }
   }, [data?.blockHash]);
