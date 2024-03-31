@@ -19,6 +19,8 @@ import {
 import { KeyboardBackspace } from "@mui/icons-material";
 import { Domain } from "@/redux/graphql/hooks";
 import { Address } from "viem";
+import { graphqlApi } from "@/redux/graphql/graphqlSlice";
+import { useDispatch } from "react-redux";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -65,6 +67,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const { closeModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
 
+  const dispatch = useDispatch();
   const labelName = domain?.labelName || "";
 
   /**
@@ -131,6 +134,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   useEffect(() => {
     if (data?.blockHash) {
+      // invalidate Name tag to trigger refetch of the useGetName hooks
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsExtendSuccess(true);
     }
   }, [data?.blockHash]);

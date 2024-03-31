@@ -59,7 +59,7 @@ const TwitterIcon = styled(X)(({ theme }) => ({
 export const RegisterName: React.FC = () => {
   const { address } = useAccount();
   const { useDomain, updateName } = useDomainState();
-  const { name = "", year = 1, status } = useDomain();
+  const { name = "", year = 1 } = useDomain();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
 
