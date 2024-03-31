@@ -24,8 +24,8 @@ import MenuPopper from "./MenuPopper";
 import DropDownMenu, { Option } from "./DropDownMenu";
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
-  margin: "20px 0",
-  borderColor: alpha(grey[800], 0.5),
+  margin: "25px 0",
+  borderColor: alpha(grey[800], 0.35),
 }));
 
 const HeaderText = styled(SecondaryLabel)(({ theme }) => ({
@@ -42,11 +42,14 @@ const Field = styled(SecondaryLabel)(({ theme }) => ({
 const ToggleButtonGroup = styled(MuiToggleGroup)(({ theme }) => ({
   borderRadius: "8px",
   minWidth: "150px",
-  border: `1px solid ${alpha(theme.palette.primary.dark, 0.75)}`,
+  border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
 
   "&.MuiToggleButtonGroup-root": {
     ".MuiToggleButtonGroup-lastButton": {
-      borderLeft: `solid 1px ${theme.palette.primary.dark} !important`,
+      borderLeft: `solid 1px ${alpha(
+        theme.palette.text.primary,
+        0.15
+      )} !important`,
       marginLeft: 0,
     },
   },
@@ -62,9 +65,14 @@ const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
 
   "&.MuiToggleButton-root": {
     border: "none",
+    color: alpha(theme.palette.text.primary, 0.5),
+    fontSize: "14px",
+    textTransform: "capitalize",
+    lineHeight: "normal",
 
     "&.Mui-selected": {
       backgroundColor: theme.palette.primary.main,
+      color: alpha(theme.palette.text.primary, 1),
     },
 
     "&:hover": {
@@ -73,9 +81,13 @@ const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
   },
 }));
 
-const ValueText = styled(SecondaryLabel)(({ theme }) => ({
+const SortValue = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "14px",
   textTransform: "capitalize",
+}));
+
+const TypeLabel = styled(SortValue)(({ theme }) => ({
+  color: alpha(theme.palette.text.primary, 0.35),
 }));
 
 const ArrowDownIcon = styled(ArrowDropDown)(({ theme }) => ({
@@ -132,27 +144,19 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
         <Grid>
           <HeaderText>Filter By</HeaderText>
           <Divider />
-          <Grid px={2}>
+          <Grid px={1}>
             <FlexJustified py={0.5}>
               <Field>View</Field>
               <ToggleButtonGroup value={views} onChange={handleViewsSelect}>
-                <ToggleButton value="Active">
-                  <ValueText>Active</ValueText>
-                </ToggleButton>
-                <ToggleButton value="Expired">
-                  <ValueText>Expired</ValueText>
-                </ToggleButton>
+                <ToggleButton value="Active">Active</ToggleButton>
+                <ToggleButton value="Expired">Expired</ToggleButton>
               </ToggleButtonGroup>
             </FlexJustified>
             <FlexJustified py={0.5}>
               <Field>Expiry Date</Field>
               <ToggleButtonGroup value={expiry} onChange={handleExpirySelect}>
-                <ToggleButton value="High">
-                  <ValueText>High</ValueText>
-                </ToggleButton>
-                <ToggleButton value="Low">
-                  <ValueText>Low</ValueText>
-                </ToggleButton>
+                <ToggleButton value="High">High</ToggleButton>
+                <ToggleButton value="Low">Low</ToggleButton>
               </ToggleButtonGroup>
             </FlexJustified>
           </Grid>
@@ -163,8 +167,9 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
           <Grid mt={2.5}>
             <MenuField item xs>
               <Flex>
-                {/* <ValueText>{selectedOption.}</ValueText> */}
-                <ValueText>{selectedOption.label}</ValueText>
+                <SortValue>{selectedOption.label}</SortValue>
+                <MuiDivider sx={{ mx: 1 }} flexItem orientation="vertical" />
+                <TypeLabel>{selectedOption.type}</TypeLabel>
               </Flex>
               <DropDownMenu
                 selectedOption={selectedOption}
@@ -196,6 +201,7 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
             onClick={() => {
               handleSaveFilter();
             }}
+            sx={{ width: "100px" }}
           >
             Save
           </ActionButton>
