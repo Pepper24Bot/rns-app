@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  BaseIconButton,
   FieldContainer,
   Flex,
   FlexCenter,
@@ -13,9 +12,9 @@ import DropDownMenu, { Option } from "./DropDownMenu";
 export interface Menu {
   options: Option[];
   label: string;
-  selectedOption: string;
+  selectedOption: Option;
   arrow?: boolean;
-  handleOptionSelect: (option: string) => void | any;
+  handleOptionSelect: (option: Option) => void | any;
 }
 
 const PaymentLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -64,11 +63,13 @@ export const MenuField: React.FC<Menu> = (props: Menu) => {
   return (
     <Flex>
       <FlexCenter container>
-        <Grid item xs={4.75}>
-          <PaymentLabel>{label}</PaymentLabel>
-        </Grid>
+        {label && (
+          <Grid item xs={4.75}>
+            <PaymentLabel>{label}</PaymentLabel>
+          </Grid>
+        )}
         <FieldContainer item xs>
-          <SecondaryLabel>{selectedOption}</SecondaryLabel>
+          <SecondaryLabel>{selectedOption.label}</SecondaryLabel>
           <DropDownMenu
             selectedOption={selectedOption}
             options={options}

@@ -123,10 +123,10 @@ export const Form: React.FC<Form> = (props: Form) => {
         </FieldContainer>
         <MenuField
           label="Payment Method"
-          selectedOption={payment?.method as PaymentMethod}
+          selectedOption={{ label: payment?.method as string }}
           options={PAYMENT_METHOD}
           handleOptionSelect={(option) => {
-            updatePaymentOption(option as PaymentMethod);
+            updatePaymentOption(option?.label as PaymentMethod);
           }}
         />
         <FieldContainer>

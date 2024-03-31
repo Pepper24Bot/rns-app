@@ -59,6 +59,10 @@ export const dashboardState = createSlice({
             state = { ...state, names: payload }
             return state
         },
+        updateFilterOptions: (state, { payload }: { payload: Options }): DashboardState => {
+            state = { ...state, options: { ...payload } }
+            return state
+        },
         toggleNamesLoading: (state, { payload }: { payload: boolean }): DashboardState => {
             state = { ...state, isNameListLoading: payload }
             return state
@@ -74,17 +78,17 @@ export const useDashboardState = () => {
         updateNameList: (props: Name[]) => {
             dispatch(actions.updateNames(props))
         },
-
+        updateFilterOptions: (props: Options) => {
+            dispatch(actions.updateFilterOptions(props))
+        },
         toggleNamesLoading: (isLoading: boolean = false) => {
             dispatch(actions.toggleNamesLoading(isLoading))
         },
-
         useDashboard: () => {
             return useSelector((state: RootState) => {
                 return state.dashboardState
             })
         },
-
         useNames: () => {
             return useSelector((state: RootState) => {
                 return state.dashboardState.names

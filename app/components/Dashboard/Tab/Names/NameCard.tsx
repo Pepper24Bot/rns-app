@@ -22,7 +22,7 @@ import { getExpiration, getMaskedAddress } from "@/services/utils";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 
-import DropDownMenu from "@/components/Reusables/DropDownMenu";
+import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
 import Image from "next/image";
 import EnsImage from "@/components/Reusables/EnsImage";
 
@@ -115,10 +115,10 @@ export const NameCard: React.FC<Name> = (props: Name) => {
   // Check if name is linked to the wallet address
   const hasChecked = address === item.owner.id;
 
-  const handleMenuSelect = (menuOption: string) => {
+  const handleMenuSelect = (menuOption: Option) => {
     toggleModal({
-      id: menuOption,
-      title: menuOption,
+      id: menuOption.label,
+      title: menuOption.label,
       data: {
         domain: item.domain,
         owner: item.owner,

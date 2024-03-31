@@ -33,6 +33,7 @@ import LoyaltyPoints from "./Tab/Loyalty";
 import Notifications from "./Tab/Notifications";
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import FeatureToggle from "../Reusables/FeatureToggle";
+import FilterOption from "../Reusables/FilterOption";
 
 const Container = styled(FlexCenter)(({ theme }) => ({
   position: "relative",
@@ -137,6 +138,14 @@ export const Dashboard: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isDashboardVisible, setIsDashboardVisible] = useState<boolean>(true); // show by default
 
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [filterAnchor, setFilterAnchor] = useState<HTMLButtonElement | null>(
+    null
+  );
+
+  const [isViewOpen, setIsViewOpen] = useState<boolean>(false);
+  const [viewAnchor, setViewAnchor] = useState<HTMLButtonElement | null>(null);
+
   const {
     data: searchedName,
     isLoading: searchedNameLoading,
@@ -235,15 +244,33 @@ export const Dashboard: React.FC = () => {
                 />
               </Grid>
               <Grid item>
-                <IconButton>
+                <IconButton
+                  onClick={(event) => {
+                    setIsFilterOpen(!isFilterOpen);
+                    setIsViewOpen(false);
+                    setFilterAnchor(event.currentTarget);
+                  }}
+                >
                   <Settings />
                 </IconButton>
-                <IconButton>
+                <IconButton
+                  onClick={(event) => {
+                    setIsViewOpen(!isViewOpen);
+                    setIsFilterOpen(false);
+                    setViewAnchor(event.currentTarget);
+                  }}
+                >
                   <Tune />
                 </IconButton>
               </Grid>
             </Toolbar>
           </FlexJustified>
+          {/* Menu Popper */}
+          <FilterOption
+            toggleMenu={setIsFilterOpen}
+            isOpen={isFilterOpen}
+            anchorEl={filterAnchor}
+          />
           <Content>
             <Grid>
               <Tabs

@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, Grid, Typography, alpha, styled } from "@mui/material";
+import { Divider, Grid, alpha, styled } from "@mui/material";
 import { Description, useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 import {
@@ -10,8 +10,8 @@ import {
   PrimaryLabel,
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
-import { FONT_WEIGHT } from "../Theme/Global";
 import { X } from "@mui/icons-material";
+import { grey } from "@mui/material/colors";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -53,19 +53,18 @@ const WalletItem = styled(Flex, {
   },
 }));
 
-const WalletName = styled(Typography)(({ theme }) => ({
-  fontFamily: "var(--default-font)",
-  fontWeight: FONT_WEIGHT.Bold,
-  color: theme.palette.secondary.main,
+const WalletName = styled(PrimaryLabel)(({ theme }) => ({
   marginLeft: "20px",
 }));
 
-const HeaderLabel = styled(PrimaryLabel)(({ theme }) => ({
-  padding: "10px 0",
+const HeaderLabel = styled(SecondaryLabel)(({ theme }) => ({
+  paddingBottom: "16px",
+  fontSize: "16px",
+  color: alpha(theme.palette.text.primary, 0.35),
 }));
 
 const Label = styled(PrimaryLabel)(({ theme }) => ({
-  fontSize: "14px",
+  fontSize: "12px",
   padding: "0px 16px",
   color: alpha(theme.palette.text.primary, 0.75),
 }));
@@ -115,29 +114,30 @@ export const Wallets: React.FC = () => {
       )}
       <WalletsContainer>
         <Grid>
-          {activeConnector?.name && <HeaderLabel>Switch Wallet</HeaderLabel>}
-          {connectors?.map((connector) => {
-            return (
-              connector.name !== "MetaMask" && (
-                <WalletItem
-                  key={connector.id}
-                  onClick={() => {
-                    connect({ connector });
-                    closeModal();
-                  }}
-                  isActive={activeConnector?.name === connector.name}
-                >
-                  <Image
-                    src={getIcon(connector.name as Wallet)}
-                    alt={connector.name}
-                    width={32}
-                    height={32}
-                  />
-                  <WalletName>{getWalletName(connector.name)}</WalletName>
-                </WalletItem>
-              )
-            );
-          })}
+          <Grid mt={4}>
+            {connectors?.map((connector) => {
+              return (
+                connector.name !== "MetaMask" && (
+                  <WalletItem
+                    key={connector.id}
+                    onClick={() => {
+                      connect({ connector });
+                      closeModal();
+                    }}
+                    isActive={activeConnector?.name === connector.name}
+                  >
+                    <Image
+                      src={getIcon(connector.name as Wallet)}
+                      alt={connector.name}
+                      width={32}
+                      height={32}
+                    />
+                    <WalletName>{getWalletName(connector.name)}</WalletName>
+                  </WalletItem>
+                )
+              );
+            })}
+          </Grid>
           {activeConnector?.name && (
             <FlexRight>
               <DisconnectButton
@@ -154,14 +154,20 @@ export const Wallets: React.FC = () => {
         </Grid>
         {activeConnector?.name && (
           <>
-            <Divider sx={{ mt: 4, mb: 2, backgroundColor: "primary.dark" }} />
-            <Grid mb={4}>
+            <Divider
+              sx={{
+                mt: 8,
+                mb: 4,
+                borderColor: alpha(grey[900], 0.35),
+              }}
+            />
+            <Grid>
               <HeaderLabel>Social Accounts</HeaderLabel>
               <FlexLeft>
                 <X />
                 <Grid>
                   <Label>X (Twitter)</Label>
-                  <AccountLabel>X (Twitter)</AccountLabel>
+                  <AccountLabel>@placeholder</AccountLabel>
                 </Grid>
               </FlexLeft>
             </Grid>

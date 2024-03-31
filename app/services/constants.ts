@@ -5,6 +5,14 @@ export const PAYMENT_METHOD = [
     // { label: "USDC" }
 ]
 
+export const SORTING_OPTIONS = [
+    { label: "Name", type: "Ascending" },
+    { label: "Name", type: "Descending" },
+    { label: "Cost", type: "High" },
+    { label: "Cost", type: "Low" },
+    { label: "Length", type: "High" },
+    { label: "Length", type: "Low" }
+]
 
 // day in seconds
 export const DAY = 24 * 60 * 60;

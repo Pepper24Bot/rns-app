@@ -12,6 +12,7 @@ import { BaseIconButton, SecondaryLabel } from "../Theme/StyledGlobal";
 export interface Option {
   label: string;
   icon?: React.ReactNode;
+  type?: string;
 }
 
 export type DropdownType = "Menu" | "Options";
@@ -23,14 +24,14 @@ export interface DropdownProps {
 }
 
 export interface DropDown {
-  selectedOption?: string;
+  selectedOption?: Option;
   options: Option[];
   arrow?: boolean;
   type?: DropdownType;
   hasButton?: boolean;
   /** if hasButton is true, this should be provided */
   iconButton?: React.ReactNode;
-  handleSelect: (option: string) => void | any;
+  handleSelect: (option: Option) => void | any;
 
   /** if hasButton is true, these are no longer necessary */
   isOpen?: boolean;
@@ -80,17 +81,24 @@ const Label = styled(SecondaryLabel, {
   shouldForwardProp: (prop) => prop !== "props",
 })<{ props?: DropdownProps }>(({ theme, props }) => ({
   marginLeft: "5px",
-  fontSize: props?.type === "Options" ? "16px" : "14px",
-  minWidth: "100px",
+  fontSize: "14px",
+  minWidth: props?.type === "Menu" ? "100px" : "75px",
   color: props?.isSelected
     ? theme.palette.primary.main
     : theme.palette.text.primary,
 }));
 
+const Type = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "14px",
+  color: alpha(theme.palette.text.primary, 0.25),
+  width: "-webkit-fill-available",
+  textAlign: "end",
+}));
+
 const ArrowButton = styled(BaseIconButton)(({ theme }) => ({
   borderRadius: "32px",
   backgroundColor: "transparent",
-  padding: "4px",
+  padding: 0,
 }));
 
 export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {
@@ -102,7 +110,7 @@ export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {
     options,
     iconButton,
     hasButton = false,
-    selectedOption = "",
+    selectedOption = { label: "" },
     anchorRef = btnAnchorRef,
     isOpen = isMenuOpen,
     type = "Options",
@@ -136,6 +144,17 @@ export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {
     } else {
       onClose(event);
     }
+  };
+
+  const isOptionSelected = (option: Option) => {
+    if (option?.type) {
+      return (
+        option.label === selectedOption.label &&
+        option.type === selectedOption.type
+      );
+    }
+
+    return option.label === selectedOption.label;
   };
 
   return (
@@ -186,25 +205,26 @@ export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {
       >
         {options?.map((option, index) => {
           return (
-            <Grid key={`field-item-${option.label}`}>
+            <Grid key={`field-item-${option.label}-${index}`}>
               <MenuItem
                 // disabled={option.label === selectedOption}
                 onClick={(event) => {
-                  if (option.label !== selectedOption) {
+                  if (!isOptionSelected(option)) {
                     handleOnClose(event);
-                    handleSelect(option.label);
+                    handleSelect(option);
                   }
                 }}
               >
                 {option.icon}
                 <Label
                   props={{
-                    isSelected: option.label === selectedOption,
+                    isSelected: isOptionSelected(option),
                     type,
                   }}
                 >
                   {option.label}
                 </Label>
+                {option.type && <Type>{option.type}</Type>}
               </MenuItem>
               {index !== options.length - 1 && <Divider />}
             </Grid>

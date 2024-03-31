@@ -99,9 +99,7 @@ export const Toolbar: React.FC = () => {
             toggleModal({
               id: "Wallets",
               // title: address ? "Switch Wallet" : "Choose your Wallet",
-              // isHeaderEnabled: true
-              title: address ? "Manage Account" : "Choose your Wallet",
-              isHeaderEnabled: !isEmpty(address),
+              title: address ? "Switch Wallet" : "Choose your Wallet",
               isXDisabled: true,
             });
           }}
