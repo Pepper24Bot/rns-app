@@ -4653,11 +4653,18 @@ export enum _SubgraphErrorPolicy_ {
 
 export type GetNamesByNameQueryVariables = Exact<{
   labelName: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
 }>;
 
 
 export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
+
+export type GetNamesByUserAndLabelQueryVariables = Exact<{
+  labelName: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetNamesByUserAndLabelQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
 
 export type GetNamesByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -4668,7 +4675,39 @@ export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __
 
 
 export const GetNamesByNameDocument = `
-    query GetNamesByName($labelName: String!, $id: ID!) {
+    query GetNamesByName($labelName: String!) {
+  nameWrappeds(where: {domain_: {labelName: $labelName}}) {
+    id
+    name
+    owner {
+      id
+    }
+    domain {
+      id
+      name
+      labelName
+      labelhash
+      isMigrated
+      expiryDate
+      createdAt
+      resolvedAddress {
+        id
+      }
+      resolver {
+        address
+        id
+        texts
+      }
+    }
+    fuses
+    transactionID
+    expiryDate
+    blockNumber
+  }
+}
+    `;
+export const GetNamesByUserAndLabelDocument = `
+    query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
   nameWrappeds(
     where: {domain_: {labelName_contains: $labelName}, owner_: {id: $id}}
   ) {
@@ -4739,6 +4778,9 @@ const injectedRtkApi = api.injectEndpoints({
     GetNamesByName: build.query<GetNamesByNameQuery, GetNamesByNameQueryVariables>({
       query: (variables) => ({ document: GetNamesByNameDocument, variables })
     }),
+    GetNamesByUserAndLabel: build.query<GetNamesByUserAndLabelQuery, GetNamesByUserAndLabelQueryVariables>({
+      query: (variables) => ({ document: GetNamesByUserAndLabelDocument, variables })
+    }),
     GetNamesById: build.query<GetNamesByIdQuery, GetNamesByIdQueryVariables>({
       query: (variables) => ({ document: GetNamesByIdDocument, variables })
     }),
@@ -4746,5 +4788,5 @@ const injectedRtkApi = api.injectEndpoints({
 });
 
 export { injectedRtkApi as api };
-export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery } = injectedRtkApi;
+export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByUserAndLabelQuery, useLazyGetNamesByUserAndLabelQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery } = injectedRtkApi;
 

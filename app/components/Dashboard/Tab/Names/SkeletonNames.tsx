@@ -106,8 +106,8 @@ export const SkeletonNames: React.FC<SkeletonProps> = (
         })}
         {/* Placeholder for the pagination */}
       </Grid>
-      <FlexCenter pt="100px" height={60}>
-        <SkeletonTypography isloading={true} height={60} width="30%" />
+      <FlexCenter pt="100px" height={80}>
+        <SkeletonTypography isloading={true} height={80} width="30%" />
       </FlexCenter>
     </Container>
   );

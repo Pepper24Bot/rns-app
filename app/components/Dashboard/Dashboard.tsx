@@ -22,7 +22,7 @@ import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/services/constants";
 import { FONT_SIZE } from "../Theme/Global";
 import {
   useGetNamesByIdQuery,
-  useGetNamesByNameQuery,
+  useGetNamesByUserAndLabelQuery,
 } from "@/redux/graphql/hooks";
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { Address } from "viem";
@@ -137,14 +137,18 @@ export const Dashboard: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isDashboardVisible, setIsDashboardVisible] = useState<boolean>(true); // show by default
 
-  const { data: searchedName, isLoading: searchedNameLoading } =
-    useGetNamesByNameQuery(
-      { labelName: searchValue, id: address?.toLowerCase() as Address },
-      {
-        skip: isEmpty(searchValue) || isEmpty(address),
-        refetchOnMountOrArgChange: true,
-      }
-    );
+  const {
+    data: searchedName,
+    isLoading: searchedNameLoading,
+    refetch,
+  } = useGetNamesByUserAndLabelQuery(
+    { labelName: searchValue, id: address?.toLowerCase() as Address },
+    {
+      skip: isEmpty(searchValue) || isEmpty(address),
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+    }
+  );
 
   const { data: namesList, isLoading: namesListLoading } = useGetNamesByIdQuery(
     { id: address?.toLowerCase() || "" },

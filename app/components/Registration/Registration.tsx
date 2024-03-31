@@ -20,6 +20,8 @@ import { Address } from "viem";
 import { COMMITMENT_AGE } from "@/services/constants";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
+import { useDispatch } from "react-redux";
+import { graphQlApi } from "@/redux/graphql/hooks";
 
 import Image from "next/image";
 import useRegistrationDetails from "@/hooks/useRegistrationDetails";
@@ -60,6 +62,8 @@ export const RegisterName: React.FC = () => {
   const { name = "", year = 1, status } = useDomain();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
+
+  const dispatch = useDispatch();
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
@@ -161,6 +165,7 @@ export const RegisterName: React.FC = () => {
   useEffect(() => {
     if (data?.blockHash) {
       setIsRegisterSuccess(true);
+      dispatch(graphQlApi.util.invalidateTags(["Name"]));
       updateName({ status: "Registered" });
     }
   }, [data?.blockHash]);

@@ -1,4 +1,35 @@
-query GetNamesByName($labelName: String!, $id: ID!) {
+query GetNamesByName($labelName: String!) {
+  nameWrappeds(where: { domain_: { labelName: $labelName } }) {
+    id
+    name
+    owner {
+      id
+    }
+    domain {
+      id
+      name
+      labelName
+      labelhash
+      isMigrated
+      expiryDate
+      createdAt
+      resolvedAddress {
+        id
+      }
+      resolver {
+        address
+        id
+        texts
+      }
+    }
+    fuses
+    transactionID
+    expiryDate
+    blockNumber
+  }
+}
+
+query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
   nameWrappeds(
     where: { domain_: { labelName_contains: $labelName }, owner_: { id: $id } }
   ) {

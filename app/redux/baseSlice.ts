@@ -8,6 +8,6 @@ export const api = createApi({
     baseQuery: customBaseQuery({
         baseUrl: BASE_URL,
     }),
-    tagTypes: [], // TODO: Add tag types for api endpoints to revalidate data
+    tagTypes: ['Name'],
     endpoints: () => { return {}; },
 })

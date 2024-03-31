@@ -53,6 +53,11 @@ export const domainState = createSlice({
             return state
         },
 
+        udpateNameStatus: (state, { payload }: { payload: NameStatus }): DomainState => {
+            state = { ...state, status: payload }
+            return state
+        },
+
         updatePaymentOption: (state, { payload }: { payload: PaymentMethod }): DomainState => {
             state.payment = { method: payload }
             return state
@@ -82,6 +87,10 @@ export const useDomainState = () => {
         // dispatcher
         updateName: (props: DomainProps) => {
             dispatch(actions.updateName({ ...props }))
+        },
+
+        updateNameStatus: (status: NameStatus) => {
+            dispatch(actions.udpateNameStatus(status))
         },
 
         increaseYear: () => {
