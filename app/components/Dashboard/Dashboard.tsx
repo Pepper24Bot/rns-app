@@ -25,7 +25,7 @@ import {
   useGetNamesByUserAndLabelQuery,
 } from "@/redux/graphql/graphqlSlice";
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
-import { Address } from "viem";
+import { Address, formatEther } from "viem";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -131,7 +131,10 @@ const TabItem = styled(Tab)(({ theme }) => ({
 export const Dashboard: React.FC = () => {
   const { address, status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
-  const { updateNameList, toggleNamesLoading } = useDashboardState();
+  const { updateNameList, toggleNamesLoading, useFilters } =
+    useDashboardState();
+
+  const options = useFilters();
 
   const [activeTab, setActiveTab] = useState<number>(0); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");
@@ -173,16 +176,67 @@ export const Dashboard: React.FC = () => {
     []
   );
 
+  // TODO: Make this sorting function reusable and move to util
+  const getSortedNames = (list: Name[]) => {
+    const sortBy = options?.sort?.by;
+    const orderBy = options?.sort?.order;
+
+    switch (sortBy) {
+      case "Name":
+        return list?.sort((a, b) => {
+          return orderBy === "Ascending"
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name);
+        });
+
+      case "Created Date":
+        return list?.sort((a, b) => {
+          return orderBy === "Ascending"
+            ? b.domain?.createdAt - a.domain?.createdAt
+            : a.domain?.createdAt - b.domain?.createdAt;
+        });
+
+      case "Cost":
+        return list?.sort((a, b) => {
+          const costA = Number(
+            formatEther(BigInt(a.domain?.registration?.cost))
+          );
+          const costB = Number(
+            formatEther(BigInt(b.domain?.registration?.cost))
+          );
+
+          return orderBy === "High" ? costB - costA : costA - costB;
+        });
+
+      case "Length":
+        return list?.sort((a, b) => {
+          return orderBy === "High"
+            ? b.name.length - a.name.length
+            : a.name.length - b.name.length;
+        });
+
+      default:
+        return list?.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  };
+
   const getFilteredNames = () => {
+    let list: Name[] = [];
+
+    // #1. Filter based on the name being searched
     if (searchValue !== "") {
-      updateNameList((searchedName?.nameWrappeds as Name[]) || []);
+      list = (searchedName?.nameWrappeds as Name[]) || [];
     } else {
-      const filteredList = namesList?.nameWrappeds?.filter((item) => {
+      // #2. Then apply the filter options - TODO
+      // #3. If there are no filters, return the whole list
+      list = namesList?.nameWrappeds?.filter((item) => {
         return item.name !== null;
       }) as Name[];
-
-      updateNameList(filteredList);
     }
+
+    // #4. Sort the list based on the options
+    const sortedList = getSortedNames(list);
+    updateNameList(sortedList);
   };
 
   const getList = () => {
@@ -213,6 +267,7 @@ export const Dashboard: React.FC = () => {
     searchedNameLoading,
     searchValue,
     searchedName,
+    options,
   ]);
 
   return (
@@ -253,15 +308,17 @@ export const Dashboard: React.FC = () => {
                 >
                   <Settings />
                 </IconButton>
-                <IconButton
-                  onClick={(event) => {
-                    setIsViewOpen(!isViewOpen);
-                    setIsFilterOpen(false);
-                    setViewAnchor(event.currentTarget);
-                  }}
-                >
-                  <Tune />
-                </IconButton>
+                <FeatureToggle feature={FeatureList.ViewOptions}>
+                  <IconButton
+                    onClick={(event) => {
+                      setIsViewOpen(!isViewOpen);
+                      setIsFilterOpen(false);
+                      setViewAnchor(event.currentTarget);
+                    }}
+                  >
+                    <Tune />
+                  </IconButton>
+                </FeatureToggle>
               </Grid>
             </Toolbar>
           </FlexJustified>
