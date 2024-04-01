@@ -4656,7 +4656,7 @@ export type GetNamesByNameQueryVariables = Exact<{
 }>;
 
 
-export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
+export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
 
 export type GetNamesByUserAndLabelQueryVariables = Exact<{
   labelName: Scalars['String']['input'];
@@ -4664,14 +4664,14 @@ export type GetNamesByUserAndLabelQueryVariables = Exact<{
 }>;
 
 
-export type GetNamesByUserAndLabelQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
+export type GetNamesByUserAndLabelQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
 
 export type GetNamesByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
+export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', address: any, id: string, texts?: Array<string> | null } | null } }> };
 
 
 export const GetNamesByNameDocument = `
@@ -4690,6 +4690,9 @@ export const GetNamesByNameDocument = `
       isMigrated
       expiryDate
       createdAt
+      registration {
+        cost
+      }
       resolvedAddress {
         id
       }
@@ -4724,6 +4727,9 @@ export const GetNamesByUserAndLabelDocument = `
       isMigrated
       expiryDate
       createdAt
+      registration {
+        cost
+      }
       resolvedAddress {
         id
       }
@@ -4756,6 +4762,9 @@ export const GetNamesByIdDocument = `
       isMigrated
       expiryDate
       createdAt
+      registration {
+        cost
+      }
       resolvedAddress {
         id
       }

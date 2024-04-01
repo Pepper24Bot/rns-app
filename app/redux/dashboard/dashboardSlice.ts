@@ -7,6 +7,11 @@ export interface Dashboard {
 
 }
 
+export type View = "Active" | "Expired"
+export type ExpiryDate = "High" | "Low"
+export type SortBy = "Name" | "Length" | "Cost" | "Created Date"
+export type SortOrder = "Ascending" | "Descending" | "High" | "Low"
+
 export interface Name {
     id: string,
     name: string,
@@ -22,12 +27,12 @@ export interface Name {
 
 export interface Options {
     filter?: {
-        view?: "Active" | "Expired"
-        expiryDate?: "High" | "Low"
+        views?: View[]
+        expiryDate?: ExpiryDate[]
     }
     sort?: {
-        by?: "Name" | "Length" | "Cost"
-        order?: "Ascending" | "Descending" | "High" | "Low"
+        by?: SortBy
+        order?: SortOrder
     }
 }
 
@@ -48,7 +53,17 @@ export interface DashboardState {
 }
 
 const initialState: DashboardState = {
-    names: []
+    names: [],
+    options: {
+        filter: {
+            views: ["Active", "Expired"],
+            expiryDate: ["High", "Low"]
+        },
+        sort: {
+            by: "Created Date",
+            order: "Ascending"
+        }
+    }
 }
 
 export const dashboardState = createSlice({
@@ -92,6 +107,11 @@ export const useDashboardState = () => {
         useNames: () => {
             return useSelector((state: RootState) => {
                 return state.dashboardState.names
+            })
+        },
+        useFilters: () => {
+            return useSelector((state: RootState) => {
+                return state.dashboardState.options
             })
         }
     }

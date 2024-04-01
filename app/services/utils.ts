@@ -33,6 +33,16 @@ export const getMaskedAddress = (address: string, index = 6) => {
 /**
  * 
  * @param date 
+ * @returns 
+ */
+export const getDate = (date: number) => {
+    const newDate = new Date(date * 1000)
+    return newDate
+}
+
+/**
+ * 
+ * @param date 
  * @returns string month-date-year
  */
 export const getFormattedDate = (date: number) => {
@@ -60,18 +70,6 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
     const dayCreated = createdDate.getDate().toString().padStart(2, "0")
 
     return `${monthCreated}-${dayCreated}-${yearExpiry}`
-}
-
-/**
- * 
- * @param date 
- * @returns 
- */
-export const getRemainingDays = (date: number) => {
-    const currentDate = new Date()
-    const expiryDate = new Date(date * 1000)
-
-    return formatDistanceStrict(expiryDate, currentDate, { unit: "day" })
 }
 
 /**

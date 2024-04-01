@@ -18,7 +18,14 @@ import {
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { SORTING_OPTIONS } from "@/services/constants";
-import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
+import {
+  ExpiryDate,
+  Options,
+  SortBy,
+  SortOrder,
+  View,
+  useDashboardState,
+} from "@/redux/dashboard/dashboardSlice";
 import { ArrowDropDown } from "@mui/icons-material";
 import MenuPopper from "./MenuPopper";
 import DropDownMenu, { Option } from "./DropDownMenu";
@@ -96,6 +103,7 @@ const ArrowDownIcon = styled(ArrowDropDown)(({ theme }) => ({
 
 const MenuField = styled(FieldContainer)(({ theme }) => ({
   padding: "8px 20px",
+  cursor: "pointer",
 }));
 
 export interface FilterOption extends MenuPopper {
@@ -104,38 +112,64 @@ export interface FilterOption extends MenuPopper {
 
 export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
   const { isOpen, anchorEl, toggleMenu } = props;
+  const { useFilters } = useDashboardState();
 
-  const [views, setViews] = useState<string[]>([]);
-  const [expiry, setExpiry] = useState<string[]>([]);
-  const [selectedOption, setSelectedOption] = useState<Option>({
-    label: "Name",
-    type: "Ascending",
-  });
+  const options = useFilters();
+
+  const [isSortOpen, setIsSortOption] = useState<boolean>(false);
+
+  const [views, setViews] = useState<View[]>(options?.filter?.views || []);
+  const [expiry, setExpiry] = useState<ExpiryDate[]>(
+    options?.filter?.expiryDate || []
+  );
+
+  const initialSelectedOption = {
+    label: options?.sort?.by || "Name",
+    type: options?.sort?.order || "Ascending",
+  };
+
+  const [selectedOption, setSelectedOption] = useState<Option>(
+    initialSelectedOption
+  );
 
   const { updateFilterOptions } = useDashboardState();
 
   const handleViewsSelect = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
-    views: string[]
+    views: View[]
   ) => {
     setViews(views);
   };
 
   const handleExpirySelect = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
-    expiry: string[]
+    expiry: ExpiryDate[]
   ) => {
     setExpiry(expiry);
   };
 
   const handleCancel = () => {
-    setViews([]);
-    setExpiry([]);
+    setViews(options?.filter?.views || []);
+    setExpiry(options?.filter?.expiryDate || []);
+    setSelectedOption(initialSelectedOption);
+
+    toggleMenu(false);
   };
 
   const handleSaveFilter = () => {
-    console.log("views:: ", views);
-    console.log("expiry:: ", expiry);
+    const options: Options = {
+      filter: {
+        views,
+        expiryDate: expiry,
+      },
+      sort: {
+        by: selectedOption.label as SortBy,
+        order: selectedOption.type as SortOrder,
+      },
+    };
+
+    updateFilterOptions(options);
+    toggleMenu(false);
   };
 
   return (
@@ -165,7 +199,13 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
         <Grid>
           <HeaderText>Sort By</HeaderText>
           <Grid mt={2.5}>
-            <MenuField item xs>
+            <MenuField
+              item
+              xs
+              onClick={() => {
+                setIsSortOption(!isSortOpen);
+              }}
+            >
               <Flex>
                 <SortValue>{selectedOption.label}</SortValue>
                 <MuiDivider sx={{ mx: 1 }} flexItem orientation="vertical" />
@@ -176,8 +216,14 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
                 options={SORTING_OPTIONS}
                 hasButton
                 iconButton={<ArrowDownIcon />}
+                isOpen={isSortOpen}
+                handleOpen={() => {
+                  setIsSortOption(true);
+                }}
+                handleClose={() => {
+                  setIsSortOption(false);
+                }}
                 handleSelect={(option) => {
-                  console.log("option:: ", option);
                   setSelectedOption(option);
                 }}
               />
@@ -191,7 +237,6 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
             variant="text"
             onClick={() => {
               handleCancel();
-              toggleMenu(false);
             }}
           >
             Cancel

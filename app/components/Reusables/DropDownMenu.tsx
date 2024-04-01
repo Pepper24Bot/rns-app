@@ -80,7 +80,6 @@ const Menu = styled(MuiMenu, {
 const Label = styled(SecondaryLabel, {
   shouldForwardProp: (prop) => prop !== "props",
 })<{ props?: DropdownProps }>(({ theme, props }) => ({
-  marginLeft: "5px",
   fontSize: "14px",
   minWidth: props?.type === "Menu" ? "100px" : "75px",
   color: props?.isSelected
@@ -93,6 +92,7 @@ const Type = styled(SecondaryLabel)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.25),
   width: "-webkit-fill-available",
   textAlign: "end",
+  paddingLeft: "10px",
 }));
 
 const ArrowButton = styled(BaseIconButton)(({ theme }) => ({

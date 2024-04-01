@@ -9,6 +9,7 @@ export enum FeatureList {
   Notifications = "false",
   LoyaltyPoints = "false",
   Subscription = "true",
+  ViewOptions = "false",
 }
 
 export default function useFeatureToggle() {

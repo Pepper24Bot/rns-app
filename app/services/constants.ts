@@ -11,7 +11,9 @@ export const SORTING_OPTIONS = [
     { label: "Cost", type: "High" },
     { label: "Cost", type: "Low" },
     { label: "Length", type: "High" },
-    { label: "Length", type: "Low" }
+    { label: "Length", type: "Low" },
+    { label: "Created Date", type: "Ascending" },
+    { label: "Created Date", type: "Descending" },
 ]
 
 // day in seconds

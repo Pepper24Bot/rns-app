@@ -13,6 +13,9 @@ query GetNamesByName($labelName: String!) {
       isMigrated
       expiryDate
       createdAt
+      registration {
+        cost
+      }
       resolvedAddress {
         id
       }
@@ -46,6 +49,9 @@ query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
       isMigrated
       expiryDate
       createdAt
+      registration {
+        cost
+      }
       resolvedAddress {
         id
       }
@@ -77,6 +83,9 @@ query GetNamesById($id: ID!) {
       isMigrated
       expiryDate
       createdAt
+      registration {
+        cost
+      }
       resolvedAddress {
         id
       }
