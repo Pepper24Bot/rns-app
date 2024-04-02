@@ -23,7 +23,7 @@ export interface RegistrationProps {
   owner: Address | undefined;
 }
 
-export default function useRegistrationDetails(props: RegistrationProps) {
+export default function useNameDetails(props: RegistrationProps) {
   const {
     name,
     year,
@@ -31,7 +31,8 @@ export default function useRegistrationDetails(props: RegistrationProps) {
   } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
-  const resolver = useContractDetails({ action: "OwnedResolver" });
+  // const resolver = useContractDetails({ action: "OwnedResolver" });
+  const resolver = useContractDetails({ action: "PublicResolver" });
 
   const { abi, address } = controller;
 

@@ -17,10 +17,10 @@ import {
   SwapHoriz,
 } from "@mui/icons-material";
 import { Flex, SecondaryLabel } from "@/components/Theme/StyledGlobal";
-import { useAccount } from "wagmi";
 import { getExpiration, getMaskedAddress } from "@/services/utils";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
+import { EMPTY_ADDRESS } from "@/services/constants";
 
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
 import Image from "next/image";
@@ -45,7 +45,7 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 }));
 
 const NameDetails = styled(Grid)(({ theme }) => ({
-  paddingTop: "8px",
+  paddingTop: "12px",
 }));
 
 const Name = styled(SecondaryLabel)(({ theme }) => ({
@@ -109,11 +109,11 @@ export interface Name {
 
 export const NameCard: React.FC<Name> = (props: Name) => {
   const { item } = props;
-  const { address } = useAccount();
   const { toggleModal } = useModalState();
 
   // Check if name is linked to the wallet address
-  const hasChecked = address === item.owner.id;
+  const linkedAddr = item?.domain?.resolver?.addr?.id;
+  const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
 
   const handleMenuSelect = (menuOption: Option) => {
     toggleModal({
@@ -150,14 +150,21 @@ export const NameCard: React.FC<Name> = (props: Name) => {
             <Grid>
               <Flex>
                 <Name>{item.name}</Name>
-                {hasChecked && <CheckedIcon />}
+                {hasLinkedAddr && <CheckedIcon />}
               </Flex>
             </Grid>
             <NameDetails>
-              <Detail>
-                <Label>Linked to</Label>
-                {getMaskedAddress(String(item.owner.id), 4)}
-              </Detail>
+              {hasLinkedAddr ? (
+                <Detail>
+                  <Label>Linked to</Label>
+                  {getMaskedAddress(String(linkedAddr), 6)}
+                </Detail>
+              ) : (
+                <Detail>
+                  <Label>Owner</Label>
+                  {getMaskedAddress(String(item.owner.id), 6)}
+                </Detail>
+              )}
               <Grid container>
                 <Detail mr={1}>
                   <Label>Expiry</Label>

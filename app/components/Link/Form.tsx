@@ -13,6 +13,8 @@ import { Address } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { isAddressFuturePass } from "@/services/utils";
 import { useWaitForTransactionReceipt } from "wagmi";
+import { graphqlApi } from "@/redux/graphql/graphqlSlice";
+import { useDispatch } from "react-redux";
 
 import useRecords from "@/hooks/useRecords";
 import Link from "./Link";
@@ -20,6 +22,7 @@ import ProgressBar from "../Reusables/ProgressBar";
 
 export const Form: React.FC<Link> = (props: Link) => {
   const { domain } = props;
+  const dispatch = useDispatch();
 
   const { closeModal } = useModalState();
   const { setAddressRecord, setTextRecord } = useRecords();
@@ -32,7 +35,6 @@ export const Form: React.FC<Link> = (props: Link) => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [linkHash, setLinkHash] = useState<Address | undefined>(undefined);
 
-  // My FuturePass = "0xFfFFFFff00000000000000000000000000038E08";
   const [futurePassAddr, setFuturePassAddr] = useState<string>("");
 
   const { data } = useWaitForTransactionReceipt({
@@ -47,15 +49,8 @@ export const Form: React.FC<Link> = (props: Link) => {
       setIsProgressVisible(true);
       setIsPending(true);
 
-      // const { isSuccess, error, data } = await setTextRecord({
-      //   name: domain?.name || "",
-      //   key: "futurepass",
-      //   value: futurePassAddr,
-      // });
-
       const { isSuccess, error, data } = await setAddressRecord({
         name: domain?.name || "",
-        key: "futurepass",
         futurePassAddress: futurePassAddr as Address,
         resolverAddress: domain?.resolver?.address,
       });
@@ -71,7 +66,9 @@ export const Form: React.FC<Link> = (props: Link) => {
 
   useEffect(() => {
     if (data?.blockHash) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsLinkSuccess(true);
+      closeModal();
     }
   }, [data?.blockHash]);
 

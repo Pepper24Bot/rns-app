@@ -20,9 +20,13 @@ query GetNamesByName($labelName: String!) {
         id
       }
       resolver {
-        address
         id
+        address
         texts
+        coinTypes
+        addr {
+          id
+        }
       }
     }
     fuses
@@ -56,9 +60,13 @@ query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
         id
       }
       resolver {
-        address
         id
+        address
         texts
+        coinTypes
+        addr {
+          id
+        }
       }
     }
     fuses
@@ -90,9 +98,13 @@ query GetNamesById($id: ID!) {
         id
       }
       resolver {
-        address
         id
+        address
         texts
+        coinTypes
+        addr {
+          id
+        }
       }
     }
     fuses

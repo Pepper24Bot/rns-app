@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Grid } from "@mui/material";
 import { Form } from "./Form";
-import { useDomainState } from "@/redux/domain/domainSlice";
-import { useAccount } from "wagmi";
 import { Domain } from "@/redux/graphql/hooks";
+import { EMPTY_ADDRESS } from "@/services/constants";
 
 import Details from "./Details";
-import useRecords from "@/hooks/useRecords";
 import EnsImage from "../Reusables/EnsImage";
 
 export interface Link {
@@ -17,12 +15,17 @@ export interface Link {
 }
 
 export const Link: React.FC<Link> = (props: Link) => {
-  const [isFuturePassLinked, setIsFuturePassLinked] = useState<boolean>(false);
+  const { domain } = props;
+
+  const futurePassAddr = domain?.resolver?.addr?.id;
+
+  // TODO: This is temporary
+  const hasLinkedAddr = futurePassAddr && futurePassAddr !== EMPTY_ADDRESS;
 
   return (
     <Grid container mt={6} minWidth={250} maxWidth={700}>
       <EnsImage />
-      {!isFuturePassLinked ? <Form {...props} /> : <Details />}
+      {!hasLinkedAddr ? <Form {...props} /> : <Details {...props} />}
     </Grid>
   );
 };

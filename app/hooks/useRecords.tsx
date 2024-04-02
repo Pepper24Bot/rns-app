@@ -1,11 +1,11 @@
-import { useSendTransaction, useWriteContract } from "wagmi";
-import { Address, encodeFunctionData, namehash, toBytes } from "viem";
+import { useWriteContract } from "wagmi";
+import { Address, namehash } from "viem";
 import { Response } from "@/services/interfaces";
-import { getEnsText, simulateContract } from "viem/actions";
-import { config, publicClient } from "@/chains/config";
+import { getEnsText } from "viem/actions";
+import { publicClient } from "@/chains/config";
 import { normalize } from "viem/ens";
+import { EMPTY_ADDRESS } from "@/services/constants";
 import useContractDetails from "./useContractDetails";
-import { estimateGas } from "@wagmi/core/dist/types/exports";
 
 export interface Record {
   name?: string;
@@ -26,16 +26,12 @@ export interface PrimaryName {
 }
 
 export default function useRecords() {
-  const ens = useContractDetails({ action: "ENS" });
   const reverse = useContractDetails({ action: "ReverseRegistrar" });
   const universal = useContractDetails({ action: "UniversalResolver" });
   const ownedResolver = useContractDetails({ action: "OwnedResolver" });
+  const publicResolver = useContractDetails({ action: "PublicResolver" });
 
-  const { writeContractAsync: setRecordAsync } = useWriteContract();
-  const { writeContractAsync: setPrimaryNameAsync } = useWriteContract();
-  const { writeContractAsync: setFuturePassAsync } = useWriteContract();
-
-  const { sendTransaction, error, data, failureReason } = useSendTransaction();
+  const { writeContractAsync } = useWriteContract();
 
   const handlePrimaryName = async (props: PrimaryName) => {
     const { name } = props;
@@ -44,7 +40,7 @@ export default function useRecords() {
     if (name) {
       try {
         const nameHash = namehash(name);
-        const primaryResponse = await setPrimaryNameAsync({
+        const primaryResponse = await writeContractAsync({
           abi: reverse.abi,
           address: reverse.address,
           functionName: "setName",
@@ -76,7 +72,7 @@ export default function useRecords() {
     if (name && key && value) {
       const nameHash = namehash(name);
       try {
-        const recordResponse = await setRecordAsync({
+        const recordResponse = await writeContractAsync({
           abi: ownedResolver.abi,
           address: ownedResolver.address,
           functionName: "setText",
@@ -96,7 +92,7 @@ export default function useRecords() {
   };
 
   /**
-   *
+   * Test Data: 0xFfFFFFff00000000000000000000000000038E08
    * @param props
    * @returns
    */
@@ -109,36 +105,11 @@ export default function useRecords() {
       const nameHash = namehash(name);
 
       try {
-        // const addressResponse = await simulateContract(config, {
-        //   abi: ownedResolver.abi,
-        //   address: ownedResolver.address,
-        //   functionName: "setAddr",
-        //   args: [nameHash, 60, futurePassAddress],
-        // });
-
-        const encodedFunction = encodeFunctionData({
-          abi: ownedResolver.abi,
+        const addressResponse = await writeContractAsync({
+          abi: publicResolver.abi,
+          address: publicResolver.address,
           functionName: "setAddr",
           args: [nameHash, futurePassAddress],
-          // args: [nameHash, 60, futurePassAddress],
-        });
-
-        const gas = await publicClient.estimateGas({
-          account: "0x8f8faa9ebb54deda91a62b4fc33550b19b9d33bf",
-          to: "0x8f8faa9ebb54deda91a62b4fc33550b19b9d33bf",
-          data: encodedFunction, // 60 = ETH
-          // args: [nameHash, 60, futurePassAddress], // 60 = ETH
-        });
-
-        console.log("gas-response:: ", gas);
-
-        const addressResponse = await setFuturePassAsync({
-          abi: ownedResolver.abi,
-          address: ownedResolver.address,
-          functionName: "setAddr",
-          // args: [nameHash, 60, futurePassAddress], // 60 = ETH
-          args: [nameHash, futurePassAddress],
-          gas,
         });
 
         console.log("address-response:: ", addressResponse);
@@ -175,12 +146,36 @@ export default function useRecords() {
     }
   };
 
-  const handleUpdateResolver = async () => {
+  const handleUpdateAddress = async () => {
     // TODO: implement edit resolver
   };
 
-  const handleRemoveResolver = async () => {
-    // TODO: remove resolver
+  const handleRemoveAddress = async (props: Record) => {
+    const { name } = props;
+    const response: Response = { error: null, isSuccess: false, data: null };
+
+    if (name) {
+      const nameHash = namehash(name);
+
+      try {
+        const removeResponse = await writeContractAsync({
+          abi: publicResolver.abi,
+          address: publicResolver.address,
+          functionName: "setAddr",
+          // TODO: how did ens allow null to remove the address but not the contract
+          args: [nameHash, EMPTY_ADDRESS],
+        });
+
+        console.log("remove-response:: ", removeResponse);
+        response.isSuccess = true;
+        response.data = removeResponse;
+      } catch (error) {
+        console.log("error:: ", error);
+        response.error = error as string;
+      }
+    }
+
+    return response;
   };
 
   return {
@@ -188,9 +183,7 @@ export default function useRecords() {
     setAddressRecord: handleAddressRecord,
     setFuturePassRecord: handleAddressRecord,
     setPrimaryName: handlePrimaryName,
+    removeAddress: handleRemoveAddress,
     getTextRecord,
-    failureReason,
-    error,
-    data,
   };
 }

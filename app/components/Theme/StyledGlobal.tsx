@@ -71,9 +71,9 @@ export const BaseButton = styled(Button)(({ theme }) => ({
 
 export const ActionButton = styled(BaseButton)(({ theme }) => ({
   "&.MuiButtonBase-root": {
-    filter: `drop-shadow(0px 0px 10px ${alpha(
+    filter: `drop-shadow(0px 0px 5px ${alpha(
       theme.palette.background.paper,
-      0.5
+      0.25
     )})`,
   },
   "&.MuiButton-contained": {

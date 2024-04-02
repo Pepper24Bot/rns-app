@@ -24,8 +24,8 @@ import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlSlice";
 
 import Image from "next/image";
-import useRegistrationDetails from "@/hooks/useRegistrationDetails";
-import useRegister from "@/hooks/useRegisterName";
+import useNameDetails from "@/hooks/useNameDetails";
+import useRegister from "@/hooks/useRegister";
 import Form from "./Form";
 import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -88,7 +88,7 @@ export const RegisterName: React.FC = () => {
     duration,
     nameHash,
     resolverAddr,
-  } = useRegistrationDetails({
+  } = useNameDetails({
     name,
     year,
     owner: address,
