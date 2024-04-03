@@ -89,15 +89,16 @@ export const ShareRegistration: React.FC = () => {
     // TODO: Move these constants in an env file
     const twitterUrl = "https://twitter.com/i/oauth2/authorize";
     const clientId = "T3hJLTR0TlFLcXpsLXIwcTlSN0o6MTpjaQ";
-    // const redirectUri = "http://localhost:3000"; //
-    const redirectUri =
-      "https://rns-server-billowing-morning-6833.fly.dev/auth/twitter";
+    const redirectUri = "http://127.0.0.1:3001/auth/twitter";
+    // const redirectUri =
+    //   "https://rns-server-billowing-morning-6833.fly.dev/auth/twitter";
+
     const scope = "tweet.read%20tweet.write%20users.read";
 
     const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
 
     if (typeof window !== "undefined") {
-      window.open(url, "_blank");
+      window.open(url, "_self");
     }
   };
 
@@ -109,7 +110,7 @@ export const ShareRegistration: React.FC = () => {
     const url = `http://twitter.com/intent/tweet?text=${content}`;
 
     if (typeof window !== "undefined") {
-      window.open(url, "_blank");
+      window.open(url, "_self");
     }
   };
 
@@ -119,6 +120,8 @@ export const ShareRegistration: React.FC = () => {
   //     createAccessToken({ code: params.get("code") || "" });
   //   }
   // }, [params.get("code")]);
+
+  console.log("cookies:: ", document.cookie);
 
   return (
     <FlexCenter container position="relative">
