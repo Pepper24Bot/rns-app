@@ -1,23 +1,36 @@
+import { HttpStatusCode } from "axios";
 import { api } from "../baseSlice"
 
-export interface TwitterProps {
+export interface AuthRequest {
     // email: string
-    code: string
+    code: string,
+    redirect?: string,
+    state?: string
 }
 
-// TODO: Move this in env
-const twitterUrl = "https://api.twitter.com/2/oauth2"
-const clientId = "QmczejlDYjJkT25wWEpKN3Fyb1A6MTpjaQ";
-const redirectUri = "http://localhost:3000";
-const scope = "tweet.read%20tweet.write%20users.read";
-const bearer = "AAAAAAAAAAAAAAAAAAAAAPvoswEAAAAAH%2FJJ9WnCZxRX6zM6PemmsG9C4Hs%3DZNdpdVFF94RaD9HuTcF7zA1RZ0ZDGfG9qnHtirP5TsWhlnCK2t"
+export interface AuthResponse {
+    status?: HttpStatusCode,
+    isSuccess: boolean,
+    token: {
+        state?: string,
+        access_token?: string,
+        token_type?: string,
+        scope?: string,
+        expires_at?: number,
+    }
+}
+
+const clientId = process.env.NEXT_PUBLIC_TWITTER_API_CLIENT_ID;
+const redirectUri = process.env.NEXT_PUBLIC_TWITTER_REDIRECT_CLIENT_URI;
+const bearer = process.env.NEXT_PUBLIC_TWITTER_API_BEARER_TOKEN
+const twitterUrl = process.env.NEXT_PUBLIC_TWITTER_API_URL
 
 export const twitterApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        createAccessToken: builder.mutation<{}, TwitterProps>({
-            query: ({ code }) => ({
-                url: `${twitterUrl}/token`,
-                method: 'POST',
+        requestToken: builder.query<AuthResponse, AuthRequest>({
+            query: ({ code, redirect, state }) => ({
+                url: `${twitterUrl}/auth/twitter?code=${code}&redirect_uri=${redirect}&state=${state}`,
+                method: 'GET',
                 data: {
                     code,
                     grant_type: "authorization_code",
@@ -36,5 +49,5 @@ export const twitterApi = api.injectEndpoints({
 })
 
 export const {
-    useCreateAccessTokenMutation
+    useRequestTokenQuery
 } = twitterApi

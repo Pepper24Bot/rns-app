@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Grid, alpha, darken, styled } from "@mui/material";
+import { CircularProgress, Grid, alpha, darken, styled } from "@mui/material";
 import {
   ActionButton,
-  Flex,
   FlexCenter,
   ModalInputField,
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useSearchParams } from "next/navigation";
-import { useCreateAccessTokenMutation } from "@/redux/twitter/twitterSlice";
+import { useRequestTokenQuery } from "@/redux/twitter/twitterSlice";
 import { isEmpty } from "lodash";
+import { red } from "@mui/material/colors";
+import { TWITTER_AUTH } from "@/services/api";
+import { parseCookie } from "@/services/utils";
+import { TWEET_RNS } from "@/services/content";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "50px 30px 40px 30px",
 }));
 
 const Content = styled(Grid)(({ theme }) => ({
-  minHeight: "235px", // fixed width
+  minHeight: "250px", // fixed width
   maxWidth: "225px",
   alignContent: "space-between",
 }));
@@ -31,9 +34,16 @@ const StepLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "20px",
 }));
 
-const ButtonLabel = styled(SecondaryLabel)(({ theme }) => ({
+const ButtonLabel = styled(SecondaryLabel, {
+  shouldForwardProp: (prop) => prop !== "status",
+})<{ status?: string }>(({ status, theme }) => ({
   fontWeight: FONT_WEIGHT.Bold,
-  color: theme.palette.primary.main,
+  color:
+    status === "denied"
+      ? red[500]
+      : status === "disabled"
+      ? alpha(theme.palette.text.disabled, 0.15)
+      : theme.palette.primary.main,
   fontSize: "14px",
   textTransform: "uppercase",
 }));
@@ -47,6 +57,14 @@ const ShareButton = styled(ActionButton)(({ theme }) => ({
     border: `solid 1px ${alpha(theme.palette.primary.main, 0.5)}`,
     backgroundColor: theme.palette.background.paper,
     padding: "8px 24px",
+
+    "&.Mui-disabled": {
+      border: `solid 1px ${theme.palette.background.dark}`,
+    },
+
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.primary.dark, 0.2),
+    },
   },
 }));
 
@@ -80,22 +98,32 @@ const Bullet: React.FC<BulletProps> = (props: BulletProps) => {
 };
 
 export const ShareRegistration: React.FC = () => {
-  const [link, setLink] = useState<string>("");
-
-  const [createAccessToken, result] = useCreateAccessTokenMutation();
   const params = useSearchParams();
 
-  const handleLink = () => {
-    // TODO: Move these constants in an env file
-    const twitterUrl = "https://twitter.com/i/oauth2/authorize";
-    const clientId = "T3hJLTR0TlFLcXpsLXIwcTlSN0o6MTpjaQ";
-    const redirectUri = "http://127.0.0.1:3001/auth/twitter";
-    // const redirectUri =
-    //   "https://rns-server-billowing-morning-6833.fly.dev/auth/twitter";
+  const isAccessDenied = params.get("error") === "access_denied";
+  const authCode = params.get("code");
 
+  const redirectUri = process.env.NEXT_PUBLIC_TWITTER_REDIRECT_CLIENT_URI;
+  const clientId = process.env.NEXT_PUBLIC_TWITTER_API_CLIENT_ID;
+
+  const [link, setLink] = useState<string>("");
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+
+  const hasToken =
+    parseCookie("access_token") !== "undefined" &&
+    typeof parseCookie("access_token") !== "undefined";
+
+  const { data: tokenResponse } = useRequestTokenQuery(
+    { code: authCode || "", redirect: redirectUri, state: "modal-Share RNS" },
+    { skip: isEmpty(authCode) || hasToken }
+  );
+
+  const handleLink = () => {
     const scope = "tweet.read%20tweet.write%20users.read";
 
-    const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
+    const url =
+      `${TWITTER_AUTH}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}` +
+      `&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
 
     if (typeof window !== "undefined") {
       window.open(url, "_self");
@@ -103,9 +131,7 @@ export const ShareRegistration: React.FC = () => {
   };
 
   const handleTweet = () => {
-    const content = `I just registered my new @RootNameService (RNS) Cross Platform, Social and Data Identity on @therootnetwork.
-    %0D%0DSecure your RNS Idenity today and be eligible for @Futureverse Quest Rewards.
-    %0D%0DMore info  https://futureverse.com/futurepass/quests/ `;
+    const content = TWEET_RNS;
 
     const url = `http://twitter.com/intent/tweet?text=${content}`;
 
@@ -114,14 +140,19 @@ export const ShareRegistration: React.FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("params:: ", params.get("code"));
-  //   if (!isEmpty(params.get("code"))) {
-  //     createAccessToken({ code: params.get("code") || "" });
-  //   }
-  // }, [params.get("code")]);
+  useEffect(() => {
+    if (!hasToken) {
+      const isSuccess = tokenResponse?.isSuccess || false;
+      setIsAuthorized(isSuccess);
 
-  console.log("cookies:: ", document.cookie);
+      if (isSuccess) {
+        // TODO: add secure
+        document.cookie = `access_token=${tokenResponse?.token?.access_token}; path=/`;
+      }
+    } else {
+      setIsAuthorized(true);
+    }
+  }, [tokenResponse]);
 
   return (
     <FlexCenter container position="relative">
@@ -134,11 +165,23 @@ export const ShareRegistration: React.FC = () => {
           <ButtonContainer item xs={12}>
             <ShareButton
               variant="contained"
+              disabled={isAuthorized}
               onClick={() => {
                 handleLink();
               }}
             >
-              <ButtonLabel>Link</ButtonLabel>
+              <FlexCenter>
+                <ButtonLabel
+                  status={
+                    isAccessDenied ? "denied" : isAuthorized ? "disabled" : ""
+                  }
+                >
+                  {isAccessDenied ? "Denied" : isAuthorized ? "Linked" : "Link"}
+                </ButtonLabel>
+                {!isEmpty(authCode) && !isAuthorized && (
+                  <CircularProgress size="16px" sx={{ ml: "8px" }} />
+                )}
+              </FlexCenter>
             </ShareButton>
           </ButtonContainer>
         </Content>
@@ -151,12 +194,15 @@ export const ShareRegistration: React.FC = () => {
           </Grid>
           <ButtonContainer item xs={12}>
             <ShareButton
+              disabled={!isAuthorized}
               variant="contained"
               onClick={() => {
                 handleTweet();
               }}
             >
-              <ButtonLabel>Tweet</ButtonLabel>
+              <ButtonLabel status={!isAuthorized ? "disabled" : ""}>
+                Tweet
+              </ButtonLabel>
             </ShareButton>
           </ButtonContainer>
         </Content>
@@ -175,8 +221,14 @@ export const ShareRegistration: React.FC = () => {
             />
           </Grid>
           <ButtonContainer item xs={12}>
-            <ShareButton variant="contained" onClick={() => {}}>
-              <ButtonLabel>Verify</ButtonLabel>
+            <ShareButton
+              disabled={!isAuthorized}
+              variant="contained"
+              onClick={() => {}}
+            >
+              <ButtonLabel status={!isAuthorized ? "disabled" : ""}>
+                Verify
+              </ButtonLabel>
             </ShareButton>
           </ButtonContainer>
         </Content>
