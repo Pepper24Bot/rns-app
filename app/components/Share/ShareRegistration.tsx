@@ -88,9 +88,10 @@ export const ShareRegistration: React.FC = () => {
   const handleLink = () => {
     // TODO: Move these constants in an env file
     const twitterUrl = "https://twitter.com/i/oauth2/authorize";
-    const clientId = "QmczejlDYjJkT25wWEpKN3Fyb1A6MTpjaQ";
+    const clientId = "T3hJLTR0TlFLcXpsLXIwcTlSN0o6MTpjaQ";
     // const redirectUri = "http://localhost:3000"; //
-    const redirectUri = "http://127.0.0.1:3001/auth/twitter?path=`/`";
+    const redirectUri =
+      "https://rns-server-billowing-morning-6833.fly.dev/auth/twitter";
     const scope = "tweet.read%20tweet.write%20users.read";
 
     const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
