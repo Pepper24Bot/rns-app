@@ -97,7 +97,7 @@ export const ShareRegistration: React.FC = () => {
     const url = `${twitterUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=modal-Share RNS&code_challenge=challenge&code_challenge_method=plain`;
 
     if (typeof window !== "undefined") {
-      window.open(url, "_self");
+      window.open(url, "_blank");
     }
   };
 
