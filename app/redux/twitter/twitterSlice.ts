@@ -1,11 +1,25 @@
-import { HttpStatusCode } from "axios";
+import axios, { AxiosError, HttpStatusCode } from "axios";
 import { api } from "../baseSlice"
+import { getHeader, refetchTwitterToken } from "@/services/customQuery";
 
-export interface AuthRequest {
-    // email: string
-    code: string,
+/**
+ * TODO:
+ * Move these interfaces in a service folder
+ * ../services/interfaces/twitter.ts
+ */
+
+export interface Request {
+    token?: string,
+}
+
+export interface AuthReqeuest extends Request {
     redirect?: string,
-    state?: string
+    state?: string,
+    code?: string,
+}
+
+export interface TweetRequest extends Request {
+    tweetId?: string
 }
 
 export interface AuthResponse {
@@ -20,34 +34,111 @@ export interface AuthResponse {
     }
 }
 
-const clientId = process.env.NEXT_PUBLIC_TWITTER_API_CLIENT_ID;
-const redirectUri = process.env.NEXT_PUBLIC_TWITTER_REDIRECT_CLIENT_URI;
+export interface UserResponse {
+    status?: HttpStatusCode,
+    isSuccess: boolean,
+    data?: {
+        id: string,
+        name: string,
+        username: string
+    }
+}
+
+export interface TweetResponse {
+    status?: HttpStatusCode,
+    isSuccess: boolean,
+    data?: any
+}
+
 const bearer = process.env.NEXT_PUBLIC_TWITTER_API_BEARER_TOKEN
 const twitterUrl = process.env.NEXT_PUBLIC_TWITTER_API_URL
 
 export const twitterApi = api.injectEndpoints({
     endpoints: (builder) => ({
-        requestToken: builder.query<AuthResponse, AuthRequest>({
+        getAccessToken: builder.query<AuthResponse, AuthReqeuest>({
             query: ({ code, redirect, state }) => ({
                 url: `${twitterUrl}/auth/twitter?code=${code}&redirect_uri=${redirect}&state=${state}`,
                 method: 'GET',
-                data: {
-                    code,
-                    grant_type: "authorization_code",
-                    client_id: clientId,
-                    redirect_uri: redirectUri,
-                    code_verifier: "challenge"
-                },
-                headers: {
-                    Authorization: `Bearer ${bearer}`,
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Access-Control-Allow-Origin": "*"
-                },
+                headers: getHeader(bearer || "")
             }),
+        }),
+        getRefreshToken: builder.query<AuthResponse, AuthReqeuest>({
+            query: ({ token = "" }) => ({
+                url: `${twitterUrl}/auth/twitter/token`,
+                method: 'GET',
+                headers: getHeader(token)
+            }),
+        }),
+        getUserDetails: builder.query<UserResponse, Request>({
+            async queryFn({ token = "" }) {
+                try {
+                    const userResponse = await axios({
+                        url: `${twitterUrl}/users/me`,
+                        method: 'GET',
+                        headers: getHeader(token)
+                    })
+
+                    return { data: userResponse.data }
+
+                } catch (error) {
+                    const errorData = error as AxiosError
+
+                    if (errorData?.response?.status === 401) {
+                        // Refresh Token
+                        const newToken = await refetchTwitterToken(token)
+
+                        //  retry user request
+                        const userResponse = await axios({
+                            url: `${twitterUrl}/users/me`,
+                            method: 'GET',
+                            headers: getHeader(newToken)
+                        })
+
+                        return userResponse.status === 200
+                            ? { data: userResponse.data }
+                            : { error: userResponse }
+                    }
+
+                    return { data: error }
+                }
+            },
+        }),
+        getTweetById: builder.query<TweetResponse, TweetRequest>({
+            async queryFn({ token = "", tweetId }) {
+                try {
+                    const searchResponse = await axios({
+                        url: `${twitterUrl}/tweets/${tweetId}`,
+                        method: 'GET',
+                        headers: getHeader(token)
+                    })
+
+                    return { data: searchResponse.data }
+                } catch (error) {
+                    const errorData = error as AxiosError
+
+                    if (errorData?.response?.status === 401) {
+                        const newToken = await refetchTwitterToken(token)
+
+                        //  retry user request
+                        const searchResponse = await axios({
+                            url: `${twitterUrl}/tweets/${tweetId}`,
+                            method: 'GET',
+                            headers: getHeader(newToken)
+                        })
+
+                        return { data: searchResponse.data }
+                    }
+
+                    return { data: error }
+                }
+            },
         }),
     })
 })
 
 export const {
-    useRequestTokenQuery
+    useGetAccessTokenQuery,
+    useGetUserDetailsQuery,
+    useGetTweetByIdQuery,
+    useGetRefreshTokenQuery
 } = twitterApi
