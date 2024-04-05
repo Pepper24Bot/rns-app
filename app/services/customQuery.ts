@@ -56,3 +56,27 @@ export const customBaseQuery = (options: CustomRequestOptions): BaseQueryFn<any>
         }
     };
 }
+
+export const getHeader = (token: string) => {
+    return {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Access-Control-Allow-Origin": "*"
+    }
+}
+
+export const refetchTwitterToken = async (oldToken: string) => {
+    try {
+        const tokenResponse = await axios({
+            url: `${process.env.NEXT_PUBLIC_TWITTER_API_URL}/auth/twitter/token`,
+            method: 'GET',
+            headers: getHeader(oldToken)
+        })
+
+        return tokenResponse.data?.token?.access_token
+    }
+    catch (error) {
+        console.log("Unable to get a new token:: ", error)
+        return ""
+    }
+}

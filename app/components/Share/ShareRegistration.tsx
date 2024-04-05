@@ -8,9 +8,13 @@ import {
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useSearchParams } from "next/navigation";
-import { useRequestTokenQuery } from "@/redux/twitter/twitterSlice";
+import {
+  useGetAccessTokenQuery,
+  useGetTweetByIdQuery,
+  useGetUserDetailsQuery,
+} from "@/redux/twitter/twitterSlice";
 import { isEmpty } from "lodash";
-import { red } from "@mui/material/colors";
+import { green, red, yellow } from "@mui/material/colors";
 import { TWITTER_AUTH } from "@/services/api";
 import { parseCookie } from "@/services/utils";
 import { TWEET_RNS } from "@/services/content";
@@ -46,6 +50,10 @@ const ButtonLabel = styled(SecondaryLabel, {
       : theme.palette.primary.main,
   fontSize: "14px",
   textTransform: "uppercase",
+}));
+
+const Verified = styled(ButtonLabel)(({ theme }) => ({
+  color: theme.palette.text.primary,
 }));
 
 const ButtonContainer = styled(FlexCenter)(({ theme }) => ({
@@ -100,22 +108,56 @@ const Bullet: React.FC<BulletProps> = (props: BulletProps) => {
 export const ShareRegistration: React.FC = () => {
   const params = useSearchParams();
 
-  const isAccessDenied = params.get("error") === "access_denied";
-  const authCode = params.get("code");
-
   const redirectUri = process.env.NEXT_PUBLIC_TWITTER_REDIRECT_CLIENT_URI;
   const clientId = process.env.NEXT_PUBLIC_TWITTER_API_CLIENT_ID;
 
+  const isAccessDenied = params.get("error") === "access_denied";
+  const authCode = params.get("code");
+
+  const userId = parseCookie("username") || "";
+
   const [link, setLink] = useState<string>("");
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const [tweetId, setTweetId] = useState<string>("");
+  const [twitterId, setTwitterId] = useState<string>(userId);
 
-  const hasToken =
-    parseCookie("access_token") !== "undefined" &&
-    typeof parseCookie("access_token") !== "undefined";
-
-  const { data: tokenResponse } = useRequestTokenQuery(
+  /**
+   * #1.
+   * After the user authorized the app, request for access token,
+   * skip this query when the user has authorized rns app, call refreshToken instead
+   */
+  const { data: tokenResponse } = useGetAccessTokenQuery(
     { code: authCode || "", redirect: redirectUri, state: "modal-Share RNS" },
-    { skip: isEmpty(authCode) || hasToken }
+    { skip: isEmpty(authCode) || !isEmpty(userId) }
+  );
+
+  const accessToken =
+    tokenResponse?.token?.access_token || parseCookie("access_token") || "";
+
+  /**
+   * #2.
+   * Get the user data after successful authorization and token request,
+   * Skip this query if there is already a user stored in cookie
+   *
+   * This will return the userid
+   */
+  const { data: userResponse } = useGetUserDetailsQuery(
+    { token: accessToken },
+    { skip: isEmpty(accessToken) || !isEmpty(twitterId) }
+  );
+
+  /**
+   * #3.
+   * Verify the link provided.
+   * Skip this call when there is no tweetId and access_token provided
+   */
+  const {
+    data: tweetResponse,
+    isFetching: isVerifying,
+    isSuccess: isVerified,
+    isError: isVerifyFailed,
+  } = useGetTweetByIdQuery(
+    { tweetId: tweetId || "", token: accessToken },
+    { skip: isEmpty(accessToken) || isEmpty(tweetId) }
   );
 
   const handleLink = () => {
@@ -136,23 +178,42 @@ export const ShareRegistration: React.FC = () => {
     const url = `http://twitter.com/intent/tweet?text=${content}`;
 
     if (typeof window !== "undefined") {
-      window.open(url, "_self");
+      window.open(url, "_blank");
     }
   };
 
-  useEffect(() => {
-    if (!hasToken) {
-      const isSuccess = tokenResponse?.isSuccess || false;
-      setIsAuthorized(isSuccess);
+  const handleVerify = () => {
+    const pattern = new RegExp(/status\//g);
+    const tweetId = link.toLowerCase().split(pattern)[1];
 
-      if (isSuccess) {
-        // TODO: add secure
-        document.cookie = `access_token=${tokenResponse?.token?.access_token}; path=/`;
-      }
-    } else {
-      setIsAuthorized(true);
+    setTweetId(tweetId);
+  };
+
+  useEffect(() => {
+    const isSuccess = tokenResponse?.isSuccess || false;
+
+    if (isSuccess) {
+      // TODO: add security
+      document.cookie = `access_token=${tokenResponse?.token?.access_token}; path=/`;
     }
   }, [tokenResponse]);
+
+  useEffect(() => {
+    const isSuccess = userResponse?.isSuccess || false;
+    if (isSuccess) {
+      // TODO: add security
+      document.cookie = `username=@${userResponse?.data?.username}; path=/`;
+      setTwitterId(userResponse?.data?.username || "");
+    }
+  }, [userResponse]);
+
+  useEffect(() => {
+    if (isAccessDenied) {
+      document.cookie = `access=denied; path=/`;
+    } else {
+      document.cookie = `access=granted; path=/`;
+    }
+  }, [isAccessDenied]);
 
   return (
     <FlexCenter container position="relative">
@@ -165,7 +226,7 @@ export const ShareRegistration: React.FC = () => {
           <ButtonContainer item xs={12}>
             <ShareButton
               variant="contained"
-              disabled={isAuthorized}
+              disabled={!isEmpty(userId)}
               onClick={() => {
                 handleLink();
               }}
@@ -173,12 +234,20 @@ export const ShareRegistration: React.FC = () => {
               <FlexCenter>
                 <ButtonLabel
                   status={
-                    isAccessDenied ? "denied" : isAuthorized ? "disabled" : ""
+                    isAccessDenied
+                      ? "denied"
+                      : !isEmpty(userId)
+                      ? "disabled"
+                      : ""
                   }
                 >
-                  {isAccessDenied ? "Denied" : isAuthorized ? "Linked" : "Link"}
+                  {isAccessDenied
+                    ? "Denied"
+                    : !isEmpty(userId)
+                    ? "Linked"
+                    : "Link"}
                 </ButtonLabel>
-                {!isEmpty(authCode) && !isAuthorized && (
+                {!isEmpty(authCode) && isEmpty(userId) && (
                   <CircularProgress size="16px" sx={{ ml: "8px" }} />
                 )}
               </FlexCenter>
@@ -194,13 +263,15 @@ export const ShareRegistration: React.FC = () => {
           </Grid>
           <ButtonContainer item xs={12}>
             <ShareButton
-              disabled={!isAuthorized}
+              disabled={isEmpty(userId) || isVerified}
               variant="contained"
               onClick={() => {
                 handleTweet();
               }}
             >
-              <ButtonLabel status={!isAuthorized ? "disabled" : ""}>
+              <ButtonLabel
+                status={isEmpty(userId) || isVerified ? "disabled" : ""}
+              >
                 Tweet
               </ButtonLabel>
             </ShareButton>
@@ -222,13 +293,34 @@ export const ShareRegistration: React.FC = () => {
           </Grid>
           <ButtonContainer item xs={12}>
             <ShareButton
-              disabled={!isAuthorized}
+              disabled={isEmpty(userId)}
               variant="contained"
-              onClick={() => {}}
+              onClick={() => {
+                handleVerify();
+              }}
+              sx={{
+                "&.MuiButton-contained": {
+                  // border: "none",
+                  backgroundColor: isVerifying
+                    ? yellow[800]
+                    : isVerified
+                    ? green[800]
+                    : isVerifyFailed
+                    ? red[600]
+                    : "background.paper",
+                },
+              }}
             >
-              <ButtonLabel status={!isAuthorized ? "disabled" : ""}>
-                Verify
-              </ButtonLabel>
+              {isVerifying || isVerified || isVerifyFailed ? (
+                <Verified>Verified</Verified>
+              ) : (
+                <ButtonLabel status={isEmpty(userId) ? "disabled" : ""}>
+                  Verify
+                </ButtonLabel>
+              )}
+              {isVerifying && (
+                <CircularProgress size="16px" sx={{ ml: "8px" }} />
+              )}
             </ShareButton>
           </ButtonContainer>
         </Content>
