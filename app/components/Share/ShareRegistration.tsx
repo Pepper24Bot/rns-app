@@ -52,8 +52,16 @@ const ButtonLabel = styled(SecondaryLabel, {
   textTransform: "uppercase",
 }));
 
+const Verifying = styled(ButtonLabel)(({ theme }) => ({
+  color: yellow[800],
+}));
+
 const Verified = styled(ButtonLabel)(({ theme }) => ({
-  color: theme.palette.text.primary,
+  color: green[800],
+}));
+
+const Failed = styled(ButtonLabel)(({ theme }) => ({
+  color: red[600],
 }));
 
 const ButtonContainer = styled(FlexCenter)(({ theme }) => ({
@@ -115,13 +123,13 @@ export const ShareRegistration: React.FC = () => {
   const authCode = params.get("code");
 
   const userId = parseCookie("username") || "";
+  const isGranted = parseCookie("isAccessGranted") || "";
 
   const [link, setLink] = useState<string>("");
   const [tweetId, setTweetId] = useState<string>("");
   const [twitterId, setTwitterId] = useState<string>(userId);
 
   /**
-   * #1.
    * After the user authorized the app, request for access token,
    * skip this query when the user has authorized rns app, call refreshToken instead
    */
@@ -134,7 +142,6 @@ export const ShareRegistration: React.FC = () => {
     tokenResponse?.token?.access_token || parseCookie("access_token") || "";
 
   /**
-   * #2.
    * Get the user data after successful authorization and token request,
    * Skip this query if there is already a user stored in cookie
    *
@@ -146,7 +153,6 @@ export const ShareRegistration: React.FC = () => {
   );
 
   /**
-   * #3.
    * Verify the link provided.
    * Skip this call when there is no tweetId and access_token provided
    */
@@ -194,7 +200,7 @@ export const ShareRegistration: React.FC = () => {
 
     if (isSuccess) {
       // TODO: add security
-      document.cookie = `access_token=${tokenResponse?.token?.access_token}; path=/`;
+      // document.cookie = `access_token=${tokenResponse?.token?.access_token}; path=/`;
     }
   }, [tokenResponse]);
 
@@ -298,23 +304,15 @@ export const ShareRegistration: React.FC = () => {
               onClick={() => {
                 handleVerify();
               }}
-              sx={{
-                "&.MuiButton-contained": {
-                  // border: "none",
-                  backgroundColor: isVerifying
-                    ? yellow[800]
-                    : isVerified
-                    ? green[800]
-                    : isVerifyFailed
-                    ? red[600]
-                    : "background.paper",
-                },
-              }}
             >
-              {isVerifying || isVerified || isVerifyFailed ? (
+              {isVerifying ? (
+                <Verifying>Verifying</Verifying>
+              ) : isVerified ? (
                 <Verified>Verified</Verified>
+              ) : isVerifyFailed ? (
+                <Failed>Verfication Failed</Failed>
               ) : (
-                <ButtonLabel status={isEmpty(userId) ? "disabled" : ""}>
+                <ButtonLabel status={false ? "disabled" : ""}>
                   Verify
                 </ButtonLabel>
               )}

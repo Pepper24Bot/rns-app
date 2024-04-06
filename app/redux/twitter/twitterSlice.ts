@@ -59,7 +59,7 @@ export const twitterApi = api.injectEndpoints({
             query: ({ code, redirect, state }) => ({
                 url: `${twitterUrl}/auth/twitter?code=${code}&redirect_uri=${redirect}&state=${state}`,
                 method: 'GET',
-                headers: getHeader(bearer || "")
+                headers: getHeader(bearer)
             }),
         }),
         getRefreshToken: builder.query<AuthResponse, AuthReqeuest>({
@@ -109,7 +109,7 @@ export const twitterApi = api.injectEndpoints({
                     const searchResponse = await axios({
                         url: `${twitterUrl}/tweets/${tweetId}`,
                         method: 'GET',
-                        headers: getHeader(token)
+                        headers: getHeader(token),
                     })
 
                     return { data: searchResponse.data }
@@ -129,7 +129,7 @@ export const twitterApi = api.injectEndpoints({
                         return { data: searchResponse.data }
                     }
 
-                    return { data: error }
+                    return { error: errorData.response }
                 }
             },
         }),

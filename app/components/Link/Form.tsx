@@ -78,7 +78,9 @@ export const Form: React.FC<Link> = (props: Link) => {
         <InputField disabled value={domain?.name} />
         <InputField
           error={!isFuturePassValid}
-          helperText={!isFuturePassValid ? "Invalid FuturePass Address" : ""}
+          helperText={
+            !isFuturePassValid ? "Please insert a FuturePass Address only" : ""
+          }
           label="FuturePass Address"
           placeholder="Enter FuturePass Address"
           focused

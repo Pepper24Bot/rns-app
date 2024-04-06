@@ -57,7 +57,7 @@ export const customBaseQuery = (options: CustomRequestOptions): BaseQueryFn<any>
     };
 }
 
-export const getHeader = (token: string) => {
+export const getHeader = (token: string = "") => {
     return {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/x-www-form-urlencoded",

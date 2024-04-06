@@ -51,7 +51,7 @@ const DialogContainer = styled(FlexCenter)(({ theme }) => ({
 }));
 
 const ContentContainer = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.background.darker,
+  backgroundColor: theme.palette.background.paper,
   margin: "1px",
   borderRadius: "8px",
 }));
