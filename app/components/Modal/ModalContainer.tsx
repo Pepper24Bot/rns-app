@@ -32,19 +32,21 @@ interface ContentProps {
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
-    maxWidth: "max-content",
-    maxHeight: "max-content",
-    borderRadius: "8px",
-    filter: `drop-shadow(0px 0px 15px ${alpha(
+    filter: `drop-shadow(0px 5px 15px ${alpha(
       theme.palette.primary.main,
       0.1
     )})`,
+    maxWidth: "max-content",
+    maxHeight: "max-content",
+    borderRadius: "8px",
 
     [theme.breakpoints.down("sm")]: {
       margin: "16px",
     },
   },
 }));
+
+const Shadow = styled(FlexCenter)(({ theme }) => ({}));
 
 const DialogContainer = styled(FlexCenter)(({ theme }) => ({
   background: "linear-gradient(180deg, #000000 32.5%, #c2185b 100%)",
@@ -166,65 +168,68 @@ export const ModalContainer: React.FC = () => {
   }, []);
 
   return (
-    <Dialog
-      open={isModalOpen || hasPathModal}
-      onClose={() => {
-        if (isCloseDisabled) {
-          // do not allow modal to be closed
-        } else {
-          closeModal();
-          setHasPathModal(false);
-          setIsFullSize(false);
-        }
-      }}
-      disableEscapeKeyDown={isCloseDisabled}
-    >
-      <DialogContainer>
-        <ContentContainer>
-          {props?.isHeaderEnabled && <ModalHeader />}
-          {/* TODO: Move the styling to styledcomponents */}
-          <Content
-            props={{
-              fullHeight: props?.fullHeight || isFullSize,
-              fullWidth: props?.fullWidth || isFullSize,
-              isHeaderEnabled: props?.isHeaderEnabled,
-            }}
-          >
-            {!props?.isXDisabled && (
-              <CloseButton
-                onClick={() => {
-                  closeModal();
-                  setHasPathModal(false);
-                  setIsFullSize(false);
-                }}
-              >
-                <CloseIcon />
-              </CloseButton>
-            )}
-            {!props?.isHeaderEnabled && props?.title && (
-              <Title>{props?.title}</Title>
-            )}
-            {props?.description && (
-              <Paragraph description={props?.description} />
-            )}
-            {getContent(type)}
-          </Content>
-          {props?.isFooterEnabled && (
-            <Footer>
-              {props?.downloadFile && (
-                <DownloadButton href={props?.downloadFile} download>
-                  <i
-                    className="fa-solid fa-file-pdf"
-                    style={{ color: "#c2185b", marginRight: "8px" }}
-                  />
-                  Download
-                </DownloadButton>
+    <>
+      <Shadow id="shadow-id" />
+      <Dialog
+        open={isModalOpen || hasPathModal}
+        onClose={() => {
+          if (isCloseDisabled) {
+            // do not allow modal to be closed
+          } else {
+            closeModal();
+            setHasPathModal(false);
+            setIsFullSize(false);
+          }
+        }}
+        disableEscapeKeyDown={isCloseDisabled}
+      >
+        <DialogContainer>
+          <ContentContainer>
+            {props?.isHeaderEnabled && <ModalHeader />}
+            {/* TODO: Move the styling to styledcomponents */}
+            <Content
+              props={{
+                fullHeight: props?.fullHeight || isFullSize,
+                fullWidth: props?.fullWidth || isFullSize,
+                isHeaderEnabled: props?.isHeaderEnabled,
+              }}
+            >
+              {!props?.isXDisabled && (
+                <CloseButton
+                  onClick={() => {
+                    closeModal();
+                    setHasPathModal(false);
+                    setIsFullSize(false);
+                  }}
+                >
+                  <CloseIcon />
+                </CloseButton>
               )}
-            </Footer>
-          )}
-        </ContentContainer>
-      </DialogContainer>
-    </Dialog>
+              {!props?.isHeaderEnabled && props?.title && (
+                <Title>{props?.title}</Title>
+              )}
+              {props?.description && (
+                <Paragraph description={props?.description} />
+              )}
+              {getContent(type)}
+            </Content>
+            {props?.isFooterEnabled && (
+              <Footer>
+                {props?.downloadFile && (
+                  <DownloadButton href={props?.downloadFile} download>
+                    <i
+                      className="fa-solid fa-file-pdf"
+                      style={{ color: "#c2185b", marginRight: "8px" }}
+                    />
+                    Download
+                  </DownloadButton>
+                )}
+              </Footer>
+            )}
+          </ContentContainer>
+        </DialogContainer>
+      </Dialog>
+    </>
   );
 };
 

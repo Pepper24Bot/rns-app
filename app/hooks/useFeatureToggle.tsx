@@ -10,6 +10,7 @@ export enum FeatureList {
   LoyaltyPoints = "false",
   Subscription = "true",
   ViewOptions = "false",
+  SocialAccounts = "false",
 }
 
 export default function useFeatureToggle() {

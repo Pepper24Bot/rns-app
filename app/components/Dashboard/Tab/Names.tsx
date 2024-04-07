@@ -36,7 +36,7 @@ const Description = styled(SecondaryLabel)(({ theme }) => ({
 const PaginationContainer = styled(FlexCenter)(({ theme }) => ({
   padding: "10px",
   borderRadius: "8px",
-  border: `solid 1px ${alpha(theme.palette.primary.dark, 0.2)}`,
+  border: `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`,
   filter: `drop-shadow(0px 0px 10px ${alpha(
     theme.palette.background.paper,
     0.75
@@ -57,6 +57,9 @@ const PageField = styled(InputField)(({ theme }) => ({
 
     "&.MuiOutlinedInput-root": {
       padding: "8px",
+      "& fieldset": {
+        borderColor: theme.palette.background.dark,
+      },
     },
   },
 }));

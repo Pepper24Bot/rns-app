@@ -19,7 +19,6 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { SORTING_OPTIONS } from "@/services/constants";
 import {
-  ExpiryDate,
   Options,
   SortBy,
   SortOrder,

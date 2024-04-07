@@ -26,10 +26,15 @@ import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
 import Image from "next/image";
 import EnsImage from "@/components/Reusables/EnsImage";
 
-const ItemContainer = styled(Grid)(({ theme }) => ({
-  backgroundColor: alpha(theme.palette.background.darker, 0.75),
+const Container = styled(Grid)(({ theme }) => ({
+  background: "linear-gradient(180deg, #0C0C0C 50%, rgba(194,24,91,0.75) 100%)",
   borderRadius: "8px",
-  boxShadow: `0px 0px 15px 0px ${theme.palette.background.paper}`,
+  padding: "1px",
+}));
+
+const ItemContainer = styled(Grid)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: "8px",
 }));
 
 const ImageContainer = styled(Grid)(({ theme }) => ({
@@ -41,7 +46,7 @@ const Summary = styled(Grid)(({ theme }) => ({
 }));
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
-  borderColor: alpha(theme.palette.primary.main, 0.5),
+  borderColor: alpha(theme.palette.primary.main, 0.2),
 }));
 
 const NameDetails = styled(Grid)(({ theme }) => ({
@@ -128,77 +133,83 @@ export const NameCard: React.FC<Name> = (props: Name) => {
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
-      <ItemContainer>
-        <ImageContainer>
-          <Image
-            src="/images/rns-image-placeholder.svg"
-            alt="Wallet Icon"
-            width={290}
-            height={200}
-            style={{
-              width: "-webkit-fill-available",
-              height: "-webkit-fill-available",
-              border: `solid 1px ${alpha(grey[50], 0.25)}`,
-              borderRadius: "4px",
-              boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
-            }}
-          />
-        </ImageContainer>
-        <Divider flexItem />
-        <Summary container>
-          <Grid item xs={11}>
-            <Grid>
-              <Flex>
-                <Name>{item.name}</Name>
-                {hasLinkedAddr && <CheckedIcon />}
-              </Flex>
-            </Grid>
-            <NameDetails>
-              {hasLinkedAddr ? (
-                <Detail>
-                  <Label>Linked to</Label>
-                  {getMaskedAddress(String(linkedAddr), 6)}
-                </Detail>
-              ) : (
-                <Detail>
-                  <Label>Owner</Label>
-                  {getMaskedAddress(String(item.owner.id), 6)}
-                </Detail>
-              )}
-              <Grid container>
-                <Detail mr={1}>
-                  <Label>Expiry</Label>
-                  {
-                    getExpiration(item.domain.createdAt, item.domain.expiryDate)
-                      .expiration
-                  }
-                </Detail>
-                <Detail>
-                  <Label>In</Label>
-                  {
-                    getExpiration(item.domain.createdAt, item.domain.expiryDate)
-                      .distanceToExpiration
-                  }
-                </Detail>
-              </Grid>
-            </NameDetails>
-          </Grid>
-          <Grid item xs={0.5}>
-            <DropDownMenu
-              handleSelect={handleMenuSelect}
-              options={[
-                { label: "Extend Expiry", icon: <ClockIcon /> },
-                { label: "Link Name", icon: <LinkIcon /> },
-                // { label: "Update Image", icon: <PhotoIcon /> },
-                // { label: "Transfer", icon: <TransferIcon /> },
-              ]}
-              hasButton
-              iconButton={<MoreIcon />}
-              type="Menu"
+      <Container>
+        <ItemContainer>
+          <ImageContainer>
+            <Image
+              src="/images/rns-image-placeholder.svg"
+              alt="Wallet Icon"
+              width={290}
+              height={200}
+              style={{
+                width: "-webkit-fill-available",
+                height: "-webkit-fill-available",
+                border: `solid 1px ${alpha(grey[50], 0.25)}`,
+                borderRadius: "4px",
+                boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
+              }}
             />
-          </Grid>
-        </Summary>
-      </ItemContainer>
+          </ImageContainer>
+          <Divider flexItem />
+          <Summary container>
+            <Grid item xs={11}>
+              <Grid>
+                <Flex>
+                  <Name>{item.name}</Name>
+                  {hasLinkedAddr && <CheckedIcon />}
+                </Flex>
+              </Grid>
+              <NameDetails>
+                {hasLinkedAddr ? (
+                  <Detail>
+                    <Label>Linked to</Label>
+                    {getMaskedAddress(String(linkedAddr), 6)}
+                  </Detail>
+                ) : (
+                  <Detail>
+                    <Label>Owner</Label>
+                    {getMaskedAddress(String(item.owner.id), 6)}
+                  </Detail>
+                )}
+                <Grid container>
+                  <Detail mr={1}>
+                    <Label>Expiry</Label>
+                    {
+                      getExpiration(
+                        item.domain.createdAt,
+                        item.domain.expiryDate
+                      ).expiration
+                    }
+                  </Detail>
+                  <Detail>
+                    <Label>In</Label>
+                    {
+                      getExpiration(
+                        item.domain.createdAt,
+                        item.domain.expiryDate
+                      ).distanceToExpiration
+                    }
+                  </Detail>
+                </Grid>
+              </NameDetails>
+            </Grid>
+            <Grid item xs={0.5}>
+              <DropDownMenu
+                handleSelect={handleMenuSelect}
+                options={[
+                  { label: "Extend Expiry", icon: <ClockIcon /> },
+                  { label: "Link Name", icon: <LinkIcon /> },
+                  // { label: "Update Image", icon: <PhotoIcon /> },
+                  // { label: "Transfer", icon: <TransferIcon /> },
+                ]}
+                hasButton
+                iconButton={<MoreIcon />}
+                type="Menu"
+              />
+            </Grid>
+          </Summary>
+        </ItemContainer>
+      </Container>
     </Grid>
   );
 };
