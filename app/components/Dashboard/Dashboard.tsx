@@ -26,6 +26,7 @@ import {
 } from "@/redux/graphql/graphqlSlice";
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { Address, formatEther } from "viem";
+import { getExpiration } from "@/services/utils";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -208,6 +209,23 @@ export const Dashboard: React.FC = () => {
           return orderBy === "High" ? costB - costA : costA - costB;
         });
 
+      case "Expiry":
+        return list?.sort((a, b) => {
+          const expiryA = getExpiration(
+            a?.domain?.createdAt,
+            a?.domain?.expiryDate
+          ).distanceToExpiration.split(" days")[0];
+
+          const expiryB = getExpiration(
+            b?.domain?.createdAt,
+            b?.domain?.expiryDate
+          ).distanceToExpiration.split(" days")[0];
+
+          return orderBy === "High"
+            ? Number(expiryB) - Number(expiryA)
+            : Number(expiryA) - Number(expiryB);
+        });
+
       case "Length":
         return list?.sort((a, b) => {
           return orderBy === "High"
@@ -227,11 +245,33 @@ export const Dashboard: React.FC = () => {
     if (searchValue !== "") {
       list = (searchedName?.nameWrappeds as Name[]) || [];
     } else {
-      // #2. Then apply the filter options - TODO
-      // #3. If there are no filters, return the whole list
-      list = namesList?.nameWrappeds?.filter((item) => {
-        return item.name !== null;
-      }) as Name[];
+      // For now, the only filter option we have is the views
+      list = namesList?.nameWrappeds
+        // #2. Then apply the filter options
+        ?.filter((item) => {
+          const views = options?.filter?.views;
+          const length = views?.length;
+
+          if (length === 2 || length === 0) {
+            return item;
+          } else {
+            const filteredView = !isEmpty(views) && views![0];
+            const remainingDays = getExpiration(
+              item?.domain?.createdAt,
+              item?.domain?.expiryDate
+            ).distanceToExpiration.split(" days")[0];
+
+            return filteredView === "Active" && Number(remainingDays) > 0
+              ? item
+              : filteredView === "Expired" && Number(remainingDays) <= 0
+              ? item
+              : false;
+          }
+        })
+        // #3. If there are no filters, return the whole list
+        ?.filter((item) => {
+          return item.name !== null;
+        }) as Name[];
     }
 
     // #4. Sort the list based on the options

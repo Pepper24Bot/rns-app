@@ -119,9 +119,6 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
   const [isSortOpen, setIsSortOption] = useState<boolean>(false);
 
   const [views, setViews] = useState<View[]>(options?.filter?.views || []);
-  const [expiry, setExpiry] = useState<ExpiryDate[]>(
-    options?.filter?.expiryDate || []
-  );
 
   const initialSelectedOption = {
     label: options?.sort?.by || "Name",
@@ -141,16 +138,8 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
     setViews(views);
   };
 
-  const handleExpirySelect = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    expiry: ExpiryDate[]
-  ) => {
-    setExpiry(expiry);
-  };
-
   const handleCancel = () => {
     setViews(options?.filter?.views || []);
-    setExpiry(options?.filter?.expiryDate || []);
     setSelectedOption(initialSelectedOption);
 
     toggleMenu(false);
@@ -160,7 +149,6 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
     const options: Options = {
       filter: {
         views,
-        expiryDate: expiry,
       },
       sort: {
         by: selectedOption.label as SortBy,
@@ -179,18 +167,11 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
           <HeaderText>Filter By</HeaderText>
           <Divider />
           <Grid px={1}>
-            <FlexJustified py={0.5}>
+            <FlexJustified>
               <Field>View</Field>
               <ToggleButtonGroup value={views} onChange={handleViewsSelect}>
                 <ToggleButton value="Active">Active</ToggleButton>
                 <ToggleButton value="Expired">Expired</ToggleButton>
-              </ToggleButtonGroup>
-            </FlexJustified>
-            <FlexJustified py={0.5}>
-              <Field>Expiry Date</Field>
-              <ToggleButtonGroup value={expiry} onChange={handleExpirySelect}>
-                <ToggleButton value="High">High</ToggleButton>
-                <ToggleButton value="Low">Low</ToggleButton>
               </ToggleButtonGroup>
             </FlexJustified>
           </Grid>

@@ -9,7 +9,7 @@ export interface Dashboard {
 
 export type View = "Active" | "Expired"
 export type ExpiryDate = "High" | "Low"
-export type SortBy = "Name" | "Length" | "Cost" | "Created Date"
+export type SortBy = "Name" | "Length" | "Cost" | "Expiry" | "Created Date"
 export type SortOrder = "Ascending" | "Descending" | "High" | "Low"
 
 export interface Name {
@@ -28,7 +28,6 @@ export interface Name {
 export interface Options {
     filter?: {
         views?: View[]
-        expiryDate?: ExpiryDate[]
     }
     sort?: {
         by?: SortBy
@@ -57,7 +56,6 @@ const initialState: DashboardState = {
     options: {
         filter: {
             views: ["Active", "Expired"],
-            expiryDate: ["High", "Low"]
         },
         sort: {
             by: "Created Date",

@@ -12,6 +12,8 @@ export const SORTING_OPTIONS = [
     { label: "Name", type: "Descending" },
     { label: "Cost", type: "High" },
     { label: "Cost", type: "Low" },
+    { label: "Expiry", type: "High" },
+    { label: "Expiry", type: "Low" },
     { label: "Length", type: "High" },
     { label: "Length", type: "Low" },
     { label: "Created Date", type: "Ascending" },
