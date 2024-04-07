@@ -128,7 +128,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     // TODO: Fix this, should not manually resetting the name details here in this component
     // TODO: Find a way to reset the values when the modal is closed
     if (!isModalOpen) {
-      updateName({ ...nameInitialState, name: labelName });
+      updateName({ ...nameInitialState });
     }
   }, [isModalOpen]);
 

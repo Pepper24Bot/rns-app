@@ -168,9 +168,6 @@ export const SearchForm: React.FC = () => {
   const handleDebounceOnChange = (value: string) => {
     setAnchorEl(searchFieldRef.current);
     setSearchValue(value);
-
-    // Store in global state so the other componenst will be able to access the value
-    updateName({ name: value, status: getNameStatus() });
   };
 
   const debounceFn = useCallback(

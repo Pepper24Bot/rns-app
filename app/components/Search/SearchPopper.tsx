@@ -26,7 +26,7 @@ import {
 import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
-import { NameStatus } from "@/redux/domain/domainSlice";
+import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
 
 import Image from "next/image";
 
@@ -51,6 +51,7 @@ const SearchText = styled(SubTitle)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
   marginBottom: 0,
   textAlign: "start",
+  wordBreak: "break-word",
 
   [theme.breakpoints.down("md")]: {
     fontSize: FONT_SIZE.Medium,
@@ -121,6 +122,7 @@ const StarIcon = styled(StarBorder)(({ theme }) => ({
 export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   const { isLoading, anchorEl, searchValue, status } = props;
   const { toggleModal } = useModalState();
+  const { updateName } = useDomainState();
 
   const [clientWidth, setClientWidth] = useState<number>(
     anchorEl?.clientWidth || 500
@@ -146,7 +148,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
         <Fade {...TransitionProps} timeout={350}>
           <PopperContainer>
             <FlexJustified container>
-              <Grid>
+              <Grid item xs={7.25}>
                 <SearchText>{`${searchValue}.root`}</SearchText>
                 <Relative>
                   <SkeletonTypography isloading={isLoading} />
@@ -165,7 +167,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                   )}
                 </Relative>
               </Grid>
-              <ButtonsContainer>
+              <ButtonsContainer xs>
                 <Relative>
                   <Flex isloading={isLoading}>
                     <InformationTip title="Coming soon!" arrow>
@@ -181,6 +183,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                       <SearchButton
                         variant="contained"
                         onClick={() => {
+                          // Store in global state so the other componenst will be able to access the value
+                          updateName({ name: searchValue || "", status });
+
                           toggleModal({
                             id: "Register Name",
                             title: "Register",
@@ -193,6 +198,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                       <SearchButton
                         variant="contained"
                         onClick={() => {
+                          // Store in global state so the other componenst will be able to access the value
+                          updateName({ name: searchValue || "", status });
+
                           toggleModal({
                             id: "Registration Details",
                             title: "Registration Details",
