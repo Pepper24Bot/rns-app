@@ -2,19 +2,23 @@ import { createSlice } from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
 import { Domain } from "../graphql/hooks"
+import { Address } from "viem"
+import { PAYMENT_METHOD } from "@/services/constants"
 
 export type PaymentMethod = "ROOT" | "USDC"
 export type NameStatus = "Available" | "Not Available" | "Registered"
-
+export interface Payment {
+    label: PaymentMethod,
+    address: Address,
+    decimals: number
+}
 export interface DomainProps {
     /** Used by the registration forms */
     name?: string
     labelName?: string
     status?: NameStatus
     year?: number
-    payment?: {
-        method: PaymentMethod
-    }
+    payment?: Payment
     fee?: {
         registration?: number
         transaction?: number
@@ -34,9 +38,7 @@ export const initialState: DomainState = {
     name: '',
     labelName: '',
     year: 1,
-    payment: {
-        method: 'ROOT'
-    },
+    payment: PAYMENT_METHOD[0] as Payment, // root
     fee: {
         registration: 0,
         transaction: 0,
@@ -58,8 +60,8 @@ export const domainState = createSlice({
             return state
         },
 
-        updatePaymentOption: (state, { payload }: { payload: PaymentMethod }): DomainState => {
-            state.payment = { method: payload }
+        updatePaymentOption: (state, { payload }: { payload: Payment }): DomainState => {
+            state.payment = payload
             return state
         },
 
@@ -101,8 +103,8 @@ export const useDomainState = () => {
             dispatch(actions.decreaseYear())
         },
 
-        updatePaymentOption: (method: PaymentMethod) => {
-            dispatch(actions.updatePaymentOption(method))
+        updatePaymentOption: (payment: Payment) => {
+            dispatch(actions.updatePaymentOption(payment))
         },
 
         // selector

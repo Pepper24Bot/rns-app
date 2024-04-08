@@ -2,8 +2,9 @@ import { useReadContract, useReadContracts } from "wagmi";
 import { namehash } from "ethers/lib/utils.js";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData } from "viem";
-import { SECONDS } from "@/services/constants";
+import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
 import { RentPrice } from "@/services/interfaces";
+import { Payment } from "@/redux/domain/domainSlice";
 
 import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
@@ -21,20 +22,24 @@ export interface RegistrationProps {
   year: number;
 
   owner: Address | undefined;
+
+  payment?: Payment;
 }
 
 export default function useNameDetails(props: RegistrationProps) {
   const {
     name,
     year,
+    payment,
     owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account - dummy
   } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
-  // const resolver = useContractDetails({ action: "OwnedResolver" });
   const resolver = useContractDetails({ action: "PublicResolver" });
-
   const { abi, address } = controller;
+
+  // Default token = ROOT
+  const token = payment?.address || PAYMENT_METHOD[0].address;
 
   const duration = year * SECONDS;
   const contract = {
@@ -50,8 +55,9 @@ export default function useNameDetails(props: RegistrationProps) {
       // #2. Get the rent price based on the name and duration
       {
         ...contract,
-        functionName: "rentPrice",
-        args: [name, duration],
+        // functionName: "rentPrice",
+        functionName: "rentERC20Price",
+        args: [token, name, duration],
       },
     ],
   });

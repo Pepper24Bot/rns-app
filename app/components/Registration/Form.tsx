@@ -11,12 +11,11 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
-import { PaymentMethod, useDomainState } from "@/redux/domain/domainSlice";
+import { Payment, useDomainState } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 
 import MenuField from "@/components/Reusables/MenuField";
-import useFees from "@/hooks/useFees";
 
 const SummaryContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -56,28 +55,28 @@ const Button = styled(BaseButton)(({ theme }) => ({
 }));
 
 export interface Form {
-  rent: bigint;
-  gasFee: bigint;
-  gasPrice: bigint;
   name?: string;
+  rentFee?: number;
+  transactionFee?: number;
+  totalFee?: number;
 
   /** hide form when transaction is successful */
   isShowing?: boolean;
 }
 
 export const Form: React.FC<Form> = (props: Form) => {
-  const { rent, gasFee, gasPrice, name: nameProp, isShowing = true } = props;
+  const {
+    name: nameProp,
+    isShowing = true,
+    rentFee,
+    transactionFee,
+    totalFee,
+  } = props;
 
   const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
     useDomainState();
 
   const { name, payment, year, status } = useDomain();
-
-  const { rentFee, transactionFee, totalFee } = useFees({
-    rent,
-    gasFee,
-    gasPrice,
-  });
 
   const getYearLabel = () => {
     return year && year > 1 ? "Years" : "Year";
@@ -123,25 +122,25 @@ export const Form: React.FC<Form> = (props: Form) => {
         </FieldContainer>
         <MenuField
           label="Payment Method"
-          selectedOption={{ label: payment?.method as string }}
+          selectedOption={{ label: payment?.label as string }}
           options={PAYMENT_METHOD}
           handleOptionSelect={(option) => {
-            updatePaymentOption(option?.label as PaymentMethod);
+            updatePaymentOption(option as Payment);
           }}
         />
         <FieldContainer>
           <SummaryContainer>
             <Transaction>
               <TransactionLabel>{`${year} ${getYearLabel()} Registration`}</TransactionLabel>
-              <Value>{`${rentFee} ${payment?.method}`}</Value>
+              <Value>{`${rentFee} ${payment?.label}`}</Value>
             </Transaction>
             <Transaction>
               <TransactionLabel>Transaction Fee</TransactionLabel>
-              <Value>{`${transactionFee} ${payment?.method}`}</Value>
+              <Value>{`${transactionFee} ${payment?.label}`}</Value>
             </Transaction>
             <Transaction>
               <TransactionLabel>Total</TransactionLabel>
-              <Value>{`${totalFee} ${payment?.method}`}</Value>
+              <Value>{`${totalFee} ${payment?.label}`}</Value>
             </Transaction>
           </SummaryContainer>
         </FieldContainer>

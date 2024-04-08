@@ -1,6 +1,6 @@
 import { formatUnits } from "ethers/lib/utils.js";
-import { BigNumber } from "ethers";
-import { formatEther } from "viem";
+import { Payment } from "@/redux/domain/domainSlice";
+import { PAYMENT_METHOD } from "@/services/constants";
 
 export interface FeesProps {
   rent?: bigint;
@@ -9,11 +9,12 @@ export interface FeesProps {
   gasUsed?: bigint;
   enabled?: boolean;
   raw?: boolean;
+  payment?: Payment;
 }
 
 export interface FeesResponse {
-  rentFee: string | bigint;
-  transactionFee: string | bigint;
+  rentFee: number;
+  transactionFee: number;
   totalFee: number;
 }
 
@@ -22,41 +23,15 @@ export interface Options {
 }
 
 export default function useFees(props: FeesProps) {
-  const { rent, gasFee, gasPrice = BigInt("0"), enabled, raw } = props;
+  const { rent = 0, gasFee = 0, payment = PAYMENT_METHOD[0] } = props;
 
-  // TODO: Research about Pricing Oracle
-  /**
-   * TODO: The rent is priced in USDC,
-   * so we need to convert it to ROOT if the user chose to pay in ROOT
-   * @returns
-   */
   const getRentFee = () => {
-    const rentFee = rent ? BigNumber.from(rent) : BigNumber.from(0);
-
-    if (raw) {
-      // return rent ? formatEther(rent) : BigInt("0");
-      return formatEther(rentFee.toBigInt());
-    } else {
-      // return rent ? Number(formatEther(rent)).toFixed(2) : BigInt("0");
-      return Number(formatEther(rentFee.toBigInt())).toFixed(2);
-    }
+    return rent ? Number(formatUnits(rent, payment.decimals)) : 0;
   };
 
-  /**
-   * TODO: The gas fee is in XRP,
-   * convert it to ROOT or USDC
-   * @returns
-   */
   const getTransactionFee = () => {
-    const transactionFee = gasFee
-      ? BigNumber.from(gasFee).mul(gasPrice)
-      : BigNumber.from(0);
-
-    if (raw) {
-      return formatEther(transactionFee.toBigInt());
-    } else {
-      return Number(formatEther(transactionFee.toBigInt())).toFixed(2);
-    }
+    // https://explorer.rootnet.live/token/0xCCCCcCCc00000002000000000000000000000000
+    return gasFee ? Number(formatUnits(gasFee, 6)) : 0;
   };
 
   // TODO: Convert to USDC and ROOT
@@ -64,7 +39,10 @@ export default function useFees(props: FeesProps) {
     const rent = getRentFee();
     const transaction = getTransactionFee();
 
-    return rent && transaction ? Number(rent) + Number(transaction) : 0;
+    const totalFee =
+      rent && transaction ? Number(rent) + Number(transaction) : 0;
+
+    return totalFee ? Number(totalFee.toFixed(6)) : 0;
   };
 
   return {

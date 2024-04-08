@@ -12,7 +12,7 @@ import { type Chain } from 'viem'
 export const porcini = {
     id: 7672,
     name: 'Root Testnet',
-    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
+    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 6 },
     rpcUrls: {
         default: {
             http: ['https://porcini.rootnet.app/archive'],
@@ -46,7 +46,7 @@ export const porcini = {
 export const porciniWalletConfig = {
     chainId: "0x1DF8",
     chainName: 'Root Testnet',
-    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
+    nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 6 },
     rpcUrls: ['https://porcini.rootnet.app/archive'],
     blockExplorerUrls: ['https://explorer.rootnet.cloud'],
 }

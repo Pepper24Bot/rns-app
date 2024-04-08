@@ -15,7 +15,7 @@ import {
 } from "@/redux/twitter/twitterSlice";
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
-import { TWITTER_AUTH } from "@/services/api";
+import { TWITTER_AUTH } from "@/services/apis";
 import { parseCookie } from "@/services/utils";
 import { TWEET_RNS } from "@/services/content";
 

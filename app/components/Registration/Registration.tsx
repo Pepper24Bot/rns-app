@@ -59,7 +59,7 @@ const TwitterIcon = styled(X)(({ theme }) => ({
 export const RegisterName: React.FC = () => {
   const { address } = useAccount();
   const { useDomain, updateName } = useDomainState();
-  const { name = "", year = 1 } = useDomain();
+  const { name = "", year = 1, payment } = useDomain();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
 
@@ -92,13 +92,15 @@ export const RegisterName: React.FC = () => {
     name,
     year,
     owner: address,
+    payment,
   });
 
   const { commit, register } = useRegister();
-  const { rentFee, totalFee } = useFees({
+  const { rentFee, totalFee, transactionFee } = useFees({
     rent: base,
     gasPrice: estimatedGasPrice,
     gasFee: estimatedGas,
+    payment,
   });
 
   const handleCommit = async () => {
@@ -173,10 +175,10 @@ export const RegisterName: React.FC = () => {
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
       <Form
-        rent={base}
-        gasFee={estimatedGas}
-        gasPrice={estimatedGasPrice}
         isShowing={!isRegisterSuccess}
+        rentFee={rentFee}
+        totalFee={totalFee}
+        transactionFee={transactionFee}
       />
       <FlexCenter marginY={2.5}>
         <Relative>
