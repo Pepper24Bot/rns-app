@@ -30,17 +30,6 @@ import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
 
 import Image from "next/image";
 
-export interface SearchPopper {
-  isLoading: boolean;
-  anchorEl: HTMLElement | null;
-  searchValue: string | null;
-  address?: `0x${string}`;
-  status?: NameStatus;
-
-  // TODO: Fix any type
-  data?: any;
-}
-
 const Popper = styled(MuiPopper)(({ theme }) => ({
   zIndex: 15,
   marginTop: "5px !important", //override inline styling
@@ -119,8 +108,19 @@ const StarIcon = styled(StarBorder)(({ theme }) => ({
   width: "20px",
 }));
 
+export interface SearchPopper {
+  isLoading: boolean;
+  anchorEl: HTMLElement | null;
+  searchValue: string | null;
+  address?: `0x${string}`;
+  status?: NameStatus;
+  isNameValid?: boolean;
+  // TODO: Fix any type
+  data?: any;
+}
+
 export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
-  const { isLoading, anchorEl, searchValue, status } = props;
+  const { isLoading, anchorEl, searchValue, status, isNameValid } = props;
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
 
@@ -148,7 +148,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
         <Fade {...TransitionProps} timeout={350}>
           <PopperContainer>
             <FlexJustified container>
-              <Grid item xs={7.25}>
+              <Grid item xs={6}>
                 <SearchText>{`${searchValue}.root`}</SearchText>
                 <Relative>
                   <SkeletonTypography isloading={isLoading} />
@@ -167,7 +167,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                   )}
                 </Relative>
               </Grid>
-              <ButtonsContainer xs>
+              <ButtonsContainer item xs={4.5}>
                 <Relative>
                   <Flex isloading={isLoading}>
                     <InformationTip title="Coming soon!" arrow>

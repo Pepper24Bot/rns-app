@@ -26,6 +26,7 @@ import { useDomainState } from "@/redux/domain/domainSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { isAccountLoading } from "@/services/utils";
 import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlSlice";
+import { normalize } from "viem/ens";
 
 import Image from "next/image";
 
@@ -136,6 +137,7 @@ export const SearchForm: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
+  const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
 
   // TODO: Normalize names -- validate
   const { data, isLoading } = useGetNamesByNameQuery(
@@ -167,6 +169,13 @@ export const SearchForm: React.FC = () => {
 
   const handleDebounceOnChange = (value: string) => {
     setAnchorEl(searchFieldRef.current);
+    try {
+      const normalized = normalize(value);
+      console.log("normalized:: ", normalized);
+    } catch (error) {
+      console.log("error:: ", error);
+      setIsNameInvalid(true);
+    }
     setSearchValue(value);
   };
 
@@ -225,6 +234,7 @@ export const SearchForm: React.FC = () => {
                   anchorEl={anchorEl}
                   searchValue={searchValue}
                   status={getNameStatus()}
+                  isNameValid={!isNameInvalid}
                 />
               </FlexCenter>
             </ClickAwayListener>
