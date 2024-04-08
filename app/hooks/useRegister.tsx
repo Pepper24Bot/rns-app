@@ -1,14 +1,16 @@
 import { ContractDetails } from "./useContractDetails";
 import { useWriteContract } from "wagmi";
-import { Address, parseEther } from "viem";
+import { Address, parseUnits } from "viem";
 import { Response } from "@/services/interfaces";
+import { Payment } from "@/redux/domain/domainSlice";
+import { PAYMENT_METHOD } from "@/services/constants";
 
 export interface RegisterProps {
   controller: ContractDetails;
   fees: {
     gasPrice: bigint;
-    rent: string;
-    totalFee: string;
+    rent: number;
+    totalFee: number;
   };
   args: {
     name: string;
@@ -16,6 +18,7 @@ export interface RegisterProps {
     duration: number;
     nameHash: string;
     resolverAddr: string;
+    payment?: Payment;
   };
 }
 
@@ -56,13 +59,21 @@ export default function useRegister() {
     const response: Response = { error: null, isSuccess: false, data: null };
     console.log("entering registration hook...");
 
+    const payment = args.payment || PAYMENT_METHOD[0];
+
+    // TODO: Figure this out, is this correct
+    const value = parseUnits(fees.totalFee.toString(), payment.decimals);
+    console.log("value:: ", value);
+
     try {
       const registerResponse = await registerAsync({
         abi,
         address,
-        functionName: "register",
+        // functionName: "register",
+        // value: parseEther(fees.totalFee),
+        functionName: "registerWithERC20",
         account: args.owner,
-        value: parseEther(fees.totalFee),
+        value,
         args: [
           args.name,
           args.owner,
@@ -72,6 +83,7 @@ export default function useRegister() {
           [],
           false,
           0,
+          payment.address,
         ],
       });
       response.isSuccess = true;

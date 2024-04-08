@@ -1,6 +1,6 @@
-import { formatUnits } from "ethers/lib/utils.js";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
+import { formatUnits } from "viem";
 
 export interface FeesProps {
   rent?: bigint;
@@ -27,6 +27,7 @@ export default function useFees(props: FeesProps) {
 
   const getRentFee = () => {
     return rent ? Number(formatUnits(rent, payment.decimals)) : 0;
+    // return rent ? Number(rent) : 0;
   };
 
   const getTransactionFee = () => {
@@ -42,7 +43,7 @@ export default function useFees(props: FeesProps) {
     const totalFee =
       rent && transaction ? Number(rent) + Number(transaction) : 0;
 
-    return totalFee ? Number(totalFee.toFixed(6)) : 0;
+    return totalFee || 0;
   };
 
   return {

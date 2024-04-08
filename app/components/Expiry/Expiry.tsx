@@ -62,7 +62,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   const { address } = useAccount();
   const { useDomain, updateName } = useDomainState();
-  const { year = 1 } = useDomain();
+  const { year = 1, payment } = useDomain();
 
   const { closeModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
@@ -97,12 +97,14 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     name: labelName,
     year,
     owner: address,
+    payment,
   });
 
-  const { rentFee, totalFee } = useFees({
+  const { rentFee, totalFee, transactionFee } = useFees({
     rent: base,
     gasFee: estimatedGas,
     gasPrice: estimatedGasPrice,
+    payment,
   });
 
   const handleExtend = async () => {
@@ -113,7 +115,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
       name: labelName,
       duration,
       owner: address,
-      fees: { rent: rentFee as string, totalFee: totalFee.toString() },
+      fees: { rent: rentFee, totalFee: totalFee },
     });
 
     if (isSuccess) {
@@ -147,9 +149,9 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
         {extendPage === 1 ? (
           <Form
             name={domain?.name || ""}
-            rent={base}
-            gasFee={estimatedGas}
-            gasPrice={estimatedGasPrice}
+            rentFee={rentFee}
+            totalFee={totalFee}
+            transactionFee={transactionFee}
           />
         ) : (
           <>

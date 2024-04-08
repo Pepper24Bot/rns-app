@@ -29,7 +29,7 @@ export const Summary: React.FC<Summary> = (props: Summary) => {
     <Container>
       {title}
       <InputField value={`${year} ${getYearLabel()}`} label="Duration" />
-      <InputField value={payment?.method || "ROOT"} label="Payment Method" />
+      <InputField value={payment?.label || "ROOT"} label="Payment Method" />
       <InputField value={fee?.total || 0} label="Total" />
     </Container>
   );

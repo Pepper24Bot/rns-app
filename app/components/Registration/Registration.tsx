@@ -131,8 +131,8 @@ export const RegisterName: React.FC = () => {
         controller,
         fees: {
           gasPrice: estimatedGasPrice,
-          rent: rentFee as string,
-          totalFee: totalFee.toString(),
+          rent: rentFee,
+          totalFee: totalFee,
         },
         args: {
           name,
@@ -140,6 +140,7 @@ export const RegisterName: React.FC = () => {
           duration,
           nameHash,
           resolverAddr,
+          payment,
         },
       });
 

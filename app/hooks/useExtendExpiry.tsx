@@ -1,8 +1,9 @@
 import { useReadContract, useWriteContract } from "wagmi";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData, parseEther } from "viem";
-import { SECONDS } from "@/services/constants";
+import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
 import { RentPrice, Response } from "@/services/interfaces";
+import { Payment } from "@/redux/domain/domainSlice";
 
 import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
@@ -20,6 +21,8 @@ export interface ExtendProps {
   year: number;
 
   owner: Address | undefined;
+
+  payment?: Payment;
 }
 
 export interface RenewProps {
@@ -27,26 +30,29 @@ export interface RenewProps {
   duration: number;
   owner: Address | undefined;
   fees: {
-    rent: string;
-    totalFee: string;
+    rent: number;
+    totalFee: number;
   };
 }
 
 export default function useExtend(props: ExtendProps) {
-  const { name, year, owner } = props;
+  const { name, year, owner, payment = PAYMENT_METHOD[0] } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
-  const { writeContractAsync: renewAsync } = useWriteContract();
 
+  const { writeContractAsync: renewAsync } = useWriteContract();
   const { abi, address } = controller;
 
   const duration = year * SECONDS;
+  const token = payment.address;
 
   // #1. Get the estimated gas fee to be used in Transaction Fee field
   const encodedFunction = encodeFunctionData({
     abi,
-    functionName: "renew",
-    args: [name, duration],
+    // functionName: "renew",
+    // args: [name, duration],
+    functionName: "renewWithERC20",
+    args: [name, duration, token],
   });
 
   const { estimatedGas, gasPrice } = useEstimateRegistration({
@@ -58,8 +64,10 @@ export default function useExtend(props: ExtendProps) {
   const { data: rentPrice } = useReadContract({
     abi,
     address,
-    functionName: "rentPrice",
-    args: [name, duration],
+    // functionName: "rentPrice",
+    // args: [name, duration],
+    functionName: "rentERC20Price",
+    args: [token, name, duration],
     query: { enabled: !isEmpty(name) },
   });
 
@@ -67,15 +75,19 @@ export default function useExtend(props: ExtendProps) {
     const { name, duration, fees } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
 
+    const value = parseEther(fees.totalFee.toString());
+
     if (name && duration) {
       try {
         const renewResponse = await renewAsync({
           abi,
           address,
-          functionName: "renew",
+          // functionName: "renew",
+          // args: [name, duration],
+          functionName: "renewWithERC20",
           account: owner,
-          value: parseEther(fees.totalFee),
-          args: [name, duration],
+          value: value,
+          args: [name, duration, token],
         });
 
         response.data = renewResponse;
@@ -85,6 +97,7 @@ export default function useExtend(props: ExtendProps) {
       }
     }
 
+    console.log("extend response:: ", response);
     return response;
   };
 
