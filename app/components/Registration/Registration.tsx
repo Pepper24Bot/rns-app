@@ -8,6 +8,7 @@ import {
   Relative,
   BoxContainer,
   Tip,
+  ShareButton,
 } from "@/components/Theme/StyledGlobal";
 import { Divider, Grid, alpha, styled } from "@mui/material";
 import {
@@ -22,6 +23,7 @@ import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlSlice";
+import { parseCookie } from "@/services/utils";
 
 import Image from "next/image";
 import useNameDetails from "@/hooks/useNameDetails";
@@ -29,14 +31,6 @@ import useRegister from "@/hooks/useRegister";
 import Form from "./Form";
 import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
-
-const ShareButton = styled(ActionButton)(({ theme }) => ({
-  "&.MuiButton-contained": {
-    border: `solid 1px ${alpha(theme.palette.primary.dark, 0.75)}`,
-    backgroundColor: theme.palette.background.paper,
-    padding: 0,
-  },
-}));
 
 const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
   padding: "8px 16px",
@@ -64,6 +58,7 @@ export const RegisterName: React.FC = () => {
   const { isModalOpen } = useModal();
 
   const dispatch = useDispatch();
+  const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
@@ -254,9 +249,7 @@ export const RegisterName: React.FC = () => {
       )}
 
       {/* Only show the share button when the registration is successful */}
-      {/* This is temporary, revert once testing is done */}
-      {/* {true && ( */}
-      {isRegisterSuccess && data?.blockHash && (
+      {!isTweetVerified && isRegisterSuccess && data?.blockHash && (
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip>

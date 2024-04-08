@@ -15,9 +15,14 @@ import {
   Link,
   CropOriginal,
   SwapHoriz,
+  X,
 } from "@mui/icons-material";
-import { Flex, SecondaryLabel } from "@/components/Theme/StyledGlobal";
-import { getExpiration, getMaskedAddress } from "@/services/utils";
+import {
+  Flex,
+  SecondaryLabel,
+  ShareButton,
+} from "@/components/Theme/StyledGlobal";
+import { getExpiration, getMaskedAddress, parseCookie } from "@/services/utils";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/services/constants";
@@ -43,6 +48,10 @@ const ImageContainer = styled(Grid)(({ theme }) => ({
 
 const Summary = styled(Grid)(({ theme }) => ({
   padding: "20px 30px",
+}));
+
+const ShareContainer = styled(Summary)(({ theme }) => ({
+  padding: "10px 30px 20px 30px",
 }));
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
@@ -108,6 +117,17 @@ const TransferIcon = styled(SwapHoriz)(({ theme }) => ({
   marginRight: "6px",
 }));
 
+const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
+  padding: "6px 10px",
+  textTransform: "uppercase",
+  fontWeight: FONT_WEIGHT.Bold,
+}));
+
+const TwitterIcon = styled(X)(({ theme }) => ({
+  margin: "6px 8px",
+  fontSize: "16px",
+}));
+
 export interface Name {
   item: NameWrapped;
 }
@@ -119,6 +139,8 @@ export const NameCard: React.FC<Name> = (props: Name) => {
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
+
+  const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const handleMenuSelect = (menuOption: Option) => {
     toggleModal({
@@ -208,6 +230,25 @@ export const NameCard: React.FC<Name> = (props: Name) => {
               />
             </Grid>
           </Summary>
+          {!isTweetVerified && (
+            <ShareContainer>
+              <ShareButton
+                variant="contained"
+                onClick={() => {
+                  toggleModal({
+                    id: "Share RNS",
+                    title: "",
+                    fullHeight: true,
+                    fullWidth: true,
+                  });
+                }}
+              >
+                <TwitterIcon fontSize="small" />
+                <Divider orientation="vertical" flexItem />
+                <ShareLabel>Share</ShareLabel>
+              </ShareButton>
+            </ShareContainer>
+          )}
         </ItemContainer>
       </Container>
     </Grid>

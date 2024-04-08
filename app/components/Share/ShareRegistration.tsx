@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgress, Grid, alpha, darken, styled } from "@mui/material";
+import {
+  CircularProgress,
+  Divider as MuiDivider,
+  Grid,
+  alpha,
+  darken,
+  styled,
+} from "@mui/material";
 import {
   ActionButton,
   FlexCenter,
@@ -30,7 +37,7 @@ const Content = styled(Grid)(({ theme }) => ({
 }));
 
 const TweetContainer = styled(Container)(({ theme }) => ({
-  backgroundColor: darken(theme.palette.background.darker, 0.25),
+  backgroundColor: darken(theme.palette.background.darker, 0.6),
 }));
 
 const StepLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -62,6 +69,10 @@ const Verified = styled(ButtonLabel)(({ theme }) => ({
 
 const Failed = styled(ButtonLabel)(({ theme }) => ({
   color: red[600],
+}));
+
+const Divider = styled(MuiDivider)(({ theme }) => ({
+  borderColor: alpha(theme.palette.primary.main, 0.15),
 }));
 
 const ButtonContainer = styled(FlexCenter)(({ theme }) => ({
@@ -223,7 +234,7 @@ export const ShareRegistration: React.FC = () => {
 
   return (
     <FlexCenter container position="relative">
-      <Container item xs={4}>
+      <Container item xs={3.95}>
         <Content container>
           <Grid item xs={12} height="fit-content">
             <Bullet index={1} />
@@ -261,7 +272,8 @@ export const ShareRegistration: React.FC = () => {
           </ButtonContainer>
         </Content>
       </Container>
-      <TweetContainer item xs={4}>
+      <Divider orientation="vertical" flexItem />
+      <TweetContainer item xs={3.95}>
         <Content container>
           <Grid item xs={12} height="fit-content">
             <Bullet index={2} />
@@ -284,7 +296,8 @@ export const ShareRegistration: React.FC = () => {
           </ButtonContainer>
         </Content>
       </TweetContainer>
-      <Container item xs={4}>
+      <Divider orientation="vertical" flexItem />
+      <Container item xs={3.95}>
         <Content container>
           <Grid item xs={12} height="fit-content">
             <Bullet index={3} />
@@ -312,7 +325,7 @@ export const ShareRegistration: React.FC = () => {
               ) : isVerifyFailed ? (
                 <Failed>Verfication Failed</Failed>
               ) : (
-                <ButtonLabel status={false ? "disabled" : ""}>
+                <ButtonLabel status={isEmpty(userId) ? "disabled" : ""}>
                   Verify
                 </ButtonLabel>
               )}

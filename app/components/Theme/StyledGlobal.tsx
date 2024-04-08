@@ -125,6 +125,15 @@ export const SocialButton = styled(ToolbarButton)(({ theme }) => ({
   },
 }));
 
+export const ShareButton = styled(ActionButton)(({ theme }) => ({
+  "&.MuiButton-contained": {
+    borderRadius: "4px",
+    border: `solid 1px ${alpha(theme.palette.primary.dark, 0.75)}`,
+    backgroundColor: theme.palette.background.paper,
+    padding: 0,
+  },
+}));
+
 export const BaseIconButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
   borderRadius: "8px",
