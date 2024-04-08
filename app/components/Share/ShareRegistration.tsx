@@ -127,7 +127,7 @@ const Bullet: React.FC<BulletProps> = (props: BulletProps) => {
 export const ShareRegistration: React.FC = () => {
   const params = useSearchParams();
 
-  const redirectUri = process.env.NEXT_PUBLIC_TWITTER_REDIRECT_CLIENT_URI;
+  const redirectUri = `${process.env.NEXT_PUBLIC_TWITTER_API_URL}/auth/twitter`;
   const clientId = process.env.NEXT_PUBLIC_TWITTER_API_CLIENT_ID;
 
   const isAccessDenied = params.get("error") === "access_denied";

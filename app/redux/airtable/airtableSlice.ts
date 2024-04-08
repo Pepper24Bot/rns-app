@@ -4,7 +4,7 @@ export interface EmailProps {
     email: string
 }
 
-const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+const apiKey = process.env.NEXT_PUBLIC_AIRTABLE_API_KEY;
 const baseId = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID;
 const airTableUrl = process.env.NEXT_PUBLIC_AIRTABLE_URL;
 

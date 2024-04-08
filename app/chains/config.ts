@@ -5,8 +5,7 @@ import { root } from './root'
 import { porcini } from './porcini'
 
 // TODO: Create an official RNS project in WalletConnect
-// TODO: Move this to .env
-const projectId = '1eb80f5c8feab7837860b4c8588d1171'
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || ""
 
 export const config = createConfig({
     chains: [porcini],
