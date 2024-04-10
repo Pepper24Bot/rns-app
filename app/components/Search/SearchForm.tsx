@@ -171,7 +171,6 @@ export const SearchForm: React.FC = () => {
     setAnchorEl(searchFieldRef.current);
     try {
       const normalized = normalize(value);
-      console.log("normalized:: ", normalized);
     } catch (error) {
       console.log("error:: ", error);
       setIsNameInvalid(true);

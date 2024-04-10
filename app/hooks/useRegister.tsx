@@ -18,7 +18,7 @@ export interface RegisterProps {
     name: string;
     owner: Address;
     duration: number;
-    nameHash: string;
+    secret: string;
     resolverAddr: Address;
     payment?: Payment;
   };
@@ -39,6 +39,46 @@ export default function useRegister() {
   const { writeContractAsync: commitAsync } = useWriteContract();
   const { writeContractAsync: approveAsync } = useWriteContract();
   const { writeContractAsync: registerAsync } = useWriteContract();
+
+  const handleApproval = async (props: ApprovalProps) => {
+    const { controller, payment = PAYMENT_METHOD[0], fee } = props;
+
+    const response: Response = { error: null, isSuccess: false, data: null };
+
+    const spender = controller.address as Address;
+    const tokenAddr = payment?.address as Address;
+
+    const value = parseUnits(fee.toString(), payment?.decimals);
+
+    try {
+      const token = await simulateContract(config, {
+        abi: erc20Abi,
+        address: tokenAddr,
+        functionName: "approve",
+        args: [spender, value],
+      });
+
+      console.log("token:: ", token);
+
+      const approvalResponse = await approveAsync(token.request);
+
+      const receipt = await waitForTransactionReceipt(config, {
+        hash: approvalResponse,
+      });
+
+      response.isSuccess = true;
+      response.data = {
+        hash: approvalResponse,
+        receipt,
+      };
+    } catch (error) {
+      response.error = error as string;
+    }
+
+    console.log("response:: ", response);
+    console.log("-----------------------");
+    return response;
+  };
 
   const handleCommit = async (props: CommitProps) => {
     const { hash, controller } = props;
@@ -66,46 +106,6 @@ export default function useRegister() {
         response.error = error as string;
       }
     }
-    return response;
-  };
-
-  const handleApproval = async (props: ApprovalProps) => {
-    const { controller, payment = PAYMENT_METHOD[0], fee } = props;
-
-    const response: Response = { error: null, isSuccess: false, data: null };
-
-    const spender = controller.address as Address;
-    const tokenAddr = payment?.address as Address;
-
-    // const value = parseEther(fee.toString());
-    const value = parseUnits(fee.toString(), payment?.decimals);
-
-    try {
-      const token = await simulateContract(config, {
-        abi: erc20Abi,
-        address: tokenAddr,
-        functionName: "approve",
-        args: [spender, value],
-      });
-
-      const approvalResponse = await approveAsync(token.request);
-
-      const receipt = await waitForTransactionReceipt(config, {
-        hash: approvalResponse,
-      });
-
-      response.isSuccess = true;
-      response.data = {
-        hash: approvalResponse,
-        receipt,
-      };
-
-      console.log("exiting approval try-catch");
-    } catch (error) {
-      response.error = error as string;
-    }
-
-    console.log("response:: ", response);
     return response;
   };
 
@@ -153,7 +153,7 @@ export default function useRegister() {
           args.name,
           args.owner,
           args.duration,
-          args.nameHash,
+          args.secret,
           args.resolverAddr,
           [],
           false,
@@ -161,7 +161,6 @@ export default function useRegister() {
           payment.address,
         ],
       });
-
       console.log("register:: ", register);
 
       const registerResponse = await registerAsync(register.request);
@@ -176,13 +175,12 @@ export default function useRegister() {
         hash: registerResponse,
         receipt,
       };
-
-      console.log("exiting try-catch");
     } catch (error) {
       response.error = error as string;
     }
 
     console.log("response:: ", response);
+    console.log("-----------------------");
     return response;
   };
 

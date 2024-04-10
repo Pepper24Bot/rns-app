@@ -77,18 +77,17 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [extendPage, setExtendPage] = useState<number>(1);
   const [isPending, setIsPending] = useState<boolean>(false);
 
+  const [isApprovalSuccess, setIsApprovalSuccess] = useState<boolean>(false);
+
   const [isExtendSuccess, setIsExtendSuccess] = useState<boolean>(false);
   const [isExtendError, setIsExtendError] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
-  const [expiryHash, setExpiryHash] = useState<Address | undefined>(undefined);
-
-  const { data } = useWaitForTransactionReceipt({
-    hash: expiryHash,
-  });
+  const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
 
   const {
     renew,
+    approve,
     duration,
     rentPrice: { base },
     estimatedGas,
@@ -98,6 +97,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     year,
     owner: address,
     payment,
+    isEnabled: isDetailsEnabled,
   });
 
   const { rentFee, totalFee, transactionFee } = useFees({
@@ -107,24 +107,48 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     payment,
   });
 
-  const handleExtend = async () => {
+  const handleApproval = async () => {
+    setIsDetailsEnabled(false);
     setIsProgressVisible(true);
     setIsPending(true);
 
-    const { isSuccess, error, data } = await renew({
-      name: labelName,
-      duration,
-      owner: address,
-      fees: { rent: rentFee, totalFee: totalFee },
+    const { isSuccess } = await approve({
+      fee: totalFee,
     });
 
     if (isSuccess) {
       setIsPending(false);
-      setExpiryHash(data);
+      setIsApprovalSuccess(isSuccess);
     } else {
       setIsExtendError(true);
     }
   };
+
+  const handleExtend = async () => {
+    setIsPending(true);
+
+    if (isApprovalSuccess) {
+      const { isSuccess, error, data } = await renew({
+        name: labelName,
+        duration,
+        owner: address,
+        fees: { rent: rentFee, totalFee: totalFee },
+      });
+
+      if (isSuccess) {
+        setIsPending(false);
+
+        dispatch(graphqlApi.util.invalidateTags(["Name"]));
+        setIsExtendSuccess(true);
+      } else {
+        setIsExtendError(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleExtend();
+  }, [isApprovalSuccess]);
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
@@ -133,14 +157,6 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
       updateName({ ...nameInitialState });
     }
   }, [isModalOpen]);
-
-  useEffect(() => {
-    if (data?.blockHash) {
-      // invalidate Name tag to trigger refetch of the useGetName hooks
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsExtendSuccess(true);
-    }
-  }, [data?.blockHash]);
 
   return (
     <Grid container mt={6} minWidth={250} sx={{ placeContent: "center" }}>
@@ -218,7 +234,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                     setExtendPage(extendPage + 1);
                     updateName({ fee: { total: totalFee } });
                   } else {
-                    handleExtend();
+                    // handleExtend();
+                    handleApproval();
                   }
                 }}
               >

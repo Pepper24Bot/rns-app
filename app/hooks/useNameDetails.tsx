@@ -24,6 +24,8 @@ export interface RegistrationProps {
   owner: Address | undefined;
 
   payment?: Payment;
+
+  isEnabled?: boolean;
 }
 
 export default function useNameDetails(props: RegistrationProps) {
@@ -31,7 +33,8 @@ export default function useNameDetails(props: RegistrationProps) {
     name,
     year,
     payment,
-    owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account - dummy
+    owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account
+    isEnabled,
   } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
@@ -48,7 +51,7 @@ export default function useNameDetails(props: RegistrationProps) {
   };
 
   const { data, isSuccess, isPending } = useReadContracts({
-    query: { enabled: !isEmpty(name) },
+    query: { enabled: !isEmpty(name) && isEnabled },
     contracts: [
       // #1. Get the availability of the name
       { ...contract, functionName: "available", args: [name] },
@@ -65,7 +68,7 @@ export default function useNameDetails(props: RegistrationProps) {
   const [availability, rentPrice] = data || [];
 
   // #3. Get the namehash
-  const nameHash = namehash(name);
+  const secret = namehash(name);
 
   // #4. Get the resolver's address
   const resolverAddr = resolver.address;
@@ -78,7 +81,7 @@ export default function useNameDetails(props: RegistrationProps) {
     name,
     owner as Address,
     duration,
-    nameHash,
+    secret,
     resolverAddr,
     [],
     false,
@@ -90,14 +93,14 @@ export default function useNameDetails(props: RegistrationProps) {
     address,
     functionName: "makeCommitment",
     args: commitmentArgs,
-    query: { enabled: shouldMakeACommitment },
+    query: { enabled: shouldMakeACommitment && isEnabled },
   });
 
   // #6. Get the estimated gas fee to be used in Transaction Fee field
   const encodedFunction = encodeFunctionData({
     abi,
-    functionName: "register",
-    args: commitmentArgs,
+    functionName: "registerWithERC20",
+    args: [...commitmentArgs, token],
   });
 
   const { estimatedGas, gasPrice } = useEstimateRegistration({
@@ -106,8 +109,8 @@ export default function useNameDetails(props: RegistrationProps) {
   });
 
   const fallBackRent: RentPrice = {
-    base: BigInt("0"),
-    premium: BigInt("0"),
+    base: BigInt(0),
+    premium: BigInt(0),
   };
 
   const rentFee = rentPrice?.result
@@ -123,7 +126,7 @@ export default function useNameDetails(props: RegistrationProps) {
     resolver,
     resolverAddr,
     duration,
-    nameHash,
+    secret,
     hash: commitment,
     args: commitmentArgs,
   };

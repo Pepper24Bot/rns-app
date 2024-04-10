@@ -44,7 +44,7 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
             ? prevProgress
             : prevProgress + 1;
         });
-      }, 1600);
+      }, 2000);
 
       return () => {
         clearInterval(timer);
