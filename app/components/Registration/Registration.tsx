@@ -15,7 +15,12 @@ import {
   initialState as nameInitialState,
   useDomainState,
 } from "@/redux/domain/domainSlice";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address } from "viem";
 import { COMMITMENT_AGE } from "@/services/constants";
@@ -62,6 +67,7 @@ export const RegisterName: React.FC = () => {
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
+  const [isApprovalSuccess, setIsApprovalSuccess] = useState<boolean>(false);
   const [isRegisterSuccess, setIsRegisterSuccess] = useState<boolean>(false);
   const [isRegisterError, setIsRegisterError] = useState<boolean>(false);
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -90,7 +96,7 @@ export const RegisterName: React.FC = () => {
     payment,
   });
 
-  const { commit, register } = useRegister();
+  const { commit, register, approve } = useRegister();
   const { rentFee, totalFee, transactionFee } = useFees({
     rent: base,
     gasPrice: estimatedGasPrice,
@@ -98,12 +104,13 @@ export const RegisterName: React.FC = () => {
     payment,
   });
 
-  const handleCommit = async () => {
+  /** Approve the token transaction first before writing to contract */
+  const handleApproval = async () => {
+    console.log("entering handleApprove...");
     setIsProgressVisible(true);
     setIsPending(true);
 
-    const hashStr = hash as unknown as string;
-    const { isSuccess } = await commit({ hash: hashStr, controller });
+    const { isSuccess } = await approve({ controller, payment, fee: totalFee });
 
     if (!isSuccess) {
       setIsRegisterError(true);
@@ -111,17 +118,37 @@ export const RegisterName: React.FC = () => {
       setIsPending(false);
     }
 
-    setTimeout(() => {
-      if (isSuccess) {
-        setIsCommitSuccess(isSuccess);
-      }
+    setTimeout(async () => {
+      setIsApprovalSuccess(isSuccess);
+      console.log("exiting approval timeout");
     }, COMMITMENT_AGE);
   };
 
-  const handleRegister = async () => {
-    if (isCommitSuccess) {
-      console.log("entering handleRegister...");
+  const handleCommit = async () => {
+    if (isApprovalSuccess) {
+      console.log("entering handleCommit...");
+      setIsProgressVisible(true);
       setIsPending(true);
+
+      const hashStr = hash as unknown as string;
+      const { isSuccess } = await commit({ hash: hashStr, controller });
+
+      if (!isSuccess) {
+        setIsRegisterError(true);
+      } else {
+        setIsPending(false);
+      }
+
+      setTimeout(() => {
+        setIsCommitSuccess(isSuccess);
+        console.log("exiting commit timeout");
+      }, COMMITMENT_AGE);
+    }
+  };
+
+  const handleRegister = async () => {
+    if (isApprovalSuccess) {
+      console.log("entering handleRegister...");
       const { isSuccess, data } = await register({
         controller,
         fees: {
@@ -141,12 +168,17 @@ export const RegisterName: React.FC = () => {
 
       if (isSuccess) {
         setIsPending(false);
-        setRegistrationHash(data);
+        setRegistrationHash(data.hash);
       } else {
         setIsRegisterError(true);
+        setIsPending(true);
       }
     }
   };
+
+  useEffect(() => {
+    handleCommit();
+  }, [isApprovalSuccess]);
 
   useEffect(() => {
     handleRegister();
@@ -217,7 +249,8 @@ export const RegisterName: React.FC = () => {
                 disabled={isProgressVisible && isRegisterSuccess}
                 variant="contained"
                 onClick={() => {
-                  handleCommit();
+                  // handleCommit();
+                  handleApproval();
                 }}
               >
                 Confirm

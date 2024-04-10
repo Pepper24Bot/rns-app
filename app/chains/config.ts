@@ -1,5 +1,5 @@
-import { http, createConfig } from 'wagmi'
-import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
+import { http, createConfig } from '@wagmi/core'
+import { injected, walletConnect, coinbaseWallet } from '@wagmi/connectors'
 import { createPublicClient } from 'viem'
 import { root } from './root'
 import { porcini } from './porcini'
@@ -23,6 +23,7 @@ export const config = createConfig({
         // [mainnet.id]: http(),
         [porcini.id]: http()
     },
+    ssr: true
 })
 
 export const publicClient = createPublicClient({
