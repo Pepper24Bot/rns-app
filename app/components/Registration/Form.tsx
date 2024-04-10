@@ -132,11 +132,11 @@ export const Form: React.FC<Form> = (props: Form) => {
           <SummaryContainer>
             <Transaction>
               <TransactionLabel>{`${year} ${getYearLabel()} Registration`}</TransactionLabel>
-              <Value>{`${rentFee} ${payment?.label}`}</Value>
+              <Value>{`${rentFee?.toFixed(6)} ${payment?.label}`}</Value>
             </Transaction>
             <Transaction>
               <TransactionLabel>Transaction Fee</TransactionLabel>
-              <Value>{`${transactionFee} ${payment?.label}`}</Value>
+              <Value>{`${transactionFee?.toFixed(6)} ${payment?.label}`}</Value>
             </Transaction>
             <Transaction>
               <TransactionLabel>Total</TransactionLabel>

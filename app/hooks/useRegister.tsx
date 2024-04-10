@@ -117,38 +117,12 @@ export default function useRegister() {
 
     const payment = args.payment || PAYMENT_METHOD[0];
 
-    // TODO: Figure this out, is this correct
-    const value = parseUnits(fees.totalFee.toString(), payment.decimals);
-    // const value = parseEther(fees.totalFee.toString());
-
     try {
-      // const registerResponse = await registerAsync({
-      //   abi,
-      //   address,
-      //   functionName: "registerWithERC20",
-      //   account: args.owner,
-      //   value,
-      //   args: [
-      //     args.name,
-      //     args.owner,
-      //     args.duration,
-      //     args.nameHash,
-      //     args.resolverAddr,
-      //     [],
-      //     false,
-      //     0,
-      //     payment.address,
-      //   ],
-      // });
-      // response.isSuccess = true;
-      // response.data = registerResponse;
-
       const register = await simulateContract(config, {
         abi,
         address,
         functionName: "registerWithERC20",
         account: args.owner,
-        value,
         args: [
           args.name,
           args.owner,

@@ -118,9 +118,6 @@ export default function useExtend(props: ExtendProps) {
     const { name, duration, fees } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
 
-    // const value = parseEther(fees.totalFee.toString());
-    const value = parseUnits(fees.totalFee.toString(), payment.decimals);
-
     if (name && duration) {
       try {
         const renewResponse = await renewAsync({
@@ -128,7 +125,6 @@ export default function useExtend(props: ExtendProps) {
           address,
           functionName: "renewWithERC20",
           account: owner,
-          value: value,
           args: [name, duration, token],
         });
 

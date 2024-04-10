@@ -5,7 +5,7 @@ export const DEFAULT_DEBOUNCE = 500;
 /** https://explorer.rootnet.live/tokens */
 export const PAYMENT_METHOD = [
     { label: "ROOT", decimals: 6, address: "0xcCcCCccC00000001000000000000000000000000" },
-    { label: "USDC", decimals: 6, address: "0xCCcCCcCC00000C64000000000000000000000000" }
+    { label: "USDC", decimals: 18, address: "0xCCcCCcCC00000C64000000000000000000000000" }
 ]
 
 export const SORTING_OPTIONS = [
@@ -25,8 +25,7 @@ export const SORTING_OPTIONS = [
 export const DAY = 24 * 60 * 60;
 export const MIN_REGISTRATION_TIME = 28 * DAY;
 // export const COMMITMENT_AGE = 150000;
-export const COMMITMENT_AGE = 100000;
-// export const COMMITMENT_AGE = 60000;
+export const COMMITMENT_AGE = 90000;
 
 // year in seconds
 export const SECONDS = 31536000;
