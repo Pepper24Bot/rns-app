@@ -69,7 +69,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     // TODO: How to do this properly
     setTimeout(() => {
       closeModal();
-    }, 2000);
+    }, 3000);
   };
 
   const handleRemoveRecord = async () => {

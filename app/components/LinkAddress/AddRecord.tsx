@@ -54,7 +54,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
     // TODO: How to do this properly
     setTimeout(() => {
       closeModal();
-    }, 2000);
+    }, 3000);
   };
 
   const handleSetFuturePass = async () => {

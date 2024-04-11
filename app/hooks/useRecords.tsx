@@ -167,6 +167,7 @@ export default function useRecords(props?: RecordProps) {
           // TODO: how did ens allow null to remove the address but not the contract
           args: [nameHash, EMPTY_ADDRESS],
         });
+        setIsAddressLoading(true);
 
         const receipt = await waitForTransactionReceipt(config, {
           hash: removeResponse,
@@ -183,6 +184,7 @@ export default function useRecords(props?: RecordProps) {
       }
     }
 
+    setIsAddressLoading(false);
     return response;
   };
 
