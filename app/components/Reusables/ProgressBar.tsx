@@ -46,7 +46,7 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
             ? prevProgress
             : prevProgress + 1;
         });
-      }, 2000);
+      }, 600);
 
       return () => {
         clearInterval(timer);
@@ -67,7 +67,7 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
   }, [isSuccess]);
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
       <Box sx={{ width: "100%", mr: 1 }}>
         {isError ? (
           <LoadingText>Transaction failed, please try again.</LoadingText>

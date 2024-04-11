@@ -6,6 +6,7 @@ import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
 import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/chains/config";
+import { useState } from "react";
 
 export interface RegisterProps {
   controller: ContractDetails;
@@ -40,6 +41,42 @@ export default function useRegister() {
   const { writeContractAsync: approveAsync } = useWriteContract();
   const { writeContractAsync: registerAsync } = useWriteContract();
 
+  const [isCommitLoading, setCommitLoading] = useState(false);
+  const [isApprovalLoading, setApprovalLoading] = useState(false);
+  const [isRegisterLoading, setRegisterLoading] = useState(false);
+
+  const handleCommit = async (props: CommitProps) => {
+    const { hash, controller } = props;
+    const response: Response = { error: null, isSuccess: false };
+
+    if (hash) {
+      try {
+        const commitResponse = await commitAsync({
+          abi: controller.abi,
+          address: controller.address,
+          functionName: "commit",
+          args: [hash],
+        });
+        setCommitLoading(true);
+
+        const receipt = await waitForTransactionReceipt(config, {
+          hash: commitResponse,
+        });
+
+        response.isSuccess = true;
+        response.data = {
+          hash: commitResponse,
+          receipt,
+        };
+      } catch (error) {
+        response.error = error as string;
+      }
+    }
+
+    setCommitLoading(false);
+    return response;
+  };
+
   const handleApproval = async (props: ApprovalProps) => {
     const { controller, payment = PAYMENT_METHOD[0], fee } = props;
 
@@ -58,9 +95,8 @@ export default function useRegister() {
         args: [spender, value],
       });
 
-      console.log("token:: ", token);
-
       const approvalResponse = await approveAsync(token.request);
+      setApprovalLoading(true);
 
       const receipt = await waitForTransactionReceipt(config, {
         hash: approvalResponse,
@@ -75,37 +111,7 @@ export default function useRegister() {
       response.error = error as string;
     }
 
-    console.log("response:: ", response);
-    console.log("-----------------------");
-    return response;
-  };
-
-  const handleCommit = async (props: CommitProps) => {
-    const { hash, controller } = props;
-    const response: Response = { error: null, isSuccess: false };
-
-    if (hash) {
-      try {
-        const commitResponse = await commitAsync({
-          abi: controller.abi,
-          address: controller.address,
-          functionName: "commit",
-          args: [hash],
-        });
-
-        const receipt = await waitForTransactionReceipt(config, {
-          hash: commitResponse,
-        });
-
-        response.isSuccess = true;
-        response.data = {
-          hash: commitResponse,
-          receipt,
-        };
-      } catch (error) {
-        response.error = error as string;
-      }
-    }
+    setApprovalLoading(false);
     return response;
   };
 
@@ -113,7 +119,6 @@ export default function useRegister() {
     const { controller, fees, args } = props;
     const { abi, address } = controller;
     const response: Response = { error: null, isSuccess: false, data: null };
-    console.log("entering registration hook...");
 
     const payment = args.payment || PAYMENT_METHOD[0];
 
@@ -135,10 +140,9 @@ export default function useRegister() {
           payment.address,
         ],
       });
-      console.log("register:: ", register);
 
       const registerResponse = await registerAsync(register.request);
-      console.log("registerResponse:: ", registerResponse);
+      setRegisterLoading(true);
 
       const receipt = await waitForTransactionReceipt(config, {
         hash: registerResponse,
@@ -153,8 +157,7 @@ export default function useRegister() {
       response.error = error as string;
     }
 
-    console.log("response:: ", response);
-    console.log("-----------------------");
+    setRegisterLoading(false);
     return response;
   };
 
@@ -162,5 +165,9 @@ export default function useRegister() {
     commit: handleCommit,
     approve: handleApproval,
     register: handleRegister,
+    isLoading: isCommitLoading || isApprovalLoading || isRegisterLoading,
+    isCommitLoading,
+    isApprovalLoading,
+    isRegisterLoading,
   };
 }
