@@ -50,6 +50,13 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
     setIsSuccess(false);
   };
 
+  const toggleModal = () => {
+    // TODO: How to do this properly
+    setTimeout(() => {
+      closeModal();
+    }, 2000);
+  };
+
   const handleSetFuturePass = async () => {
     const isValid = isAddressFuturePass(futurePassAddr);
     setIsFuturePassValid(isValid);
@@ -66,7 +73,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
       if (isSuccess) {
         dispatch(graphqlApi.util.invalidateTags(["Name"]));
         setIsSuccess(isSuccess);
-        closeModal();
+        toggleModal();
       } else {
         setIsError(true);
       }
