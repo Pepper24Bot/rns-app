@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import {
   ModalInputField as InputField,
@@ -12,65 +12,68 @@ import {
 import { Address } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { isAddressFuturePass } from "@/services/utils";
-import { useWaitForTransactionReceipt } from "wagmi";
 import { graphqlApi } from "@/redux/graphql/graphqlSlice";
 import { useDispatch } from "react-redux";
+import { isEmpty } from "lodash";
+import { Link } from "./LinkAddress";
 
 import useRecords from "@/hooks/useRecords";
-import Link from "./Link";
 import ProgressBar from "../Reusables/ProgressBar";
 
-export const Form: React.FC<Link> = (props: Link) => {
+export const AddRecord: React.FC<Link> = (props: Link) => {
   const { domain } = props;
+  const { closeModal } = useModalState();
+
   const dispatch = useDispatch();
 
-  const { closeModal } = useModalState();
-  const { setAddressRecord, setTextRecord } = useRecords();
+  /** Use the isLoading Flag here for the progress bar */
+  const { setAddressRecord, isLoading } = useRecords({ type: "AddressRecord" });
 
+  /** Status Flags */
   const [isPending, setIsPending] = useState<boolean>(false);
-  const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
-  const [isLinkSuccess, setIsLinkSuccess] = useState<boolean>(false);
-  const [isLinkError, setIsLinkError] = useState<boolean>(false);
-
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [resetProgress, setResetProgress] = useState<boolean>(false);
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
-  const [linkHash, setLinkHash] = useState<Address | undefined>(undefined);
 
+  const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
   const [futurePassAddr, setFuturePassAddr] = useState<string>("");
 
-  const { data } = useWaitForTransactionReceipt({
-    hash: linkHash,
-  });
+  const initializeFlags = () => {
+    // display progress bar
+    setIsPending(true);
+    setIsProgressVisible(true);
+    // should always start to 0
+    setResetProgress(true);
+    // in case the user rejected the transaction, reset the error status
+    setIsError(false);
+    setIsSuccess(false);
+  };
 
   const handleSetFuturePass = async () => {
     const isValid = isAddressFuturePass(futurePassAddr);
     setIsFuturePassValid(isValid);
 
     if (futurePassAddr && domain?.name && isValid) {
-      setIsProgressVisible(true);
-      setIsPending(true);
+      initializeFlags();
 
-      const { isSuccess, error, data } = await setAddressRecord({
+      const { isSuccess } = await setAddressRecord({
         name: domain?.name || "",
         futurePassAddress: futurePassAddr as Address,
         resolverAddress: domain?.resolver?.address,
       });
 
       if (isSuccess) {
-        setIsPending(false);
-        setLinkHash(data);
+        dispatch(graphqlApi.util.invalidateTags(["Name"]));
+        setIsSuccess(isSuccess);
+        closeModal();
       } else {
-        setIsLinkError(true);
+        setIsError(true);
       }
     }
+    setResetProgress(false);
+    setIsPending(false);
   };
-
-  useEffect(() => {
-    if (data?.blockHash) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsLinkSuccess(true);
-      closeModal();
-    }
-  }, [data?.blockHash]);
 
   return (
     <Grid item xs display="grid" alignContent="space-between">
@@ -88,6 +91,11 @@ export const Form: React.FC<Link> = (props: Link) => {
           onChange={(event) => {
             const { value } = event.target;
             setFuturePassAddr(value);
+
+            /**
+             * If inputted address is invalid, and an onchange has been triggered,
+             * reset the invalid field flag
+             */
             if (!isFuturePassValid) {
               setIsFuturePassValid(true);
             }
@@ -97,10 +105,11 @@ export const Form: React.FC<Link> = (props: Link) => {
           <Relative width="100%">
             <BoxContainer isVisible={isProgressVisible}>
               <ProgressBar
-                isError={isLinkError}
-                isPaused={isPending}
+                isError={isError}
+                isPaused={!isLoading}
                 isVisible={isProgressVisible}
-                isSuccess={isLinkSuccess}
+                isSuccess={isSuccess}
+                resetProgress={resetProgress}
               />
             </BoxContainer>
             <FlexCenter>
@@ -112,6 +121,7 @@ export const Form: React.FC<Link> = (props: Link) => {
       <Grid mt={3}>
         <FlexRight>
           <ActionButton
+            disabled={isEmpty(futurePassAddr) || isPending}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
@@ -121,6 +131,7 @@ export const Form: React.FC<Link> = (props: Link) => {
             Cancel
           </ActionButton>
           <ActionButton
+            disabled={isEmpty(futurePassAddr) || isPending}
             variant="contained"
             onClick={() => {
               handleSetFuturePass();
@@ -133,3 +144,5 @@ export const Form: React.FC<Link> = (props: Link) => {
     </Grid>
   );
 };
+
+export default AddRecord;

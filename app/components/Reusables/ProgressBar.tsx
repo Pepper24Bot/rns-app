@@ -16,6 +16,7 @@ export interface ProgressBar extends LinearProgressProps {
   isPaused?: boolean;
   isVisible?: boolean;
   isSuccess?: boolean;
+  resetProgress?: boolean;
 }
 
 const LoadingText = styled(Typography)(({ theme }) => ({
@@ -31,6 +32,7 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
     isError,
     isPaused,
     isVisible = true,
+    resetProgress = false,
     ...progressProps
   } = props;
 
@@ -51,6 +53,12 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
       };
     }
   }, [isPaused, isVisible]);
+
+  useEffect(() => {
+    if (resetProgress) {
+      setProgress(0);
+    }
+  }, [resetProgress]);
 
   useEffect(() => {
     if (isSuccess) {

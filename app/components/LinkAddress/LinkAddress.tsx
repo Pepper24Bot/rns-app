@@ -1,10 +1,10 @@
 import React from "react";
 import { Grid } from "@mui/material";
-import { Form } from "./Form";
 import { Domain } from "@/redux/graphql/hooks";
 import { EMPTY_ADDRESS } from "@/services/constants";
 
-import Details from "./Details";
+import AddRecord from "./AddRecord";
+import AddressRecord from "./AddressRecord";
 import EnsImage from "../Reusables/EnsImage";
 
 export interface Link {
@@ -14,7 +14,7 @@ export interface Link {
   };
 }
 
-export const Link: React.FC<Link> = (props: Link) => {
+export const LinkAddress: React.FC<Link> = (props: Link) => {
   const { domain } = props;
 
   const futurePassAddr = domain?.resolver?.addr?.id;
@@ -25,9 +25,9 @@ export const Link: React.FC<Link> = (props: Link) => {
   return (
     <Grid container mt={6} minWidth={250} maxWidth={700}>
       <EnsImage />
-      {!hasLinkedAddr ? <Form {...props} /> : <Details {...props} />}
+      {hasLinkedAddr ? <AddressRecord {...props} /> : <AddRecord {...props} />}
     </Grid>
   );
 };
 
-export default Link;
+export default LinkAddress;

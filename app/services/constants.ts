@@ -25,7 +25,7 @@ export const SORTING_OPTIONS = [
 export const DAY = 24 * 60 * 60;
 export const MIN_REGISTRATION_TIME = 28 * DAY;
 // export const COMMITMENT_AGE = 150000;
-export const COMMITMENT_AGE = 90000;
+export const COMMITMENT_AGE = 60000;
 
 // year in seconds
 export const SECONDS = 31536000;

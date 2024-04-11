@@ -21,7 +21,7 @@ import SwitchNetwork from "../Wallet/SwitchNetwork";
 import Registration from "../Registration/Registration";
 import RegistrationDetails from "../Registration/Details";
 import Expiry from "../Expiry/Expiry";
-import Link from "../Link/Link";
+import LinkAddress from "../LinkAddress/LinkAddress";
 import ShareRegistration from "../Share/ShareRegistration";
 
 interface ContentProps {
@@ -150,7 +150,7 @@ export const ModalContainer: React.FC = () => {
       case "Extend Expiry":
         return <Expiry {...props?.data} />;
       case "Link Name":
-        return <Link {...props?.data} />;
+        return <LinkAddress {...props?.data} />;
       case "Share RNS":
         return <ShareRegistration />;
       default:

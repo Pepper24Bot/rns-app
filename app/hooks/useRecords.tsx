@@ -2,9 +2,12 @@ import { useWriteContract } from "wagmi";
 import { Address, namehash } from "viem";
 import { Response } from "@/services/interfaces";
 import { getEnsText } from "viem/actions";
-import { publicClient } from "@/chains/config";
+import { config, publicClient } from "@/chains/config";
 import { normalize } from "viem/ens";
 import { EMPTY_ADDRESS } from "@/services/constants";
+import { waitForTransactionReceipt } from "@wagmi/core";
+import { useState } from "react";
+
 import useContractDetails from "./useContractDetails";
 
 export interface Record {
@@ -25,13 +28,19 @@ export interface PrimaryName {
   address?: Address;
 }
 
-export default function useRecords() {
+export interface RecordProps {
+  type: "TextRecord" | "AddressRecord" | "PrimaryName";
+}
+
+export default function useRecords(props?: RecordProps) {
   const reverse = useContractDetails({ action: "ReverseRegistrar" });
   const universal = useContractDetails({ action: "UniversalResolver" });
   const ownedResolver = useContractDetails({ action: "OwnedResolver" });
   const publicResolver = useContractDetails({ action: "PublicResolver" });
 
   const { writeContractAsync } = useWriteContract();
+
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const handlePrimaryName = async (props: PrimaryName) => {
     const { name } = props;
@@ -47,9 +56,15 @@ export default function useRecords() {
           args: [nameHash],
         });
 
-        console.log("response:: ", response);
+        const receipt = await waitForTransactionReceipt(config, {
+          hash: primaryResponse,
+        });
+
         response.isSuccess = true;
-        response.data = primaryResponse;
+        response.data = {
+          hash: primaryResponse,
+          receipt,
+        };
       } catch (error) {
         console.log("error:: ", error);
         response.error = error as string;
@@ -79,9 +94,15 @@ export default function useRecords() {
           args: [nameHash, key, value],
         });
 
-        console.log("record-response:: ", response);
+        const receipt = await waitForTransactionReceipt(config, {
+          hash: recordResponse,
+        });
+
         response.isSuccess = true;
-        response.data = recordResponse;
+        response.data = {
+          hash: recordResponse,
+          receipt,
+        };
       } catch (error) {
         console.log("error:: ", error);
         response.error = error as string;
@@ -99,7 +120,6 @@ export default function useRecords() {
   const handleAddressRecord = async (props: FuturePassRecord) => {
     const { name, futurePassAddress, resolverAddress } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
-    console.log("props:: ", props);
 
     if (name && resolverAddress) {
       const nameHash = namehash(name);
@@ -111,10 +131,52 @@ export default function useRecords() {
           functionName: "setAddr",
           args: [nameHash, futurePassAddress],
         });
+        // will only set the loading flag as soon as the transasction is approved
+        setIsAddressLoading(true);
 
-        console.log("address-response:: ", addressResponse);
+        const receipt = await waitForTransactionReceipt(config, {
+          hash: addressResponse,
+        });
+
         response.isSuccess = true;
-        response.data = addressResponse;
+        response.data = {
+          hash: addressResponse,
+          receipt,
+        };
+      } catch (error) {
+        response.error = error as string;
+      }
+    }
+
+    setIsAddressLoading(false);
+    return response;
+  };
+
+  const handleRemoveAddress = async (props: Record) => {
+    const { name } = props;
+    const response: Response = { error: null, isSuccess: false, data: null };
+
+    if (name) {
+      const nameHash = namehash(name);
+
+      try {
+        const removeResponse = await writeContractAsync({
+          abi: publicResolver.abi,
+          address: publicResolver.address,
+          functionName: "setAddr",
+          // TODO: how did ens allow null to remove the address but not the contract
+          args: [nameHash, EMPTY_ADDRESS],
+        });
+
+        const receipt = await waitForTransactionReceipt(config, {
+          hash: removeResponse,
+        });
+
+        response.isSuccess = true;
+        response.data = {
+          hash: removeResponse,
+          receipt,
+        };
       } catch (error) {
         console.log("error:: ", error);
         response.error = error as string;
@@ -146,36 +208,13 @@ export default function useRecords() {
     }
   };
 
-  const handleUpdateAddress = async () => {
-    // TODO: implement edit resolver
-  };
-
-  const handleRemoveAddress = async (props: Record) => {
-    const { name } = props;
-    const response: Response = { error: null, isSuccess: false, data: null };
-
-    if (name) {
-      const nameHash = namehash(name);
-
-      try {
-        const removeResponse = await writeContractAsync({
-          abi: publicResolver.abi,
-          address: publicResolver.address,
-          functionName: "setAddr",
-          // TODO: how did ens allow null to remove the address but not the contract
-          args: [nameHash, EMPTY_ADDRESS],
-        });
-
-        console.log("remove-response:: ", removeResponse);
-        response.isSuccess = true;
-        response.data = removeResponse;
-      } catch (error) {
-        console.log("error:: ", error);
-        response.error = error as string;
-      }
+  const getLoadingStatus = () => {
+    const type = props?.type || "AddressRecord";
+    switch (type) {
+      case "AddressRecord":
+      default:
+        return isAddressLoading;
     }
-
-    return response;
   };
 
   return {
@@ -185,5 +224,11 @@ export default function useRecords() {
     setPrimaryName: handlePrimaryName,
     removeAddress: handleRemoveAddress,
     getTextRecord,
+
+    /**
+     * Loading Flags
+     */
+    isLoading: getLoadingStatus(),
+    isAddressLoading,
   };
 }

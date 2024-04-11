@@ -77,12 +77,22 @@ export const ActionButton = styled(BaseButton)(({ theme }) => ({
     )})`,
   },
   "&.MuiButton-contained": {
-    border: `solid 1px ${alpha(grey[50], 0.15)}`,
+    // border: `solid 1px ${alpha(grey[400], 0.15)}`,
+
+    "&.Mui-disabled": {
+      color: grey[700],
+      border: "none",
+      backgroundColor: alpha(theme.palette.primary.dark, 0.25),
+    },
   },
   "&.MuiButton-text": {
     color: "white",
     border: "none",
     padding: "8px 16px",
+
+    "&.Mui-disabled": {
+      color: grey[700],
+    },
 
     [theme.breakpoints.down("md")]: {
       fontSize: "14px",
@@ -217,8 +227,8 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
       fontFamily: "var(--default-font)",
       fontSize: "18px",
       padding: "16px 25px",
-      filter: `drop-shadow(0px 0px 10px ${theme.palette.background.paper})`,
-
+      // filter: `drop-shadow(0px 0px 5px ${theme.palette.background.paper})`,
+      boxShadow: `0 0 10px 2px ${theme.palette.background.paper}`,
       [theme.breakpoints.down("md")]: {
         fontSize: "14px",
       },
@@ -269,7 +279,7 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
         borderColor: alpha(theme.palette.primary.main, 0.5),
       },
       "&.Mui-focused fieldset": {
-        borderColor: alpha(theme.palette.primary.main, 0.5),
+        borderColor: alpha(theme.palette.primary.main, 1),
       },
     },
   },
