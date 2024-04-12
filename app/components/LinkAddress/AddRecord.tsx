@@ -120,7 +120,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
               />
             </BoxContainer>
             <FlexCenter>
-              <Tip isVisible={isProgressVisible}>View Transaction</Tip>
+              <Tip isVisible={isSuccess}>View Transaction</Tip>
             </FlexCenter>
           </Relative>
         </FlexCenter>

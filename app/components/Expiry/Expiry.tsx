@@ -78,9 +78,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [isPending, setIsPending] = useState<boolean>(false);
 
   const [isApprovalSuccess, setIsApprovalSuccess] = useState<boolean>(false);
-
   const [isExtendSuccess, setIsExtendSuccess] = useState<boolean>(false);
-  const [isExtendError, setIsExtendError] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
@@ -92,6 +91,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     rentPrice: { base },
     estimatedGas,
     estimatedGasPrice,
+    isLoading,
   } = useExtend({
     name: labelName,
     year,
@@ -107,26 +107,31 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     payment,
   });
 
-  const handleApproval = async () => {
-    setIsDetailsEnabled(false);
-    setIsProgressVisible(true);
+  const initializeFlags = () => {
+    // display progress bar
     setIsPending(true);
+    setIsProgressVisible(true);
+    // in case the user rejected the transaction, reset the error status
+    setIsError(false);
+    setIsDetailsEnabled(false);
+  };
+
+  const handleApproval = async () => {
+    initializeFlags();
 
     const { isSuccess } = await approve({
       fee: totalFee,
     });
 
     if (isSuccess) {
-      setIsPending(false);
       setIsApprovalSuccess(isSuccess);
     } else {
-      setIsExtendError(true);
+      setIsError(true);
+      setIsPending(false);
     }
   };
 
   const handleExtend = async () => {
-    setIsPending(true);
-
     if (isApprovalSuccess) {
       const { isSuccess, error, data } = await renew({
         name: labelName,
@@ -136,12 +141,11 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
       });
 
       if (isSuccess) {
-        setIsPending(false);
-
         dispatch(graphqlApi.util.invalidateTags(["Name"]));
         setIsExtendSuccess(true);
       } else {
-        setIsExtendError(true);
+        setIsError(true);
+        setIsPending(false);
       }
     }
   };
@@ -190,14 +194,14 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               <Relative width="100%">
                 <BoxContainer isVisible={isProgressVisible}>
                   <ProgressBar
-                    isError={isExtendError}
-                    isPaused={isPending}
+                    isError={isError}
+                    isPaused={!isLoading}
                     isVisible={isProgressVisible}
                     isSuccess={isExtendSuccess}
                   />
                 </BoxContainer>
                 <FlexCenter>
-                  <Tip isVisible={isProgressVisible}>View Transaction</Tip>
+                  <Tip isVisible={isExtendSuccess}>View Transaction</Tip>
                 </FlexCenter>
               </Relative>
             </FlexCenter>
@@ -227,6 +231,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               </ActionButton>
             ) : (
               <ActionButton
+                disabled={isPending}
                 variant="contained"
                 onClick={() => {
                   if (extendPage === 1) {
@@ -234,7 +239,6 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                     setExtendPage(extendPage + 1);
                     updateName({ fee: { total: totalFee } });
                   } else {
-                    // handleExtend();
                     handleApproval();
                   }
                 }}

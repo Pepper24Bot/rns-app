@@ -6,6 +6,7 @@ import { RentPrice, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/chains/config";
+import { useState } from "react";
 
 import useContractDetails from "./useContractDetails";
 import useEstimateRegistration from "./useEstimateRegistration";
@@ -50,6 +51,9 @@ export default function useExtend(props: ExtendProps) {
 
   const { writeContractAsync: renewAsync } = useWriteContract();
   const { writeContractAsync: approveAsync } = useWriteContract();
+
+  const [isApprovalLoading, setApprovalLoading] = useState(false);
+  const [isExtendLoading, setExtendLoading] = useState(false);
 
   const { abi, address } = controller;
 
@@ -96,6 +100,7 @@ export default function useExtend(props: ExtendProps) {
       });
 
       const approvalResponse = await approveAsync(token.request);
+      setApprovalLoading(true);
 
       const receipt = await waitForTransactionReceipt(config, {
         hash: approvalResponse,
@@ -110,6 +115,7 @@ export default function useExtend(props: ExtendProps) {
       response.error = error as string;
     }
 
+    setApprovalLoading(false);
     console.log("extend response:: ", response);
     return response;
   };
@@ -127,6 +133,7 @@ export default function useExtend(props: ExtendProps) {
           account: owner,
           args: [name, duration, token],
         });
+        setExtendLoading(true);
 
         const receipt = await waitForTransactionReceipt(config, {
           hash: renewResponse,
@@ -142,6 +149,7 @@ export default function useExtend(props: ExtendProps) {
       }
     }
 
+    setExtendLoading(false);
     console.log("extend response:: ", response);
     return response;
   };
@@ -162,5 +170,8 @@ export default function useExtend(props: ExtendProps) {
     rentPrice: rentFee,
     renew: handleExtend,
     approve: handleApproval,
+    isLoading: isApprovalLoading || isExtendLoading,
+    isApprovalLoading,
+    isExtendLoading,
   };
 }

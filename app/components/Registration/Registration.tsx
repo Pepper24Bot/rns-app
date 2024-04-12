@@ -192,11 +192,10 @@ export const RegisterName: React.FC = () => {
       });
 
       if (isSuccess) {
-        setIsRegisterSuccess(isSuccess);
-
         // Data Invalidation: Refresh Dashboard
         dispatch(graphqlApi.util.invalidateTags(["Name"]));
         updateName({ status: "Registered" });
+        setIsRegisterSuccess(isSuccess);
       } else {
         setFlagsWhenError();
       }

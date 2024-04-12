@@ -167,11 +167,9 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
               resetProgress={resetProgress}
             />
           </BoxContainer>
-          {isSuccess && (
-            <FlexCenter>
-              <Tip isVisible={isProgressVisible}>View Transaction</Tip>
-            </FlexCenter>
-          )}
+          <FlexCenter>
+            <Tip isVisible={isSuccess}>View Transaction</Tip>
+          </FlexCenter>
         </Relative>
       </FlexCenter>
       {(isEditMode || isRemoveMode) && (
