@@ -194,7 +194,7 @@ export const SearchForm: React.FC = () => {
           <Search>
             <SearchTitle>Name Search</SearchTitle>
             <SearchSubText>
-              Your official cross platform, data, social and wallet identity on
+              Your premier cross platform, data, social and wallet identity on
               The Root Network. Take your identity and data wherever you go.
             </SearchSubText>
             <ClickAwayListener
