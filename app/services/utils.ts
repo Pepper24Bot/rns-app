@@ -1,3 +1,4 @@
+import { ModalState } from "@/redux/modal/modalSlice";
 import { formatDistanceStrict } from "date-fns";
 import { isEmpty } from "lodash";
 
@@ -133,24 +134,37 @@ export const isUrlGraphql = (url: string = "") => {
 
     return !isEmpty(match)
 }
-
 /**
  * 
- * @param params 
- * @returns 
+ * @param pathId This is the id from the url path
+ * @param id This is the id passed from ModalContainer
+ * @returns ModalState object
  */
-export const getModal = (params: string = "") => {
+export const getModalFromPath = (pathId: string = "", id: string = ""): ModalState => {
+    const modals: ModalState[] = [{
+        isModalOpen: true, // default
+        props: { id: "Share RNS", fullHeight: true, fullWidth: true }
+    }]
+
     const pattern = new RegExp(
         /(?:modal-)/g
     );
 
-    const match = params.toLowerCase().match(pattern)
-    const type = params.split(pattern)
-
-    return {
-        isModalOpen: !isEmpty(match),
-        modalType: type[1]
+    const modalItem: ModalState = {
+        isModalOpen: false,
     }
+
+    if (isEmpty(id)) {
+        const match = pathId.toLowerCase().match(pattern)
+        const modal = modals.find((modal: ModalState) => {
+            return (modal.props?.id === pathId.split(pattern)[1])
+        })
+
+        modalItem.isModalOpen = !isEmpty(match)
+        modalItem.props = modal?.props
+    }
+
+    return modalItem
 }
 
 /**

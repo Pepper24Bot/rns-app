@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useModalState } from "@/redux/modal/modalSlice";
+import React, { useState } from "react";
+import { ModalState, useModalState } from "@/redux/modal/modalSlice";
 import {
   Dialog as MuiDialog,
   Grid,
@@ -12,7 +12,7 @@ import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
 import { PolicyAndTerms } from "../Reusables/PolicyAndTerms";
 import { useSearchParams } from "next/navigation";
-import { getModal } from "@/services/utils";
+import { getModalFromPath } from "@/services/utils";
 
 import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
@@ -92,6 +92,7 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
   right: 25,
   top: 25,
+  zIndex: 2,
 
   [theme.breakpoints.down("sm")]: {
     right: 10,
@@ -117,14 +118,17 @@ export const ModalContainer: React.FC = () => {
   const { useModal, closeModal } = useModalState();
   const { isModalOpen, props } = useModal();
 
-  const [hasPathModal, setHasPathModal] = useState(false);
-  const [isFullSize, setIsFullSize] = useState(false);
-
   const params = useSearchParams();
+  const state = params.get("state") || "";
+  const modal: ModalState = getModalFromPath(state, props?.id);
 
-  const modalProps = getModal(params.get("state") || "");
+  const [isPathModalOpen, setIsPathModalOpen] = useState(modal.isModalOpen);
+
   const isCloseDisabled = props?.isCloseDisabled || false;
-  const type = props?.id || modalProps.modalType || "";
+  const type = props?.id || modal.props?.id || "";
+  const isFullHeight = props?.fullHeight || modal.props?.fullHeight;
+  const isFullWidth = props?.fullWidth || modal.props?.fullWidth;
+  const isOpen = isModalOpen || isPathModalOpen;
 
   /**
    * Storing a non-serializeable (e.g, react components)
@@ -158,27 +162,17 @@ export const ModalContainer: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    setHasPathModal(modalProps.isModalOpen);
-
-    // TODO: This is very specific to share twitter - PLS FIX!!!
-    const fullSize =
-      modalProps.isModalOpen && modalProps.modalType === "Share RNS";
-    setIsFullSize(fullSize);
-  }, []);
-
   return (
     <>
       <Shadow id="shadow-id" />
       <Dialog
-        open={isModalOpen || hasPathModal}
+        open={isOpen}
         onClose={() => {
           if (isCloseDisabled) {
             // do not allow modal to be closed
           } else {
             closeModal();
-            setHasPathModal(false);
-            setIsFullSize(false);
+            setIsPathModalOpen(false);
           }
         }}
         disableEscapeKeyDown={isCloseDisabled}
@@ -189,8 +183,8 @@ export const ModalContainer: React.FC = () => {
             {/* TODO: Move the styling to styledcomponents */}
             <Content
               props={{
-                fullHeight: props?.fullHeight || isFullSize,
-                fullWidth: props?.fullWidth || isFullSize,
+                fullHeight: isFullHeight,
+                fullWidth: isFullWidth,
                 isHeaderEnabled: props?.isHeaderEnabled,
               }}
             >
@@ -198,8 +192,8 @@ export const ModalContainer: React.FC = () => {
                 <CloseButton
                   onClick={() => {
                     closeModal();
-                    setHasPathModal(false);
-                    setIsFullSize(false);
+                    setIsPathModalOpen(false);
+                    console.log("closing...");
                   }}
                 >
                   <CloseIcon />

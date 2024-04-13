@@ -65,7 +65,7 @@ export const getHeader = (token: string = "") => {
     }
 }
 
-export const refetchTwitterToken = async (oldToken: string) => {
+export const refetchTwitterToken = async (oldToken: string = "") => {
     try {
         const tokenResponse = await axios({
             url: `${process.env.NEXT_PUBLIC_TWITTER_API_URL}/auth/twitter/token`,

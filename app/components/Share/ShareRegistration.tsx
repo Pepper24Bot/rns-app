@@ -15,16 +15,13 @@ import {
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useSearchParams } from "next/navigation";
-import {
-  useGetAccessTokenQuery,
-  useGetTweetByIdQuery,
-  useGetUserDetailsQuery,
-} from "@/redux/twitter/twitterSlice";
+import { useGetTweetByIdQuery } from "@/redux/twitter/twitterSlice";
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
 import { TWITTER_AUTH } from "@/services/api";
 import { parseCookie } from "@/services/utils";
 import { TWEET_RNS } from "@/services/content";
+import { useAccount } from "wagmi";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "50px 30px 40px 30px",
@@ -86,7 +83,7 @@ const ShareButton = styled(ActionButton)(({ theme }) => ({
     padding: "8px 24px",
 
     "&.Mui-disabled": {
-      border: `solid 1px ${theme.palette.background.dark}`,
+      border: `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`,
     },
 
     "&:hover": {
@@ -125,56 +122,30 @@ const Bullet: React.FC<BulletProps> = (props: BulletProps) => {
 };
 
 export const ShareRegistration: React.FC = () => {
-  const params = useSearchParams();
+  const account = useAccount();
+  console.log("account:: ", account);
 
   const redirectUri = `${process.env.NEXT_PUBLIC_TWITTER_API_URL}/auth/twitter`;
   const clientId = process.env.NEXT_PUBLIC_TWITTER_API_CLIENT_ID;
 
-  const isAccessDenied = params.get("error") === "access_denied";
-  const authCode = params.get("code");
-
-  const userId = parseCookie("username") || "";
-  const isGranted = parseCookie("isAccessGranted") || "";
+  const isGranted = parseCookie("access") === "granted";
+  const isDenied = parseCookie("access") === "denied";
 
   const [link, setLink] = useState<string>("");
   const [tweetId, setTweetId] = useState<string>("");
-  const [twitterId, setTwitterId] = useState<string>(userId);
-
-  /**
-   * After the user authorized the app, request for access token,
-   * skip this query when the user has authorized rns app, call refreshToken instead
-   */
-  const { data: tokenResponse } = useGetAccessTokenQuery(
-    { code: authCode || "", redirect: redirectUri, state: "modal-Share RNS" },
-    { skip: isEmpty(authCode) || !isEmpty(userId) }
-  );
-
-  const accessToken =
-    tokenResponse?.token?.access_token || parseCookie("access_token") || "";
-
-  /**
-   * Get the user data after successful authorization and token request,
-   * Skip this query if there is already a user stored in cookie
-   *
-   * This will return the userid
-   */
-  const { data: userResponse } = useGetUserDetailsQuery(
-    { token: accessToken },
-    { skip: isEmpty(accessToken) || !isEmpty(twitterId) }
-  );
 
   /**
    * Verify the link provided.
    * Skip this call when there is no tweetId and access_token provided
    */
   const {
-    data: tweetResponse,
+    data: verifyResponse,
     isFetching: isVerifying,
     isSuccess: isVerified,
     isError: isVerifyFailed,
   } = useGetTweetByIdQuery(
-    { tweetId: tweetId || "", token: accessToken },
-    { skip: isEmpty(accessToken) || isEmpty(tweetId) }
+    { tweetId: tweetId || "" },
+    { skip: isDenied || isEmpty(tweetId) }
   );
 
   const handleLink = () => {
@@ -206,32 +177,6 @@ export const ShareRegistration: React.FC = () => {
     setTweetId(tweetId);
   };
 
-  useEffect(() => {
-    const isSuccess = tokenResponse?.isSuccess || false;
-
-    if (isSuccess) {
-      // TODO: add security
-      // document.cookie = `access_token=${tokenResponse?.token?.access_token}; path=/`;
-    }
-  }, [tokenResponse]);
-
-  useEffect(() => {
-    const isSuccess = userResponse?.isSuccess || false;
-    if (isSuccess) {
-      // TODO: add security
-      document.cookie = `username=@${userResponse?.data?.username}; path=/`;
-      setTwitterId(userResponse?.data?.username || "");
-    }
-  }, [userResponse]);
-
-  useEffect(() => {
-    if (isAccessDenied) {
-      document.cookie = `access=denied; path=/`;
-    } else {
-      document.cookie = `access=granted; path=/`;
-    }
-  }, [isAccessDenied]);
-
   return (
     <FlexCenter container position="relative">
       <Container item xs={3.95}>
@@ -243,30 +188,17 @@ export const ShareRegistration: React.FC = () => {
           <ButtonContainer item xs={12}>
             <ShareButton
               variant="contained"
-              disabled={!isEmpty(userId)}
+              disabled={isGranted}
               onClick={() => {
                 handleLink();
               }}
             >
               <FlexCenter>
                 <ButtonLabel
-                  status={
-                    isAccessDenied
-                      ? "denied"
-                      : !isEmpty(userId)
-                      ? "disabled"
-                      : ""
-                  }
+                  status={isDenied ? "denied" : isGranted ? "disabled" : ""}
                 >
-                  {isAccessDenied
-                    ? "Denied"
-                    : !isEmpty(userId)
-                    ? "Linked"
-                    : "Link"}
+                  {isGranted ? "Linked" : isDenied ? "Denied" : "Link"}
                 </ButtonLabel>
-                {!isEmpty(authCode) && isEmpty(userId) && (
-                  <CircularProgress size="16px" sx={{ ml: "8px" }} />
-                )}
               </FlexCenter>
             </ShareButton>
           </ButtonContainer>
@@ -281,15 +213,13 @@ export const ShareRegistration: React.FC = () => {
           </Grid>
           <ButtonContainer item xs={12}>
             <ShareButton
-              disabled={isEmpty(userId) || isVerified}
+              disabled={isDenied || isVerified}
               variant="contained"
               onClick={() => {
                 handleTweet();
               }}
             >
-              <ButtonLabel
-                status={isEmpty(userId) || isVerified ? "disabled" : ""}
-              >
+              <ButtonLabel status={isDenied || isVerified ? "disabled" : ""}>
                 Tweet
               </ButtonLabel>
             </ShareButton>
@@ -312,7 +242,7 @@ export const ShareRegistration: React.FC = () => {
           </Grid>
           <ButtonContainer item xs={12}>
             <ShareButton
-              disabled={isEmpty(userId)}
+              disabled={isDenied}
               variant="contained"
               onClick={() => {
                 handleVerify();
@@ -325,7 +255,7 @@ export const ShareRegistration: React.FC = () => {
               ) : isVerifyFailed ? (
                 <Failed>Verfication Failed</Failed>
               ) : (
-                <ButtonLabel status={isEmpty(userId) ? "disabled" : ""}>
+                <ButtonLabel status={isDenied ? "disabled" : ""}>
                   Verify
                 </ButtonLabel>
               )}

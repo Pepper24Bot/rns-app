@@ -104,12 +104,12 @@ export const twitterApi = api.injectEndpoints({
             },
         }),
         getTweetById: builder.query<TweetResponse, TweetRequest>({
-            async queryFn({ token = "", tweetId }) {
+            async queryFn({ tweetId }) {
                 try {
                     const searchResponse = await axios({
                         url: `${twitterUrl}/tweets/${tweetId}`,
                         method: 'GET',
-                        headers: getHeader(token),
+                        headers: getHeader(bearer),
                     })
 
                     return { data: searchResponse.data }
@@ -117,7 +117,7 @@ export const twitterApi = api.injectEndpoints({
                     const errorData = error as AxiosError
 
                     if (errorData?.response?.status === 401) {
-                        const newToken = await refetchTwitterToken(token)
+                        const newToken = await refetchTwitterToken(bearer)
 
                         //  retry user request
                         const searchResponse = await axios({
