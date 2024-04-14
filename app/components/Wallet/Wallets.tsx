@@ -4,9 +4,11 @@ import { Description, useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 import {
   ActionButton,
+  Description as StyledDescription,
   Flex,
   FlexLeft,
   FlexRight,
+  HighlightText,
   PrimaryLabel,
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
@@ -14,7 +16,6 @@ import { X } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 
-import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import FeatureToggle from "../Reusables/FeatureToggle";
@@ -89,7 +90,7 @@ export const Wallets: React.FC = () => {
   const { connector: activeConnector } = useAccount();
   const { disconnect, isPending: isDisconnecting } = useDisconnect();
 
-  const { closeModal } = useModalState();
+  const { closeModal, toggleModal } = useModalState();
   const { getIcon } = useWalletIcon();
 
   const description: Description = {
@@ -111,7 +112,41 @@ export const Wallets: React.FC = () => {
     <Container>
       {!activeConnector?.name && !isDisconnecting && (
         <Grid mb={5}>
-          <Paragraph description={description} />
+          <StyledDescription>
+            By connecting your wallet, you agree to our
+            <HighlightText
+              onClick={() => {
+                toggleModal({
+                  id: "Terms",
+                  title: "Terms of Service",
+                  isXDisabled: true,
+                  isFooterEnabled: true,
+                  isHeaderEnabled: true,
+                  downloadFile: "/documents/rns-terms-of-service.pdf",
+                });
+              }}
+            >
+              {" "}
+              Terms of Service
+            </HighlightText>{" "}
+            and our
+            <HighlightText
+              onClick={() => {
+                toggleModal({
+                  id: "Policy",
+                  title: "Privacy Policy",
+                  isXDisabled: true,
+                  isFooterEnabled: true,
+                  isHeaderEnabled: true,
+                  downloadFile: "/documents/rns-privacy-policy.pdf",
+                });
+              }}
+            >
+              {" "}
+              Privacy Policy
+            </HighlightText>
+            .
+          </StyledDescription>
         </Grid>
       )}
       <WalletsContainer>

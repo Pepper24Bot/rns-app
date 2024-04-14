@@ -342,8 +342,7 @@ export const RegisterName: React.FC = () => {
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip>
-              Help us spread the word by sharing your new RNS on X and earn RNS
-              Loyalty Points while you’re at it!
+              Help us spread the word by sharing your new RNS on X.
             </ShareTip>
           </FlexCenter>
           <FlexCenter>

@@ -134,7 +134,7 @@ export const SwitchNetwork: React.FC = () => {
             switchNetwork();
           }}
         >
-          Confirm
+          Switch
         </ConfirmButton>
       </FlexRight>
     </Container>

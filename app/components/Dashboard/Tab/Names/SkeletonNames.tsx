@@ -61,7 +61,7 @@ export const SkeletonNames: React.FC<SkeletonProps> = (
                     }}
                   />
                   <Image
-                    src="/images/rns-image-placeholder.svg"
+                    src="/images/rns-default.gif"
                     alt="Dummy Image Placeholder"
                     width={290}
                     height={200}

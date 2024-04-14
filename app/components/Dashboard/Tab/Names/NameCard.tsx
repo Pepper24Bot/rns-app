@@ -46,6 +46,19 @@ const ImageContainer = styled(Grid)(({ theme }) => ({
   padding: "20px",
 }));
 
+const RnsName = styled(Grid)(({ theme }) => ({
+  position: "relative",
+  bottom: "40px",
+  backgroundColor: alpha(theme.palette.primary.dark, 0.1),
+  padding: "8px",
+}));
+
+const RnsNameText = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "14px",
+  color: alpha(theme.palette.text.primary, 0.5),
+  textAlign: "center",
+}));
+
 const Summary = styled(Grid)(({ theme }) => ({
   padding: "20px 30px",
 }));
@@ -159,96 +172,101 @@ export const NameCard: React.FC<Name> = (props: Name) => {
         <ItemContainer>
           <ImageContainer>
             <Image
-              src="/images/rns-image-placeholder.svg"
+              src="/images/rns-default.gif"
               alt="Wallet Icon"
               width={290}
               height={200}
               style={{
                 width: "-webkit-fill-available",
                 height: "-webkit-fill-available",
-                border: `solid 1px ${alpha(grey[50], 0.25)}`,
+                border: `solid 1px ${alpha(grey[700], 0.25)}`,
                 borderRadius: "4px",
                 boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
               }}
             />
+            <RnsName>
+              <RnsNameText>{item.name}</RnsNameText>
+            </RnsName>
           </ImageContainer>
-          <Divider flexItem />
-          <Summary container>
-            <Grid item xs={11}>
-              <Grid>
-                <Flex>
-                  <Name>{item.name}</Name>
-                  {hasLinkedAddr && <CheckedIcon />}
-                </Flex>
-              </Grid>
-              <NameDetails>
-                {hasLinkedAddr ? (
-                  <Detail>
-                    <Label>Linked to</Label>
-                    {getMaskedAddress(String(linkedAddr), 6)}
-                  </Detail>
-                ) : (
-                  <Detail>
-                    <Label>Owner</Label>
-                    {getMaskedAddress(String(item.owner.id), 6)}
-                  </Detail>
-                )}
-                <Grid container>
-                  <Detail mr={1}>
-                    <Label>Expiry</Label>
-                    {
-                      getExpiration(
-                        item.domain.createdAt,
-                        item.domain.expiryDate
-                      ).expiration
-                    }
-                  </Detail>
-                  <Detail>
-                    <Label>In</Label>
-                    {
-                      getExpiration(
-                        item.domain.createdAt,
-                        item.domain.expiryDate
-                      ).distanceToExpiration
-                    }
-                  </Detail>
+          <Grid mt="-40px">
+            <Divider flexItem />
+            <Summary container>
+              <Grid item xs={11}>
+                <Grid>
+                  <Flex>
+                    <Name>{item.name}</Name>
+                    {hasLinkedAddr && <CheckedIcon />}
+                  </Flex>
                 </Grid>
-              </NameDetails>
-            </Grid>
-            <Grid item xs={0.5}>
-              <DropDownMenu
-                handleSelect={handleMenuSelect}
-                options={[
-                  { label: "Extend Expiry", icon: <ClockIcon /> },
-                  { label: "Link Name", icon: <LinkIcon /> },
-                  // { label: "Update Image", icon: <PhotoIcon /> },
-                  // { label: "Transfer", icon: <TransferIcon /> },
-                ]}
-                hasButton
-                iconButton={<MoreIcon />}
-                type="Menu"
-              />
-            </Grid>
-          </Summary>
-          {!isTweetVerified && (
-            <ShareContainer>
-              <ShareButton
-                variant="contained"
-                onClick={() => {
-                  toggleModal({
-                    id: "Share RNS",
-                    title: "",
-                    fullHeight: true,
-                    fullWidth: true,
-                  });
-                }}
-              >
-                <TwitterIcon fontSize="small" />
-                <Divider orientation="vertical" flexItem />
-                <ShareLabel>Share</ShareLabel>
-              </ShareButton>
-            </ShareContainer>
-          )}
+                <NameDetails>
+                  {hasLinkedAddr ? (
+                    <Detail>
+                      <Label>Linked to</Label>
+                      {getMaskedAddress(String(linkedAddr), 6)}
+                    </Detail>
+                  ) : (
+                    <Detail>
+                      <Label>Owner</Label>
+                      {getMaskedAddress(String(item.owner.id), 6)}
+                    </Detail>
+                  )}
+                  <Grid container>
+                    <Detail mr={1}>
+                      <Label>Expiry</Label>
+                      {
+                        getExpiration(
+                          item.domain.createdAt,
+                          item.domain.expiryDate
+                        ).expiration
+                      }
+                    </Detail>
+                    <Detail>
+                      <Label>In</Label>
+                      {
+                        getExpiration(
+                          item.domain.createdAt,
+                          item.domain.expiryDate
+                        ).distanceToExpiration
+                      }
+                    </Detail>
+                  </Grid>
+                </NameDetails>
+              </Grid>
+              <Grid item xs={0.5}>
+                <DropDownMenu
+                  handleSelect={handleMenuSelect}
+                  options={[
+                    { label: "Extend Expiry", icon: <ClockIcon /> },
+                    { label: "Link Name", icon: <LinkIcon /> },
+                    // { label: "Update Image", icon: <PhotoIcon /> },
+                    // { label: "Transfer", icon: <TransferIcon /> },
+                  ]}
+                  hasButton
+                  iconButton={<MoreIcon />}
+                  type="Menu"
+                />
+              </Grid>
+            </Summary>
+            {!isTweetVerified && (
+              <ShareContainer>
+                <ShareButton
+                  variant="contained"
+                  onClick={() => {
+                    toggleModal({
+                      id: "Share RNS",
+                      title: "",
+                      fullHeight: true,
+                      fullWidth: true,
+                    });
+                  }}
+                >
+                  <TwitterIcon fontSize="small" />
+                  <Divider orientation="vertical" flexItem />
+                  <ShareLabel>Share</ShareLabel>
+                </ShareButton>
+              </ShareContainer>
+            )}
+          </Grid>
         </ItemContainer>
       </Container>
     </Grid>
