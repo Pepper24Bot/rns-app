@@ -10,6 +10,7 @@ import {
   Tip,
   ShareButton,
   FlexJustified,
+  FlexLeft,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, alpha, styled } from "@mui/material";
 import {
@@ -52,9 +53,11 @@ const TwitterIcon = styled(X)(({ theme }) => ({
   margin: "8px 16px",
 }));
 
-const ViewProcessText = styled(SecondaryLabel)(({ theme }) => ({
+const ViewProcessText = styled(SecondaryLabel, {
+  shouldForwardProp: (prop) => prop !== "disabled",
+})<{ disabled?: boolean }>(({ theme, disabled }) => ({
   fontSize: "12px",
-  color: theme.palette.primary.main,
+  color: disabled ? theme.palette.primary.dark : theme.palette.primary.main,
 }));
 
 export const RegisterName: React.FC = () => {
@@ -246,11 +249,11 @@ export const RegisterName: React.FC = () => {
             </Collapse>
           </BoxContainer>
           {isWaiting && (
-            <FlexCenter>
+            <FlexLeft>
               <Tip isVisible={isWaiting}>
                 Please wait for 60 seconds before the transaction proceeds.
               </Tip>
-            </FlexCenter>
+            </FlexLeft>
           )}
           <FlexCenter>
             <Tip isVisible={isRegisterSuccess}>View Transaction</Tip>
@@ -270,14 +273,22 @@ export const RegisterName: React.FC = () => {
           {address ? (
             <FlexJustified>
               <ActionButton
+                disabled={areBtnsDisabled}
                 onClick={() => {
                   toggleModal({
                     id: "Registration Info",
                     title: "Registration Process",
                   });
                 }}
+                sx={{
+                  "&.MuiButton-text": {
+                    padding: "0",
+                  },
+                }}
               >
-                <ViewProcessText>View Registration Process</ViewProcessText>
+                <ViewProcessText disabled={areBtnsDisabled}>
+                  View Registration Process
+                </ViewProcessText>
               </ActionButton>
               <FlexRight>
                 <ActionButton

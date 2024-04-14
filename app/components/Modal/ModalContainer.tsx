@@ -23,7 +23,7 @@ import RegistrationDetails from "../Registration/Details";
 import Expiry from "../Expiry/Expiry";
 import LinkAddress from "../LinkAddress/LinkAddress";
 import ShareRegistration from "../Share/ShareRegistration";
-import Infographics from "../Registration/Infographics";
+import RegistrationProcess from "../Registration/Process";
 
 interface ContentProps {
   fullWidth?: boolean;
@@ -154,7 +154,7 @@ export const ModalContainer: React.FC = () => {
       case "Registration Details":
         return <RegistrationDetails />;
       case "Registration Info":
-        return <Infographics />;
+        return <RegistrationProcess />;
       case "Extend Expiry":
         return <Expiry {...props?.data} />;
       case "Link Name":

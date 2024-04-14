@@ -76,7 +76,7 @@ const ContentText = styled(StepTitle)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
 }));
 
-export const Infographics: React.FC = () => {
+export const RegistrationProcess: React.FC = () => {
   const { toggleModal } = useModalState();
 
   const isInformationHidden =
@@ -151,4 +151,4 @@ export const Infographics: React.FC = () => {
   );
 };
 
-export default Infographics;
+export default RegistrationProcess;
