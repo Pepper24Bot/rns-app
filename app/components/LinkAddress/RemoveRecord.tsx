@@ -22,15 +22,17 @@ const ConfirmationText = styled(SecondaryLabel)(({ theme }) => ({
 export interface RemoveProps {
   toggleRemoveMode: () => void;
   futurePassInput: string;
+  disableBack?: boolean;
 }
 
 export const RemoveAddress: React.FC<RemoveProps> = (props: RemoveProps) => {
-  const { futurePassInput, toggleRemoveMode } = props;
+  const { futurePassInput, toggleRemoveMode, disableBack } = props;
 
   return (
     <Grid>
       <FlexLeft>
         <IconButton
+          disabled={disableBack}
           onClick={() => {
             // Go back to the previous page
             toggleRemoveMode();
@@ -40,7 +42,7 @@ export const RemoveAddress: React.FC<RemoveProps> = (props: RemoveProps) => {
         </IconButton>
         <ConfirmationLabel>Confirmation</ConfirmationLabel>
       </FlexLeft>
-      <Grid pt={4} pl={1.5}>
+      <Grid pt={4}>
         <ConfirmationText pb={4}>
           Are you sure you want to remove the linked address?
         </ConfirmationText>

@@ -128,7 +128,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
       <Grid mt={3}>
         <FlexRight>
           <ActionButton
-            disabled={isEmpty(futurePassAddr) || isPending}
+            disabled={isPending || isSuccess}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
@@ -138,7 +138,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
             Cancel
           </ActionButton>
           <ActionButton
-            disabled={isEmpty(futurePassAddr) || isPending}
+            disabled={isEmpty(futurePassAddr) || isPending || isSuccess}
             variant="contained"
             onClick={() => {
               handleSetFuturePass();

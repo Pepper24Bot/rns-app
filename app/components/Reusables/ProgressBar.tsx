@@ -68,7 +68,7 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-      <Box sx={{ width: "100%", mr: 1 }}>
+      <Box sx={{ width: "100%" }}>
         {isError ? (
           <LoadingText>Transaction failed, please try again.</LoadingText>
         ) : (

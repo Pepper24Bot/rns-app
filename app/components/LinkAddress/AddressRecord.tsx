@@ -113,6 +113,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
         setIsError(true);
       }
     }
+
     setResetProgress(false);
     setIsPending(false);
   };
@@ -135,6 +136,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
           isUpdateEnabled={isEditMode}
           toggleEditMode={() => {
             setIsEditMode(!isEditMode);
+            setIsProgressVisible(false);
 
             /**
              * If inputted address is invalid, and an onchange has been triggered,
@@ -151,7 +153,9 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
       ) : (
         <RemoveAddress
           futurePassInput={inputValue}
+          disableBack={isPending}
           toggleRemoveMode={() => {
+            setIsProgressVisible(false);
             setIsRemoveMode(!isRemoveMode);
           }}
         />
@@ -175,7 +179,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
       {(isEditMode || isRemoveMode) && (
         <FlexRight>
           <ActionButton
-            disabled={isPending}
+            disabled={isPending || isSuccess}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
