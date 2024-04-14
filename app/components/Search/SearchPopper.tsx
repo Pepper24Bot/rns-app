@@ -27,6 +27,7 @@ import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
+import { parseCookie } from "@/services/utils";
 
 import Image from "next/image";
 
@@ -124,6 +125,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
 
+  const isInformationHidden =
+    parseCookie("registration_process_hidden") === "true";
+
   const [clientWidth, setClientWidth] = useState<number>(
     anchorEl?.clientWidth || 500
   );
@@ -186,10 +190,17 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                           // Store in global state so the other componenst will be able to access the value
                           updateName({ name: searchValue || "", status });
 
-                          toggleModal({
-                            id: "Register Name",
-                            title: "Register",
-                          });
+                          if (isInformationHidden) {
+                            toggleModal({
+                              id: "Register Name",
+                              title: "Register",
+                            });
+                          } else {
+                            toggleModal({
+                              id: "Registration Info",
+                              title: "Registration Process",
+                            });
+                          }
                         }}
                       >
                         <SearchLabel>Register</SearchLabel>

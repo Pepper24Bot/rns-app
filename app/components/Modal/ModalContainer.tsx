@@ -23,6 +23,7 @@ import RegistrationDetails from "../Registration/Details";
 import Expiry from "../Expiry/Expiry";
 import LinkAddress from "../LinkAddress/LinkAddress";
 import ShareRegistration from "../Share/ShareRegistration";
+import Infographics from "../Registration/Infographics";
 
 interface ContentProps {
   fullWidth?: boolean;
@@ -32,9 +33,9 @@ interface ContentProps {
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
   "& .MuiPaper-root": {
-    filter: `drop-shadow(0px 5px 15px ${alpha(
+    filter: `drop-shadow(0px 10px 15px ${alpha(
       theme.palette.primary.main,
-      0.1
+      0.15
     )})`,
     maxWidth: "max-content",
     maxHeight: "max-content",
@@ -129,6 +130,7 @@ export const ModalContainer: React.FC = () => {
   const isFullHeight = props?.fullHeight || modal.props?.fullHeight;
   const isFullWidth = props?.fullWidth || modal.props?.fullWidth;
   const isOpen = isModalOpen || isPathModalOpen;
+  const title = props?.title || modal.props?.title;
 
   /**
    * Storing a non-serializeable (e.g, react components)
@@ -151,6 +153,8 @@ export const ModalContainer: React.FC = () => {
         return <Registration />;
       case "Registration Details":
         return <RegistrationDetails />;
+      case "Registration Info":
+        return <Infographics />;
       case "Extend Expiry":
         return <Expiry {...props?.data} />;
       case "Link Name":
@@ -199,9 +203,7 @@ export const ModalContainer: React.FC = () => {
                   <CloseIcon />
                 </CloseButton>
               )}
-              {!props?.isHeaderEnabled && props?.title && (
-                <Title>{props?.title}</Title>
-              )}
+              {!props?.isHeaderEnabled && title && <Title>{title}</Title>}
               {props?.description && (
                 <Paragraph description={props?.description} />
               )}

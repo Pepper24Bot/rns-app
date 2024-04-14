@@ -141,10 +141,19 @@ export const isUrlGraphql = (url: string = "") => {
  * @returns ModalState object
  */
 export const getModalFromPath = (pathId: string = "", id: string = ""): ModalState => {
-    const modals: ModalState[] = [{
-        isModalOpen: true, // default
-        props: { id: "Share RNS", fullHeight: true, fullWidth: true }
-    }]
+    const modals: ModalState[] = [
+        {
+            isModalOpen: true, // default
+            props: { id: "Share RNS", fullHeight: true, fullWidth: true }
+        },
+        {
+            isModalOpen: true, // default
+            props: {
+                id: "Registration Info",
+                title: "Registration Process"
+            }
+        },
+    ]
 
     const pattern = new RegExp(
         /(?:modal-)/g

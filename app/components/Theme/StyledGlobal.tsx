@@ -55,7 +55,7 @@ export const FlexRight = styled(Flex)(({ theme }) => ({
 }));
 
 export const BaseButton = styled(Button)(({ theme }) => ({
-  textTransform: "capitalize",
+  textTransform: "none",
 
   "&.MuiButtonBase-root": {
     borderRadius: "8px",
