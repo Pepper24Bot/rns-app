@@ -4,20 +4,32 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 export interface ProgressProps {
   isVisible?: boolean;
   max?: number;
+  countdown?: boolean;
 }
 
 export const CircularProgressWithLabel: React.FC<ProgressProps> = (
   props: ProgressProps
 ) => {
-  const { isVisible, max = 100 } = props;
-  const [progress, setProgress] = useState<number>(0);
+  const { isVisible, max = 100, countdown } = props;
+
+  const initial = countdown ? max : 0;
+  const [progress, setProgress] = useState<number>(initial);
+
+  // TODO: make sure to always make the speed 1 second
+  // const speed =
 
   useEffect(() => {
     if (isVisible) {
       const timer = setInterval(() => {
-        setProgress((prevProgress) =>
-          prevProgress >= max ? 0 : prevProgress + 1
-        );
+        if (countdown) {
+          setProgress((prevProgress) =>
+            prevProgress === 0 ? max : prevProgress - 1
+          );
+        } else {
+          setProgress((prevProgress) =>
+            prevProgress >= max ? 0 : prevProgress + 1
+          );
+        }
       }, 600);
       return () => {
         clearInterval(timer);

@@ -242,7 +242,7 @@ export const RegisterName: React.FC = () => {
               isSuccess={isRegisterSuccess}
             />
             <Collapse orientation="horizontal" in={isWaiting}>
-              <CircularProgress isVisible={isWaiting} />
+              <CircularProgress isVisible={isWaiting} countdown />
             </Collapse>
           </BoxContainer>
           {isWaiting && (
