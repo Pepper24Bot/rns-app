@@ -82,11 +82,19 @@ export const Infographics: React.FC = () => {
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
 
-  const [isInfoHidden, setInfoHidden] = useState<boolean>(isInformationHidden);
+  const label = isInformationHidden ? "Always show" : "Do not show again";
+
+  const [isInfoDisabled, setInfoDisabled] = useState<boolean>(false);
+  const [infoActionLabel, setInfoActionLabel] = useState<string>(label);
 
   const handleDoNotShow = () => {
-    setInfoHidden(true);
+    setInfoDisabled(true);
     document.cookie = `registration_process_hidden=${true}; path=/`;
+  };
+
+  const handleViewProcess = () => {
+    setInfoDisabled(true);
+    document.cookie = `registration_process_hidden=${false}; path=/`;
   };
 
   return (
@@ -113,12 +121,16 @@ export const Infographics: React.FC = () => {
       <FlexRight>
         <Grid mr={1}>
           <ActionButton
-            disabled={isInfoHidden}
+            disabled={isInfoDisabled}
             onClick={() => {
-              handleDoNotShow();
+              if (isInformationHidden) {
+                handleViewProcess();
+              } else {
+                handleDoNotShow();
+              }
             }}
           >
-            Do not show again
+            {infoActionLabel}
           </ActionButton>
         </Grid>
         <Grid>

@@ -9,6 +9,7 @@ import {
   BoxContainer,
   Tip,
   ShareButton,
+  FlexJustified,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, alpha, styled } from "@mui/material";
 import {
@@ -49,6 +50,11 @@ const ShareTip = styled(SecondaryLabel)(({ theme }) => ({
 
 const TwitterIcon = styled(X)(({ theme }) => ({
   margin: "8px 16px",
+}));
+
+const ViewProcessText = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "12px",
+  color: theme.palette.primary.main,
 }));
 
 export const RegisterName: React.FC = () => {
@@ -262,27 +268,39 @@ export const RegisterName: React.FC = () => {
       {!isRegisterSuccess && (
         <Grid mt={3}>
           {address ? (
-            <FlexRight>
+            <FlexJustified>
               <ActionButton
-                disabled={areBtnsDisabled}
-                sx={{ marginRight: 1 }}
-                variant="text"
                 onClick={() => {
-                  closeModal();
+                  toggleModal({
+                    id: "Registration Info",
+                    title: "Registration Process",
+                  });
                 }}
               >
-                Cancel
+                <ViewProcessText>View Registration Process</ViewProcessText>
               </ActionButton>
-              <ActionButton
-                disabled={areBtnsDisabled}
-                variant="contained"
-                onClick={() => {
-                  handleCommit();
-                }}
-              >
-                Confirm
-              </ActionButton>
-            </FlexRight>
+              <FlexRight>
+                <ActionButton
+                  disabled={areBtnsDisabled}
+                  sx={{ marginRight: 1 }}
+                  variant="text"
+                  onClick={() => {
+                    closeModal();
+                  }}
+                >
+                  Cancel
+                </ActionButton>
+                <ActionButton
+                  disabled={areBtnsDisabled}
+                  variant="contained"
+                  onClick={() => {
+                    handleCommit();
+                  }}
+                >
+                  Confirm
+                </ActionButton>
+              </FlexRight>
+            </FlexJustified>
           ) : (
             <FlexCenter>
               <ToolbarButton
