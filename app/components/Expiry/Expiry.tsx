@@ -179,9 +179,11 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               title={
                 <FlexLeft>
                   <IconButton
+                    disabled={isPending}
                     onClick={() => {
                       // Go back to the previous page
                       setExtendPage(extendPage - 1);
+                      setIsProgressVisible(false);
                     }}
                   >
                     <KeyboardBackspace />
@@ -209,43 +211,31 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
         )}
         <Grid mt={3}>
           <FlexRight>
-            {!isExtendSuccess && (
-              <ActionButton
-                sx={{ marginRight: 1 }}
-                variant="text"
-                onClick={() => {
-                  closeModal();
-                }}
-              >
-                Cancel
-              </ActionButton>
-            )}
-            {isExtendSuccess ? (
-              <ActionButton
-                variant="contained"
-                onClick={() => {
-                  closeModal();
-                }}
-              >
-                Close
-              </ActionButton>
-            ) : (
-              <ActionButton
-                disabled={isPending}
-                variant="contained"
-                onClick={() => {
-                  if (extendPage === 1) {
-                    // Move to the next page
-                    setExtendPage(extendPage + 1);
-                    updateName({ fee: { total: totalFee } });
-                  } else {
-                    handleApproval();
-                  }
-                }}
-              >
-                {extendPage === 1 ? "Next" : "Confirm"}
-              </ActionButton>
-            )}
+            <ActionButton
+              disabled={isPending || isExtendSuccess}
+              sx={{ marginRight: 1 }}
+              variant="text"
+              onClick={() => {
+                closeModal();
+              }}
+            >
+              Cancel
+            </ActionButton>
+            <ActionButton
+              disabled={isPending || isExtendSuccess}
+              variant="contained"
+              onClick={() => {
+                if (extendPage === 1) {
+                  // Move to the next page
+                  setExtendPage(extendPage + 1);
+                  updateName({ fee: { total: totalFee } });
+                } else {
+                  handleApproval();
+                }
+              }}
+            >
+              {extendPage === 1 ? "Next" : "Confirm"}
+            </ActionButton>
           </FlexRight>
         </Grid>
       </DetailsContainer>

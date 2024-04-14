@@ -65,13 +65,6 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     setIsSuccess(false);
   };
 
-  const toggleModal = () => {
-    // TODO: How to do this properly
-    setTimeout(() => {
-      closeModal();
-    }, 3000);
-  };
-
   const handleRemoveRecord = async () => {
     initializeFlags();
 
@@ -83,7 +76,6 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     if (isSuccess) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
-      toggleModal();
     } else {
       setIsError(true);
     }
@@ -108,7 +100,6 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
       if (isSuccess) {
         dispatch(graphqlApi.util.invalidateTags(["Name"]));
         setIsSuccess(true);
-        toggleModal();
       } else {
         setIsError(true);
       }
@@ -152,8 +143,8 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
         />
       ) : (
         <RemoveAddress
-          futurePassInput={inputValue}
-          disableBack={isPending}
+          futurePassInput={linkedAddr}
+          disableBack={isPending || isSuccess}
           toggleRemoveMode={() => {
             setIsProgressVisible(false);
             setIsRemoveMode(!isRemoveMode);

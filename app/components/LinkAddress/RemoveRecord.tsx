@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, styled, IconButton, alpha } from "@mui/material";
 import {
   ModalInputField as InputField,
@@ -7,6 +7,8 @@ import {
 } from "../Theme/StyledGlobal";
 import { KeyboardBackspace } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
+import { EMPTY_ADDRESS } from "@/services/constants";
+import { getMaskedAddress } from "@/services/utils";
 
 const ConfirmationLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -27,6 +29,16 @@ export interface RemoveProps {
 
 export const RemoveAddress: React.FC<RemoveProps> = (props: RemoveProps) => {
   const { futurePassInput, toggleRemoveMode, disableBack } = props;
+
+  const [value, setValue] = useState<string>("");
+
+  useEffect(() => {
+    const value =
+      futurePassInput === EMPTY_ADDRESS
+        ? "None"
+        : getMaskedAddress(futurePassInput);
+    setValue(value);
+  }, [futurePassInput]);
 
   return (
     <Grid>
@@ -50,7 +62,7 @@ export const RemoveAddress: React.FC<RemoveProps> = (props: RemoveProps) => {
           label="Linked To / Resolver"
           disabled
           focused
-          value={futurePassInput}
+          value={value}
         />
       </Grid>
     </Grid>
