@@ -93,16 +93,12 @@ export const Wallets: React.FC = () => {
   const { closeModal, toggleModal } = useModalState();
   const { getIcon } = useWalletIcon();
 
-  const getWalletName = (name: string) => {
-    switch (name) {
-      case "Injected":
-        return "MetaMask";
-      default:
-        return name;
-    }
-  };
-
-  console.log("connectors:: ", connectors);
+  const filteredConnectors = connectors?.filter((connector) => {
+    return (
+      connector.type !== "injected" ||
+      (connector.type === "injected" && connector.id === "metaMask")
+    );
+  });
 
   return (
     <Container>
@@ -148,26 +144,24 @@ export const Wallets: React.FC = () => {
       <WalletsContainer>
         <Grid>
           <Grid mt={4}>
-            {connectors?.map((connector) => {
+            {filteredConnectors?.map((connector) => {
               return (
-                connector.id !== "io.metamask" && (
-                  <WalletItem
-                    key={connector.id}
-                    onClick={() => {
-                      connect({ connector });
-                      closeModal();
-                    }}
-                    isActive={activeConnector?.name === connector.name}
-                  >
-                    <Image
-                      src={getIcon(connector.name as Wallet)}
-                      alt={connector.name}
-                      width={32}
-                      height={32}
-                    />
-                    <WalletName>{getWalletName(connector.name)}</WalletName>
-                  </WalletItem>
-                )
+                <WalletItem
+                  key={connector.id}
+                  onClick={() => {
+                    connect({ connector });
+                    closeModal();
+                  }}
+                  isActive={activeConnector?.name === connector.name}
+                >
+                  <Image
+                    src={getIcon(connector.name as Wallet)}
+                    alt={connector.name}
+                    width={32}
+                    height={32}
+                  />
+                  <WalletName>{connector.name}</WalletName>
+                </WalletItem>
               );
             })}
           </Grid>
