@@ -20,6 +20,7 @@
 
 .textLayer :is(span, br) {
   color: rgb(255, 255, 255, 0.5);
+  letter-spacing: normal;
 }
 
 .react-pdf__Page__textContent > span {

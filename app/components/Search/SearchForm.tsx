@@ -57,7 +57,7 @@ const SearchContainer = styled(Grid)(({ theme }) => ({
     height: "80%",
     content: '""',
     background: "linear-gradient(transparent 0%,#000000 100%)",
-    boxShadow: `0px 100px 30px 20px rgba(0,0,0)`,
+    boxShadow: `0px 50px 30px 25px rgba(0,0,0)`,
     borderRadius: "16px",
   },
 }));

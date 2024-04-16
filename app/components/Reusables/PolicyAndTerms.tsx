@@ -8,7 +8,7 @@
  */
 
 import React, { useState } from "react";
-import { Grid, Typography, styled } from "@mui/material";
+import { Grid, styled } from "@mui/material";
 import { pdfjs, Document, Page } from "react-pdf";
 
 import "react-pdf/dist/esm/Page/TextLayer.css";
@@ -26,7 +26,11 @@ interface PolicyAndTerms {
   type: "Policy" | "Terms";
 }
 
-const PdfContainer = styled(Grid)(({ theme }) => ({}));
+const PdfContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.up("md")]: {
+    minWidth: "620px",
+  },
+}));
 
 const Content = styled(Grid)(({ theme }) => ({
   height: "400px",
@@ -34,7 +38,10 @@ const Content = styled(Grid)(({ theme }) => ({
   overflow: "auto",
 }));
 
-const PageSteps = styled(FlexCenter)(({ theme }) => ({}));
+const PageSteps = styled(FlexCenter)(({ theme }) => ({
+  position: "relative",
+  zIndex: 10,
+}));
 
 const PageLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
@@ -126,20 +133,6 @@ export const PolicyAndTerms: React.FC<PolicyAndTerms> = (
             options={options}
             renderMode="canvas"
           >
-            {/* {Array.from(new Array(numPages), (_, index) => {
-            return (
-              <Page
-                className={type === "Policy" ? "Policy-Page" : ""}
-                key={`pdf_page_${index + 1}`}
-                pageNumber={index + 1}
-                renderAnnotationLayer={false} // creating a custom annotation
-                canvasBackground="transparent"
-                customTextRenderer={(options) => {
-                  return getTextRenderer(options);
-                }}
-              />
-            );
-          })} */}
             <Page
               pageNumber={pageNumber}
               renderAnnotationLayer={false} // creating a custom annotation
