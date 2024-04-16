@@ -12,7 +12,7 @@ export const config = createConfig({
     connectors: [
         injected({
             shimDisconnect: true,
-            // target: 'metaMask'
+            target: "metaMask"
         }),
         walletConnect({ projectId }),
         coinbaseWallet({

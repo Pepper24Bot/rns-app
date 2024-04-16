@@ -1,6 +1,6 @@
 import React from "react";
 import { Divider, Grid, alpha, styled } from "@mui/material";
-import { Description, useModalState } from "@/redux/modal/modalSlice";
+import { useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 import {
   ActionButton,
@@ -93,12 +93,6 @@ export const Wallets: React.FC = () => {
   const { closeModal, toggleModal } = useModalState();
   const { getIcon } = useWalletIcon();
 
-  const description: Description = {
-    content:
-      "By connecting your wallet, you agree to our Terms of Service and our Privacy Policy.",
-    highlights: ["Terms of Service", "Privacy Policy"],
-  };
-
   const getWalletName = (name: string) => {
     switch (name) {
       case "Injected":
@@ -107,6 +101,8 @@ export const Wallets: React.FC = () => {
         return name;
     }
   };
+
+  console.log("connectors:: ", connectors);
 
   return (
     <Container>
@@ -154,7 +150,7 @@ export const Wallets: React.FC = () => {
           <Grid mt={4}>
             {connectors?.map((connector) => {
               return (
-                connector.name !== "MetaMask" && (
+                connector.id !== "io.metamask" && (
                   <WalletItem
                     key={connector.id}
                     onClick={() => {
