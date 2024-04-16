@@ -44,7 +44,7 @@ const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
 const ShareTip = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "14px",
   color: alpha(theme.palette.text.primary, 0.75),
-  width: "calc(100% - 64px)",
+  width: "calc(100% - 50px)",
   textAlign: "center",
   paddingBottom: "16px",
 }));
