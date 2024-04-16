@@ -69,11 +69,17 @@ const SearchButton = styled(BaseButton)(({ theme }) => ({
   marginLeft: "10px",
 
   "&.MuiButtonBase-root": {
-    backgroundColor: theme.palette.primary.dark,
     filter: `drop-shadow(0px 0px 15px ${alpha(
       theme.palette.background.paper,
       0.5
     )})`,
+
+    "&.MuiButton-contained": {
+      backgroundColor: theme.palette.primary.dark,
+      "&.Mui-disabled": {
+        backgroundColor: alpha(theme.palette.primary.dark, 0.25),
+      },
+    },
 
     "&:hover": {
       backgroundColor: alpha(theme.palette.primary.main, 0.25),
@@ -115,13 +121,13 @@ export interface SearchPopper {
   searchValue: string | null;
   address?: `0x${string}`;
   status?: NameStatus;
-  isNameValid?: boolean;
+  isNameInvalid?: boolean;
   // TODO: Fix any type
   data?: any;
 }
 
 export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
-  const { isLoading, anchorEl, searchValue, status, isNameValid } = props;
+  const { isLoading, anchorEl, searchValue, status, isNameInvalid } = props;
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
 
@@ -137,6 +143,25 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
       setClientWidth(anchorEl?.clientWidth);
     }
   }, [anchorEl?.clientWidth]);
+
+  const getStatus = () => {
+    switch (status) {
+      case "Available":
+        return <AvailableText isloading={isLoading}>{status}</AvailableText>;
+      case "Registered":
+        return (
+          <RegisteredText isloading={isLoading}>
+            Registered By You
+          </RegisteredText>
+        );
+      case "Invalid":
+      case "Not Available":
+      default:
+        return (
+          <NotAvailableText isloading={isLoading}>{status}</NotAvailableText>
+        );
+    }
+  };
 
   return (
     <Popper
@@ -156,19 +181,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                 <SearchText>{`${searchValue}.root`}</SearchText>
                 <Relative>
                   <SkeletonTypography isloading={isLoading} />
-                  {status === "Available" ? (
-                    <AvailableText isloading={isLoading}>
-                      {status}
-                    </AvailableText>
-                  ) : status === "Registered" ? (
-                    <RegisteredText isloading={isLoading}>
-                      Registered By You
-                    </RegisteredText>
-                  ) : (
-                    <NotAvailableText isloading={isLoading}>
-                      {status}
-                    </NotAvailableText>
-                  )}
+                  {getStatus()}
                 </Relative>
               </Grid>
               <ButtonsContainer item xs={4.5}>
@@ -183,8 +196,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                       </FavoriteButton>
                     </InformationTip>
                     <Divider orientation="vertical" flexItem />
-                    {status === "Available" ? (
+                    {status === "Available" || status === "Invalid" ? (
                       <SearchButton
+                        disabled={isNameInvalid}
                         variant="contained"
                         onClick={() => {
                           // Store in global state so the other componenst will be able to access the value
@@ -203,7 +217,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                           }
                         }}
                       >
-                        <SearchLabel>Register</SearchLabel>
+                        <SearchLabel isDisabled={isNameInvalid}>
+                          Register
+                        </SearchLabel>
                       </SearchButton>
                     ) : status === "Registered" ? (
                       <SearchButton

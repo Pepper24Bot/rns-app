@@ -156,7 +156,9 @@ export const SearchForm: React.FC = () => {
       !isEmpty(data?.nameWrappeds) &&
       data?.nameWrappeds[0].owner.id !== address?.toLowerCase();
 
-    return isAvailable
+    return isNameInvalid
+      ? "Invalid"
+      : isAvailable
       ? "Available"
       : isNotAvailable
       ? "Not Available"
@@ -171,11 +173,12 @@ export const SearchForm: React.FC = () => {
     setAnchorEl(searchFieldRef.current);
     try {
       const normalized = normalize(value);
+      setIsNameInvalid(false);
+      setSearchValue(normalized);
     } catch (error) {
-      console.log("error:: ", error);
       setIsNameInvalid(true);
+      setSearchValue(value);
     }
-    setSearchValue(value);
   };
 
   const debounceFn = useCallback(
@@ -233,7 +236,7 @@ export const SearchForm: React.FC = () => {
                   anchorEl={anchorEl}
                   searchValue={searchValue}
                   status={getNameStatus()}
-                  isNameValid={!isNameInvalid}
+                  isNameInvalid={isNameInvalid}
                 />
               </FlexCenter>
             </ClickAwayListener>

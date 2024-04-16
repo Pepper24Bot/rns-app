@@ -356,9 +356,12 @@ export const PrimaryLabel = styled(SubTitle, {
 }));
 
 export const SecondaryLabel = styled(PrimaryLabel, {
-  shouldForwardProp: (prop) => prop !== "isloading",
-})<{ isloading?: boolean }>(({ theme, isloading }) => ({
+  shouldForwardProp: (prop) => prop !== "isDisabled",
+})<{ isDisabled?: boolean }>(({ theme, isDisabled }) => ({
   fontFamily: "var(--secondary-font)",
+  color: isDisabled
+    ? alpha(theme.palette.text.primary, 0.25)
+    : theme.palette.text.primary,
 }));
 
 export const InformationTip = styled(
