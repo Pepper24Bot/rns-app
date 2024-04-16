@@ -102,7 +102,7 @@ export const RegistrationProcess: React.FC = () => {
       <StepContainer container my={4} spacing={4}>
         {REGISTRATION_PROCESS.map((item, index) => {
           return (
-            <StepItemContainer item xs>
+            <StepItemContainer item xs key={item.label}>
               <Step>
                 <StepTitle>{`Step ${index + 1}`}</StepTitle>
                 <FlexCenter>

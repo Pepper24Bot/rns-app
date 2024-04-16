@@ -37,8 +37,6 @@ export const CircularProgressWithLabel: React.FC<ProgressProps> = (
     }
   }, [isVisible]);
 
-  console.log("time:: ", Math.trunc((progress * 600) / 1000));
-
   return (
     <Box sx={{ position: "relative", display: "inline-flex", mx: 1 }}>
       <CircularProgress

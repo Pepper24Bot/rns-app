@@ -275,7 +275,7 @@ export const Dashboard: React.FC = () => {
     }
 
     // #4. Sort the list based on the options
-    const sortedList = getSortedNames(list);
+    const sortedList = !isEmpty(list) ? getSortedNames([...list]) : [];
     updateNameList(sortedList);
   };
 
