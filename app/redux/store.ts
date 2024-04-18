@@ -4,6 +4,7 @@ import { themeState } from './theme/themeSlice'
 import { modalState } from './modal/modalSlice'
 import { domainState } from './domain/domainSlice'
 import { dashboardState } from './dashboard/dashboardSlice'
+import { rootNetworkState } from './rootNetwork/rootNetworkSlice'
 
 const store = configureStore({
     // Add reducers here
@@ -13,7 +14,8 @@ const store = configureStore({
         themeState: themeState.reducer,
         modalState: modalState.reducer,
         domainState: domainState.reducer,
-        dashboardState: dashboardState.reducer
+        dashboardState: dashboardState.reducer,
+        rootNetworkSate: rootNetworkState.reducer
     },
 
     // Add middleware to handle api queries
