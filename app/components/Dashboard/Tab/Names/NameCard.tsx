@@ -7,7 +7,7 @@ import {
   styled,
 } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
-import { green, grey } from "@mui/material/colors";
+import { green, grey, red, yellow } from "@mui/material/colors";
 import {
   CheckCircle,
   MoreVert,
@@ -18,7 +18,9 @@ import {
   X,
 } from "@mui/icons-material";
 import {
+  ButtonLabel,
   Flex,
+  FlexJustified,
   SecondaryLabel,
   ShareButton,
 } from "@/components/Theme/StyledGlobal";
@@ -26,7 +28,9 @@ import { getExpiration, getMaskedAddress, parseCookie } from "@/services/utils";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/services/constants";
+import { FeatureList } from "@/hooks/useFeatureToggle";
 
+import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
 import Image from "next/image";
 import EnsImage from "@/components/Reusables/EnsImage";
@@ -134,6 +138,19 @@ const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
   padding: "6px 10px",
   textTransform: "uppercase",
   fontWeight: FONT_WEIGHT.Bold,
+}));
+
+const Verifying = styled(ButtonLabel)(({ theme }) => ({
+  padding: "8px 12px",
+  color: yellow[800],
+}));
+
+const Verified = styled(Verifying)(({ theme }) => ({
+  color: green[800],
+}));
+
+const Failed = styled(Verifying)(({ theme }) => ({
+  color: red[600],
 }));
 
 const TwitterIcon = styled(X)(({ theme }) => ({
@@ -248,23 +265,44 @@ export const NameCard: React.FC<Name> = (props: Name) => {
               </Grid>
             </Summary>
             {!isTweetVerified && (
-              <ShareContainer>
-                <ShareButton
-                  variant="contained"
-                  onClick={() => {
-                    toggleModal({
-                      id: "Share RNS",
-                      title: "",
-                      fullHeight: true,
-                      fullWidth: true,
-                    });
-                  }}
-                >
-                  <TwitterIcon fontSize="small" />
-                  <Divider orientation="vertical" flexItem />
-                  <ShareLabel>Share</ShareLabel>
-                </ShareButton>
-              </ShareContainer>
+              <FlexJustified>
+                <ShareContainer>
+                  <ShareButton
+                    variant="contained"
+                    onClick={() => {
+                      toggleModal({
+                        id: "Share RNS",
+                        title: "",
+                        fullHeight: true,
+                        fullWidth: true,
+                      });
+                    }}
+                  >
+                    <TwitterIcon fontSize="small" />
+                    <Divider orientation="vertical" flexItem />
+                    <ShareLabel>Share</ShareLabel>
+                  </ShareButton>
+                </ShareContainer>
+                <FeatureToggle feature={FeatureList.ShareStatus}>
+                  <ShareContainer>
+                    {/* TODO: Enable this once Share per RNS name is supported */}
+                    {/* <ShareButton disabled variant="contained">
+                      {isLoading ? (
+                        <Verifying>Verifying</Verifying>
+                      ) : isSuccess ? (
+                        <Verified>Verified</Verified>
+                      ) : isError ? (
+                        <Failed>Failed</Failed>
+                      ) : (
+                        <></>
+                      )}
+                      {isLoading && (
+                        <CircularProgress size="16px" sx={{ ml: "8px" }} />
+                      )}
+                    </ShareButton> */}
+                  </ShareContainer>
+                </FeatureToggle>
+              </FlexJustified>
             )}
           </Grid>
         </ItemContainer>

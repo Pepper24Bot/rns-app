@@ -370,6 +370,20 @@ export const SecondaryLabel = styled(PrimaryLabel, {
     : theme.palette.text.primary,
 }));
 
+export const ButtonLabel = styled(SecondaryLabel, {
+  shouldForwardProp: (prop) => prop !== "status",
+})<{ status?: string }>(({ status, theme }) => ({
+  fontWeight: FONT_WEIGHT.Bold,
+  color:
+    status === "denied"
+      ? red[500]
+      : status === "disabled"
+      ? alpha(theme.palette.text.disabled, 0.15)
+      : theme.palette.primary.main,
+  fontSize: "14px",
+  textTransform: "uppercase",
+}));
+
 export const InformationTip = styled(
   ({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />

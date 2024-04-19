@@ -5,6 +5,7 @@ import { modalState } from './modal/modalSlice'
 import { domainState } from './domain/domainSlice'
 import { dashboardState } from './dashboard/dashboardSlice'
 import { rootNetworkState } from './rootNetwork/rootNetworkSlice'
+import { shareState } from './share/shareSlice'
 
 const store = configureStore({
     // Add reducers here
@@ -15,7 +16,8 @@ const store = configureStore({
         modalState: modalState.reducer,
         domainState: domainState.reducer,
         dashboardState: dashboardState.reducer,
-        rootNetworkSate: rootNetworkState.reducer
+        rootNetworkSate: rootNetworkState.reducer,
+        shareState: shareState.reducer
     },
 
     // Add middleware to handle api queries

@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import {
   ActionButton,
+  ButtonLabel,
   FlexCenter,
   ModalInputField,
   SecondaryLabel,
@@ -17,12 +18,16 @@ import { FONT_WEIGHT } from "../Theme/Global";
 import {
   useGetTweetByIdQuery,
   useGetUserDetailsQuery,
-} from "@/redux/share/shareSlice";
+  useTriggerWebhookMutation,
+} from "@/redux/share/shareApi";
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
 import { TWITTER_AUTH } from "@/services/api";
 import { parseCookie } from "@/services/utils";
 import { TWEET_RNS } from "@/services/content";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { useModalState } from "@/redux/modal/modalSlice";
+import { useShareState } from "@/redux/share/shareSlice";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "50px 30px 40px 30px",
@@ -41,20 +46,6 @@ const TweetContainer = styled(Container)(({ theme }) => ({
 const StepLabel = styled(SecondaryLabel)(({ theme }) => ({
   textAlign: "center",
   fontSize: "20px",
-}));
-
-const ButtonLabel = styled(SecondaryLabel, {
-  shouldForwardProp: (prop) => prop !== "status",
-})<{ status?: string }>(({ status, theme }) => ({
-  fontWeight: FONT_WEIGHT.Bold,
-  color:
-    status === "denied"
-      ? red[500]
-      : status === "disabled"
-      ? alpha(theme.palette.text.disabled, 0.15)
-      : theme.palette.primary.main,
-  fontSize: "14px",
-  textTransform: "uppercase",
 }));
 
 const Verifying = styled(ButtonLabel)(({ theme }) => ({
@@ -131,6 +122,12 @@ export const ShareRegistration: React.FC = () => {
 
   const isAccessRequested = parseCookie("isAccessRequested") === "true";
 
+  const { updateShareStatus } = useShareState();
+  const { useRootNetwork } = useRootNetworkState();
+  const {
+    data: { futurePassAddress },
+  } = useRootNetwork();
+
   const { data: userResponse } = useGetUserDetailsQuery(
     {},
     { skip: !isAccessRequested }
@@ -150,6 +147,8 @@ export const ShareRegistration: React.FC = () => {
     { tweetId: tweetId || "" },
     { skip: !isGranted || isEmpty(tweetId) }
   );
+
+  const [triggerWebhook, result] = useTriggerWebhookMutation();
 
   const handleLink = () => {
     document.cookie = `isAccessRequested=${true}; path=/`;
@@ -180,6 +179,30 @@ export const ShareRegistration: React.FC = () => {
 
     setTweetId(tweetId);
   };
+
+  useEffect(() => {
+    const twitterId = verifyResponse?.data?.id;
+
+    updateShareStatus({
+      isLoading: isVerifying,
+      isError: isVerifyFailed,
+    });
+
+    if (twitterId && futurePassAddress) {
+      triggerWebhook({ futurePass: futurePassAddress });
+    }
+  }, [isVerifying]);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      document.cookie = `isTweetVerified=${true}; path=/`;
+    }
+    updateShareStatus({
+      isLoading: result.isLoading,
+      isSuccess: result.isSuccess,
+      isError: result.isError,
+    });
+  }, [result.isLoading]);
 
   return (
     <FlexCenter container position="relative">

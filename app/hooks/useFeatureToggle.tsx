@@ -11,6 +11,7 @@ export enum FeatureList {
   Subscription = "true",
   ViewOptions = "false",
   SocialAccounts = "false",
+  ShareStatus = "false",
 }
 
 export default function useFeatureToggle() {
