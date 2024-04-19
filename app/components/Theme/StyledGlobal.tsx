@@ -56,6 +56,10 @@ export const FlexRight = styled(Flex)(({ theme }) => ({
   justifyContent: "end",
 }));
 
+export const FlexTop = styled(Flex)(({ theme }) => ({
+  alignItems: "start",
+}));
+
 export const BaseButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
 

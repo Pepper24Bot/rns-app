@@ -11,14 +11,14 @@ export interface ConnectProps {
 }
 
 export default function useConnectRoot(props?: ConnectProps) {
-  const { address } = useAccount();
   const { name } = useNetworkConfig();
+  const { address } = useAccount();
   const { updateRootDetails } = useRootNetworkState();
 
   const setup = async () => {
     const api = await ApiPromise.create({
       ...getApiOptions(),
-      ...getPublicProvider("root"),
+      ...getPublicProvider("root"), // todo: change this to name
     });
 
     const [fpHolder, chain, chainId, nodeName, nodeVersion] = await Promise.all(
@@ -31,18 +31,17 @@ export default function useConnectRoot(props?: ConnectProps) {
       ]
     );
 
-    const fpAccount = fpHolder?.unwrapOr(undefined);
+    // Why does Porcini returns undefined after multiple calls?
+    const fpAccount = fpHolder?.unwrapOr(undefined)?.toString();
 
-    if (fpAccount) {
-      updateRootDetails({
-        futurePassAddress: fpAccount?.toString(),
-        eoaAddress: address,
-        chain: chain?.toString(),
-        chainId: chainId?.toString(),
-        nodeName: nodeName?.toString(),
-        nodeVersion: nodeVersion?.toString(),
-      });
-    }
+    updateRootDetails({
+      futurePassAddress: fpAccount,
+      eoaAddress: address,
+      chain: chain?.toString(),
+      chainId: chainId?.toString(),
+      nodeName: nodeName?.toString(),
+      nodeVersion: nodeVersion?.toString(),
+    });
   };
 
   // Initial load only

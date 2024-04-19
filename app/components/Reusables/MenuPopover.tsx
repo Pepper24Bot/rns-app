@@ -16,7 +16,7 @@ const Container = styled(Grid)(({ theme }) => ({
 }));
 
 const Content = styled(Grid)(({ theme }) => ({
-  padding: "20px",
+  padding: "25px",
   borderRadius: "8px",
   backgroundColor: darken(theme.palette.background.darker, 0.5),
 }));

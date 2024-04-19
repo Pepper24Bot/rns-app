@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Grid, Link, alpha, styled } from "@mui/material";
 import {
   Divider,
-  ToolbarButton,
   Flex,
   SocialButton,
   Relative,
@@ -13,13 +12,12 @@ import {
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/services/utils";
-import { isEmpty } from "lodash";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
 import MenuPopover from "../Reusables/MenuPopover";
-import useConnectRoot from "@/hooks/useConnectRoot";
+import Account from "./Account";
 
 const ToolbarContainer = styled(Flex)(({ theme }) => ({
   padding: "10px 0",
@@ -61,8 +59,6 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
 }));
 
 export const Toolbar: React.FC = () => {
-  useConnectRoot({ state: "initialize" });
-
   const { address, connector, status } = useAccount();
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
@@ -99,11 +95,6 @@ export const Toolbar: React.FC = () => {
     const walletIcon = address ? path : "/icons/wallet.svg";
     setIconPath(walletIcon);
   }, [address]);
-
-  useEffect(() => {
-    console.log("=========================");
-    console.log("data:: ", data);
-  }, [data?.futurePassAddress]);
 
   return (
     <ToolbarContainer>
@@ -188,20 +179,13 @@ export const Toolbar: React.FC = () => {
             setIsOpen(false);
           }}
         >
-          <Grid>
-            <Relative>
-              <ActionLabel>Account</ActionLabel>
-            </Relative>
-            <Grid py={2}>
-              <Image
-                src={iconPath}
-                alt="Wallet Icon"
-                width={24}
-                height={24}
-                style={{ color: "white", marginRight: address ? "" : "8px" }}
-              />
-            </Grid>
-          </Grid>
+          {address && (
+            <Account
+              toggleClose={() => {
+                setIsOpen(false);
+              }}
+            />
+          )}
         </MenuPopover>
       </Grid>
     </ToolbarContainer>

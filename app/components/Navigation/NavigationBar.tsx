@@ -5,7 +5,6 @@ import {
   Slide,
   AppBar as MuiAppBar,
   alpha,
-  Grid,
 } from "@mui/material";
 import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 import { useAccount } from "wagmi";
@@ -14,6 +13,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import Image from "next/image";
 import Toolbar from "./Toolbar";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
+import useConnectRoot from "@/hooks/useConnectRoot";
 
 const Navigation = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -76,6 +76,8 @@ export const HideOnScrollBar: React.FC<ScrollProps> = (props: ScrollProps) => {
 };
 
 export const NavigationBar: React.FC = () => {
+  useConnectRoot({ state: "initialize" });
+
   const { address, chainId } = useAccount();
   const { toggleModal, closeModal } = useModalState();
   const { config } = useNetworkConfig();

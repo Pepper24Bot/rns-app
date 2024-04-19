@@ -17,7 +17,8 @@ export interface RootNetworkState {
 
 const initialState: RootNetworkState = {
     data: {
-        futurePassAddress: ""
+        futurePassAddress: "",
+        eoaAddress: ""
     }
 }
 
