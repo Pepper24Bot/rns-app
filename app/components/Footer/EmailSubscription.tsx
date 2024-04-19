@@ -10,7 +10,7 @@ import { DEFAULT_DEBOUNCE } from "@/services/constants";
 import { debounce as _debounce } from "lodash";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { isEmailValid } from "@/services/utils";
-import { useSubscribesEmailMutation } from "@/redux/airtable/airtableSlice";
+import { useSubscribesEmailMutation } from "@/redux/airtable/airtableApi";
 import { green } from "@mui/material/colors";
 import { Check } from "@mui/icons-material";
 

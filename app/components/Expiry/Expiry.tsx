@@ -19,7 +19,7 @@ import {
 import { KeyboardBackspace } from "@mui/icons-material";
 import { Domain } from "@/redux/graphql/hooks";
 import { Address } from "viem";
-import { graphqlApi } from "@/redux/graphql/graphqlSlice";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 
 import Form from "../Registration/Form";

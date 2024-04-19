@@ -25,7 +25,7 @@ import { SearchPopper } from "./SearchPopper";
 import { useDomainState } from "@/redux/domain/domainSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { isAccountLoading } from "@/services/utils";
-import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlSlice";
+import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { normalize } from "viem/ens";
 
 import Image from "next/image";

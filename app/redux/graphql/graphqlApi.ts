@@ -1,4 +1,4 @@
-import { api } from "../graphql/hooks"
+import { api } from "./hooks"
 
 export const graphqlApi = api.enhanceEndpoints({
     addTagTypes: ["Name"],

@@ -13,10 +13,7 @@ import { getMaskedAddress, isAddressFuturePass } from "@/services/utils";
 import { Link } from "./LinkAddress";
 import { Address } from "viem";
 import { useDispatch } from "react-redux";
-import {
-  graphqlApi,
-  useGetNamesByNameQuery,
-} from "@/redux/graphql/graphqlSlice";
+import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import UpdateRecord from "./UpdateRecord";

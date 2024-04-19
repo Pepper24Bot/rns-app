@@ -24,7 +24,7 @@ import { COMMITMENT_AGE } from "@/services/constants";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
-import { graphqlApi } from "@/redux/graphql/graphqlSlice";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { parseCookie } from "@/services/utils";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
