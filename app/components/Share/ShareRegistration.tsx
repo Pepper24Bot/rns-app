@@ -14,14 +14,15 @@ import {
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { useSearchParams } from "next/navigation";
-import { useGetTweetByIdQuery } from "@/redux/twitter/twitterSlice";
+import {
+  useGetTweetByIdQuery,
+  useGetUserDetailsQuery,
+} from "@/redux/share/shareSlice";
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
 import { TWITTER_AUTH } from "@/services/api";
 import { parseCookie } from "@/services/utils";
 import { TWEET_RNS } from "@/services/content";
-import { useAccount } from "wagmi";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "50px 30px 40px 30px",
@@ -122,17 +123,19 @@ const Bullet: React.FC<BulletProps> = (props: BulletProps) => {
 };
 
 export const ShareRegistration: React.FC = () => {
-  const account = useAccount();
-  console.log("account:: ", account);
-
   const redirectUri = `${process.env.NEXT_PUBLIC_TWITTER_API_URL}/auth/twitter`;
   const clientId = process.env.NEXT_PUBLIC_TWITTER_API_CLIENT_ID;
 
-  const isGranted = parseCookie("access") === "granted";
-  const isDenied = parseCookie("access") === "denied";
-
   const [link, setLink] = useState<string>("");
   const [tweetId, setTweetId] = useState<string>("");
+
+  const isAccessRequested = parseCookie("isAccessRequested") === "true";
+
+  const { data: userResponse } = useGetUserDetailsQuery(
+    {},
+    { skip: !isAccessRequested }
+  );
+  const isGranted = !isEmpty(userResponse?.data?.id);
 
   /**
    * Verify the link provided.
@@ -145,10 +148,11 @@ export const ShareRegistration: React.FC = () => {
     isError: isVerifyFailed,
   } = useGetTweetByIdQuery(
     { tweetId: tweetId || "" },
-    { skip: isDenied || isEmpty(tweetId) }
+    { skip: !isGranted || isEmpty(tweetId) }
   );
 
   const handleLink = () => {
+    document.cookie = `isAccessRequested=${true}; path=/`;
     const scope = "tweet.read%20tweet.write%20users.read";
 
     const url =
@@ -194,10 +198,8 @@ export const ShareRegistration: React.FC = () => {
               }}
             >
               <FlexCenter>
-                <ButtonLabel
-                  status={isDenied ? "denied" : isGranted ? "disabled" : ""}
-                >
-                  {isGranted ? "Linked" : isDenied ? "Denied" : "Link"}
+                <ButtonLabel status={isGranted ? "disabled" : ""}>
+                  {isGranted ? "Linked" : "Link"}
                 </ButtonLabel>
               </FlexCenter>
             </ShareButton>
@@ -213,13 +215,13 @@ export const ShareRegistration: React.FC = () => {
           </Grid>
           <ButtonContainer item xs={12}>
             <ShareButton
-              disabled={isDenied || isVerified}
+              disabled={!isGranted}
               variant="contained"
               onClick={() => {
                 handleTweet();
               }}
             >
-              <ButtonLabel status={isDenied || isVerified ? "disabled" : ""}>
+              <ButtonLabel status={!isGranted ? "disabled" : ""}>
                 Tweet
               </ButtonLabel>
             </ShareButton>
@@ -242,7 +244,7 @@ export const ShareRegistration: React.FC = () => {
           </Grid>
           <ButtonContainer item xs={12}>
             <ShareButton
-              disabled={isDenied}
+              disabled={!isGranted || isEmpty(link)}
               variant="contained"
               onClick={() => {
                 handleVerify();
@@ -255,7 +257,9 @@ export const ShareRegistration: React.FC = () => {
               ) : isVerifyFailed ? (
                 <Failed>Verfication Failed</Failed>
               ) : (
-                <ButtonLabel status={isDenied ? "disabled" : ""}>
+                <ButtonLabel
+                  status={!isGranted || isEmpty(link) ? "disabled" : ""}
+                >
                   Verify
                 </ButtonLabel>
               )}

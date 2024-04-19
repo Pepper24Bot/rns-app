@@ -22,6 +22,10 @@ export interface TweetRequest extends Request {
     tweetId?: string
 }
 
+export interface WehbookRequest {
+    futurePass?: string
+}
+
 export interface AuthResponse {
     status?: HttpStatusCode,
     isSuccess: boolean,
@@ -53,8 +57,25 @@ export interface TweetResponse {
 const bearer = process.env.NEXT_PUBLIC_TWITTER_API_BEARER_TOKEN
 const twitterUrl = process.env.NEXT_PUBLIC_TWITTER_API_URL
 
-export const twitterApi = api.injectEndpoints({
+const webHook = process.env.NEXT_PUBLIC_WEBHOOK_URL
+const apiKey = process.env.NEXT_PUBLIC_WEBHOOK_API
+
+export const shareApi = api.injectEndpoints({
     endpoints: (builder) => ({
+        triggerWebhook: builder.mutation<{}, WehbookRequest>({
+            query: ({ futurePass }) => ({
+                url: webHook,
+                method: 'POST',
+                data: {
+                    "end_user_id": futurePass,
+                    "end_user_type": "FUTUREPASS"
+                },
+                headers: {
+                    "x-api-key": apiKey,
+                    "Content-Type": "application/json",
+                },
+            }),
+        }),
         getAccessToken: builder.query<AuthResponse, AuthReqeuest>({
             query: ({ code, redirect, state }) => ({
                 url: `${twitterUrl}/auth/twitter?code=${code}&redirect_uri=${redirect}&state=${state}`,
@@ -75,7 +96,7 @@ export const twitterApi = api.injectEndpoints({
                     const userResponse = await axios({
                         url: `${twitterUrl}/users/me`,
                         method: 'GET',
-                        headers: getHeader(token)
+                        headers: getHeader(bearer)
                     })
 
                     return { data: userResponse.data }
@@ -140,5 +161,6 @@ export const {
     useGetAccessTokenQuery,
     useGetUserDetailsQuery,
     useGetTweetByIdQuery,
-    useGetRefreshTokenQuery
-} = twitterApi
+    useGetRefreshTokenQuery,
+    useTriggerWebhookMutation
+} = shareApi
