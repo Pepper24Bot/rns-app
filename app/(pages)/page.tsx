@@ -11,8 +11,6 @@ const Container = styled(Grid)(({ theme }) => ({
 }));
 
 export default function Home() {
-  useConnectRoot();
-
   return (
     <Container>
       <SearchForm />

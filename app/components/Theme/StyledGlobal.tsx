@@ -13,6 +13,8 @@ import {
   TooltipProps,
   tooltipClasses,
   Box,
+  ToggleButton as MuiToggleButton,
+  ToggleButtonGroup as MuiToggleGroup,
 } from "@mui/material";
 import { grey, red } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
@@ -414,4 +416,46 @@ export const Tip = styled(SecondaryLabel, {
   width: "calc(100% - 64px)",
   textAlign: "center",
   visibility: isVisible ? "visible" : "hidden",
+}));
+
+export const ToggleButtonGroup = styled(MuiToggleGroup)(({ theme }) => ({
+  borderRadius: "8px",
+  minWidth: "150px",
+  border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
+
+  "&.MuiToggleButtonGroup-root": {
+    ".MuiToggleButtonGroup-lastButton": {
+      borderLeft: `solid 1px ${alpha(
+        theme.palette.text.primary,
+        0.15
+      )} !important`,
+      marginLeft: 0,
+    },
+  },
+}));
+
+export const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
+  borderRadius: "8px",
+  borderColor: alpha(theme.palette.text.primary, 0.15),
+  padding: "8px",
+  height: "fit-content",
+  width: "50%",
+  backgroundColor: alpha(theme.palette.primary.dark, 0.25),
+
+  "&.MuiToggleButton-root": {
+    border: "none",
+    color: alpha(theme.palette.text.primary, 0.5),
+    fontSize: "14px",
+    textTransform: "capitalize",
+    lineHeight: "normal",
+
+    "&.Mui-selected": {
+      backgroundColor: theme.palette.primary.main,
+      color: alpha(theme.palette.text.primary, 1),
+    },
+
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.primary.main, 0.5),
+    },
+  },
 }));

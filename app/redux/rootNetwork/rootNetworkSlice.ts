@@ -4,6 +4,7 @@ import { RootState } from "../store";
 
 export interface RootProps {
     futurePassAddress?: string,
+    eoaAddress?: string,
     chain?: string,
     chainId?: string,
     nodeName?: string,

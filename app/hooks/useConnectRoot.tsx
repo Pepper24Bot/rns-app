@@ -6,41 +6,50 @@ import { useEffect } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import useNetworkConfig from "./useNetworkConfig";
 
-export default function useConnectRoot() {
+export interface ConnectProps {
+  state: "initialize" | "reinitialize";
+}
+
+export default function useConnectRoot(props?: ConnectProps) {
   const { address } = useAccount();
   const { name } = useNetworkConfig();
   const { updateRootDetails } = useRootNetworkState();
 
-  const setup = async (address: string = "") => {
+  const setup = async () => {
     const api = await ApiPromise.create({
       ...getApiOptions(),
-      ...getPublicProvider(name),
+      ...getPublicProvider("root"),
     });
 
-    const [chain, chainId, nodeName, nodeVersion, fpHolder] = await Promise.all(
+    const [fpHolder, chain, chainId, nodeName, nodeVersion] = await Promise.all(
       [
+        api.query.futurepass.holders(address || ""),
         api.rpc.system.chain(),
         api.query.evmChainId.chainId(),
         api.rpc.system.name(),
         api.rpc.system.version(),
-        api.query.futurepass.holders(address || ""),
       ]
     );
 
-    const fpAccount = fpHolder.unwrapOr(undefined);
+    const fpAccount = fpHolder?.unwrapOr(undefined);
 
-    updateRootDetails({
-      futurePassAddress: fpAccount?.toString(),
-      chain: chain?.toString(),
-      chainId: chainId?.toString(),
-      nodeName: nodeName?.toString(),
-      nodeVersion: nodeVersion?.toString(),
-    });
+    if (fpAccount) {
+      updateRootDetails({
+        futurePassAddress: fpAccount?.toString(),
+        eoaAddress: address,
+        chain: chain?.toString(),
+        chainId: chainId?.toString(),
+        nodeName: nodeName?.toString(),
+        nodeVersion: nodeVersion?.toString(),
+      });
+    }
   };
 
   // Initial load only
   useEffect(() => {
-    setup(address);
+    if (address && props?.state === "initialize") {
+      setup();
+    }
   }, [address]);
 
   return { setup };

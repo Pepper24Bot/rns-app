@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Link, styled } from "@mui/material";
+import { Grid, Link, alpha, styled } from "@mui/material";
 import {
   Divider,
   ToolbarButton,
@@ -7,14 +7,19 @@ import {
   SocialButton,
   Relative,
   SkeletonTypography,
+  ToggleButtonGroup as StyledToggleButtonGroup,
+  ToggleButton as StyledToggleButton,
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/services/utils";
 import { isEmpty } from "lodash";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
+import MenuPopover from "../Reusables/MenuPopover";
+import useConnectRoot from "@/hooks/useConnectRoot";
 
 const ToolbarContainer = styled(Flex)(({ theme }) => ({
   padding: "10px 0",
@@ -38,11 +43,38 @@ const ActionLabel = styled("span", {
   visibility: isLoading ? "hidden" : "visible",
 }));
 
+const ToggleButtonGroup = styled(StyledToggleButtonGroup)(({ theme }) => ({
+  borderRadius: "16px",
+  minWidth: 0,
+}));
+
+const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
+  width: "auto",
+  height: "auto",
+  padding: "8px 16px",
+  borderRadius: "16px",
+  backgroundColor: alpha(theme.palette.primary.main, 0.85),
+
+  "&.MuiToggleButton-root": {
+    color: theme.palette.text.primary,
+  },
+}));
+
 export const Toolbar: React.FC = () => {
+  useConnectRoot({ state: "initialize" });
+
   const { address, connector, status } = useAccount();
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
   const { data: ensName } = useEnsName({ address });
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data } = useRootNetwork();
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [anchor, setAnchor] = useState<(EventTarget & HTMLElement) | null>(
+    null
+  );
 
   /**
    * Move wallet label and icon path to useState/useEffect
@@ -68,6 +100,11 @@ export const Toolbar: React.FC = () => {
     setIconPath(walletIcon);
   }, [address]);
 
+  useEffect(() => {
+    console.log("=========================");
+    console.log("data:: ", data);
+  }, [data?.futurePassAddress]);
+
   return (
     <ToolbarContainer>
       <Flex
@@ -90,35 +127,82 @@ export const Toolbar: React.FC = () => {
         </Link>
         <Divider orientation="vertical" flexItem />
       </Flex>
+
       {/* TODO: Clean this */}
       <Grid width="100%" textAlign="center">
         <HorizontalDivider variant="fullWidth" />
-        <ToolbarButton
-          variant="contained"
-          onClick={() => {
-            toggleModal({
-              id: "Wallets",
-              // title: address ? "Switch Wallet" : "Choose your Wallet",
-              title: address ? "Switch Wallet" : "Choose your Wallet",
-              isXDisabled: true,
-            });
+        <ToggleButtonGroup>
+          <ToggleButton
+            value=""
+            onClick={() => {
+              toggleModal({
+                id: "Wallets",
+                title: "Switch Wallet",
+                isXDisabled: true,
+              });
+            }}
+          >
+            <Image
+              src={iconPath}
+              alt="Wallet Icon"
+              width={24}
+              height={24}
+              style={{ color: "white", marginRight: address ? "" : "8px" }}
+            />
+            {!address && (
+              <Relative>
+                <SkeletonTypography
+                  isloading={isLabelLoading}
+                  sx={{ bgcolor: "primary.light" }}
+                />
+                <ActionLabel isLoading={isLabelLoading}>
+                  {walletLabel}
+                </ActionLabel>
+              </Relative>
+            )}
+          </ToggleButton>
+          {address && (
+            <ToggleButton
+              value=""
+              onClick={(event) => {
+                setIsOpen(!isOpen);
+                setAnchor(event.currentTarget);
+              }}
+            >
+              <Relative>
+                <SkeletonTypography
+                  isloading={isLabelLoading}
+                  sx={{ bgcolor: "primary.light" }}
+                />
+                <ActionLabel isLoading={isLabelLoading}>
+                  {walletLabel}
+                </ActionLabel>
+              </Relative>
+            </ToggleButton>
+          )}
+        </ToggleButtonGroup>
+        <MenuPopover
+          isOpen={isOpen}
+          anchorEl={anchor}
+          toggleClose={() => {
+            setIsOpen(false);
           }}
         >
-          <Image
-            src={iconPath}
-            alt="Wallet Icon"
-            width={24}
-            height={24}
-            style={{ marginRight: "8px", color: "white" }}
-          />
-          <Relative>
-            <SkeletonTypography
-              isloading={isLabelLoading}
-              sx={{ bgcolor: "primary.light" }}
-            />
-            <ActionLabel isLoading={isLabelLoading}>{walletLabel}</ActionLabel>
-          </Relative>
-        </ToolbarButton>
+          <Grid>
+            <Relative>
+              <ActionLabel>Account</ActionLabel>
+            </Relative>
+            <Grid py={2}>
+              <Image
+                src={iconPath}
+                alt="Wallet Icon"
+                width={24}
+                height={24}
+                style={{ color: "white", marginRight: address ? "" : "8px" }}
+              />
+            </Grid>
+          </Grid>
+        </MenuPopover>
       </Grid>
     </ToolbarContainer>
   );

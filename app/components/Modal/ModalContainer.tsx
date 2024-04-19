@@ -62,21 +62,21 @@ const ContentContainer = styled(Grid)(({ theme }) => ({
 const Content = styled(Grid, {
   shouldForwardProp: (prop) => prop !== "props",
 })<{ props?: ContentProps }>(({ props, theme }) => ({
-  paddingTop: props?.isHeaderEnabled ? "10px" : props?.fullHeight ? 0 : "50px",
+  paddingTop: props?.isHeaderEnabled ? "10px" : props?.fullHeight ? 0 : "25px",
   paddingBottom: props?.isHeaderEnabled
     ? "10px"
     : props?.fullHeight
     ? 0
-    : "40px",
-  paddingLeft: props?.fullWidth ? 0 : "45px",
-  paddingRight: props?.fullWidth ? 0 : "45px",
+    : "25px",
+  paddingLeft: props?.fullWidth ? 0 : "25px",
+  paddingRight: props?.fullWidth ? 0 : "25px",
 
   [theme.breakpoints.down("sm")]: {
     // TODO: Clean this up
-    paddingTop: props?.fullHeight ? 0 : "40px",
-    paddingBottom: props?.fullHeight ? 0 : "40px",
-    paddingLeft: props?.fullWidth ? 0 : "20px",
-    paddingRight: props?.fullWidth ? 0 : "20px",
+    paddingTop: props?.fullHeight ? 0 : "20px",
+    paddingBottom: props?.fullHeight ? 0 : "20px",
+    paddingLeft: props?.fullWidth ? 0 : "15px",
+    paddingRight: props?.fullWidth ? 0 : "15px",
   },
 }));
 

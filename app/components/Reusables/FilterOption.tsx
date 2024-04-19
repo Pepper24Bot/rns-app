@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Grid,
-  Divider as MuiDivider,
-  ToggleButton as MuiToggleButton,
-  ToggleButtonGroup as MuiToggleGroup,
-  alpha,
-  styled,
-} from "@mui/material";
+import { Grid, Divider as MuiDivider, alpha, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import {
   SecondaryLabel,
@@ -15,6 +8,8 @@ import {
   FlexJustified,
   FieldContainer,
   Flex,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { SORTING_OPTIONS } from "@/services/constants";
@@ -43,48 +38,6 @@ const Field = styled(SecondaryLabel)(({ theme }) => ({
   textTransform: "uppercase",
   fontSize: "14px",
   color: alpha(theme.palette.text.primary, 0.5),
-}));
-
-const ToggleButtonGroup = styled(MuiToggleGroup)(({ theme }) => ({
-  borderRadius: "8px",
-  minWidth: "150px",
-  border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
-
-  "&.MuiToggleButtonGroup-root": {
-    ".MuiToggleButtonGroup-lastButton": {
-      borderLeft: `solid 1px ${alpha(
-        theme.palette.text.primary,
-        0.15
-      )} !important`,
-      marginLeft: 0,
-    },
-  },
-}));
-
-const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
-  borderRadius: "8px",
-  borderColor: alpha(theme.palette.text.primary, 0.15),
-  padding: "8px",
-  height: "fit-content",
-  width: "50%",
-  backgroundColor: alpha(theme.palette.primary.dark, 0.25),
-
-  "&.MuiToggleButton-root": {
-    border: "none",
-    color: alpha(theme.palette.text.primary, 0.5),
-    fontSize: "14px",
-    textTransform: "capitalize",
-    lineHeight: "normal",
-
-    "&.Mui-selected": {
-      backgroundColor: theme.palette.primary.main,
-      color: alpha(theme.palette.text.primary, 1),
-    },
-
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.primary.main, 0.5),
-    },
-  },
 }));
 
 const SortValue = styled(SecondaryLabel)(({ theme }) => ({

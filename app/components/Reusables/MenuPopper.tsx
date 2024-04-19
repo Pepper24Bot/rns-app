@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Fade, Grid, Paper, Popper, styled } from "@mui/material";
+import { Box, Fade, Grid, Paper, Popper, darken, styled } from "@mui/material";
 
 export interface MenuPopper {
   children?: React.ReactNode;
@@ -17,6 +17,8 @@ const Container = styled(Grid)(({ theme }) => ({
 const Content = styled(Paper)(({ theme }) => ({
   padding: "50px 30px 40px 30px",
   borderRadius: "8px",
+  backgroundColor: darken(theme.palette.background.darker, 0.5),
+  backgroundImage: "none",
 }));
 
 export const MenuPopper: React.FC<MenuPopper> = (props: MenuPopper) => {
