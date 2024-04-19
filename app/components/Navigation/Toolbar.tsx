@@ -128,7 +128,7 @@ export const Toolbar: React.FC = () => {
             onClick={() => {
               toggleModal({
                 id: "Wallets",
-                title: "Switch Wallet",
+                title: address ? "Switch Wallet" : "Choose your Wallet",
                 isXDisabled: true,
               });
             }}
