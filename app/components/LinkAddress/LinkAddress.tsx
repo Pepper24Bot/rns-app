@@ -24,7 +24,7 @@ export const LinkAddress: React.FC<Link> = (props: Link) => {
 
   return (
     <Grid container mt={6} minWidth={250} maxWidth={700}>
-      <EnsImage />
+      <EnsImage name={domain?.name || ""} />
       {hasLinkedAddr ? <AddressRecord {...props} /> : <AddRecord {...props} />}
     </Grid>
   );

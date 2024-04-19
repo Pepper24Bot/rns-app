@@ -66,6 +66,13 @@ const HeaderLabel = styled(SecondaryLabel)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.35),
 }));
 
+const Highlight = styled(HighlightText)(({ theme }) => ({
+  cursor: "pointer",
+  "&:hover": {
+    color: theme.palette.text.secondary,
+  },
+}));
+
 const Label = styled(PrimaryLabel)(({ theme }) => ({
   fontSize: "12px",
   padding: "0px 16px",
@@ -106,7 +113,7 @@ export const Wallets: React.FC = () => {
         <Grid mb={5}>
           <StyledDescription>
             By connecting your wallet, you agree to our
-            <HighlightText
+            <Highlight
               onClick={() => {
                 toggleModal({
                   id: "Terms",
@@ -120,9 +127,9 @@ export const Wallets: React.FC = () => {
             >
               {" "}
               Terms of Service
-            </HighlightText>{" "}
+            </Highlight>{" "}
             and our
-            <HighlightText
+            <Highlight
               onClick={() => {
                 toggleModal({
                   id: "Policy",
@@ -136,7 +143,7 @@ export const Wallets: React.FC = () => {
             >
               {" "}
               Privacy Policy
-            </HighlightText>
+            </Highlight>
             .
           </StyledDescription>
         </Grid>

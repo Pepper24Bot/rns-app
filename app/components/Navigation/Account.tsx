@@ -160,20 +160,20 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
               style={{ color: "white", marginRight: address ? "" : "8px" }}
             />
           </Logo>
-          <Flex>
-            <Grid>
-              <Label>EOA Address</Label>
+          <Grid>
+            <Label>EOA Address</Label>
+            <Flex>
               <Highlight>{getMaskedAddress(data.eoaAddress || "")}</Highlight>
-            </Grid>
-            <IconButton
-              sx={{ ml: 2 }}
-              onClick={() => {
-                handleCopy(data.eoaAddress || "");
-              }}
-            >
-              <CopyIcon />
-            </IconButton>
-          </Flex>
+              <IconButton
+                sx={{ p: 0, ml: 1 }}
+                onClick={() => {
+                  handleCopy(data.eoaAddress || "");
+                }}
+              >
+                <CopyIcon />
+              </IconButton>
+            </Flex>
+          </Grid>
         </Flex>
         <Vertical />
         <Flex>
@@ -187,21 +187,22 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
             />
           </Logo>
           {data.futurePassAddress ? (
-            <Flex>
-              <Grid>
-                <Label sx={{ opacity: 0.35 }}>FuturePass Address</Label>
+            <Grid>
+              <Label sx={{ opacity: 0.35 }}>FuturePass Address</Label>
+              <Flex>
                 <RegularText sx={{ opacity: 0.25 }}>
                   {getMaskedAddress(data.futurePassAddress || "")}
                 </RegularText>
-              </Grid>
-              <IconButton
-                onClick={() => {
-                  handleCopy(data.futurePassAddress || "");
-                }}
-              >
-                <CopyIcon />
-              </IconButton>
-            </Flex>
+                <IconButton
+                  sx={{ p: 0, ml: 1 }}
+                  onClick={() => {
+                    handleCopy(data.futurePassAddress || "");
+                  }}
+                >
+                  <CopyIcon />
+                </IconButton>
+              </Flex>
+            </Grid>
           ) : (
             <Flex>
               <FpButton

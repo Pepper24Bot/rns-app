@@ -55,6 +55,7 @@ const TermsPolicy = styled(Link)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
   color: alpha(grey[50], 0.35),
   padding: "0 8px",
+  cursor: "pointer",
 }));
 
 export const PageFooter: React.FC = () => {

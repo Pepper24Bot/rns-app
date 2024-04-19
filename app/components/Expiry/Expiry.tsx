@@ -164,7 +164,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   return (
     <Grid container mt={6} minWidth={250} sx={{ placeContent: "center" }}>
-      <EnsImage />
+      <EnsImage name={domain?.name || ""} />
       <DetailsContainer item>
         {extendPage === 1 ? (
           <Form
