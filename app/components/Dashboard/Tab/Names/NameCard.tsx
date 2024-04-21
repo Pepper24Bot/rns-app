@@ -212,6 +212,13 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     if (scrollWidth > clientWidth) {
       setIsShowTooltip(true);
     }
+
+    console.log(`
+    name:: ${item.name}
+    createdAt:: ${item.domain.createdAt}
+    expiryDate:: ${item.domain.expiryDate}
+    -----------------
+    `);
   }, []);
 
   return (
