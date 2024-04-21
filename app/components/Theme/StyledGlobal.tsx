@@ -15,6 +15,7 @@ import {
   Box,
   ToggleButton as MuiToggleButton,
   ToggleButtonGroup as MuiToggleGroup,
+  darken,
 } from "@mui/material";
 import { grey, red } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
@@ -390,12 +391,12 @@ export const InformationTip = styled(
   )
 )(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.background.paper,
-    padding: 8,
+    backgroundColor: darken(theme.palette.background.darker, 0.5),
+    padding: "12px",
     filter: `drop-shadow(0px 1px 1px rgb(0, 0, 0, 0.5))`,
   },
   [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.background.paper,
+    color: darken(theme.palette.background.darker, 0.5),
     fontSize: (theme as Theme).typography.pxToRem(16),
     filter: `drop-shadow(-1px 0px 0px rgb(0, 0, 0, 0.25))`,
   },

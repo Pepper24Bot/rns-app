@@ -6,6 +6,7 @@ import {
   styled,
   Popper as MuiPopper,
   Divider,
+  Link,
 } from "@mui/material";
 import { isEmpty } from "lodash";
 import {
@@ -22,12 +23,16 @@ import {
   AvailableText,
   NotAvailableText,
   RegisteredText,
+  FlexRight,
+  HighlightText,
 } from "../Theme/StyledGlobal";
 import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
 import { parseCookie } from "@/services/utils";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { useAccount } from "wagmi";
 
 import Image from "next/image";
 
@@ -97,6 +102,18 @@ const SearchLabel = styled(SecondaryLabel)(({ theme }) => ({
   },
 }));
 
+const TooltipText = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "12px",
+  color: alpha(theme.palette.text.primary, 0.65),
+}));
+
+const Highlight = styled(HighlightText)(({ theme }) => ({
+  fontSize: "12px",
+  "&:hover": {
+    color: theme.palette.primary.main,
+  },
+}));
+
 const FavoriteButton = styled(BaseIconButton)(({ theme }) => ({
   borderRadius: "32px",
   padding: "8px",
@@ -130,6 +147,12 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   const { isLoading, anchorEl, searchValue, status, isNameInvalid } = props;
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
+  const { address } = useAccount();
+
+  const { useRootNetwork } = useRootNetworkState();
+  const {
+    data: { futurePassAddress },
+  } = useRootNetwork();
 
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
@@ -186,7 +209,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
               </Grid>
               <ButtonsContainer item xs={4.5}>
                 <Relative>
-                  <Flex isloading={isLoading}>
+                  <FlexRight isloading={isLoading}>
                     <InformationTip title="Coming soon!" arrow>
                       <FavoriteButton>
                         {/* TODO: Add checker here - if favorite */}
@@ -197,30 +220,59 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                     </InformationTip>
                     <Divider orientation="vertical" flexItem />
                     {status === "Available" || status === "Invalid" ? (
-                      <SearchButton
-                        disabled={isNameInvalid}
-                        variant="contained"
-                        onClick={() => {
-                          // Store in global state so the other componenst will be able to access the value
-                          updateName({ name: searchValue || "", status });
-
-                          if (isInformationHidden) {
-                            toggleModal({
-                              id: "Register Name",
-                              title: "Register",
-                            });
-                          } else {
-                            toggleModal({
-                              id: "Registration Info",
-                              title: "Registration Process",
-                            });
-                          }
-                        }}
+                      <InformationTip
+                        arrow
+                        placement="right"
+                        title={
+                          !futurePassAddress ? (
+                            <Grid>
+                              <TooltipText pb={2}>
+                                You must create a Futurepass to register.
+                              </TooltipText>
+                              <TooltipText>Follow the link below:</TooltipText>
+                              <Link
+                                href="https://futurepass.futureverse.app/"
+                                target="_blank"
+                              >
+                                <Highlight>
+                                  https://futurepass.futureverse.app/
+                                </Highlight>
+                              </Link>
+                            </Grid>
+                          ) : (
+                            ""
+                          )
+                        }
                       >
-                        <SearchLabel isDisabled={isNameInvalid}>
-                          Register
-                        </SearchLabel>
-                      </SearchButton>
+                        <Grid>
+                          <SearchButton
+                            disabled={
+                              isNameInvalid || (address && !futurePassAddress)
+                            }
+                            variant="contained"
+                            onClick={() => {
+                              // Store in global state so the other componenst will be able to access the value
+                              updateName({ name: searchValue || "", status });
+
+                              if (isInformationHidden) {
+                                toggleModal({
+                                  id: "Register Name",
+                                  title: "Register",
+                                });
+                              } else {
+                                toggleModal({
+                                  id: "Registration Info",
+                                  title: "Registration Process",
+                                });
+                              }
+                            }}
+                          >
+                            <SearchLabel isDisabled={isNameInvalid}>
+                              Register
+                            </SearchLabel>
+                          </SearchButton>
+                        </Grid>
+                      </InformationTip>
                     ) : status === "Registered" ? (
                       <SearchButton
                         variant="contained"
@@ -250,7 +302,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         />
                       </InformationTip>
                     )}
-                  </Flex>
+                  </FlexRight>
                   <SkeletonRectangular
                     sx={{ position: "relative" }}
                     variant="rectangular"

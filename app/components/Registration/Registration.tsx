@@ -26,6 +26,7 @@ import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { parseCookie } from "@/services/utils";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -67,6 +68,11 @@ export const RegisterName: React.FC = () => {
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
 
+  const { useRootNetwork } = useRootNetworkState();
+  const {
+    data: { futurePassAddress },
+  } = useRootNetwork();
+
   const dispatch = useDispatch();
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
@@ -95,6 +101,7 @@ export const RegisterName: React.FC = () => {
     hash,
     duration,
     secret,
+    resolver,
     resolverAddr,
   } = useNameDetails({
     name,
@@ -185,6 +192,7 @@ export const RegisterName: React.FC = () => {
     if (isApprovalSuccess) {
       const { isSuccess } = await register({
         controller,
+        resolver,
         fees: {
           gasPrice: estimatedGasPrice,
           rent: rentFee,
@@ -197,6 +205,7 @@ export const RegisterName: React.FC = () => {
           secret,
           resolverAddr,
           payment,
+          futurePassAddress,
         },
       });
 
@@ -319,6 +328,7 @@ export const RegisterName: React.FC = () => {
                 onClick={() => {
                   toggleModal({
                     id: "Wallets",
+                    isXDisabled: true,
                     title: address ? "Switch Wallet" : "Choose your Wallet",
                   });
                 }}

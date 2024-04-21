@@ -62,7 +62,7 @@ const ContentContainer = styled(Grid)(({ theme }) => ({
 const Content = styled(Grid, {
   shouldForwardProp: (prop) => prop !== "props",
 })<{ props?: ContentProps }>(({ props, theme }) => ({
-  paddingTop: props?.isHeaderEnabled ? "10px" : props?.fullHeight ? 0 : "25px",
+  paddingTop: props?.isHeaderEnabled ? "10px" : props?.fullHeight ? 0 : "35px",
   paddingBottom: props?.isHeaderEnabled
     ? "10px"
     : props?.fullHeight

@@ -253,6 +253,7 @@ export const SearchForm: React.FC = () => {
               onClick={() => {
                 toggleModal({
                   id: "Wallets",
+                  isXDisabled: true,
                   title: address ? "Switch Wallet" : "Choose your Wallet",
                 });
               }}

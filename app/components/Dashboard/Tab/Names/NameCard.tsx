@@ -104,6 +104,10 @@ const Label = styled("span")(({ theme }) => ({
   paddingRight: "8px",
 }));
 
+const TooltipText = styled("span")(({ theme }) => ({
+  color: alpha(theme.palette.text.primary, 0.5),
+}));
+
 const MoreIcon = styled(MoreVert)(({ theme }) => ({}));
 
 const CheckedIcon = styled(CheckCircle, {
@@ -167,17 +171,6 @@ const Failed = styled(Verifying)(({ theme }) => ({
 const TwitterIcon = styled(X)(({ theme }) => ({
   margin: "6px 8px",
   fontSize: "16px",
-}));
-
-const Tooltip = styled(InformationTip)(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.background.darker,
-    color: alpha(theme.palette.text.primary, 0.5),
-    padding: "12px",
-  },
-  [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.background.darker,
-  },
 }));
 
 export const Highlight = styled("span")(({ theme }) => ({
@@ -248,26 +241,22 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
             <Summary container>
               <Grid item xs={12}>
                 <FlexJustified container>
-                  {isShowTooltip ? (
-                    <Tooltip
-                      title={<Highlight>{item.name}</Highlight>}
-                      arrow
-                      placement="top"
-                    >
-                      <NameContainer item xs={9} ref={nameRef}>
-                        {item.name}
-                      </NameContainer>
-                    </Tooltip>
-                  ) : (
+                  <InformationTip
+                    title={
+                      isShowTooltip ? <Highlight>{item.name}</Highlight> : ""
+                    }
+                    arrow
+                    placement="top"
+                  >
                     <NameContainer item xs={9} ref={nameRef}>
                       {item.name}
                     </NameContainer>
-                  )}
+                  </InformationTip>
                   <Flex>
-                    <Tooltip
+                    <InformationTip
                       title={
                         <Grid>
-                          {`${item.name} is linked to `}
+                          <TooltipText>{`${item.name} is linked to `}</TooltipText>
                           <Highlight>{linkedAddr}</Highlight>
                         </Grid>
                       }
@@ -275,7 +264,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       placement="top"
                     >
                       <CheckedIcon hidden={!hasLinkedAddr} />
-                    </Tooltip>
+                    </InformationTip>
                     <DropDownMenu
                       handleSelect={handleMenuSelect}
                       options={[
