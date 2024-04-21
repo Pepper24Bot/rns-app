@@ -109,6 +109,7 @@ export const RegisterName: React.FC = () => {
     owner: address,
     payment,
     isEnabled: isDetailsEnabled,
+    futurePassAddress,
   });
 
   const { commit, register, approve, isLoading } = useRegister();

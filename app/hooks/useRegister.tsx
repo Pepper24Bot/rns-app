@@ -1,6 +1,12 @@
 import { ContractDetails } from "./useContractDetails";
 import { useWriteContract } from "wagmi";
-import { Address, erc20Abi, parseUnits } from "viem";
+import {
+  Address,
+  encodeFunctionData,
+  erc20Abi,
+  namehash,
+  parseUnits,
+} from "viem";
 import { Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
@@ -10,6 +16,7 @@ import { useState } from "react";
 
 export interface RegisterProps {
   controller: ContractDetails;
+  resolver?: ContractDetails;
   fees: {
     gasPrice: bigint;
     rent: number;
@@ -22,6 +29,7 @@ export interface RegisterProps {
     secret: string;
     resolverAddr: Address;
     payment?: Payment;
+    futurePassAddress?: string;
   };
 }
 
@@ -116,11 +124,18 @@ export default function useRegister() {
   };
 
   const handleRegister = async (props: RegisterProps) => {
-    const { controller, fees, args } = props;
+    const { resolver, controller, fees, args } = props;
     const { abi, address } = controller;
     const response: Response = { error: null, isSuccess: false, data: null };
 
     const payment = args.payment || PAYMENT_METHOD[0];
+
+    const nameHash = namehash(`${args.name}.root`);
+    const addressRecord = encodeFunctionData({
+      abi: resolver?.abi || [],
+      functionName: "setAddr",
+      args: [nameHash, args.futurePassAddress],
+    });
 
     try {
       const register = await simulateContract(config, {
@@ -134,7 +149,7 @@ export default function useRegister() {
           args.duration,
           args.secret,
           args.resolverAddr,
-          [],
+          [addressRecord],
           false,
           0,
           payment.address,

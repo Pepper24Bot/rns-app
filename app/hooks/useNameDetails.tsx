@@ -1,7 +1,6 @@
 import { useReadContract, useReadContracts } from "wagmi";
-import { namehash } from "ethers/lib/utils.js";
 import { isEmpty } from "lodash";
-import { Address, encodeFunctionData } from "viem";
+import { Address, encodeFunctionData, namehash } from "viem";
 import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
 import { RentPrice } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
@@ -26,8 +25,11 @@ export interface RegistrationProps {
   payment?: Payment;
 
   isEnabled?: boolean;
+
+  futurePassAddress?: string;
 }
 
+/** TODO: Optimize this hook */
 export default function useNameDetails(props: RegistrationProps) {
   const {
     name,
@@ -35,6 +37,7 @@ export default function useNameDetails(props: RegistrationProps) {
     payment,
     owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account
     isEnabled,
+    futurePassAddress,
   } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
@@ -77,13 +80,21 @@ export default function useNameDetails(props: RegistrationProps) {
   const shouldMakeACommitment =
     owner && !isEmpty(name) && availability?.result && !isPending && isSuccess;
 
+  // #6. Add Address Record
+  const nameHash = namehash(`${name}.root`);
+  const addressRecord = encodeFunctionData({
+    abi: resolver.abi,
+    functionName: "setAddr",
+    args: [nameHash, futurePassAddress],
+  });
+
   const commitmentArgs = [
     name,
     owner as Address,
     duration,
     secret,
     resolverAddr,
-    [],
+    [addressRecord],
     false,
     0,
   ];
@@ -96,7 +107,7 @@ export default function useNameDetails(props: RegistrationProps) {
     query: { enabled: shouldMakeACommitment && isEnabled },
   });
 
-  // #6. Get the estimated gas fee to be used in Transaction Fee field
+  // #7. Get the estimated gas fee to be used in Transaction Fee field
   const encodedFunction = encodeFunctionData({
     abi,
     functionName: "registerWithERC20",

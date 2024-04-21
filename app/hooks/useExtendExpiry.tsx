@@ -44,6 +44,7 @@ export interface ApprovalProps {
   fee: number;
 }
 
+/** TODO: Optimize this hook */
 export default function useExtend(props: ExtendProps) {
   const { name, year, owner, payment = PAYMENT_METHOD[0], isEnabled } = props;
 
