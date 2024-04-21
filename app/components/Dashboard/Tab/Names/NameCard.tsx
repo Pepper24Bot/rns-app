@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Divider as MuiDivider,
   Grid,
   alpha,
   darken,
   styled,
+  tooltipClasses,
 } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
 import { green, grey, red, yellow } from "@mui/material/colors";
@@ -21,6 +22,7 @@ import {
   ButtonLabel,
   Flex,
   FlexJustified,
+  InformationTip,
   SecondaryLabel,
   ShareButton,
 } from "@/components/Theme/StyledGlobal";
@@ -29,6 +31,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/services/constants";
 import { FeatureList } from "@/hooks/useFeatureToggle";
+import { isEmpty } from "lodash";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -61,14 +64,16 @@ const RnsNameText = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "14px",
   color: alpha(theme.palette.text.primary, 0.5),
   textAlign: "center",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
 }));
 
 const Summary = styled(Grid)(({ theme }) => ({
-  padding: "20px 30px",
+  padding: "20px 15px 20px 25px",
 }));
 
 const ShareContainer = styled(Summary)(({ theme }) => ({
-  padding: "10px 30px 20px 30px",
+  padding: "10px 30px 20px 25px",
 }));
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
@@ -79,9 +84,12 @@ const NameDetails = styled(Grid)(({ theme }) => ({
   paddingTop: "12px",
 }));
 
-const Name = styled(SecondaryLabel)(({ theme }) => ({
+const NameContainer = styled(Grid)(({ theme }) => ({
+  whiteSpace: "nowrap",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
   fontSize: "18px",
-  fontWeight: FONT_WEIGHT.Bold,
+  // fontWeight: FONT_WEIGHT.Bold,
 }));
 
 const Detail = styled(SecondaryLabel)(({ theme }) => ({
@@ -98,11 +106,14 @@ const Label = styled("span")(({ theme }) => ({
 
 const MoreIcon = styled(MoreVert)(({ theme }) => ({}));
 
-const CheckedIcon = styled(CheckCircle)(({ theme }) => ({
+const CheckedIcon = styled(CheckCircle, {
+  shouldForwardProp: (prop) => prop !== "hidden",
+})<{ hidden?: boolean }>(({ hidden, theme }) => ({
   color: green[500],
   width: "16px",
   height: "16px",
-  marginLeft: "20px",
+  visibility: hidden ? "hidden" : "visible",
+  margin: "0 4px",
 }));
 
 const ClockIcon = styled(AccessTime)(({ theme }) => ({
@@ -158,13 +169,31 @@ const TwitterIcon = styled(X)(({ theme }) => ({
   fontSize: "16px",
 }));
 
-export interface Name {
+const Tooltip = styled(InformationTip)(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.background.darker,
+    color: alpha(theme.palette.text.primary, 0.5),
+    padding: "12px",
+  },
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.background.darker,
+  },
+}));
+
+export const Highlight = styled("span")(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
+export interface NameProps {
   item: NameWrapped;
 }
 
-export const NameCard: React.FC<Name> = (props: Name) => {
+export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item } = props;
   const { toggleModal } = useModalState();
+
+  const nameRef = useRef<HTMLDivElement | null>(null);
+  const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
 
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
@@ -182,6 +211,15 @@ export const NameCard: React.FC<Name> = (props: Name) => {
       },
     });
   };
+
+  useEffect(() => {
+    const scrollWidth = nameRef?.current?.scrollWidth || 0;
+    const clientWidth = nameRef?.current?.clientWidth || 0;
+
+    if (scrollWidth > clientWidth) {
+      setIsShowTooltip(true);
+    }
+  }, []);
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
@@ -208,13 +246,50 @@ export const NameCard: React.FC<Name> = (props: Name) => {
           <Grid mt="-40px">
             <Divider flexItem />
             <Summary container>
-              <Grid item xs={11}>
-                <Grid>
+              <Grid item xs={12}>
+                <FlexJustified container>
+                  {isShowTooltip ? (
+                    <Tooltip
+                      title={<Highlight>{item.name}</Highlight>}
+                      arrow
+                      placement="top"
+                    >
+                      <NameContainer item xs={9} ref={nameRef}>
+                        {item.name}
+                      </NameContainer>
+                    </Tooltip>
+                  ) : (
+                    <NameContainer item xs={9} ref={nameRef}>
+                      {item.name}
+                    </NameContainer>
+                  )}
                   <Flex>
-                    <Name>{item.name}</Name>
-                    {hasLinkedAddr && <CheckedIcon />}
+                    <Tooltip
+                      title={
+                        <Grid>
+                          {`${item.name} is linked to `}
+                          <Highlight>{linkedAddr}</Highlight>
+                        </Grid>
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <CheckedIcon hidden={!hasLinkedAddr} />
+                    </Tooltip>
+                    <DropDownMenu
+                      handleSelect={handleMenuSelect}
+                      options={[
+                        { label: "Extend Expiry", icon: <ClockIcon /> },
+                        { label: "Link Name", icon: <LinkIcon /> },
+                        // { label: "Update Image", icon: <PhotoIcon /> },
+                        // { label: "Transfer", icon: <TransferIcon /> },
+                      ]}
+                      hasButton
+                      iconButton={<MoreIcon />}
+                      type="Menu"
+                    />
                   </Flex>
-                </Grid>
+                </FlexJustified>
                 <NameDetails>
                   {hasLinkedAddr ? (
                     <Detail>
@@ -248,20 +323,6 @@ export const NameCard: React.FC<Name> = (props: Name) => {
                     </Detail>
                   </Grid>
                 </NameDetails>
-              </Grid>
-              <Grid item xs={0.5}>
-                <DropDownMenu
-                  handleSelect={handleMenuSelect}
-                  options={[
-                    { label: "Extend Expiry", icon: <ClockIcon /> },
-                    { label: "Link Name", icon: <LinkIcon /> },
-                    // { label: "Update Image", icon: <PhotoIcon /> },
-                    // { label: "Transfer", icon: <TransferIcon /> },
-                  ]}
-                  hasButton
-                  iconButton={<MoreIcon />}
-                  type="Menu"
-                />
               </Grid>
             </Summary>
             {!isTweetVerified && (
