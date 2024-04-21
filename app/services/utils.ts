@@ -90,19 +90,21 @@ export const getExpiration = (dateCreated: number, dateExpiration: number) => {
         distanceToGracePeriod: ""
     }
 
-    // TODO: Check why does new Date fails sometimes
-    const currentDate = new Date().toLocaleDateString()
-    const formattedExpiry = getExpiryDate(dateCreated, dateExpiration)
-    dates.expiration = formattedExpiry
+    if (!isEmpty(dateCreated) && !isEmpty(dateExpiration)) {
+        // TODO: Check why does new Date fails sometimes
+        const currentDate = new Date().toLocaleDateString()
+        const formattedExpiry = getExpiryDate(dateCreated, dateExpiration)
+        dates.expiration = formattedExpiry
 
-    const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
-    dates.distanceToExpiration = distanceToExpiration
+        const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
+        dates.distanceToExpiration = distanceToExpiration
 
-    const gracePeriod = getFormattedDate(dateExpiration)
-    dates.gracePeriod = gracePeriod
+        const gracePeriod = getFormattedDate(dateExpiration)
+        dates.gracePeriod = gracePeriod
 
-    const distanceToGracePeriod = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
-    dates.distanceToGracePeriod = distanceToGracePeriod
+        const distanceToGracePeriod = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
+        dates.distanceToGracePeriod = distanceToGracePeriod
+    }
 
     return dates
 }
