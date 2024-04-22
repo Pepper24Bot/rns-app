@@ -194,6 +194,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
+  const { expiration, distanceToExpiration } = getExpiration(
+    Number(item.domain.createdAt),
+    Number(item.domain.expiryDate)
+  );
+
   const handleMenuSelect = (menuOption: Option) => {
     toggleModal({
       id: menuOption.label,
@@ -212,13 +217,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     if (scrollWidth > clientWidth) {
       setIsShowTooltip(true);
     }
-
-    console.log(`
-    name:: ${item.name}
-    createdAt:: ${item.domain.createdAt}
-    expiryDate:: ${item.domain.expiryDate}
-    -----------------
-    `);
   }, []);
 
   return (
@@ -301,21 +299,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                   <Grid container>
                     <Detail mr={1}>
                       <Label>Expiry</Label>
-                      {
-                        getExpiration(
-                          item.domain.createdAt,
-                          item.domain.expiryDate
-                        ).expiration
-                      }
+                      {expiration}
                     </Detail>
                     <Detail>
                       <Label>In</Label>
-                      {
-                        getExpiration(
-                          item.domain.createdAt,
-                          item.domain.expiryDate
-                        ).distanceToExpiration
-                      }
+                      {distanceToExpiration}
                     </Detail>
                   </Grid>
                 </NameDetails>

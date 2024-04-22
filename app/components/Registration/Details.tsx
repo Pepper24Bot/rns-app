@@ -52,6 +52,11 @@ export const Details: React.FC = () => {
 
   const details = data?.nameWrappeds[0];
 
+  const { expiration, distanceToExpiration } = getExpiration(
+    Number(details?.domain.createdAt),
+    Number(details?.domain.expiryDate)
+  );
+
   return (
     <Grid container mt={6} minWidth={250}>
       <EnsImage />
@@ -84,33 +89,14 @@ export const Details: React.FC = () => {
             label="Expiry"
             disabled
             focused
-            value={
-              getExpiration(
-                details?.domain.createdAt,
-                details?.domain.expiryDate
-              ).expiration
-            }
+            value={expiration}
             InputProps={{
               inputComponent: () => {
                 // TODO: Fix warning here: React.forwardRef
                 return (
                   <FlexJustified width="100%">
-                    <Label>
-                      {
-                        getExpiration(
-                          details?.domain.createdAt,
-                          details?.domain.expiryDate
-                        ).expiration
-                      }
-                    </Label>
-                    <Label>
-                      {`In ${
-                        getExpiration(
-                          details?.domain.createdAt,
-                          details?.domain.expiryDate
-                        ).distanceToExpiration
-                      }`}
-                    </Label>
+                    <Label>{expiration}</Label>
+                    <Label>{`In ${distanceToExpiration}`}</Label>
                   </FlexJustified>
                 );
               },
