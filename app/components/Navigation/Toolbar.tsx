@@ -9,15 +9,17 @@ import {
   ToggleButtonGroup as StyledToggleButtonGroup,
   ToggleButton as StyledToggleButton,
 } from "../Theme/StyledGlobal";
-import { useAccount, useEnsName } from "wagmi";
+import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/services/utils";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { useGetPrimaryNameResolverQuery } from "@/redux/graphql/hooks";
+import { isEmpty } from "lodash";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
 import MenuPopover from "../Reusables/MenuPopover";
 import Account from "./Account";
+import usePrimary from "@/hooks/usePrimary";
 
 const ToolbarContainer = styled(Flex)(({ theme }) => ({
   padding: "10px 0",
@@ -39,6 +41,7 @@ const ActionLabel = styled("span", {
   shouldForwardProp: (prop) => prop !== "isLoading",
 })<{ isLoading?: boolean }>(({ theme, isLoading }) => ({
   visibility: isLoading ? "hidden" : "visible",
+  textTransform: "none",
 }));
 
 const ToggleButtonGroup = styled(StyledToggleButtonGroup)(({ theme }) => ({
@@ -62,11 +65,15 @@ export const Toolbar: React.FC = () => {
   const { address, connector, status } = useAccount();
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
-  const { data: ensName } = useEnsName({ address });
+  const { getPrimaryName } = usePrimary();
 
-  const { useRootNetwork } = useRootNetworkState();
-  const { data } = useRootNetwork();
+  const { data: primaryData, isLoading: primaryListLoading } =
+    useGetPrimaryNameResolverQuery(
+      { id: address?.toLowerCase() || "" },
+      { skip: address === null }
+    );
 
+  const [ensName, setEnsName] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [anchor, setAnchor] = useState<(EventTarget & HTMLElement) | null>(
     null
@@ -83,6 +90,23 @@ export const Toolbar: React.FC = () => {
 
   const isLabelLoading = isAccountLoading(status);
 
+  const getName = async () => {
+    if (!isEmpty(primaryData?.nameWrappeds)) {
+      const domains = primaryData?.nameWrappeds[0].owner.domains;
+
+      if (!isEmpty(domains) && domains) {
+        const id = domains[0].id;
+        const { data } = await getPrimaryName({ domainId: id });
+        setEnsName(data);
+      }
+    }
+  };
+
+  useEffect(() => {
+    /** TODO: Fix this after data invalidation  */
+    getName();
+  }, [primaryData, primaryListLoading]);
+
   useEffect(() => {
     // TODO: display ensName here of the connected address
     const label = ensName
@@ -94,7 +118,7 @@ export const Toolbar: React.FC = () => {
 
     const walletIcon = address ? path : "/icons/wallet.svg";
     setIconPath(walletIcon);
-  }, [address]);
+  }, [address, ensName]);
 
   return (
     <ToolbarContainer>

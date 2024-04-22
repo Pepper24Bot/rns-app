@@ -5,7 +5,6 @@ import {
   alpha,
   darken,
   styled,
-  tooltipClasses,
 } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
 import { green, grey, red, yellow } from "@mui/material/colors";
@@ -17,6 +16,7 @@ import {
   CropOriginal,
   SwapHoriz,
   X,
+  Key,
 } from "@mui/icons-material";
 import {
   ButtonLabel,
@@ -31,7 +31,6 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/services/constants";
 import { FeatureList } from "@/hooks/useFeatureToggle";
-import { isEmpty } from "lodash";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -135,6 +134,13 @@ const LinkIcon = styled(Link)(({ theme }) => ({
   transform: "rotate(-40deg)",
 }));
 
+const PrimaryIcon = styled(Key)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  width: "18px",
+  height: "18px",
+  marginRight: "10px",
+}));
+
 const PhotoIcon = styled(CropOriginal)(({ theme }) => ({
   color: theme.palette.text.secondary,
   width: "18px",
@@ -202,7 +208,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const handleMenuSelect = (menuOption: Option) => {
     toggleModal({
       id: menuOption.label,
-      title: menuOption.label,
+      title: menuOption.title || menuOption.label,
       data: {
         domain: item.domain,
         owner: item.owner,
@@ -275,6 +281,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       options={[
                         { label: "Extend Expiry", icon: <ClockIcon /> },
                         { label: "Link Identity", icon: <LinkIcon /> },
+                        { label: "Set as Primary", icon: <PrimaryIcon /> },
                         // { label: "Update Image", icon: <PhotoIcon /> },
                         // { label: "Transfer", icon: <TransferIcon /> },
                       ]}

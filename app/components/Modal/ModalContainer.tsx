@@ -24,6 +24,7 @@ import Expiry from "../Expiry/Expiry";
 import LinkAddress from "../LinkAddress/LinkAddress";
 import ShareRegistration from "../Share/ShareRegistration";
 import RegistrationProcess from "../Registration/Process";
+import Primary from "../Primary/Primary";
 
 interface ContentProps {
   fullWidth?: boolean;
@@ -161,6 +162,8 @@ export const ModalContainer: React.FC = () => {
         return <LinkAddress {...props?.data} />;
       case "Share RNS":
         return <ShareRegistration />;
+      case "Set as Primary":
+        return <Primary {...props?.data} />;
       default:
         return;
     }
