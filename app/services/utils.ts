@@ -94,8 +94,8 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
     }
 
     if (!isNaN(created) && !isNaN(expiration)) {
-        // TODO: Check why does new Date fails sometimes
-        const currentDate = new Date().toLocaleDateString()
+        const currentDate = new Date().toLocaleDateString("en-US")
+
         const formattedExpiry = getExpiryDate(created, expiration)
         dates.expiration = formattedExpiry
 
