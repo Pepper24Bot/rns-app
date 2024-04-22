@@ -59,7 +59,7 @@ export const Details: React.FC = () => {
 
   return (
     <Grid container mt={6} minWidth={250}>
-      <EnsImage />
+      <EnsImage name={details?.domain.name || ""} />
       <DetailsContainer item>
         <Grid>
           <NameContainer>

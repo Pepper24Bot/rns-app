@@ -13,6 +13,9 @@ export interface Option {
   label: string;
   icon?: React.ReactNode;
   type?: string;
+
+  /** If this is provided, use this as the modal title instead of the label */
+  title?: string;
 }
 
 export type DropdownType = "Menu" | "Options";

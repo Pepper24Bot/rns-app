@@ -150,18 +150,15 @@ export const Dashboard: React.FC = () => {
   const [isViewOpen, setIsViewOpen] = useState<boolean>(false);
   const [viewAnchor, setViewAnchor] = useState<HTMLButtonElement | null>(null);
 
-  const {
-    data: searchedName,
-    isLoading: searchedNameLoading,
-    refetch,
-  } = useGetNamesByUserAndLabelQuery(
-    { labelName: searchValue, id: address?.toLowerCase() as Address },
-    {
-      skip: isEmpty(searchValue) || isEmpty(address),
-      refetchOnMountOrArgChange: true,
-      refetchOnFocus: true,
-    }
-  );
+  const { data: searchedName, isLoading: searchedNameLoading } =
+    useGetNamesByUserAndLabelQuery(
+      { labelName: searchValue, id: address?.toLowerCase() as Address },
+      {
+        skip: isEmpty(searchValue) || isEmpty(address),
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+      }
+    );
 
   const { data: namesList, isLoading: namesListLoading } = useGetNamesByIdQuery(
     { id: address?.toLowerCase() || "" },

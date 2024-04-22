@@ -22,7 +22,7 @@ const ImageContainer = styled(Grid)(({ theme }) => ({
 const StyledImage = styled(Image)(({ theme }) => ({
   minWidth: "200px",
   height: "fit-content",
-  border: `solid 1px ${alpha(grey[700], 0.1)}`,
+  border: `solid 1px ${alpha(grey[700], 0.2)}`,
   borderRadius: "4px",
   boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
 
