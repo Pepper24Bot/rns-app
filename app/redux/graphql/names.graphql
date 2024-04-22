@@ -4,6 +4,16 @@ query GetNamesByName($labelName: String!) {
     name
     owner {
       id
+      domains {
+        id
+        labelName
+        labelhash
+        name
+        resolver {
+          id
+          address
+        }
+      }
     }
     domain {
       id
@@ -44,6 +54,16 @@ query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
     name
     owner {
       id
+      domains {
+        id
+        labelName
+        labelhash
+        name
+        resolver {
+          id
+          address
+        }
+      }
     }
     domain {
       id
@@ -82,6 +102,16 @@ query GetNamesById($id: ID!) {
     name
     owner {
       id
+      domains {
+        id
+        labelName
+        labelhash
+        name
+        resolver {
+          id
+          address
+        }
+      }
     }
     domain {
       id
@@ -111,5 +141,21 @@ query GetNamesById($id: ID!) {
     transactionID
     expiryDate
     blockNumber
+  }
+}
+
+query GetPrimaryNameResolver($id: ID!) {
+  nameWrappeds(where: { owner_: { id: $id } }, first: 1) {
+    owner {
+      id
+      domains(where: { resolver_: { address_not: "" } }) {
+        id
+        name
+        resolver {
+          id
+          address
+        }
+      }
+    }
   }
 }

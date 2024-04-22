@@ -11,6 +11,9 @@ export const graphqlApi = api.enhanceEndpoints({
         },
         GetNamesByUserAndLabel: {
             providesTags: ["Name"]
+        },
+        GetPrimaryNameResolver: {
+            providesTags: ["Name"]
         }
     }
 })
@@ -18,5 +21,6 @@ export const graphqlApi = api.enhanceEndpoints({
 export const {
     useGetNamesByIdQuery,
     useGetNamesByNameQuery,
-    useGetNamesByUserAndLabelQuery
+    useGetNamesByUserAndLabelQuery,
+    useGetPrimaryNameResolverQuery
 } = graphqlApi
