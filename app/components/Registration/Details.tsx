@@ -53,8 +53,8 @@ export const Details: React.FC = () => {
   const details = data?.nameWrappeds[0];
 
   const { expiration, distanceToExpiration } = getExpiration(
-    Number(details?.domain.createdAt),
-    Number(details?.domain.expiryDate)
+    details?.domain.createdAt,
+    details?.domain.expiryDate
   );
 
   return (

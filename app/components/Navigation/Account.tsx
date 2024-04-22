@@ -161,7 +161,11 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
             />
           </Logo>
           <Grid>
-            <Label>EOA Address</Label>
+            <Label>
+              {data.futurePassAddress
+                ? "EOA Address"
+                : `${connector?.name} Address`}
+            </Label>
             <Flex>
               <Highlight>{getMaskedAddress(data.eoaAddress || "")}</Highlight>
               <IconButton

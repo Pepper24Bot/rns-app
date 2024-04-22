@@ -82,7 +82,10 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
  * @param dateCreated 
  * @param dateExpiration 
  */
-export const getExpiration = (dateCreated: number, dateExpiration: number) => {
+export const getExpiration = (dateCreated: string, dateExpiration: string) => {
+    const created = parseInt(dateCreated)
+    const expiration = parseInt(dateExpiration)
+
     const dates = {
         expiration: "",
         distanceToExpiration: "",
@@ -90,25 +93,20 @@ export const getExpiration = (dateCreated: number, dateExpiration: number) => {
         distanceToGracePeriod: ""
     }
 
-    try {
-        if (!isEmpty(dateCreated) && !isEmpty(dateExpiration)) {
-            // TODO: Check why does new Date fails sometimes
-            const currentDate = new Date().toLocaleDateString()
-            const formattedExpiry = getExpiryDate(dateCreated, dateExpiration)
-            dates.expiration = formattedExpiry
+    if (!isNaN(created) && !isNaN(expiration)) {
+        // TODO: Check why does new Date fails sometimes
+        const currentDate = new Date().toLocaleDateString()
+        const formattedExpiry = getExpiryDate(created, expiration)
+        dates.expiration = formattedExpiry
 
-            const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
-            dates.distanceToExpiration = distanceToExpiration
+        const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
+        dates.distanceToExpiration = distanceToExpiration
 
-            const gracePeriod = getFormattedDate(dateExpiration)
-            dates.gracePeriod = gracePeriod
+        const gracePeriod = getFormattedDate(expiration)
+        dates.gracePeriod = gracePeriod
 
-            const distanceToGracePeriod = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
-            dates.distanceToGracePeriod = distanceToGracePeriod
-        }
-    }
-    catch (error) {
-        console.log("Error parsing dates:: ", error)
+        const distanceToGracePeriod = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
+        dates.distanceToGracePeriod = distanceToGracePeriod
     }
 
     return dates

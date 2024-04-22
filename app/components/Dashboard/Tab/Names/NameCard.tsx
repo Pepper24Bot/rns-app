@@ -195,8 +195,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const { expiration, distanceToExpiration } = getExpiration(
-    Number(item.domain.createdAt),
-    Number(item.domain.expiryDate)
+    item.domain.createdAt,
+    item.domain.expiryDate
   );
 
   const handleMenuSelect = (menuOption: Option) => {
@@ -274,7 +274,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       handleSelect={handleMenuSelect}
                       options={[
                         { label: "Extend Expiry", icon: <ClockIcon /> },
-                        { label: "Link Name", icon: <LinkIcon /> },
+                        { label: "Link Identity", icon: <LinkIcon /> },
                         // { label: "Update Image", icon: <PhotoIcon /> },
                         // { label: "Transfer", icon: <TransferIcon /> },
                       ]}
