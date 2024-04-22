@@ -33,7 +33,6 @@ export interface RecordProps {
 }
 
 export default function useRecords(props?: RecordProps) {
-  const reverse = useContractDetails({ action: "ReverseRegistrar" });
   const universal = useContractDetails({ action: "UniversalResolver" });
   const ownedResolver = useContractDetails({ action: "OwnedResolver" });
   const publicResolver = useContractDetails({ action: "PublicResolver" });
@@ -41,37 +40,6 @@ export default function useRecords(props?: RecordProps) {
   const { writeContractAsync } = useWriteContract();
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-
-  const handlePrimaryName = async (props: PrimaryName) => {
-    const { name } = props;
-    const response: Response = { error: null, isSuccess: false, data: null };
-
-    if (name) {
-      try {
-        const nameHash = namehash(name);
-        const primaryResponse = await writeContractAsync({
-          abi: reverse.abi,
-          address: reverse.address,
-          functionName: "setName",
-          args: [nameHash],
-        });
-
-        const receipt = await waitForTransactionReceipt(config, {
-          hash: primaryResponse,
-        });
-
-        response.isSuccess = true;
-        response.data = {
-          hash: primaryResponse,
-          receipt,
-        };
-      } catch (error) {
-        console.log("error:: ", error);
-        response.error = error as string;
-      }
-    }
-    return response;
-  };
 
   /**
    *
