@@ -124,6 +124,21 @@ export const Names: React.FC = () => {
     return index < page * itemsPerPage && index >= (page - 1) * itemsPerPage;
   };
 
+  const getTotalCountShowedItems = () => {
+    const totalCount = names?.length || 0;
+
+    const displayedCount = page * itemsPerPage;
+
+    let displayedCountPerPage = itemsPerPage;
+    if (displayedCount < totalCount) {
+      displayedCountPerPage = displayedCount;
+    } else {
+      displayedCountPerPage = totalCount;
+    }
+
+    return displayedCountPerPage;
+  };
+
   useEffect(() => {
     const count = getNumberOfPages();
     setPageCount(count);
@@ -224,7 +239,9 @@ export const Names: React.FC = () => {
               </FlexCenter>
               <Divider flexItem orientation="vertical" />
               <Grid px={1}>
-                <PaginationText>{`${itemsPerPage} out of ${names?.length}`}</PaginationText>
+                <PaginationText>{`${getTotalCountShowedItems()} out of ${
+                  names?.length
+                }`}</PaginationText>
               </Grid>
             </PaginationContainer>
           </FlexCenter>
