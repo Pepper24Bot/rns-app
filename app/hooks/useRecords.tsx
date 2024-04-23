@@ -191,7 +191,6 @@ export default function useRecords(props?: RecordProps) {
     setTextRecord: handleTextRecord,
     setAddressRecord: handleAddressRecord,
     setFuturePassRecord: handleAddressRecord,
-    setPrimaryName: handlePrimaryName,
     removeAddress: handleRemoveAddress,
     getTextRecord,
 
