@@ -99,13 +99,15 @@ export const Toolbar: React.FC = () => {
         const { data } = await getPrimaryName({ domainId: id });
         setEnsName(data);
       }
+    } else {
+      setEnsName("");
     }
   };
 
   useEffect(() => {
     /** TODO: Fix this after data invalidation  */
     getName();
-  }, [primaryData, primaryListLoading]);
+  }, [primaryData, primaryListLoading, address]);
 
   useEffect(() => {
     // TODO: display ensName here of the connected address
