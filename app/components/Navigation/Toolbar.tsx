@@ -12,14 +12,14 @@ import {
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/services/utils";
-import { useGetPrimaryNameResolverQuery } from "@/redux/graphql/hooks";
-import { isEmpty } from "lodash";
+import { Address } from "viem";
+import { getEnsAddress, getEnsName } from "@wagmi/core";
+import { config } from "@/chains/config";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
 import MenuPopover from "../Reusables/MenuPopover";
 import Account from "./Account";
-import usePrimary from "@/hooks/usePrimary";
 
 const ToolbarContainer = styled(Flex)(({ theme }) => ({
   padding: "10px 0",
@@ -65,13 +65,6 @@ export const Toolbar: React.FC = () => {
   const { address, connector, status } = useAccount();
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
-  const { getPrimaryName } = usePrimary();
-
-  const { data: primaryData, isLoading: primaryListLoading } =
-    useGetPrimaryNameResolverQuery(
-      { id: address?.toLowerCase() || "" },
-      { skip: address === null }
-    );
 
   const [ensName, setEnsName] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -90,24 +83,22 @@ export const Toolbar: React.FC = () => {
 
   const isLabelLoading = isAccountLoading(status);
 
-  const getName = async () => {
-    if (!isEmpty(primaryData?.nameWrappeds)) {
-      const domains = primaryData?.nameWrappeds[0].owner.domains;
-
-      if (!isEmpty(domains) && domains) {
-        const id = domains[0].id;
-        const { data } = await getPrimaryName({ domainId: id });
-        setEnsName(data);
-      }
-    } else {
-      setEnsName("");
-    }
-  };
-
   useEffect(() => {
-    /** TODO: Fix this after data invalidation  */
-    getName();
-  }, [primaryData, primaryListLoading, address]);
+    const getEnsData = async () => {
+      if (address) {
+        const ensName = await getEnsName(config, {
+          address: address as Address,
+        });
+
+        // const ensAddr = await getEnsAddress(config, {
+        //   name: ensName || "",
+        // });
+        setEnsName(ensName || "");
+      }
+    };
+
+    getEnsData();
+  }, [address]);
 
   useEffect(() => {
     // TODO: display ensName here of the connected address

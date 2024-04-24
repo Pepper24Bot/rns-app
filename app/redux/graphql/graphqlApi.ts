@@ -1,7 +1,7 @@
 import { api } from "./hooks"
 
 export const graphqlApi = api.enhanceEndpoints({
-    addTagTypes: ["Name"],
+    addTagTypes: ["Name", "Primary"],
     endpoints: {
         GetNamesById: {
             providesTags: ["Name"]
@@ -13,7 +13,7 @@ export const graphqlApi = api.enhanceEndpoints({
             providesTags: ["Name"]
         },
         GetPrimaryNameResolver: {
-            providesTags: ["Name"]
+            providesTags: ["Primary"]
         }
     }
 })

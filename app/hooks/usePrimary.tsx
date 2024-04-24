@@ -39,11 +39,9 @@ export default function usePrimary() {
           args: [name],
         });
         setIsPrimaryLoading(true);
-
         const receipt = await waitForTransactionReceipt(config, {
           hash: primaryResponse,
         });
-
         response.isSuccess = true;
         response.data = {
           hash: primaryResponse,
@@ -83,7 +81,6 @@ export default function usePrimary() {
       response.error = error as string;
     }
 
-    console.log("get-response:: ", response);
     setIsPrimaryLoading(false);
     return response;
   };

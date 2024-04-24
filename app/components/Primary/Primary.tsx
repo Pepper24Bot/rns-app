@@ -67,7 +67,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
     });
 
     if (isSuccess) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      dispatch(graphqlApi.util.invalidateTags(["Primary"]));
       setIsSuccess(true);
     } else {
       setIsError(true);
@@ -83,12 +83,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
         <ConfirmationText pb={4}>
           Are you sure you want to use this name as your primary?
         </ConfirmationText>
-        <InputField
-          label="Linked To / Resolver"
-          disabled
-          focused
-          value={name}
-        />
+        <InputField disabled focused value={name} />
         <FlexCenter marginY={1}>
           <Relative width="100%">
             <BoxContainer isVisible={isProgressVisible}>
