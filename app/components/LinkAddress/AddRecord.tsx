@@ -37,7 +37,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
 
   const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
-  const [futurePassAddr, setFuturePassAddr] = useState<string>("");
+  const [inputAddr, setInputAddr] = useState<string>("");
 
   const initializeFlags = () => {
     // display progress bar
@@ -50,11 +50,11 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
     setIsSuccess(false);
   };
 
-  const handleSetFuturePass = async () => {
+  const handleSetAddress = async () => {
     initializeFlags();
     const { isSuccess } = await setAddressRecord({
       name: domain?.name || "",
-      futurePassAddress: futurePassAddr as Address,
+      address: inputAddr as Address,
       resolverAddress: domain?.resolver?.address,
     });
 
@@ -81,10 +81,10 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
           label="Address"
           placeholder="Enter Address"
           focused
-          value={futurePassAddr}
+          value={inputAddr}
           onChange={(event) => {
             const { value } = event.target;
-            setFuturePassAddr(value);
+            setInputAddr(value);
 
             /**
              * If inputted address is invalid, and an onchange has been triggered,
@@ -125,10 +125,10 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
             Cancel
           </ActionButton>
           <ActionButton
-            disabled={isEmpty(futurePassAddr) || isPending || isSuccess}
+            disabled={isEmpty(inputAddr) || isPending || isSuccess}
             variant="contained"
             onClick={() => {
-              handleSetFuturePass();
+              handleSetAddress();
             }}
           >
             Confirm

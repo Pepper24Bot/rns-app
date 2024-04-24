@@ -20,7 +20,7 @@ export interface Record {
 }
 
 export interface FuturePassRecord extends Record {
-  futurePassAddress: Address;
+  futurePassAddress?: Address;
 }
 
 export interface PrimaryName {
@@ -86,18 +86,19 @@ export default function useRecords(props?: RecordProps) {
    * @returns
    */
   const handleAddressRecord = async (props: FuturePassRecord) => {
-    const { name, futurePassAddress, resolverAddress } = props;
+    const { name, address, resolverAddress } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
 
-    if (name && resolverAddress) {
+    if (name && resolverAddress && address) {
       const nameHash = namehash(name);
+      const addr = address as Address;
 
       try {
         const addressResponse = await writeContractAsync({
           abi: publicResolver.abi,
           address: publicResolver.address,
           functionName: "setAddr",
-          args: [nameHash, futurePassAddress],
+          args: [nameHash, addr],
         });
         // will only set the loading flag as soon as the transasction is approved
         setIsAddressLoading(true);

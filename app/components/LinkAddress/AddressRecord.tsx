@@ -82,12 +82,12 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
   };
 
   // 0x3ceA3b75d585C9D809A7FE553cDAa9b81f5CF91F
-  const handleUpdateRecord = async () => {
+  const handleUpdateAddress = async () => {
     initializeFlags();
 
     const { isSuccess } = await setAddressRecord({
       name: domain?.name || "",
-      futurePassAddress: inputValue as Address,
+      address: inputValue as Address,
       resolverAddress: domain?.resolver?.address,
     });
 
@@ -179,7 +179,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
               if (isRemoveMode) {
                 handleRemoveRecord();
               } else {
-                handleUpdateRecord();
+                handleUpdateAddress();
               }
             }}
           >
