@@ -51,25 +51,20 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
   };
 
   const handleSetFuturePass = async () => {
-    const isValid = isAddressFuturePass(futurePassAddr);
-    setIsFuturePassValid(isValid);
+    initializeFlags();
+    const { isSuccess } = await setAddressRecord({
+      name: domain?.name || "",
+      futurePassAddress: futurePassAddr as Address,
+      resolverAddress: domain?.resolver?.address,
+    });
 
-    if (futurePassAddr && domain?.name && isValid) {
-      initializeFlags();
-
-      const { isSuccess } = await setAddressRecord({
-        name: domain?.name || "",
-        futurePassAddress: futurePassAddr as Address,
-        resolverAddress: domain?.resolver?.address,
-      });
-
-      if (isSuccess) {
-        dispatch(graphqlApi.util.invalidateTags(["Name"]));
-        setIsSuccess(isSuccess);
-      } else {
-        setIsError(true);
-      }
+    if (isSuccess) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      setIsSuccess(isSuccess);
+    } else {
+      setIsError(true);
     }
+
     setResetProgress(false);
     setIsPending(false);
   };
@@ -83,8 +78,8 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
           helperText={
             !isFuturePassValid ? "Please insert a FuturePass Address only" : ""
           }
-          label="FuturePass Address"
-          placeholder="Enter FuturePass Address"
+          label="Address"
+          placeholder="Enter Address"
           focused
           value={futurePassAddr}
           onChange={(event) => {

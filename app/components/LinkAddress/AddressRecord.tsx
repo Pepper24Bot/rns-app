@@ -81,25 +81,21 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     setIsPending(false);
   };
 
+  // 0x3ceA3b75d585C9D809A7FE553cDAa9b81f5CF91F
   const handleUpdateRecord = async () => {
-    const isValid = isAddressFuturePass(inputValue);
-    setIsFuturePassValid(isValid);
+    initializeFlags();
 
-    if (inputValue && isValid) {
-      initializeFlags();
+    const { isSuccess } = await setAddressRecord({
+      name: domain?.name || "",
+      futurePassAddress: inputValue as Address,
+      resolverAddress: domain?.resolver?.address,
+    });
 
-      const { isSuccess } = await setAddressRecord({
-        name: domain?.name || "",
-        futurePassAddress: inputValue as Address,
-        resolverAddress: domain?.resolver?.address,
-      });
-
-      if (isSuccess) {
-        dispatch(graphqlApi.util.invalidateTags(["Name"]));
-        setIsSuccess(true);
-      } else {
-        setIsError(true);
-      }
+    if (isSuccess) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      setIsSuccess(true);
+    } else {
+      setIsError(true);
     }
 
     setResetProgress(false);
