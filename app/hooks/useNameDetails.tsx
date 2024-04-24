@@ -85,7 +85,7 @@ export default function useNameDetails(props: RegistrationProps) {
   const addressRecord = encodeFunctionData({
     abi: resolver.abi,
     functionName: "setAddr",
-    args: [nameHash, futurePassAddress],
+    args: [nameHash, owner],
   });
 
   const commitmentArgs = [

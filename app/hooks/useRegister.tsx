@@ -134,7 +134,7 @@ export default function useRegister() {
     const addressRecord = encodeFunctionData({
       abi: resolver?.abi || [],
       functionName: "setAddr",
-      args: [nameHash, args.futurePassAddress],
+      args: [nameHash, args.owner],
     });
 
     try {
@@ -158,6 +158,7 @@ export default function useRegister() {
 
       const registerResponse = await registerAsync(register.request);
       setRegisterLoading(true);
+      console.log("registration-approval:: ", registerResponse);
 
       const receipt = await waitForTransactionReceipt(config, {
         hash: registerResponse,
@@ -172,6 +173,7 @@ export default function useRegister() {
       response.error = error as string;
     }
 
+    console.log("registration-response:: ", response);
     setRegisterLoading(false);
     return response;
   };

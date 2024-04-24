@@ -7,6 +7,7 @@ import {
   alpha,
   IconButton,
   Link as MuiLink,
+  darken,
 } from "@mui/material";
 import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
@@ -55,7 +56,7 @@ const DialogContainer = styled(FlexCenter)(({ theme }) => ({
 }));
 
 const ContentContainer = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: darken(theme.palette.background.darker, 0.6),
   margin: "1px",
   borderRadius: "8px",
 }));

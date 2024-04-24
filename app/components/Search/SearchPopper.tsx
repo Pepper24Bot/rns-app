@@ -220,59 +220,32 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                     </InformationTip>
                     <Divider orientation="vertical" flexItem />
                     {status === "Available" || status === "Invalid" ? (
-                      <InformationTip
-                        arrow
-                        placement="right"
-                        title={
-                          !futurePassAddress ? (
-                            <Grid>
-                              <TooltipText pb={2}>
-                                You must create a Futurepass to register.
-                              </TooltipText>
-                              <TooltipText>Follow the link below:</TooltipText>
-                              <Link
-                                href="https://futurepass.futureverse.app/"
-                                target="_blank"
-                              >
-                                <Highlight>
-                                  https://futurepass.futureverse.app/
-                                </Highlight>
-                              </Link>
-                            </Grid>
-                          ) : (
-                            ""
-                          )
-                        }
-                      >
-                        <Grid>
-                          <SearchButton
-                            disabled={
-                              isNameInvalid || (address && !futurePassAddress)
-                            }
-                            variant="contained"
-                            onClick={() => {
-                              // Store in global state so the other componenst will be able to access the value
-                              updateName({ name: searchValue || "", status });
+                      <Grid>
+                        <SearchButton
+                          disabled={isNameInvalid}
+                          variant="contained"
+                          onClick={() => {
+                            // Store in global state so the other componenst will be able to access the value
+                            updateName({ name: searchValue || "", status });
 
-                              if (isInformationHidden) {
-                                toggleModal({
-                                  id: "Register Name",
-                                  title: "Register",
-                                });
-                              } else {
-                                toggleModal({
-                                  id: "Registration Info",
-                                  title: "Registration Process",
-                                });
-                              }
-                            }}
-                          >
-                            <SearchLabel isDisabled={isNameInvalid}>
-                              Register
-                            </SearchLabel>
-                          </SearchButton>
-                        </Grid>
-                      </InformationTip>
+                            if (isInformationHidden) {
+                              toggleModal({
+                                id: "Register Name",
+                                title: "Register",
+                              });
+                            } else {
+                              toggleModal({
+                                id: "Registration Info",
+                                title: "Registration Process",
+                              });
+                            }
+                          }}
+                        >
+                          <SearchLabel isDisabled={isNameInvalid}>
+                            Register
+                          </SearchLabel>
+                        </SearchButton>
+                      </Grid>
                     ) : status === "Registered" ? (
                       <SearchButton
                         variant="contained"

@@ -90,10 +90,18 @@ export const Toolbar: React.FC = () => {
           address: address as Address,
         });
 
-        // const ensAddr = await getEnsAddress(config, {
-        //   name: ensName || "",
-        // });
+        const ensAddr = await getEnsAddress(config, {
+          name: ensName || "",
+        });
+
+        console.log(`
+        ensName:: ${ensName}
+        ensAddr:: ${ensAddr}
+        ------------------
+        `);
         setEnsName(ensName || "");
+      } else {
+        setEnsName("");
       }
     };
 
