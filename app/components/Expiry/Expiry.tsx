@@ -4,7 +4,7 @@ import {
   useDomainState,
 } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount } from "wagmi";
 import { Grid, IconButton, alpha, styled } from "@mui/material";
 import {
   FlexRight,
@@ -18,7 +18,6 @@ import {
 } from "../Theme/StyledGlobal";
 import { KeyboardBackspace } from "@mui/icons-material";
 import { Domain } from "@/redux/graphql/hooks";
-import { Address } from "viem";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 
@@ -28,6 +27,7 @@ import useFees from "@/hooks/useFees";
 import useExtend from "@/hooks/useExtendExpiry";
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
+import useTokenApproval from "@/hooks/useApprovalToken";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -84,9 +84,9 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
 
+  const { approve, isApprovalLoading } = useTokenApproval();
   const {
     renew,
-    approve,
     duration,
     rentPrice: { base },
     estimatedGas,
@@ -107,6 +107,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     payment,
   });
 
+  const isTransactionLoading = isLoading || isApprovalLoading;
+
   const initializeFlags = () => {
     // display progress bar
     setIsPending(true);
@@ -120,6 +122,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     initializeFlags();
 
     const { isSuccess } = await approve({
+      payment,
       fee: totalFee,
     });
 
@@ -197,7 +200,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                 <BoxContainer isVisible={isProgressVisible}>
                   <ProgressBar
                     isError={isError}
-                    isPaused={!isLoading}
+                    isPaused={!isTransactionLoading}
                     isVisible={isProgressVisible}
                     isSuccess={isExtendSuccess}
                   />

@@ -26,7 +26,6 @@ import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { parseCookie } from "@/services/utils";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -35,6 +34,7 @@ import useRegister from "@/hooks/useRegister";
 import Form from "./Form";
 import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
+import useTokenApproval from "@/hooks/useApprovalToken";
 
 const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
   padding: "8px 16px",
@@ -67,11 +67,6 @@ export const RegisterName: React.FC = () => {
   const { name = "", year = 1, payment } = useDomain();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
-
-  const { useRootNetwork } = useRootNetworkState();
-  const {
-    data: { futurePassAddress },
-  } = useRootNetwork();
 
   const dispatch = useDispatch();
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
@@ -109,10 +104,10 @@ export const RegisterName: React.FC = () => {
     owner: address,
     payment,
     isEnabled: isDetailsEnabled,
-    futurePassAddress,
   });
 
-  const { commit, register, approve, isLoading } = useRegister();
+  const { commit, register, isLoading } = useRegister();
+  const { approve, isApprovalLoading } = useTokenApproval();
 
   const { rentFee, totalFee, transactionFee } = useFees({
     rent: base,
@@ -120,6 +115,8 @@ export const RegisterName: React.FC = () => {
     gasFee: estimatedGas,
     payment,
   });
+
+  const isTransactionLoading = isLoading || isApprovalLoading;
 
   const initializeFlags = () => {
     // display progress bar
@@ -170,7 +167,6 @@ export const RegisterName: React.FC = () => {
   const handleApproval = async () => {
     if (isCommitSuccess) {
       const { isSuccess } = await approve({
-        controller,
         payment,
         fee: totalFee,
       });
@@ -206,7 +202,6 @@ export const RegisterName: React.FC = () => {
           secret,
           resolverAddr,
           payment,
-          futurePassAddress,
         },
       });
 
@@ -250,7 +245,7 @@ export const RegisterName: React.FC = () => {
           <BoxContainer isVisible={isProgressVisible} display="flex">
             <ProgressBar
               isError={isError}
-              isPaused={!isLoading}
+              isPaused={!isTransactionLoading}
               isVisible={isProgressVisible}
               isSuccess={isRegisterSuccess}
             />

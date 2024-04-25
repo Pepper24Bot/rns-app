@@ -1,20 +1,10 @@
 import useContractDetails, { ContractDetails } from "./useContractDetails";
 import { useWriteContract } from "wagmi";
-import {
-  Address,
-  encodeFunctionData,
-  erc20Abi,
-  namehash,
-  parseUnits,
-} from "viem";
+import { Address, encodeFunctionData, namehash } from "viem";
 import { Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
-import {
-  readContract,
-  simulateContract,
-  waitForTransactionReceipt,
-} from "@wagmi/core";
+import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
 
@@ -55,7 +45,6 @@ export default function useRegister() {
   const { writeContractAsync } = useWriteContract();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
-  const [isApprovalLoading, setApprovalLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
 
   const initializeResponse = (): Response => {
@@ -78,6 +67,11 @@ export default function useRegister() {
     };
   };
 
+  /**
+   *
+   * @param props
+   * @returns
+   */
   const handleCommit = async (props: CommitProps) => {
     const { hash } = props;
 
@@ -99,38 +93,16 @@ export default function useRegister() {
       }
     }
 
+    console.log("response:: ", response);
     setCommitLoading(false);
     return response;
   };
 
-  const handleApproval = async (props: ApprovalProps) => {
-    const { payment = PAYMENT_METHOD[0], fee } = props;
-
-    let response = { ...initializeResponse() };
-
-    const spender = address as Address;
-    const tokenAddr = payment?.address as Address;
-    const value = parseUnits(fee.toString(), payment?.decimals);
-
-    try {
-      const token = await simulateContract(config, {
-        abi: erc20Abi,
-        address: tokenAddr,
-        functionName: "approve",
-        args: [spender, value],
-      });
-      const hash = await writeContractAsync(token.request);
-      setApprovalLoading(true);
-
-      response = await waitForTransaction(hash);
-    } catch (error) {
-      response.error = error as string;
-    }
-
-    setApprovalLoading(false);
-    return response;
-  };
-
+  /**
+   *
+   * @param props
+   * @returns
+   */
   const handleRegister = async (props: RegisterProps) => {
     const { resolver, args } = props;
 
@@ -166,7 +138,6 @@ export default function useRegister() {
 
       const hash = await writeContractAsync(register.request);
       setRegisterLoading(true);
-      console.log("registration-approval:: ", hash);
 
       response = await waitForTransaction(hash);
     } catch (error) {
@@ -178,43 +149,11 @@ export default function useRegister() {
     return response;
   };
 
-  const checkNameValidity = async ({ name = "" }: { name?: string }) => {
-    let response = { ...initializeResponse() };
-
-    try {
-      const available = await readContract(config, {
-        abi,
-        address,
-        functionName: "available",
-        args: [name],
-      });
-
-      const valid = await readContract(config, {
-        abi,
-        address,
-        functionName: "valid",
-        args: [name],
-      });
-
-      response.data = {
-        available: available,
-        valid: valid,
-      };
-    } catch (error) {
-      response.error = error as string;
-    }
-
-    return response;
-  };
-
   return {
     commit: handleCommit,
-    approve: handleApproval,
     register: handleRegister,
-    isValid: checkNameValidity,
-    isLoading: isCommitLoading || isApprovalLoading || isRegisterLoading,
+    isLoading: isCommitLoading || isRegisterLoading,
     isCommitLoading,
-    isApprovalLoading,
     isRegisterLoading,
   };
 }

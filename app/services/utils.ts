@@ -218,7 +218,7 @@ export const isAccountLoading = (status: string) => {
 }
 
 /**
- * 
+ * TODO: Fix this
  * @param name 
  * @returns 
  */

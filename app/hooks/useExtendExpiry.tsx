@@ -50,13 +50,10 @@ export default function useExtend(props: ExtendProps) {
 
   const controller = useContractDetails({ action: "RegistrarController" });
 
-  const { writeContractAsync: renewAsync } = useWriteContract();
-  const { writeContractAsync: approveAsync } = useWriteContract();
-
-  const [isApprovalLoading, setApprovalLoading] = useState(false);
-  const [isExtendLoading, setExtendLoading] = useState(false);
-
   const { abi, address } = controller;
+  const { writeContractAsync } = useWriteContract();
+
+  const [isExtendLoading, setExtendLoading] = useState(false);
 
   const duration = year * SECONDS;
   const token = payment.address;
@@ -82,52 +79,13 @@ export default function useExtend(props: ExtendProps) {
     query: { enabled: !isEmpty(name) && isEnabled },
   });
 
-  const handleApproval = async (props: ApprovalProps) => {
-    const { fee } = props;
-    const response: Response = { error: null, isSuccess: false, data: null };
-
-    const spender = controller.address as Address;
-    const tokenAddr = payment?.address as Address;
-
-    // const value = parseEther(fees.totalFee.toString());
-    const value = parseUnits(fee.toString(), payment.decimals);
-
-    try {
-      const token = await simulateContract(config, {
-        abi: erc20Abi,
-        address: tokenAddr,
-        functionName: "approve",
-        args: [spender, value],
-      });
-
-      const approvalResponse = await approveAsync(token.request);
-      setApprovalLoading(true);
-
-      const receipt = await waitForTransactionReceipt(config, {
-        hash: approvalResponse,
-      });
-
-      response.isSuccess = true;
-      response.data = {
-        hash: approvalResponse,
-        receipt,
-      };
-    } catch (error) {
-      response.error = error as string;
-    }
-
-    setApprovalLoading(false);
-    console.log("extend response:: ", response);
-    return response;
-  };
-
   const handleExtend = async (props: RenewProps) => {
     const { name, duration, fees } = props;
     const response: Response = { error: null, isSuccess: false, data: null };
 
     if (name && duration) {
       try {
-        const renewResponse = await renewAsync({
+        const renewResponse = await writeContractAsync({
           abi,
           address,
           functionName: "renewWithERC20",
@@ -170,9 +128,7 @@ export default function useExtend(props: ExtendProps) {
     estimatedGasPrice: gasPrice,
     rentPrice: rentFee,
     renew: handleExtend,
-    approve: handleApproval,
-    isLoading: isApprovalLoading || isExtendLoading,
-    isApprovalLoading,
+    isLoading: isExtendLoading,
     isExtendLoading,
   };
 }

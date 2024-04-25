@@ -9,11 +9,12 @@ import {
   Tip,
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { getMaskedAddress, isAddressFuturePass } from "@/services/utils";
+import { getMaskedAddress } from "@/services/utils";
 import { Link } from "./LinkAddress";
 import { Address } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
+import { EMPTY_ADDRESS } from "@/services/constants";
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import UpdateRecord from "./UpdateRecord";
@@ -22,12 +23,13 @@ import RemoveAddress from "./RemoveRecord";
 export const AddressRecord: React.FC<Link> = (props: Link) => {
   const { domain: domainState, owner } = props;
   const { closeModal } = useModalState();
+
   const { data } = useGetNamesByNameQuery(
     { labelName: `${domainState?.labelName}` },
     { skip: domainState?.name === null }
   );
 
-  const { removeAddress, setAddressRecord, isLoading } = useRecords({
+  const { setAddressRecord, isLoading } = useRecords({
     type: "AddressRecord",
   });
 
@@ -62,32 +64,12 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     setIsSuccess(false);
   };
 
-  const handleRemoveRecord = async () => {
-    initializeFlags();
-
-    const { isSuccess } = await removeAddress({
-      name: domain?.name || "",
-      resolverAddress: domain?.resolver?.address,
-    });
-
-    if (isSuccess) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsSuccess(true);
-    } else {
-      setIsError(true);
-    }
-
-    setResetProgress(false);
-    setIsPending(false);
-  };
-
-  // 0x3ceA3b75d585C9D809A7FE553cDAa9b81f5CF91F
-  const handleUpdateAddress = async () => {
+  const handleUpdateAddress = async (value: string) => {
     initializeFlags();
 
     const { isSuccess } = await setAddressRecord({
       name: domain?.name || "",
-      address: inputValue as Address,
+      address: value as Address,
       resolverAddress: domain?.resolver?.address,
     });
 
@@ -177,9 +159,9 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
             variant="contained"
             onClick={() => {
               if (isRemoveMode) {
-                handleRemoveRecord();
+                handleUpdateAddress(EMPTY_ADDRESS);
               } else {
-                handleUpdateAddress();
+                handleUpdateAddress(inputValue);
               }
             }}
           >
