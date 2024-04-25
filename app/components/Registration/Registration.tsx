@@ -35,6 +35,7 @@ import Form from "./Form";
 import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
 import useTokenApproval from "@/hooks/useApprovalToken";
+import useBlockLatency from "@/hooks/useBlockLatency";
 
 const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
   padding: "8px 16px",
@@ -76,12 +77,18 @@ export const RegisterName: React.FC = () => {
   const [isRegisterSuccess, setIsRegisterSuccess] = useState<boolean>(false);
 
   const [isError, setIsError] = useState<boolean>(false);
-  const [isWaiting, setIsWaiting] = useState<boolean>(false);
+  const [isCooldown, setCooldown] = useState<boolean>(false);
   const [resetProgress, setResetProgress] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [areBtnsDisabled, setAreBtnsDisabled] = useState<boolean>(false);
+  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+
+  const { isWaiting, isCompleted } = useBlockLatency({
+    enabled: isBlockEnabled,
+    blocksToWait: 2,
+  });
 
   /**
    * Step #1:
@@ -116,7 +123,7 @@ export const RegisterName: React.FC = () => {
     payment,
   });
 
-  const isTransactionLoading = isLoading || isApprovalLoading;
+  const isTransactionLoading = isLoading || isApprovalLoading || isWaiting;
 
   const initializeFlags = () => {
     // display progress bar
@@ -148,14 +155,14 @@ export const RegisterName: React.FC = () => {
     const { isSuccess, error } = await commit({ hash: hashStr, controller });
 
     if (isSuccess) {
-      setIsWaiting(true);
+      setCooldown(true);
     } else {
       setFlagsWhenError();
     }
 
     setTimeout(() => {
       setIsCommitSuccess(isSuccess);
-      setIsWaiting(false);
+      setCooldown(false);
     }, COMMITMENT_AGE);
   };
 
@@ -206,15 +213,21 @@ export const RegisterName: React.FC = () => {
       });
 
       if (isSuccess) {
-        // Data Invalidation: Refresh Dashboard
-        dispatch(graphqlApi.util.invalidateTags(["Name"]));
-        updateName({ status: "Registered" });
-        setIsRegisterSuccess(isSuccess);
+        setIsBlockEnabled(true);
       } else {
         setFlagsWhenError();
       }
     }
   };
+
+  useEffect(() => {
+    if (isCompleted) {
+      // Data Invalidation: Refresh Dashboard
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      updateName({ status: "Registered" });
+      setIsRegisterSuccess(true);
+    }
+  }, [isCompleted]);
 
   useEffect(() => {
     handleApproval();
@@ -249,13 +262,13 @@ export const RegisterName: React.FC = () => {
               isVisible={isProgressVisible}
               isSuccess={isRegisterSuccess}
             />
-            <Collapse orientation="horizontal" in={isWaiting}>
-              <CircularProgress isVisible={isWaiting} countdown />
+            <Collapse orientation="horizontal" in={isCooldown}>
+              <CircularProgress isVisible={isCooldown} countdown />
             </Collapse>
           </BoxContainer>
-          {isWaiting && (
+          {isCooldown && (
             <FlexLeft>
-              <Tip isVisible={isWaiting}>
+              <Tip isVisible={isCooldown}>
                 Please wait for 60 seconds before the transaction proceeds.
               </Tip>
             </FlexLeft>
