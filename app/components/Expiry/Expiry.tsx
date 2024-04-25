@@ -27,7 +27,7 @@ import useFees from "@/hooks/useFees";
 import useExtend from "@/hooks/useExtendExpiry";
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
-import useTokenApproval from "@/hooks/useApprovalToken";
+import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -91,7 +91,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     blocksToWait: 2,
   });
 
-  const { approve, isApprovalLoading } = useTokenApproval();
+  const { approve, isApprovalLoading } = useToken();
   const {
     renew,
     duration,

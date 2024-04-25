@@ -4,16 +4,21 @@ import { Address, erc20Abi, parseUnits } from "viem";
 import { Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
-import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
+import {
+  readContract,
+  simulateContract,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
 
-export interface ApprovalProps {
+export interface TokenProps {
   payment?: Payment;
-  fee: number;
+  fee?: number;
+  address?: Address;
 }
 
-export default function useTokenApproval() {
+export default function useToken() {
   const controller = useContractDetails({ action: "RegistrarController" });
 
   const { address } = controller;
@@ -46,12 +51,12 @@ export default function useTokenApproval() {
    * @param props
    * @returns
    */
-  const handleApproval = async (props: ApprovalProps) => {
-    const { payment = PAYMENT_METHOD[0], fee } = props;
+  const handleApproval = async (props: TokenProps) => {
+    const { payment = PAYMENT_METHOD[0], fee = 0 } = props;
 
     let response = { ...initializeResponse() };
 
-    const spender = address as Address;
+    const spender = address as Address; // ETHRegistrarCntroller address
     const tokenAddr = payment?.address as Address;
     const value = parseUnits(fee.toString(), payment?.decimals);
 
@@ -74,8 +79,38 @@ export default function useTokenApproval() {
     return response;
   };
 
+  const getBalanceOf = async (props: TokenProps) => {
+    const { address, payment = PAYMENT_METHOD[0], fee = 0 } = props;
+
+    let response = { ...initializeResponse() };
+
+    const tokenAddr = payment?.address as Address;
+    const walletAddr = address as Address;
+    const totalFee = parseUnits(fee.toString(), payment?.decimals);
+
+    try {
+      const balance = await readContract(config, {
+        abi: erc20Abi,
+        address: tokenAddr,
+        functionName: "balanceOf",
+        args: [walletAddr],
+      });
+
+      response.isSuccess = true;
+      response.data = {
+        balance,
+        isBalanceSufficient: balance > totalFee,
+      };
+    } catch (error) {
+      response.error = error as string;
+    }
+
+    return response;
+  };
+
   return {
     approve: handleApproval,
+    getBalance: getBalanceOf,
     isApprovalLoading,
   };
 }

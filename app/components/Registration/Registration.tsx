@@ -11,6 +11,7 @@ import {
   ShareButton,
   FlexJustified,
   FlexLeft,
+  ErrorTip,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, alpha, styled } from "@mui/material";
 import {
@@ -34,7 +35,7 @@ import useRegister from "@/hooks/useRegister";
 import Form from "./Form";
 import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
-import useTokenApproval from "@/hooks/useApprovalToken";
+import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
 
 const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -85,6 +86,8 @@ export const RegisterName: React.FC = () => {
   const [areBtnsDisabled, setAreBtnsDisabled] = useState<boolean>(false);
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
 
+  const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
+
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
     blocksToWait: 2,
@@ -114,7 +117,7 @@ export const RegisterName: React.FC = () => {
   });
 
   const { commit, register, isLoading } = useRegister();
-  const { approve, isApprovalLoading } = useTokenApproval();
+  const { approve, isApprovalLoading, getBalance } = useToken();
 
   const { rentFee, totalFee, transactionFee } = useFees({
     rent: base,
@@ -149,21 +152,22 @@ export const RegisterName: React.FC = () => {
    * This will only be triggered when the approval is successful - see useEffect listener
    */
   const handleCommit = async () => {
-    initializeFlags();
+    if (isBalanceSufficient) {
+      initializeFlags();
+      const hashStr = hash as unknown as string;
+      const { isSuccess, error } = await commit({ hash: hashStr, controller });
 
-    const hashStr = hash as unknown as string;
-    const { isSuccess, error } = await commit({ hash: hashStr, controller });
+      if (isSuccess) {
+        setCooldown(true);
+      } else {
+        setFlagsWhenError();
+      }
 
-    if (isSuccess) {
-      setCooldown(true);
-    } else {
-      setFlagsWhenError();
+      setTimeout(() => {
+        setIsCommitSuccess(isSuccess);
+        setCooldown(false);
+      }, COMMITMENT_AGE);
     }
-
-    setTimeout(() => {
-      setIsCommitSuccess(isSuccess);
-      setCooldown(false);
-    }, COMMITMENT_AGE);
   };
 
   /**
@@ -220,6 +224,24 @@ export const RegisterName: React.FC = () => {
     }
   };
 
+  // On initial load - check wallet balance before doing transaction
+  useEffect(() => {
+    const getBalanceOf = async () => {
+      if (address) {
+        const { data } = await getBalance({
+          address,
+          payment,
+          fee: totalFee,
+        });
+
+        setBalanceSufficient(data.isBalanceSufficient);
+        setAreBtnsDisabled(!data.isBalanceSufficient);
+      }
+    };
+
+    getBalanceOf();
+  }, [address]);
+
   useEffect(() => {
     if (isCompleted) {
       // Data Invalidation: Refresh Dashboard
@@ -255,6 +277,11 @@ export const RegisterName: React.FC = () => {
       />
       <FlexCenter marginY={2.5}>
         <Relative>
+          <FlexCenter>
+            <ErrorTip isVisible={!isBalanceSufficient}>
+              Registration fees exceed wallet balance.
+            </ErrorTip>
+          </FlexCenter>
           <BoxContainer isVisible={isProgressVisible} display="flex">
             <ProgressBar
               isError={isError}
@@ -266,13 +293,11 @@ export const RegisterName: React.FC = () => {
               <CircularProgress isVisible={isCooldown} countdown />
             </Collapse>
           </BoxContainer>
-          {isCooldown && (
-            <FlexLeft>
-              <Tip isVisible={isCooldown}>
-                Please wait for 60 seconds before the transaction proceeds.
-              </Tip>
-            </FlexLeft>
-          )}
+          <FlexLeft>
+            <Tip isVisible={isCooldown}>
+              Please wait for 60 seconds before the transaction proceeds.
+            </Tip>
+          </FlexLeft>
           <FlexCenter>
             <Tip isVisible={isRegisterSuccess}>View Transaction</Tip>
           </FlexCenter>
