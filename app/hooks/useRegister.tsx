@@ -1,4 +1,4 @@
-import { ContractDetails } from "./useContractDetails";
+import useContractDetails, { ContractDetails } from "./useContractDetails";
 import { useWriteContract } from "wagmi";
 import {
   Address,
@@ -45,37 +45,51 @@ export interface ApprovalProps {
 }
 
 export default function useRegister() {
-  const { writeContractAsync: commitAsync } = useWriteContract();
-  const { writeContractAsync: approveAsync } = useWriteContract();
-  const { writeContractAsync: registerAsync } = useWriteContract();
+  const controller = useContractDetails({ action: "RegistrarController" });
+  const { abi, address } = controller;
+
+  const { writeContractAsync } = useWriteContract();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isApprovalLoading, setApprovalLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
 
+  const initializeResponse = (): Response => {
+    return { error: null, isSuccess: false, data: null };
+  };
+
+  // TODO: Implement block latency here
+  const waitForTransaction = async (hash: Address) => {
+    const receipt = await waitForTransactionReceipt(config, {
+      hash,
+    });
+
+    return {
+      isSuccess: true,
+      error: null,
+      data: {
+        hash,
+        receipt,
+      },
+    };
+  };
+
   const handleCommit = async (props: CommitProps) => {
-    const { hash, controller } = props;
-    const response: Response = { error: null, isSuccess: false };
+    const { hash } = props;
+
+    let response = { ...initializeResponse() };
 
     if (hash) {
       try {
-        const commitResponse = await commitAsync({
-          abi: controller.abi,
-          address: controller.address,
+        const commitHash = await writeContractAsync({
+          abi,
+          address,
           functionName: "commit",
           args: [hash],
         });
         setCommitLoading(true);
 
-        const receipt = await waitForTransactionReceipt(config, {
-          hash: commitResponse,
-        });
-
-        response.isSuccess = true;
-        response.data = {
-          hash: commitResponse,
-          receipt,
-        };
+        response = await waitForTransaction(commitHash);
       } catch (error) {
         response.error = error as string;
       }
@@ -86,13 +100,12 @@ export default function useRegister() {
   };
 
   const handleApproval = async (props: ApprovalProps) => {
-    const { controller, payment = PAYMENT_METHOD[0], fee } = props;
+    const { payment = PAYMENT_METHOD[0], fee } = props;
 
-    const response: Response = { error: null, isSuccess: false, data: null };
+    let response = { ...initializeResponse() };
 
-    const spender = controller.address as Address;
+    const spender = address as Address;
     const tokenAddr = payment?.address as Address;
-
     const value = parseUnits(fee.toString(), payment?.decimals);
 
     try {
@@ -102,19 +115,10 @@ export default function useRegister() {
         functionName: "approve",
         args: [spender, value],
       });
-
-      const approvalResponse = await approveAsync(token.request);
+      const hash = await writeContractAsync(token.request);
       setApprovalLoading(true);
 
-      const receipt = await waitForTransactionReceipt(config, {
-        hash: approvalResponse,
-      });
-
-      response.isSuccess = true;
-      response.data = {
-        hash: approvalResponse,
-        receipt,
-      };
+      response = await waitForTransaction(hash);
     } catch (error) {
       response.error = error as string;
     }
@@ -124,20 +128,20 @@ export default function useRegister() {
   };
 
   const handleRegister = async (props: RegisterProps) => {
-    const { resolver, controller, fees, args } = props;
-    const { abi, address } = controller;
-    const response: Response = { error: null, isSuccess: false, data: null };
+    const { resolver, args } = props;
+
+    let response = { ...initializeResponse() };
 
     const payment = args.payment || PAYMENT_METHOD[0];
-
     const nameHash = namehash(`${args.name}.root`);
-    const addressRecord = encodeFunctionData({
-      abi: resolver?.abi || [],
-      functionName: "setAddr",
-      args: [nameHash, args.owner],
-    });
 
     try {
+      const addressRecord = encodeFunctionData({
+        abi: resolver?.abi || [],
+        functionName: "setAddr",
+        args: [nameHash, args.owner],
+      });
+
       const register = await simulateContract(config, {
         abi,
         address,
@@ -156,19 +160,11 @@ export default function useRegister() {
         ],
       });
 
-      const registerResponse = await registerAsync(register.request);
+      const hash = await writeContractAsync(register.request);
       setRegisterLoading(true);
-      console.log("registration-approval:: ", registerResponse);
+      console.log("registration-approval:: ", hash);
 
-      const receipt = await waitForTransactionReceipt(config, {
-        hash: registerResponse,
-      });
-
-      response.isSuccess = true;
-      response.data = {
-        hash: registerResponse,
-        receipt,
-      };
+      response = await waitForTransaction(hash);
     } catch (error) {
       response.error = error as string;
     }

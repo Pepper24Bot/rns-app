@@ -22,7 +22,6 @@ import { debounce as _debounce, isEmpty } from "lodash";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { SearchPopper } from "./SearchPopper";
-import { useDomainState } from "@/redux/domain/domainSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { isAccountLoading } from "@/services/utils";
 import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
@@ -132,7 +131,6 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 export const SearchForm: React.FC = () => {
   const { address, status } = useAccount();
   const { toggleModal } = useModalState();
-  const { updateName } = useDomainState();
 
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
@@ -142,7 +140,7 @@ export const SearchForm: React.FC = () => {
   // TODO: Normalize names -- validate
   const { data, isLoading } = useGetNamesByNameQuery(
     { labelName: `${searchValue}` },
-    { skip: searchValue === null }
+    { skip: searchValue === null || isNameInvalid }
   );
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

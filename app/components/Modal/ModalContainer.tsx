@@ -70,8 +70,8 @@ const Content = styled(Grid, {
     : props?.fullHeight
     ? 0
     : "25px",
-  paddingLeft: props?.fullWidth ? 0 : "25px",
-  paddingRight: props?.fullWidth ? 0 : "25px",
+  paddingLeft: props?.fullWidth ? 0 : "30px",
+  paddingRight: props?.fullWidth ? 0 : "30px",
 
   [theme.breakpoints.down("sm")]: {
     // TODO: Clean this up

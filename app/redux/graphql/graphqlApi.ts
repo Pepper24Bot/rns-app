@@ -13,7 +13,7 @@ export const graphqlApi = api.enhanceEndpoints({
             providesTags: ["Name"]
         },
         GetPrimaryNameResolver: {
-            providesTags: ["Primary"]
+            providesTags: ["Name"]
         }
     }
 })
