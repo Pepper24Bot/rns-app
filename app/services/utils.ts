@@ -216,3 +216,15 @@ export const scrollIntoElement = (elementId: string) => {
 export const isAccountLoading = (status: string) => {
     return status !== "connected" && status !== "disconnected";
 }
+
+/**
+ * 
+ * @param name 
+ * @returns 
+ */
+export const isNameSupported = (name: string) => {
+    const pattern = new RegExp(/[a-z]\.[a-z]/g)
+
+    const match = name.match(pattern)
+    return isEmpty(match)
+}

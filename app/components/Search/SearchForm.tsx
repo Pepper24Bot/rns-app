@@ -23,7 +23,7 @@ import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { SearchPopper } from "./SearchPopper";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
-import { isAccountLoading } from "@/services/utils";
+import { isAccountLoading, isNameSupported } from "@/services/utils";
 import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { normalize } from "viem/ens";
 
@@ -136,6 +136,7 @@ export const SearchForm: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
+  const [isNameNotSupported, setIsNameNotSupported] = useState<boolean>(false);
 
   // TODO: Normalize names -- validate
   const { data, isLoading } = useGetNamesByNameQuery(
@@ -156,6 +157,8 @@ export const SearchForm: React.FC = () => {
 
     return isNameInvalid
       ? "Invalid"
+      : isNameNotSupported
+      ? "Not Supported"
       : isAvailable
       ? "Available"
       : isNotAvailable
@@ -169,6 +172,10 @@ export const SearchForm: React.FC = () => {
 
   const handleDebounceOnChange = (value: string) => {
     setAnchorEl(searchFieldRef.current);
+
+    const supported = isNameSupported(value);
+    setIsNameNotSupported(!supported);
+
     try {
       const normalized = normalize(value);
       setIsNameInvalid(false);
@@ -235,6 +242,7 @@ export const SearchForm: React.FC = () => {
                   searchValue={searchValue}
                   status={getNameStatus()}
                   isNameInvalid={isNameInvalid}
+                  isNameNotSupported={isNameNotSupported}
                 />
               </FlexCenter>
             </ClickAwayListener>

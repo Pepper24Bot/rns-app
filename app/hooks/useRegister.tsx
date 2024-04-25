@@ -10,7 +10,11 @@ import {
 import { Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
-import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
+import {
+  readContract,
+  simulateContract,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
 
@@ -174,10 +178,40 @@ export default function useRegister() {
     return response;
   };
 
+  const checkNameValidity = async ({ name = "" }: { name?: string }) => {
+    let response = { ...initializeResponse() };
+
+    try {
+      const available = await readContract(config, {
+        abi,
+        address,
+        functionName: "available",
+        args: [name],
+      });
+
+      const valid = await readContract(config, {
+        abi,
+        address,
+        functionName: "valid",
+        args: [name],
+      });
+
+      response.data = {
+        available: available,
+        valid: valid,
+      };
+    } catch (error) {
+      response.error = error as string;
+    }
+
+    return response;
+  };
+
   return {
     commit: handleCommit,
     approve: handleApproval,
     register: handleRegister,
+    isValid: checkNameValidity,
     isLoading: isCommitLoading || isApprovalLoading || isRegisterLoading,
     isCommitLoading,
     isApprovalLoading,

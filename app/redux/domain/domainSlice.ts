@@ -6,7 +6,7 @@ import { Address } from "viem"
 import { PAYMENT_METHOD } from "@/services/constants"
 
 export type PaymentMethod = "ROOT" | "USDC"
-export type NameStatus = "Available" | "Not Available" | "Registered" | "Invalid"
+export type NameStatus = "Available" | "Not Available" | "Registered" | "Invalid" | "Not Supported"
 export interface Payment {
     label: PaymentMethod,
     address: Address,

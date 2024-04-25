@@ -139,20 +139,22 @@ export interface SearchPopper {
   address?: `0x${string}`;
   status?: NameStatus;
   isNameInvalid?: boolean;
+  isNameNotSupported?: boolean;
   // TODO: Fix any type
   data?: any;
 }
 
 export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
-  const { isLoading, anchorEl, searchValue, status, isNameInvalid } = props;
+  const {
+    isLoading,
+    anchorEl,
+    searchValue,
+    status,
+    isNameInvalid,
+    isNameNotSupported,
+  } = props;
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
-  const { address } = useAccount();
-
-  const { useRootNetwork } = useRootNetworkState();
-  const {
-    data: { futurePassAddress },
-  } = useRootNetwork();
 
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
@@ -219,10 +221,12 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                       </FavoriteButton>
                     </InformationTip>
                     <Divider orientation="vertical" flexItem />
-                    {status === "Available" || status === "Invalid" ? (
+                    {status === "Available" ||
+                    status === "Invalid" ||
+                    status === "Not Supported" ? (
                       <Grid>
                         <SearchButton
-                          disabled={isNameInvalid}
+                          disabled={isNameInvalid || isNameNotSupported}
                           variant="contained"
                           onClick={() => {
                             // Store in global state so the other componenst will be able to access the value
@@ -241,7 +245,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                             }
                           }}
                         >
-                          <SearchLabel isDisabled={isNameInvalid}>
+                          <SearchLabel
+                            isDisabled={isNameInvalid || isNameNotSupported}
+                          >
                             Register
                           </SearchLabel>
                         </SearchButton>
