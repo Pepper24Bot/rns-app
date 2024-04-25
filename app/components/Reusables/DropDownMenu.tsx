@@ -16,6 +16,8 @@ export interface Option {
 
   /** If this is provided, use this as the modal title instead of the label */
   title?: string;
+
+  disabled?: boolean;
 }
 
 export type DropdownType = "Menu" | "Options";
@@ -210,7 +212,7 @@ export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {
           return (
             <Grid key={`field-item-${option.label}-${index}`}>
               <MenuItem
-                // disabled={option.label === selectedOption}
+                disabled={option.disabled}
                 onClick={(event) => {
                   if (!isOptionSelected(option)) {
                     handleOnClose(event);

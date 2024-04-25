@@ -129,7 +129,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
       <Grid mt={3}>
         <FlexRight>
           <ActionButton
-            disabled={isPending || isSuccess}
+            disabled={isPending || isSuccess || isWaiting}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
@@ -139,7 +139,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
             Cancel
           </ActionButton>
           <ActionButton
-            disabled={isEmpty(inputAddr) || isPending || isSuccess}
+            disabled={isEmpty(inputAddr) || isPending || isSuccess || isWaiting}
             variant="contained"
             onClick={() => {
               handleSetAddress();

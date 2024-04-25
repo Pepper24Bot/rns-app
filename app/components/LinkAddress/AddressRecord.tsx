@@ -160,7 +160,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
       {(isEditMode || isRemoveMode) && (
         <FlexRight>
           <ActionButton
-            disabled={isPending || isSuccess}
+            disabled={isPending || isSuccess || isWaiting}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
@@ -170,7 +170,9 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
             Cancel
           </ActionButton>
           <ActionButton
-            disabled={inputValue === linkedAddr || isPending || isSuccess}
+            disabled={
+              inputValue === linkedAddr || isPending || isSuccess || isWaiting
+            }
             variant="contained"
             onClick={() => {
               if (isRemoveMode) {

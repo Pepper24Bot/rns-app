@@ -11,6 +11,8 @@ export interface PrimaryName {
   name?: string;
   address?: Address;
   domainId?: string;
+  resolverAddress?: Address;
+  addressRecord?: Address;
 }
 
 export default function usePrimary() {
@@ -21,40 +23,24 @@ export default function usePrimary() {
 
   const [isPrimaryLoading, setIsPrimaryLoading] = useState(false);
 
-  /**
-   *
-   * @param props
-   * @returns
-   */
-  const handlePrimaryName = async (props: PrimaryName) => {
-    const { name } = props;
-    const response: Response = { error: null, isSuccess: false, data: null };
+  const initializeResponse = (): Response => {
+    return { error: null, isSuccess: false, data: null };
+  };
 
-    if (name) {
-      try {
-        const primaryResponse = await writeContractAsync({
-          abi: reverse.abi,
-          address: reverse.address,
-          functionName: "setName",
-          args: [name],
-        });
-        setIsPrimaryLoading(true);
-        const receipt = await waitForTransactionReceipt(config, {
-          hash: primaryResponse,
-        });
-        response.isSuccess = true;
-        response.data = {
-          hash: primaryResponse,
-          receipt,
-        };
-      } catch (error) {
-        response.error = error as string;
-      }
-    }
+  // TODO: Implement block latency here
+  const waitForTransaction = async (hash: Address) => {
+    const receipt = await waitForTransactionReceipt(config, {
+      hash,
+    });
 
-    console.log("set-response:: ", response);
-    setIsPrimaryLoading(false);
-    return response;
+    return {
+      isSuccess: true,
+      error: null,
+      data: {
+        hash,
+        receipt,
+      },
+    };
   };
 
   /**
@@ -64,7 +50,7 @@ export default function usePrimary() {
    */
   const getPrimaryName = async (props: PrimaryName) => {
     const { domainId = "" } = props;
-    const response: Response = { error: null, isSuccess: false, data: null };
+    const response = { ...initializeResponse() };
 
     try {
       setIsPrimaryLoading(true);
@@ -81,6 +67,36 @@ export default function usePrimary() {
       response.error = error as string;
     }
 
+    setIsPrimaryLoading(false);
+    return response;
+  };
+
+  /**
+   *
+   * @param props
+   * @returns
+   */
+  const handlePrimaryName = async (props: PrimaryName) => {
+    const { name, address, resolverAddress } = props;
+    let response = { ...initializeResponse() };
+
+    if (name && address && resolverAddress) {
+      try {
+        const hash = await writeContractAsync({
+          abi: reverse.abi,
+          address: reverse.address,
+          functionName: "setName",
+          args: [name],
+        });
+        setIsPrimaryLoading(true);
+
+        response = await waitForTransaction(hash);
+      } catch (error) {
+        response.error = error as string;
+      }
+    }
+
+    console.log("set-response:: ", response);
     setIsPrimaryLoading(false);
     return response;
   };

@@ -5,9 +5,10 @@ import {
   alpha,
   darken,
   styled,
+  Chip,
 } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
-import { green, grey, red, yellow } from "@mui/material/colors";
+import { amber, green, grey, red, yellow } from "@mui/material/colors";
 import {
   CheckCircle,
   MoreVert,
@@ -31,6 +32,8 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/services/constants";
 import { FeatureList } from "@/hooks/useFeatureToggle";
+import { useEnsAddress, useEnsName } from "wagmi";
+import { Address } from "viem";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -71,8 +74,8 @@ const Summary = styled(Grid)(({ theme }) => ({
   padding: "20px 15px 20px 25px",
 }));
 
-const ShareContainer = styled(Summary)(({ theme }) => ({
-  padding: "10px 30px 20px 25px",
+const SubContainer = styled(Summary)(({ theme }) => ({
+  padding: "10px 20px 20px 20px",
 }));
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
@@ -179,8 +182,13 @@ const TwitterIcon = styled(X)(({ theme }) => ({
   fontSize: "16px",
 }));
 
-export const Highlight = styled("span")(({ theme }) => ({
+const Highlight = styled("span")(({ theme }) => ({
   color: theme.palette.text.primary,
+}));
+
+const PrimaryChip = styled(Chip)(({ theme }) => ({
+  backgroundColor: amber[500],
+  color: theme.palette.background.paper,
 }));
 
 export interface NameProps {
@@ -191,8 +199,17 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item } = props;
   const { toggleModal } = useModalState();
 
+  const ownerId = item.owner.id as Address;
   const nameRef = useRef<HTMLDivElement | null>(null);
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
+
+  const { data: ensName } = useEnsName({
+    address: ownerId,
+  });
+
+  const { data: ensAddr } = useEnsAddress({
+    name: item.name || "",
+  });
 
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
@@ -212,6 +229,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       data: {
         domain: item.domain,
         owner: item.owner,
+        ensName,
+        ensAddr: ensAddr?.toLowerCase(),
       },
     });
   };
@@ -281,7 +300,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       options={[
                         { label: "Extend Expiry", icon: <ClockIcon /> },
                         { label: "Link Identity", icon: <LinkIcon /> },
-                        { label: "Set as Primary", icon: <PrimaryIcon /> },
+                        {
+                          label: "Set as Primary",
+                          icon: <PrimaryIcon />,
+                          disabled: ensName === item.name,
+                        },
                         // { label: "Update Image", icon: <PhotoIcon /> },
                         // { label: "Transfer", icon: <TransferIcon /> },
                       ]}
@@ -316,29 +339,37 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 </NameDetails>
               </Grid>
             </Summary>
-            {!isTweetVerified && (
-              <FlexJustified>
-                <ShareContainer>
-                  <ShareButton
-                    variant="contained"
-                    onClick={() => {
-                      toggleModal({
-                        id: "Share RNS",
-                        title: "",
-                        fullHeight: true,
-                        fullWidth: true,
-                      });
-                    }}
-                  >
-                    <TwitterIcon fontSize="small" />
-                    <Divider orientation="vertical" flexItem />
-                    <ShareLabel>Share</ShareLabel>
-                  </ShareButton>
-                </ShareContainer>
-                <FeatureToggle feature={FeatureList.ShareStatus}>
-                  <ShareContainer>
-                    {/* TODO: Enable this once Share per RNS name is supported */}
-                    {/* <ShareButton disabled variant="contained">
+            <FlexJustified>
+              <Flex>
+                {ensName === item.name && (
+                  <SubContainer>
+                    <PrimaryChip label="Primary" />
+                  </SubContainer>
+                )}
+              </Flex>
+              {!isTweetVerified && (
+                <Flex>
+                  <SubContainer>
+                    <ShareButton
+                      variant="contained"
+                      onClick={() => {
+                        toggleModal({
+                          id: "Share RNS",
+                          title: "",
+                          fullHeight: true,
+                          fullWidth: true,
+                        });
+                      }}
+                    >
+                      <TwitterIcon fontSize="small" />
+                      <Divider orientation="vertical" flexItem />
+                      <ShareLabel>Share</ShareLabel>
+                    </ShareButton>
+                  </SubContainer>
+                  <FeatureToggle feature={FeatureList.ShareStatus}>
+                    <SubContainer>
+                      {/* TODO: Enable this once Share per RNS name is supported */}
+                      {/* <ShareButton disabled variant="contained">
                       {isLoading ? (
                         <Verifying>Verifying</Verifying>
                       ) : isSuccess ? (
@@ -352,10 +383,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         <CircularProgress size="16px" sx={{ ml: "8px" }} />
                       )}
                     </ShareButton> */}
-                  </ShareContainer>
-                </FeatureToggle>
-              </FlexJustified>
-            )}
+                    </SubContainer>
+                  </FeatureToggle>
+                </Flex>
+              )}
+            </FlexJustified>
           </Grid>
         </ItemContainer>
       </Container>

@@ -229,7 +229,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
         <Grid mt={3}>
           <FlexRight>
             <ActionButton
-              disabled={isPending || isExtendSuccess}
+              disabled={isPending || isExtendSuccess || isWaiting}
               sx={{ marginRight: 1 }}
               variant="text"
               onClick={() => {
@@ -239,7 +239,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               Cancel
             </ActionButton>
             <ActionButton
-              disabled={isPending || isExtendSuccess}
+              disabled={isPending || isExtendSuccess || isWaiting}
               variant="contained"
               onClick={() => {
                 if (extendPage === 1) {
