@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import {
   ModalInputField as InputField,
@@ -11,7 +11,6 @@ import {
 } from "../Theme/StyledGlobal";
 import { Address } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { isAddressFuturePass } from "@/services/utils";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 import { isEmpty } from "lodash";
@@ -19,15 +18,13 @@ import { Link } from "./LinkAddress";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
+import useBlockLatency from "@/hooks/useBlockLatency";
 
 export const AddRecord: React.FC<Link> = (props: Link) => {
   const { domain } = props;
   const { closeModal } = useModalState();
 
   const dispatch = useDispatch();
-
-  /** Use the isLoading Flag here for the progress bar */
-  const { setAddressRecord, isLoading } = useRecords({ type: "AddressRecord" });
 
   /** Status Flags */
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -38,6 +35,17 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
 
   const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
   const [inputAddr, setInputAddr] = useState<string>("");
+
+  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+
+  /** Use the isLoading Flag here for the progress bar */
+  const { setAddressRecord, isLoading } = useRecords({ type: "AddressRecord" });
+
+  const { isWaiting, isCompleted } = useBlockLatency({
+    enabled: isBlockEnabled,
+  });
+
+  const isTransactionLoading = isLoading || isWaiting;
 
   const initializeFlags = () => {
     // display progress bar
@@ -59,8 +67,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
     });
 
     if (isSuccess) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsSuccess(isSuccess);
+      setIsBlockEnabled(true);
     } else {
       setIsError(true);
     }
@@ -68,6 +75,13 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
     setResetProgress(false);
     setIsPending(false);
   };
+
+  useEffect(() => {
+    if (isCompleted) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      setIsSuccess(true);
+    }
+  }, [isCompleted]);
 
   return (
     <Grid item xs display="grid" alignContent="space-between">
@@ -100,7 +114,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
             <BoxContainer isVisible={isProgressVisible}>
               <ProgressBar
                 isError={isError}
-                isPaused={!isLoading}
+                isPaused={!isTransactionLoading}
                 isVisible={isProgressVisible}
                 isSuccess={isSuccess}
                 resetProgress={resetProgress}

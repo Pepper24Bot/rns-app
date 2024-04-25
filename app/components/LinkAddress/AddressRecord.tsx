@@ -15,10 +15,12 @@ import { Address } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/services/constants";
+
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import UpdateRecord from "./UpdateRecord";
 import RemoveAddress from "./RemoveRecord";
+import useBlockLatency from "@/hooks/useBlockLatency";
 
 export const AddressRecord: React.FC<Link> = (props: Link) => {
   const { domain: domainState, owner } = props;
@@ -28,10 +30,6 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     { labelName: `${domainState?.labelName}` },
     { skip: domainState?.name === null }
   );
-
-  const { setAddressRecord, isLoading } = useRecords({
-    type: "AddressRecord",
-  });
 
   const dispatch = useDispatch();
   const domain = data?.nameWrappeds[0]?.domain;
@@ -46,6 +44,17 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [resetProgress, setResetProgress] = useState<boolean>(false);
   const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
+  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+
+  const { setAddressRecord, isLoading } = useRecords({
+    type: "AddressRecord",
+  });
+
+  const { isWaiting, isCompleted } = useBlockLatency({
+    enabled: isBlockEnabled,
+  });
+
+  const isTransactionLoading = isLoading || isWaiting;
 
   const ownerId = getMaskedAddress(owner?.id || "");
   const futurePass = isEditMode ? linkedAddr : getMaskedAddress(linkedAddr);
@@ -74,8 +83,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     });
 
     if (isSuccess) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsSuccess(true);
+      setIsBlockEnabled(true);
     } else {
       setIsError(true);
     }
@@ -83,6 +91,13 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     setResetProgress(false);
     setIsPending(false);
   };
+
+  useEffect(() => {
+    if (isCompleted) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      setIsSuccess(true);
+    }
+  }, [isCompleted]);
 
   useEffect(() => {
     setInputValue(futurePass);
@@ -131,7 +146,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
           <BoxContainer isVisible={isProgressVisible}>
             <ProgressBar
               isError={isError}
-              isPaused={!isLoading}
+              isPaused={!isTransactionLoading}
               isVisible={isProgressVisible}
               isSuccess={isSuccess}
               resetProgress={resetProgress}
