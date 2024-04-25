@@ -28,6 +28,7 @@ import useExtend from "@/hooks/useExtendExpiry";
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
 import useTokenApproval from "@/hooks/useApprovalToken";
+import useBlockLatency from "@/hooks/useBlockLatency";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -83,6 +84,12 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
+  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+
+  const { isWaiting, isCompleted } = useBlockLatency({
+    enabled: isBlockEnabled,
+    blocksToWait: 2,
+  });
 
   const { approve, isApprovalLoading } = useTokenApproval();
   const {
@@ -107,7 +114,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     payment,
   });
 
-  const isTransactionLoading = isLoading || isApprovalLoading;
+  const isTransactionLoading = isLoading || isApprovalLoading || isWaiting;
 
   const initializeFlags = () => {
     // display progress bar
@@ -144,14 +151,21 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
       });
 
       if (isSuccess) {
-        dispatch(graphqlApi.util.invalidateTags(["Name"]));
-        setIsExtendSuccess(true);
+        setIsBlockEnabled(true);
       } else {
         setIsError(true);
         setIsPending(false);
       }
     }
   };
+
+  useEffect(() => {
+    if (isCompleted) {
+      // Data Invalidation: Refresh Dashboard
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      setIsExtendSuccess(true);
+    }
+  }, [isCompleted]);
 
   useEffect(() => {
     handleExtend();
