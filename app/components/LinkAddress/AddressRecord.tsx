@@ -21,6 +21,7 @@ import ProgressBar from "../Reusables/ProgressBar";
 import UpdateRecord from "./UpdateRecord";
 import RemoveAddress from "./RemoveRecord";
 import useBlockLatency from "@/hooks/useBlockLatency";
+import ViewTransaction from "../Reusables/ViewTransaction";
 
 export const AddressRecord: React.FC<Link> = (props: Link) => {
   const { domain: domainState, owner } = props;
@@ -45,6 +46,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
   const [resetProgress, setResetProgress] = useState<boolean>(false);
   const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string>("");
 
   const { setAddressRecord, isLoading } = useRecords({
     type: "AddressRecord",
@@ -76,7 +78,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
   const handleUpdateAddress = async (value: string) => {
     initializeFlags();
 
-    const { isSuccess } = await setAddressRecord({
+    const { isSuccess, data } = await setAddressRecord({
       name: domain?.name || "",
       address: value as Address,
       resolverAddress: domain?.resolver?.address,
@@ -84,6 +86,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
 
     if (isSuccess) {
       setIsBlockEnabled(true);
+      setTxHash(data.hash);
     } else {
       setIsError(true);
     }
@@ -152,9 +155,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
               resetProgress={resetProgress}
             />
           </BoxContainer>
-          <FlexCenter>
-            <Tip isVisible={isSuccess}>View Transaction</Tip>
-          </FlexCenter>
+          <ViewTransaction isVisible={isSuccess} hash={txHash} />
         </Relative>
       </FlexCenter>
       {(isEditMode || isRemoveMode) && (

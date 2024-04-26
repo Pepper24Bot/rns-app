@@ -29,6 +29,7 @@ import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
 import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
+import ViewTransaction from "../Reusables/ViewTransaction";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -85,6 +86,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string>("");
 
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
@@ -152,6 +154,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
       if (isSuccess) {
         setIsBlockEnabled(true);
+        setTxHash(data.hash);
       } else {
         setIsError(true);
         setIsPending(false);
@@ -219,14 +222,12 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                     isSuccess={isExtendSuccess}
                   />
                 </BoxContainer>
-                <FlexCenter>
-                  <Tip isVisible={isExtendSuccess}>View Transaction</Tip>
-                </FlexCenter>
+                <ViewTransaction isVisible={isExtendSuccess} hash={txHash} />
               </Relative>
             </FlexCenter>
           </>
         )}
-        <Grid mt={3}>
+        <Grid mt={2}>
           <FlexRight>
             <ActionButton
               disabled={isPending || isExtendSuccess || isWaiting}

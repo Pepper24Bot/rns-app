@@ -37,6 +37,7 @@ import useFees from "@/hooks/useFees";
 import ProgressBar from "../Reusables/ProgressBar";
 import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
+import ViewTransaction from "../Reusables/ViewTransaction";
 
 const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
   padding: "8px 16px",
@@ -85,8 +86,8 @@ export const RegisterName: React.FC = () => {
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [areBtnsDisabled, setAreBtnsDisabled] = useState<boolean>(false);
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
-
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
+  const [txHash, setTxHash] = useState<string>("");
 
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
@@ -198,7 +199,7 @@ export const RegisterName: React.FC = () => {
    */
   const handleRegister = async () => {
     if (isApprovalSuccess) {
-      const { isSuccess } = await register({
+      const { isSuccess, data } = await register({
         controller,
         resolver,
         fees: {
@@ -218,6 +219,7 @@ export const RegisterName: React.FC = () => {
 
       if (isSuccess) {
         setIsBlockEnabled(true);
+        setTxHash(data.hash);
       } else {
         setFlagsWhenError();
       }
@@ -298,9 +300,7 @@ export const RegisterName: React.FC = () => {
               Please wait for 60 seconds before the transaction proceeds.
             </Tip>
           </FlexLeft>
-          <FlexCenter>
-            <Tip isVisible={isRegisterSuccess}>View Transaction</Tip>
-          </FlexCenter>
+          <ViewTransaction isVisible={isRegisterSuccess} hash={txHash} />
           <FlexCenter>
             <Tip isVisible={!isProgressVisible}>
               Avoid paying yearly transaction fees by selecting a longer
@@ -312,7 +312,7 @@ export const RegisterName: React.FC = () => {
 
       {/* Hide these action buttons after the registration */}
       {!isRegisterSuccess && (
-        <Grid mt={3}>
+        <Grid mt={2}>
           {address ? (
             <FlexJustified>
               <ActionButton

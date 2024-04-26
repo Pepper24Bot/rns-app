@@ -19,6 +19,7 @@ import { Link } from "./LinkAddress";
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import useBlockLatency from "@/hooks/useBlockLatency";
+import ViewTransaction from "../Reusables/ViewTransaction";
 
 export const AddRecord: React.FC<Link> = (props: Link) => {
   const { domain } = props;
@@ -35,8 +36,8 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
 
   const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
   const [inputAddr, setInputAddr] = useState<string>("");
-
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string>("");
 
   /** Use the isLoading Flag here for the progress bar */
   const { setAddressRecord, isLoading } = useRecords({ type: "AddressRecord" });
@@ -60,7 +61,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
 
   const handleSetAddress = async () => {
     initializeFlags();
-    const { isSuccess } = await setAddressRecord({
+    const { isSuccess, data } = await setAddressRecord({
       name: domain?.name || "",
       address: inputAddr as Address,
       resolverAddress: domain?.resolver?.address,
@@ -68,6 +69,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
 
     if (isSuccess) {
       setIsBlockEnabled(true);
+      setTxHash(data.hash);
     } else {
       setIsError(true);
     }
@@ -120,13 +122,11 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
                 resetProgress={resetProgress}
               />
             </BoxContainer>
-            <FlexCenter>
-              <Tip isVisible={isSuccess}>View Transaction</Tip>
-            </FlexCenter>
+            <ViewTransaction isVisible={isSuccess} hash={txHash} />
           </Relative>
         </FlexCenter>
       </Grid>
-      <Grid mt={3}>
+      <Grid mt={2}>
         <FlexRight>
           <ActionButton
             disabled={isPending || isSuccess || isWaiting}

@@ -25,6 +25,7 @@ import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import usePrimary from "@/hooks/usePrimary";
 import useBlockLatency from "@/hooks/useBlockLatency";
+import ViewTransaction from "../Reusables/ViewTransaction";
 
 const Container = styled(FlexTop)(({ theme }) => ({}));
 
@@ -69,6 +70,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
 
   const [ensNameData, setEnsPublicName] = useState<string>(String(ensName));
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string>("");
 
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
@@ -99,9 +101,10 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
     setIsSuccess(false);
   };
 
-  const postTransaction = (isSuccess: boolean) => {
+  const postTransaction = (isSuccess: boolean, hash: string) => {
     if (isSuccess) {
       setIsBlockEnabled(true);
+      setTxHash(hash);
     } else {
       setIsError(true);
       setIsPending(false);
@@ -111,25 +114,25 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
   };
 
   const handleSetPrimaryName = async () => {
-    const { isSuccess } = await setPrimaryName({
+    const reponse = await setPrimaryName({
       name,
       address: ownerId,
       resolverAddress,
     });
 
-    return isSuccess;
+    return reponse;
   };
 
   const handleSetAddress = async () => {
     initializeFlags();
 
-    const { isSuccess } = await setAddressRecord({
+    const response = await setAddressRecord({
       name,
       address: ownerId,
       resolverAddress,
     });
 
-    return isSuccess;
+    return response;
   };
 
   /**
@@ -163,19 +166,20 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
 
     if (transaction === "setName") {
       initializeFlags();
-      const status = await handleSetPrimaryName();
-      postTransaction(status);
+      const { isSuccess, data } = await handleSetPrimaryName();
+      postTransaction(isSuccess, data.hash);
     } else if (transaction === "setAddr") {
-      const status = await handleSetAddress();
-      postTransaction(status);
+      const { isSuccess, data } = await handleSetAddress();
+      postTransaction(isSuccess, data.hash);
     } else {
-      const isSuccess = await handleSetAddress();
+      const { isSuccess, data } = await handleSetAddress();
 
       if (isSuccess) {
-        const status = await handleSetPrimaryName();
-        postTransaction(status);
+        const { isSuccess: primarySuccess, data: primaryData } =
+          await handleSetPrimaryName();
+        postTransaction(primarySuccess, primaryData.hash);
       } else {
-        postTransaction(isSuccess);
+        postTransaction(isSuccess, data.hash);
       }
     }
   };
@@ -231,7 +235,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
           </>
         )}
         <InputField disabled focused value={name} />
-        <FlexCenter marginY={1}>
+        <FlexCenter marginY={2}>
           <Relative width="100%">
             <BoxContainer isVisible={isProgressVisible}>
               <ProgressBar
@@ -241,12 +245,10 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
                 isSuccess={isSuccess}
               />
             </BoxContainer>
-            <FlexCenter>
-              <Tip isVisible={isSuccess}>View Transaction</Tip>
-            </FlexCenter>
+            <ViewTransaction isVisible={isSuccess} hash={txHash} />
           </Relative>
         </FlexCenter>
-        <FlexRight pt={3}>
+        <FlexRight pt={2}>
           <ActionButton
             disabled={isPending || isSuccess || isWaiting}
             sx={{ marginRight: 1 }}
