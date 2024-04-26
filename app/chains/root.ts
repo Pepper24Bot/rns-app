@@ -4,7 +4,36 @@
  * Docs: https://wagmi.sh/core/api/chains#create-chain
  */
 
-import { type Chain } from 'viem'
+import { Address, type Chain } from 'viem'
+
+const addresses = {
+    7668: {
+        ensBaseRegistrarImplementation: {
+            address: '0x5E89B2f53DAa0f09B4B8f194dC1a1a2C343bFCFe' as Address,
+        },
+        ensBulkRenewal: {
+            address: '0x29435cd3D16647cc4e9eB064583E651A11C932b1' as Address,
+        },
+        ensEthRegistrarController: {
+            address: '0x25ED7268B38c5C0095a1C40dbA795BA10D6b46C9' as Address,
+        },
+        ensNameWrapper: {
+            address: '0x523abeFB947d78F96cBeC1ee8b101810B9b7453F' as Address,
+        },
+        ensPublicResolver: {
+            address: '0xc27B94BbA415129E52075D63C5dA070B8f9582C0' as Address,
+        },
+        ensRegistry: {
+            address: '0x41f6B3bA30B927d980Edb2B965C2c00dF181Be21' as Address,
+        },
+        ensReverseRegistrar: {
+            address: '0x6b6e0e9f40A82B65CE4f144EAbcce1b53e408Be7' as Address,
+        },
+        ensUniversalResolver: {
+            address: '0x02ea09723Cf472585EA2B1759a5b53710ADf7b8B' as Address,
+        },
+    },
+}
 
 export const root = {
     id: 7668,
@@ -19,22 +48,11 @@ export const root = {
         default: {
             name: 'Root Mainnet',
             url: 'https://explorer.rootnet.live',
-            // apiUrl: ''
         },
     },
-    // contracts: {
-    //     ensRegistry: {
-    //         address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
-    //     },
-    //     ensUniversalResolver: {
-    //         address: '0x8cab227b1162f03b8338331adaad7aadc83b895e',
-    //         blockCreated: 18_958_930,
-    //     },
-    //     multicall3: {
-    //         address: '0xca11bde05977b3631167028862be2a173976ca11',
-    //         blockCreated: 14_353_601,
-    //     },
-    // },
+    contracts: {
+        ...addresses[7668],
+    },
 } as const satisfies Chain
 
 /**

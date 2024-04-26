@@ -32,6 +32,7 @@ const addresses = {
         ensUniversalResolver: {
             address: '0xB3c0AE882b35E72B7b84F7A1E0cF01fBDC617170' as Address,
         },
+        // Why is this causing issues - disable it now, registration does not work when this is enabled
         // // necessary to meet the interface requirements, even though we're not using it.
         // ensDnsRegistrar: {
         //     address: '0xB32cB5677a7C971689228EC835800432B339bA2B' as Address,
@@ -48,9 +49,6 @@ const addresses = {
     },
 }
 
-/**
- * Use this config to setup chain in wagmi
- */
 export const porcini = {
     id: 7672,
     name: 'Root Testnet',
@@ -64,7 +62,6 @@ export const porcini = {
         default: {
             name: 'Root Testnet',
             url: 'https://explorer.rootnet.cloud',
-            // apiUrl: ''
         },
     },
     contracts: {
