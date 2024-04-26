@@ -51,7 +51,7 @@ const addresses = {
 
 export const porcini = {
     id: 7672,
-    name: 'Root Testnet',
+    name: 'The Root Network - Porcini Testnet',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: {
         default: {
@@ -75,7 +75,7 @@ export const porcini = {
  */
 export const porciniWalletConfig = {
     chainId: "0x1DF8",
-    chainName: 'Root Testnet',
+    chainName: 'The Root Network - Porcini Testnet',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: ['https://porcini.rootnet.app/archive'],
     blockExplorerUrls: ['https://explorer.rootnet.cloud'],
