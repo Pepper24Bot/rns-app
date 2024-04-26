@@ -102,8 +102,6 @@ export const RegisterName: React.FC = () => {
   const {
     controller,
     rentPrice: { base },
-    estimatedGas,
-    estimatedGasPrice,
     hash,
     duration,
     secret,
@@ -120,10 +118,8 @@ export const RegisterName: React.FC = () => {
   const { commit, register, isLoading } = useRegister();
   const { approve, isApprovalLoading, getBalance } = useToken();
 
-  const { rentFee, totalFee, transactionFee } = useFees({
+  const { rentFee } = useFees({
     rent: base,
-    gasPrice: estimatedGasPrice,
-    gasFee: estimatedGas,
     payment,
   });
 
@@ -180,7 +176,7 @@ export const RegisterName: React.FC = () => {
     if (isCommitSuccess) {
       const { isSuccess } = await approve({
         payment,
-        fee: totalFee,
+        fee: rentFee,
       });
 
       if (isSuccess) {
@@ -202,11 +198,6 @@ export const RegisterName: React.FC = () => {
       const { isSuccess, data } = await register({
         controller,
         resolver,
-        fees: {
-          gasPrice: estimatedGasPrice,
-          rent: rentFee,
-          totalFee: totalFee,
-        },
         args: {
           name,
           owner: address as Address,
@@ -233,7 +224,7 @@ export const RegisterName: React.FC = () => {
         const { data } = await getBalance({
           address,
           payment,
-          fee: totalFee,
+          fee: rentFee,
         });
 
         setBalanceSufficient(data.isBalanceSufficient);
@@ -242,7 +233,7 @@ export const RegisterName: React.FC = () => {
     };
 
     getBalanceOf();
-  }, [address, totalFee]);
+  }, [address, rentFee]);
 
   useEffect(() => {
     if (isCompleted) {
@@ -271,12 +262,7 @@ export const RegisterName: React.FC = () => {
 
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
-      <Form
-        isShowing={!isRegisterSuccess}
-        rentFee={rentFee}
-        totalFee={totalFee}
-        transactionFee={transactionFee}
-      />
+      <Form isShowing={!isRegisterSuccess} rentFee={rentFee} />
       <FlexCenter marginY={2.5}>
         <Relative>
           <FlexCenter>

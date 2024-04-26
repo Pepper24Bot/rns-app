@@ -65,14 +65,7 @@ export interface Form {
 }
 
 export const Form: React.FC<Form> = (props: Form) => {
-  const {
-    name: nameProp,
-    isShowing = true,
-    rentFee,
-    transactionFee,
-    totalFee,
-  } = props;
-
+  const { name: nameProp, isShowing = true, rentFee } = props;
   const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
     useDomainState();
 
@@ -135,12 +128,8 @@ export const Form: React.FC<Form> = (props: Form) => {
               <Value>{`${rentFee?.toFixed(6)} ${payment?.label}`}</Value>
             </Transaction>
             <Transaction>
-              <TransactionLabel>Transaction Fee</TransactionLabel>
-              <Value>{`${transactionFee?.toFixed(6)} ${payment?.label}`}</Value>
-            </Transaction>
-            <Transaction>
-              <TransactionLabel>Total</TransactionLabel>
-              <Value>{`${totalFee?.toFixed(6)} ${payment?.label}`}</Value>
+              <TransactionLabel>Transaction fees paid in</TransactionLabel>
+              <Value>XRP</Value>
             </Transaction>
           </SummaryContainer>
         </FieldContainer>

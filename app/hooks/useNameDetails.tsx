@@ -6,7 +6,6 @@ import { RentPrice } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 
 import useContractDetails from "./useContractDetails";
-import useEstimateRegistration from "./useEstimateRegistration";
 
 export interface RegistrationProps {
   /**
@@ -37,7 +36,6 @@ export default function useNameDetails(props: RegistrationProps) {
     payment,
     owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account
     isEnabled,
-    futurePassAddress,
   } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
@@ -107,17 +105,18 @@ export default function useNameDetails(props: RegistrationProps) {
     query: { enabled: shouldMakeACommitment && isEnabled },
   });
 
+  // Note: Enable this when needed
   // #7. Get the estimated gas fee to be used in Transaction Fee field
-  const encodedFunction = encodeFunctionData({
-    abi,
-    functionName: "registerWithERC20",
-    args: [...commitmentArgs, token],
-  });
+  // const encodedFunction = encodeFunctionData({
+  //   abi,
+  //   functionName: "registerWithERC20",
+  //   args: [...commitmentArgs, token],
+  // });
 
-  const { estimatedGas, gasPrice } = useEstimateRegistration({
-    encodedFunction,
-    owner,
-  });
+  // const { estimatedGas, gasPrice } = useEstimateRegistration({
+  //   encodedFunction,
+  //   owner,
+  // });
 
   const fallBackRent: RentPrice = {
     base: BigInt(0),
@@ -130,8 +129,6 @@ export default function useNameDetails(props: RegistrationProps) {
 
   return {
     availability: availability?.result,
-    estimatedGas,
-    estimatedGasPrice: gasPrice,
     rentPrice: rentFee,
     controller,
     resolver,

@@ -27,15 +27,12 @@ export default function useFees(props: FeesProps) {
 
   const getRentFee = () => {
     return rent ? Number(formatUnits(rent, payment.decimals)) : 0;
-    // return rent ? Number(rent) : 0;
   };
 
   const getTransactionFee = () => {
-    // https://explorer.rootnet.live/token/0xCCCCcCCc00000002000000000000000000000000
     return gasFee ? Number(formatUnits(gasFee, 6)) : 0;
   };
 
-  // TODO: Convert to USDC and ROOT
   const getTotalFee = () => {
     const rent = getRentFee();
     const transaction = getTransactionFee();
@@ -49,6 +46,6 @@ export default function useFees(props: FeesProps) {
   return {
     rentFee: getRentFee(),
     transactionFee: getTransactionFee(),
-    totalFee: getTotalFee(),
+    totalFee: getRentFee(),
   };
 }

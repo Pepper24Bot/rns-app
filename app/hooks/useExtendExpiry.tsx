@@ -34,7 +34,7 @@ export interface RenewProps {
   name: string;
   duration: number;
   owner: Address | undefined;
-  fees: {
+  fees?: {
     rent: number;
     totalFee: number;
   };
@@ -59,16 +59,16 @@ export default function useExtend(props: ExtendProps) {
   const token = payment.address;
 
   // #1. Get the estimated gas fee to be used in Transaction Fee field
-  const encodedFunction = encodeFunctionData({
-    abi,
-    functionName: "renewWithERC20",
-    args: [name, duration, token],
-  });
+  // const encodedFunction = encodeFunctionData({
+  //   abi,
+  //   functionName: "renewWithERC20",
+  //   args: [name, duration, token],
+  // });
 
-  const { estimatedGas, gasPrice } = useEstimateRegistration({
-    encodedFunction,
-    owner,
-  });
+  // const { estimatedGas, gasPrice } = useEstimateRegistration({
+  //   encodedFunction,
+  //   owner,
+  // });
 
   // #2. Get the rent price based on the name and duration
   const { data: rentPrice } = useReadContract({
@@ -124,8 +124,6 @@ export default function useExtend(props: ExtendProps) {
 
   return {
     duration,
-    estimatedGas,
-    estimatedGasPrice: gasPrice,
     rentPrice: rentFee,
     renew: handleExtend,
     isLoading: isExtendLoading,

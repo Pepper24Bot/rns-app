@@ -11,7 +11,7 @@ import { useState } from "react";
 export interface RegisterProps {
   controller: ContractDetails;
   resolver?: ContractDetails;
-  fees: {
+  fees?: {
     gasPrice: bigint;
     rent: number;
     totalFee: number;
@@ -30,12 +30,6 @@ export interface RegisterProps {
 export interface CommitProps {
   controller: ContractDetails;
   hash: string;
-}
-
-export interface ApprovalProps {
-  controller: ContractDetails;
-  payment?: Payment;
-  fee: number;
 }
 
 export default function useRegister() {

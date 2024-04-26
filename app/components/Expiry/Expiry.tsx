@@ -14,7 +14,7 @@ import {
   BoxContainer,
   FlexCenter,
   Relative,
-  Tip,
+  ErrorTip,
 } from "../Theme/StyledGlobal";
 import { KeyboardBackspace } from "@mui/icons-material";
 import { Domain } from "@/redux/graphql/hooks";
@@ -39,7 +39,7 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
   width: "350px",
-  height: "420px",
+  height: "425px",
   display: "grid",
   alignContent: "space-between",
 
@@ -86,6 +86,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [txHash, setTxHash] = useState<string>("");
 
   const { isWaiting, isCompleted } = useBlockLatency({
@@ -93,13 +94,11 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     blocksToWait: 2,
   });
 
-  const { approve, isApprovalLoading } = useToken();
+  const { approve, isApprovalLoading, getBalance } = useToken();
   const {
     renew,
     duration,
     rentPrice: { base },
-    estimatedGas,
-    estimatedGasPrice,
     isLoading,
   } = useExtend({
     name: labelName,
@@ -109,10 +108,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     isEnabled: isDetailsEnabled,
   });
 
-  const { rentFee, totalFee, transactionFee } = useFees({
+  const { rentFee } = useFees({
     rent: base,
-    gasFee: estimatedGas,
-    gasPrice: estimatedGasPrice,
     payment,
   });
 
@@ -132,7 +129,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
     const { isSuccess } = await approve({
       payment,
-      fee: totalFee,
+      fee: rentFee,
     });
 
     if (isSuccess) {
@@ -149,7 +146,6 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
         name: labelName,
         duration,
         owner: address,
-        fees: { rent: rentFee, totalFee: totalFee },
       });
 
       if (isSuccess) {
@@ -161,6 +157,23 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
       }
     }
   };
+
+  // On initial load - check wallet balance before doing transaction
+  useEffect(() => {
+    const getBalanceOf = async () => {
+      if (address) {
+        const { data } = await getBalance({
+          address,
+          payment,
+          fee: rentFee,
+        });
+
+        setBalanceSufficient(data.isBalanceSufficient);
+      }
+    };
+
+    getBalanceOf();
+  }, [address, rentFee]);
 
   useEffect(() => {
     if (isCompleted) {
@@ -187,12 +200,14 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
       <EnsImage name={domain?.name || ""} />
       <DetailsContainer item>
         {extendPage === 1 ? (
-          <Form
-            name={domain?.name || ""}
-            rentFee={rentFee}
-            totalFee={totalFee}
-            transactionFee={transactionFee}
-          />
+          <>
+            <Form name={domain?.name || ""} rentFee={rentFee} />
+            <FlexCenter>
+              <ErrorTip isVisible={!isBalanceSufficient}>
+                Registration fees exceed wallet balance.
+              </ErrorTip>
+            </FlexCenter>
+          </>
         ) : (
           <>
             <Summary
@@ -240,13 +255,18 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               Cancel
             </ActionButton>
             <ActionButton
-              disabled={isPending || isExtendSuccess || isWaiting}
+              disabled={
+                isPending ||
+                isExtendSuccess ||
+                isWaiting ||
+                !isBalanceSufficient
+              }
               variant="contained"
               onClick={() => {
                 if (extendPage === 1) {
                   // Move to the next page
                   setExtendPage(extendPage + 1);
-                  updateName({ fee: { total: totalFee } });
+                  updateName({ fee: { total: rentFee } });
                 } else {
                   handleApproval();
                 }
