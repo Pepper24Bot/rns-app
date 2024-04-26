@@ -240,7 +240,7 @@ export const RegisterName: React.FC = () => {
     };
 
     getBalanceOf();
-  }, [address]);
+  }, [address, totalFee]);
 
   useEffect(() => {
     if (isCompleted) {
