@@ -1,8 +1,8 @@
 import { GraphQLClient } from 'graphql-request'
-import { GRAPHQL_URL } from './api'
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query'
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 
+export const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || ""
 export const client = new GraphQLClient(GRAPHQL_URL)
 
 export interface CustomRequestOptions {

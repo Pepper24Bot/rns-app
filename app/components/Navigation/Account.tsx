@@ -22,7 +22,7 @@ import { getMaskedAddress } from "@/services/utils";
 import { useAccount, useDisconnect } from "wagmi";
 import { ContentCopy } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { FUTURE_PASS } from "@/services/api";
+import { FUTURE_PASS } from "@/services/url";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";

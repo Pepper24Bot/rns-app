@@ -22,7 +22,7 @@ import {
 } from "@/redux/share/shareApi";
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
-import { TWITTER_AUTH } from "@/services/api";
+import { TWITTER_AUTH } from "@/services/url";
 import { parseCookie } from "@/services/utils";
 import { TWEET_RNS } from "@/services/content";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";

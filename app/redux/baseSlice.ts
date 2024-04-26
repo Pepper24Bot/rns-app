@@ -1,5 +1,5 @@
 
-import { BASE_URL } from '@/services/api'
+import { BASE_URL } from '@/services/url'
 import { customBaseQuery } from '@/services/customQuery'
 import { createApi } from '@reduxjs/toolkit/query/react'
 
