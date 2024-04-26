@@ -156,7 +156,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
 
   /**
    * Conditions:
-   *
+   * Test deploy
    */
   const handleSetPrimary = async () => {
     const { transaction } = getStep();
