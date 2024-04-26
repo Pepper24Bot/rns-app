@@ -1,12 +1,24 @@
 import { Address } from "viem";
 
-import * as EthRegistrarController from "../abis/porciniv2/ETHRegistrarController.json";
-import * as BaseRegistrar from "../abis/porciniv2/BaseRegistrarImplementation.json";
-import * as ENSRegistry from "../abis/porciniv2/ENSRegistry.json";
-import * as OwnedResolver from "../abis/porciniv2/OwnedResolver.json";
-import * as UniversalResolver from "../abis/porciniv2/UniversalResolver.json";
-import * as ReverseRegistrar from "../abis/porciniv2/ReverseRegistrar.json";
-import * as PublicResolver from "../abis/porciniv2/PublicResolver.json";
+// Porcini
+import * as PorciniEthRegistrarController from "../abis/porcini/ETHRegistrarController.json";
+import * as PorciniBaseRegistrar from "../abis/porcini/BaseRegistrarImplementation.json";
+import * as PorciniENSRegistry from "../abis/porcini/ENSRegistry.json";
+import * as PorciniOwnedResolver from "../abis/porcini/OwnedResolver.json";
+import * as PorciniUniversalResolver from "../abis/porcini/UniversalResolver.json";
+import * as PorciniReverseRegistrar from "../abis/porcini/ReverseRegistrar.json";
+import * as PorciniPublicResolver from "../abis/porcini/PublicResolver.json";
+
+// Root
+import * as EthRegistrarController from "../abis/root/ETHRegistrarController.json";
+import * as BaseRegistrar from "../abis/root/BaseRegistrarImplementation.json";
+import * as ENSRegistry from "../abis/root/ENSRegistry.json";
+import * as OwnedResolver from "../abis/root/OwnedResolver.json";
+import * as UniversalResolver from "../abis/root/UniversalResolver.json";
+import * as ReverseRegistrar from "../abis/root/ReverseRegistrar.json";
+import * as PublicResolver from "../abis/root/PublicResolver.json";
+
+import useNetworkConfig from "./useNetworkConfig";
 
 export type Contract =
   | "Registration"
@@ -33,7 +45,7 @@ export interface ContractDetails {
   args: any[];
 }
 
-export const getContractAbi = (action: Contract) => {
+export const getMainnetContractAbi = (action: Contract) => {
   switch (action) {
     case "Transfer":
     case "Base":
@@ -56,10 +68,42 @@ export const getContractAbi = (action: Contract) => {
   }
 };
 
+export const getPorciniContractAbi = (action: Contract) => {
+  switch (action) {
+    case "Transfer":
+    case "Base":
+      return PorciniBaseRegistrar as ContractDetails;
+    case "Link":
+    case "ENS":
+      return PorciniENSRegistry as ContractDetails;
+    case "OwnedResolver":
+      return PorciniOwnedResolver as ContractDetails;
+    case "UniversalResolver":
+      return PorciniUniversalResolver as ContractDetails;
+    case "ReverseRegistrar":
+      return PorciniReverseRegistrar as ContractDetails;
+    case "PublicResolver":
+      return PorciniPublicResolver as ContractDetails;
+    case "Registration":
+    case "RegistrarController":
+    default:
+      return PorciniEthRegistrarController as ContractDetails;
+  }
+};
+
 export default function useContractDetails(
   props: ContractProps
 ): ContractDetails {
   const { action } = props;
+  const { config } = useNetworkConfig();
 
-  return { ...getContractAbi(action) };
+  const getContracts = () => {
+    if (config.id === 7668) {
+      return getMainnetContractAbi(action);
+    } else {
+      return getPorciniContractAbi(action);
+    }
+  };
+
+  return { ...getContracts() };
 }
