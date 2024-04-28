@@ -4,6 +4,7 @@ import { Address, encodeFunctionData, namehash } from "viem";
 import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
 import { RentPrice } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
+import { useEffect } from "react";
 
 import useContractDetails from "./useContractDetails";
 
@@ -66,6 +67,16 @@ export default function useNameDetails(props: RegistrationProps) {
     ],
   });
 
+  useEffect(() => {
+    console.log("data:: ", data);
+    if (data) {
+      console.log("name:: ", name);
+      console.log("token:: ", token, "|| ", payment?.label);
+      console.log("result:: ", data[1].result);
+      console.log("-------------------");
+    }
+  }, [isSuccess, isPending, token]);
+
   const [availability, rentPrice] = data || [];
 
   // #3. Get the namehash
@@ -126,6 +137,13 @@ export default function useNameDetails(props: RegistrationProps) {
   const rentFee = rentPrice?.result
     ? (rentPrice?.result as unknown as RentPrice)
     : fallBackRent;
+
+  useEffect(() => {
+    if (data) {
+      console.log("rentPrice:: ", rentFee.base);
+      console.log("==============");
+    }
+  }, [rentFee, rentPrice]);
 
   return {
     availability: availability?.result,
