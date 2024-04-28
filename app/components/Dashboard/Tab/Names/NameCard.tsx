@@ -7,7 +7,7 @@ import {
   styled,
   Chip,
 } from "@mui/material";
-import { NameWrapped } from "@/redux/graphql/hooks";
+import { Account, Domain, NameWrapped } from "@/redux/graphql/hooks";
 import { amber, green, grey, red, yellow } from "@mui/material/colors";
 import {
   CheckCircle,
@@ -32,8 +32,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/services/constants";
 import { FeatureList } from "@/hooks/useFeatureToggle";
-import { useEnsAddress, useEnsName } from "wagmi";
-import { Address } from "viem";
+import { useAccount, useEnsName } from "wagmi";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -195,20 +194,24 @@ export interface NameProps {
   item: NameWrapped;
 }
 
+export interface CardProps {
+  domain: Partial<Domain>;
+  owner: Partial<Account>;
+  refetchEnsName?: () => void;
+  ensName?: string;
+  ensAddr?: string;
+}
+
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item } = props;
   const { toggleModal } = useModalState();
 
-  const ownerId = item.owner.id as Address;
   const nameRef = useRef<HTMLDivElement | null>(null);
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
 
+  const { address } = useAccount();
   const { data: ensName } = useEnsName({
-    address: ownerId,
-  });
-
-  const { data: ensAddr } = useEnsAddress({
-    name: item.name || "",
+    address, // use address from wagmi to trigger refetch from other components
   });
 
   // Check if name is linked to the wallet address
@@ -223,15 +226,16 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   );
 
   const handleMenuSelect = (menuOption: Option) => {
+    const data: CardProps = {
+      domain: item.domain,
+      owner: item.owner,
+      ensName: ensName || "",
+    };
+
     toggleModal({
       id: menuOption.label,
       title: menuOption.title || menuOption.label,
-      data: {
-        domain: item.domain,
-        owner: item.owner,
-        ensName,
-        ensAddr: ensAddr?.toLowerCase(),
-      },
+      data,
     });
   };
 

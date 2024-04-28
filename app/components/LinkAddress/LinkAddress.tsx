@@ -9,6 +9,7 @@ import EnsImage from "../Reusables/EnsImage";
 
 export interface Link {
   domain?: Partial<Domain>;
+  ensName?: string;
   owner?: {
     id?: string;
   };

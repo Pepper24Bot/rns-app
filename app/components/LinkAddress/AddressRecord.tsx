@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Grid } from "@mui/material";
+import { Collapse, Grid } from "@mui/material";
 import {
   FlexRight,
   ActionButton,
-  BoxContainer,
   FlexCenter,
   Relative,
-  Tip,
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/services/utils";
@@ -22,17 +20,25 @@ import UpdateRecord from "./UpdateRecord";
 import RemoveAddress from "./RemoveRecord";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
+import { useAccount, useEnsAddress, useEnsName } from "wagmi";
 
 export const AddressRecord: React.FC<Link> = (props: Link) => {
-  const { domain: domainState, owner } = props;
-  const { closeModal } = useModalState();
+  const { domain: domainState, owner, ensName } = props;
+
+  const dispatch = useDispatch();
 
   const { data } = useGetNamesByNameQuery(
     { labelName: `${domainState?.labelName}` },
     { skip: domainState?.name === null }
   );
 
-  const dispatch = useDispatch();
+  const { address } = useAccount();
+  const { refetch: refetchEnsAddr } = useEnsAddress({
+    name: domainState?.name || "",
+  });
+  const { refetch: refetchEnsName } = useEnsName({ address });
+  const { closeModal } = useModalState();
+
   const domain = data?.nameWrappeds[0]?.domain;
   const linkedAddr = domain?.resolver?.addr?.id || "";
 
@@ -99,6 +105,11 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     if (isCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      refetchEnsAddr();
+
+      if (ensName === domainState?.name) {
+        refetchEnsName();
+      }
     }
   }, [isCompleted]);
 
@@ -110,6 +121,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     <Grid item xs>
       {!isRemoveMode ? (
         <UpdateRecord
+          ensName={ensName}
           name={domainState?.name || ""}
           owner={ownerId}
           isFuturePassValid={isFuturePassValid}
@@ -144,9 +156,9 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
           }}
         />
       )}
-      <FlexCenter marginY={1}>
-        <Relative width="100%">
-          <BoxContainer isVisible={isProgressVisible}>
+      <Collapse in={isProgressVisible}>
+        <FlexCenter pt={3}>
+          <Relative width="100%">
             <ProgressBar
               isError={isError}
               isPaused={!isTransactionLoading}
@@ -154,12 +166,13 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
               isSuccess={isSuccess}
               resetProgress={resetProgress}
             />
-          </BoxContainer>
-          <ViewTransaction isVisible={isSuccess} hash={txHash} />
-        </Relative>
-      </FlexCenter>
-      {(isEditMode || isRemoveMode) && (
-        <FlexRight>
+            <ViewTransaction isVisible={isSuccess} hash={txHash} />
+          </Relative>
+        </FlexCenter>
+      </Collapse>
+
+      <Collapse in={isEditMode || isRemoveMode}>
+        <FlexRight pt={3}>
           <ActionButton
             disabled={isPending || isSuccess || isWaiting}
             sx={{ marginRight: 1 }}
@@ -186,7 +199,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
             Confirm
           </ActionButton>
         </FlexRight>
-      )}
+      </Collapse>
     </Grid>
   );
 };

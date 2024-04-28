@@ -41,7 +41,7 @@ export const root = {
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: {
         default: {
-            http: ['https://root.rootnet.live/archive'],
+            http: ['https://root.rootnet.live/'],
         },
     },
     blockExplorers: {
@@ -62,6 +62,6 @@ export const rootWalletConfig = {
     chainId: "0x1DF4",
     chainName: 'The Root Network - Mainnet',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
-    rpcUrls: ['https://root.rootnet.live/archive'],
+    rpcUrls: ['https://root.rootnet.live/'],
     blockExplorerUrls: ['https://explorer.rootnet.live'],
 }

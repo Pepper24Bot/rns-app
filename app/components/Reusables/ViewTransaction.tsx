@@ -1,6 +1,6 @@
 import React from "react";
 import { FlexCenter, Tip } from "../Theme/StyledGlobal";
-import { Link as MuiLink, styled } from "@mui/material";
+import { Collapse, Link as MuiLink, styled } from "@mui/material";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 
 const TransactionTip = styled(Tip)(({ theme }) => ({
@@ -28,11 +28,19 @@ export const ViewTransaction: React.FC<Transaction> = (props: Transaction) => {
   };
 
   return (
-    <FlexCenter>
-      <Link href={getUrl()} target="_blank" sx={{ width: "calc(100% - 64px)" }}>
-        <TransactionTip isVisible={isVisible}>View Transaction</TransactionTip>
-      </Link>
-    </FlexCenter>
+    <Collapse in={isVisible}>
+      <FlexCenter>
+        <Link
+          href={getUrl()}
+          target="_blank"
+          sx={{ width: "calc(100% - 64px)" }}
+        >
+          <TransactionTip isVisible={isVisible}>
+            View Transaction
+          </TransactionTip>
+        </Link>
+      </FlexCenter>
+    </Collapse>
   );
 };
 

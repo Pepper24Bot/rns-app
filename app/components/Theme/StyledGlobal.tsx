@@ -304,7 +304,7 @@ export const ModalInputField = styled(InputField)(({ theme }) => ({
       },
 
       fontSize: "16px",
-      fontWeight: FONT_WEIGHT.Light,
+      fontWeight: FONT_WEIGHT.Regular,
       padding: "16px 25px",
       color: theme.palette.text.primary,
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled, Grid, alpha } from "@mui/material";
+import { styled, Grid, alpha, Collapse } from "@mui/material";
 import { Domain } from "@/redux/graphql/hooks";
 import { FONT_WEIGHT } from "../Theme/Global";
 import {
@@ -8,10 +8,8 @@ import {
   ModalInputField as InputField,
   ActionButton,
   FlexRight,
-  BoxContainer,
   FlexCenter,
   Relative,
-  Tip,
 } from "../Theme/StyledGlobal";
 
 import EnsImage from "../Reusables/EnsImage";
@@ -20,6 +18,7 @@ import { Address, namehash } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
+import { useAccount, useEnsAddress, useEnsName } from "wagmi";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -44,23 +43,18 @@ export interface Primary {
   domain?: Partial<Domain>;
   ensName?: string;
   ensAddr?: string;
+  refetchEnsName?: () => void;
   owner?: {
     id?: string;
   };
 }
 
 export const Primary: React.FC<Primary> = (props: Primary) => {
-  const { domain, owner, ensName, ensAddr } = props;
-
+  const { domain, ensName } = props;
   const name = domain?.name || "";
-  const ownerId = owner?.id as Address;
   const resolverAddress = domain?.resolver?.address;
 
   const dispatch = useDispatch();
-
-  const { closeModal } = useModalState();
-  const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
-  const { setAddressRecord } = useRecords();
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -72,10 +66,18 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
 
+  const { address } = useAccount();
+  const { refetch } = useEnsName({ address });
+  const { data: ensAddr } = useEnsAddress({ name });
+  const { closeModal } = useModalState();
+  const { setAddressRecord } = useRecords();
+  const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
   });
 
+  const ownerId = address?.toLowerCase() as Address;
+  const ensAddress = ensAddr?.toLowerCase();
   const isTransactionLoading = isLoading || isWaiting;
 
   const setEnsRecord = async () => {
@@ -140,13 +142,13 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
    * @returns
    */
   const getStep = () => {
-    if (ensAddr === ownerId) {
+    if (ensAddress === ownerId) {
       return {
         transaction: "setName",
       };
     }
 
-    if (ensNameData === name && ensAddr !== ownerId) {
+    if (ensNameData === name && ensAddress !== ownerId) {
       return {
         transaction: "setAddr",
       };
@@ -188,6 +190,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
     if (isCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      refetch();
     }
   }, [isCompleted]);
 
@@ -235,20 +238,20 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
           </>
         )}
         <InputField disabled focused value={name} />
-        <FlexCenter marginY={2}>
-          <Relative width="100%">
-            <BoxContainer isVisible={isProgressVisible}>
+        <Collapse in={isProgressVisible}>
+          <FlexCenter pt={2}>
+            <Relative width="100%">
               <ProgressBar
                 isError={isError}
                 isPaused={!isTransactionLoading}
                 isVisible={isProgressVisible}
                 isSuccess={isSuccess}
               />
-            </BoxContainer>
-            <ViewTransaction isVisible={isSuccess} hash={txHash} />
-          </Relative>
-        </FlexCenter>
-        <FlexRight pt={2}>
+              <ViewTransaction isVisible={isSuccess} hash={txHash} />
+            </Relative>
+          </FlexCenter>
+        </Collapse>
+        <FlexRight pt={3}>
           <ActionButton
             disabled={isPending || isSuccess || isWaiting}
             sx={{ marginRight: 1 }}

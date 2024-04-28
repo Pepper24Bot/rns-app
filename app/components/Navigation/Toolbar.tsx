@@ -9,12 +9,10 @@ import {
   ToggleButtonGroup as StyledToggleButtonGroup,
   ToggleButton as StyledToggleButton,
 } from "../Theme/StyledGlobal";
-import { useAccount } from "wagmi";
+import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/services/utils";
 import { Address } from "viem";
-import { getEnsAddress, getEnsName } from "@wagmi/core";
-import { config } from "@/chains/config";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
@@ -62,11 +60,14 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
 }));
 
 export const Toolbar: React.FC = () => {
-  const { address, connector, status } = useAccount();
+  const { address, connector, status, chainId } = useAccount();
+  const { data: ensName } = useEnsName({
+    address: address as Address,
+  });
+
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
 
-  const [ensName, setEnsName] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [anchor, setAnchor] = useState<(EventTarget & HTMLElement) | null>(
     null
@@ -84,32 +85,6 @@ export const Toolbar: React.FC = () => {
   const isLabelLoading = isAccountLoading(status);
 
   useEffect(() => {
-    const getEnsData = async () => {
-      if (address) {
-        const ensName = await getEnsName(config, {
-          address: address as Address,
-        });
-
-        const ensAddr = await getEnsAddress(config, {
-          name: ensName || "",
-        });
-
-        console.log(`
-        ensName:: ${ensName}
-        ensAddr:: ${ensAddr}
-        ------------------
-        `);
-        setEnsName(ensName || "");
-      } else {
-        setEnsName("");
-      }
-    };
-
-    getEnsData();
-  }, [address]);
-
-  useEffect(() => {
-    // TODO: display ensName here of the connected address
     const label = ensName
       ? ensName
       : address

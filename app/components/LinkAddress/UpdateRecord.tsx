@@ -4,9 +4,11 @@ import {
   ModalInputField as InputField,
   ActionButton,
   Flex,
+  Tip,
 } from "../Theme/StyledGlobal";
 import { CheckCircle, Close, Edit } from "@mui/icons-material";
-import { green } from "@mui/material/colors";
+import { amber, green } from "@mui/material/colors";
+import { Chip } from "@mui/material";
 
 const ResolverButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButton-contained": {
@@ -31,9 +33,15 @@ const CheckedIcon = styled(CheckCircle)(({ theme }) => ({
   zIndex: 2,
 }));
 
+const PrimaryChip = styled(Chip)(({ theme }) => ({
+  backgroundColor: amber[500],
+  color: theme.palette.background.paper,
+}));
+
 export interface UpdateProps {
   name?: string;
   owner?: string;
+  ensName?: string;
   isUpdateEnabled?: boolean;
   toggleEditMode: () => void;
   toggleRemoveMode: () => void;
@@ -45,6 +53,7 @@ export interface UpdateProps {
 
 export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
   const {
+    ensName = "",
     name = "",
     owner = "",
     futurePassInput = "",
@@ -57,7 +66,14 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
 
   return (
     <Grid>
-      <InputField disabled value={name} />
+      <InputField
+        disabled
+        value={name}
+        InputProps={{
+          endAdornment:
+            ensName === name ? <PrimaryChip label="Primary" /> : <></>,
+        }}
+      />
       <InputField
         label="Owner"
         disabled
@@ -112,6 +128,12 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
           ),
         }}
       />
+      <Collapse in={ensName === name}>
+        <Tip pt={2} isVisible={ensName === name} sx={{ width: "100%" }}>
+          Please note that changing the address that your RNS Identity is
+          Linked/Resolved to will remove this RNS Identity as your Primary.
+        </Tip>
+      </Collapse>
     </Grid>
   );
 };

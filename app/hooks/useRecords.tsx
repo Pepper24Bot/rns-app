@@ -38,7 +38,14 @@ export default function useRecords(props?: RecordProps) {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   const initializeResponse = (): Response => {
-    return { error: null, isSuccess: false, data: null };
+    return {
+      error: null,
+      isSuccess: false,
+      data: {
+        hash: "",
+        receipt: "",
+      },
+    };
   };
 
   // TODO: Implement block latency here
@@ -99,10 +106,10 @@ export default function useRecords(props?: RecordProps) {
     let response = { ...initializeResponse() };
 
     if (name && resolverAddress && address) {
-      const nameHash = namehash(name);
-      const addr = address as Address;
-
       try {
+        const nameHash = namehash(name);
+        const addr = address as Address;
+
         const hash = await writeContractAsync({
           abi: publicResolver.abi,
           address: publicResolver.address,
@@ -118,8 +125,8 @@ export default function useRecords(props?: RecordProps) {
       }
     }
 
-    setIsAddressLoading(false);
     console.log("address-record:: ", response);
+    setIsAddressLoading(false);
     return response;
   };
 
