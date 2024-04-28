@@ -37,7 +37,7 @@ const addresses = {
 
 export const root = {
     id: 7668,
-    name: 'The Root Network - Mainnet',
+    name: 'The Root Network',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: {
         default: {
@@ -60,7 +60,7 @@ export const root = {
  */
 export const rootWalletConfig = {
     chainId: "0x1DF4",
-    chainName: 'The Root Network - Mainnet',
+    chainName: 'The Root Network',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: ['https://root.rootnet.live/'],
     blockExplorerUrls: ['https://explorer.rootnet.live'],
