@@ -1,6 +1,6 @@
 import { useWriteContract } from "wagmi";
 import { Address, namehash } from "viem";
-import { Response } from "@/services/interfaces";
+import { ErrorResponse, Response } from "@/services/interfaces";
 import { config } from "@/chains/config";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { useState } from "react";
@@ -86,8 +86,9 @@ export default function useRecords(props?: RecordProps) {
         });
 
         response = await waitForTransaction(hash);
-      } catch (error) {
-        response.error = error as string;
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
       }
     }
 
@@ -120,8 +121,9 @@ export default function useRecords(props?: RecordProps) {
         setIsAddressLoading(true);
 
         response = await waitForTransaction(hash);
-      } catch (error) {
-        response.error = error as string;
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
       }
     }
 

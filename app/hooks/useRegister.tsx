@@ -1,7 +1,7 @@
 import useContractDetails, { ContractDetails } from "./useContractDetails";
 import { useWriteContract } from "wagmi";
 import { Address, encodeFunctionData, namehash } from "viem";
-import { Response } from "@/services/interfaces";
+import { ErrorResponse, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
 import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
@@ -61,6 +61,33 @@ export default function useRegister() {
     };
   };
 
+  const getCommitments = async (props: CommitProps) => {
+    const { hash } = props;
+
+    let response = { ...initializeResponse() };
+
+    if (hash) {
+      try {
+        const commitHash = await writeContractAsync({
+          abi,
+          address,
+          functionName: "commitments",
+          args: [hash],
+        });
+        setCommitLoading(true);
+
+        response = await waitForTransaction(commitHash);
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
+      }
+    }
+
+    console.log("commitments-response:: ", response);
+    setCommitLoading(false);
+    return response;
+  };
+
   /**
    *
    * @param props
@@ -82,8 +109,11 @@ export default function useRegister() {
         setCommitLoading(true);
 
         response = await waitForTransaction(commitHash);
-      } catch (error) {
-        response.error = error as string;
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
+
+        console.log("cause:: ", error?.cause?.data.errorName);
       }
     }
 
@@ -134,8 +164,9 @@ export default function useRegister() {
       setRegisterLoading(true);
 
       response = await waitForTransaction(hash);
-    } catch (error) {
-      response.error = error as string;
+    } catch (e) {
+      const error = e as ErrorResponse;
+      response.error = error;
     }
 
     console.log("registration-response:: ", response);
@@ -146,6 +177,7 @@ export default function useRegister() {
   return {
     commit: handleCommit,
     register: handleRegister,
+    commitments: getCommitments,
     isLoading: isCommitLoading || isRegisterLoading,
     isCommitLoading,
     isRegisterLoading,

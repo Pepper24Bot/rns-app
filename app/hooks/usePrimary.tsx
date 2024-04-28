@@ -1,6 +1,6 @@
 import { useWriteContract } from "wagmi";
 import { Address } from "viem";
-import { Response } from "@/services/interfaces";
+import { ErrorResponse, Response } from "@/services/interfaces";
 import { config } from "@/chains/config";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
 import { useState } from "react";
@@ -70,8 +70,9 @@ export default function usePrimary() {
 
       response.isSuccess = true;
       response.data = primaryResponse;
-    } catch (error) {
-      response.error = error as string;
+    } catch (e) {
+      const error = e as ErrorResponse;
+      response.error = error;
     }
 
     setIsPrimaryLoading(false);
@@ -98,8 +99,9 @@ export default function usePrimary() {
         setIsPrimaryLoading(true);
 
         response = await waitForTransaction(hash);
-      } catch (error) {
-        response.error = error as string;
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
       }
     }
 

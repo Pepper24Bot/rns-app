@@ -1,7 +1,7 @@
 import useContractDetails from "./useContractDetails";
 import { useWriteContract } from "wagmi";
 import { Address, erc20Abi, parseUnits } from "viem";
-import { Response } from "@/services/interfaces";
+import { ErrorResponse, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
 import {
@@ -71,8 +71,9 @@ export default function useToken() {
       setApprovalLoading(true);
 
       response = await waitForTransaction(hash);
-    } catch (error) {
-      response.error = error as string;
+    } catch (e) {
+      const error = e as ErrorResponse;
+      response.error = error;
     }
 
     setApprovalLoading(false);
@@ -101,8 +102,9 @@ export default function useToken() {
         balance,
         isBalanceSufficient: balance > totalFee,
       };
-    } catch (error) {
-      response.error = error as string;
+    } catch (e) {
+      const error = e as ErrorResponse;
+      response.error = error;
     }
 
     return response;

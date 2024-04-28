@@ -2,7 +2,7 @@ import { useReadContract, useWriteContract } from "wagmi";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
-import { RentPrice, Response } from "@/services/interfaces";
+import { ErrorResponse, RentPrice, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/chains/config";
@@ -103,8 +103,9 @@ export default function useExtend(props: ExtendProps) {
           hash: renewResponse,
           receipt,
         };
-      } catch (error) {
-        response.error = error as string;
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
       }
     }
 
