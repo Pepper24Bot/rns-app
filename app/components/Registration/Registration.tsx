@@ -220,6 +220,7 @@ export const RegisterName: React.FC = () => {
   // On initial load - check wallet balance before doing transaction
   useEffect(() => {
     const getBalanceOf = async () => {
+      console.log("getbalance-rentFee:: ", rentFee);
       if (address) {
         const { data } = await getBalance({
           address,
