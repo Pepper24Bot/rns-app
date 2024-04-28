@@ -5,13 +5,12 @@ import {
 } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useAccount } from "wagmi";
-import { Grid, IconButton, alpha, styled } from "@mui/material";
+import { Collapse, Grid, IconButton, alpha, styled } from "@mui/material";
 import {
   FlexRight,
   ActionButton,
   SecondaryLabel,
   FlexLeft,
-  BoxContainer,
   FlexCenter,
   Relative,
   ErrorTip,
@@ -39,7 +38,7 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
   width: "350px",
-  height: "425px",
+  // height: "425px",
   display: "grid",
   alignContent: "space-between",
 
@@ -202,11 +201,11 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
         {extendPage === 1 ? (
           <>
             <Form name={domain?.name || ""} rentFee={rentFee} />
-            <FlexCenter>
-              <ErrorTip isVisible={!isBalanceSufficient}>
-                Registration fees exceed wallet balance.
-              </ErrorTip>
-            </FlexCenter>
+            <Collapse in={!isBalanceSufficient}>
+              <FlexCenter py={2}>
+                <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>
+              </FlexCenter>
+            </Collapse>
           </>
         ) : (
           <>
@@ -227,19 +226,19 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                 </FlexLeft>
               }
             />
-            <FlexCenter marginY={2.5}>
-              <Relative width="100%">
-                <BoxContainer isVisible={isProgressVisible}>
+            <Collapse in={isProgressVisible}>
+              <FlexCenter pt={2}>
+                <Relative width="100%">
                   <ProgressBar
                     isError={isError}
                     isPaused={!isTransactionLoading}
                     isVisible={isProgressVisible}
                     isSuccess={isExtendSuccess}
                   />
-                </BoxContainer>
-                <ViewTransaction isVisible={isExtendSuccess} hash={txHash} />
-              </Relative>
-            </FlexCenter>
+                  <ViewTransaction isVisible={isExtendSuccess} hash={txHash} />
+                </Relative>
+              </FlexCenter>
+            </Collapse>
           </>
         )}
         <Grid mt={2}>

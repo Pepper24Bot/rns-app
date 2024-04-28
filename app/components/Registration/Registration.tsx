@@ -6,12 +6,12 @@ import {
   ActionButton,
   SecondaryLabel,
   Relative,
-  BoxContainer,
   Tip,
   ShareButton,
   FlexJustified,
   FlexLeft,
   ErrorTip,
+  Flex,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, alpha, styled } from "@mui/material";
 import {
@@ -263,42 +263,48 @@ export const RegisterName: React.FC = () => {
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
       <Form isShowing={!isRegisterSuccess} rentFee={rentFee} />
-      <FlexCenter marginY={2.5}>
+      <FlexCenter py={2}>
         <Relative>
-          <FlexCenter>
-            <ErrorTip isVisible={!isBalanceSufficient}>
-              Registration fees exceed wallet balance.
-            </ErrorTip>
-          </FlexCenter>
-          <BoxContainer isVisible={isProgressVisible} display="flex">
-            <ProgressBar
-              isError={isError}
-              isPaused={!isTransactionLoading}
-              isVisible={isProgressVisible}
-              isSuccess={isRegisterSuccess}
-            />
-            <Collapse orientation="horizontal" in={isCooldown}>
-              <CircularProgress isVisible={isCooldown} countdown />
-            </Collapse>
-          </BoxContainer>
-          <FlexLeft>
-            <Tip isVisible={isCooldown}>
-              Please wait for 60 seconds before the transaction proceeds.
-            </Tip>
-          </FlexLeft>
+          <Collapse in={!isBalanceSufficient}>
+            <FlexCenter pb={3}>
+              <ErrorTip>Registration fees exceed wallet balance</ErrorTip>
+            </FlexCenter>
+          </Collapse>
+          <Collapse in={isProgressVisible}>
+            <Flex>
+              <ProgressBar
+                isError={isError}
+                isPaused={!isTransactionLoading}
+                isVisible={isProgressVisible}
+                isSuccess={isRegisterSuccess}
+              />
+              <Collapse orientation="horizontal" in={isCooldown}>
+                <CircularProgress isVisible countdown />
+              </Collapse>
+            </Flex>
+          </Collapse>
+          <Collapse in={isCooldown}>
+            <FlexLeft>
+              <Tip>
+                Please wait for 60 seconds before the transaction proceeds.
+              </Tip>
+            </FlexLeft>
+          </Collapse>
           <ViewTransaction isVisible={isRegisterSuccess} hash={txHash} />
-          <FlexCenter>
-            <Tip isVisible={!isProgressVisible}>
-              Avoid paying yearly transaction fees by selecting a longer
-              registration period.
-            </Tip>
-          </FlexCenter>
+          <Collapse in={!isProgressVisible}>
+            <FlexCenter>
+              <Tip>
+                Avoid paying yearly transaction fees by selecting a longer
+                registration period.
+              </Tip>
+            </FlexCenter>
+          </Collapse>
         </Relative>
       </FlexCenter>
 
       {/* Hide these action buttons after the registration */}
-      {!isRegisterSuccess && (
-        <Grid mt={2}>
+      <Collapse in={!isRegisterSuccess}>
+        <Grid pt={2}>
           {address ? (
             <FlexJustified>
               <ActionButton
@@ -365,10 +371,10 @@ export const RegisterName: React.FC = () => {
             </FlexCenter>
           )}
         </Grid>
-      )}
+      </Collapse>
 
       {/* Only show the share button when the registration is successful */}
-      {!isTweetVerified && isRegisterSuccess && (
+      <Collapse in={!isTweetVerified && isRegisterSuccess}>
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip>
@@ -393,7 +399,7 @@ export const RegisterName: React.FC = () => {
             </ShareButton>
           </FlexCenter>
         </Grid>
-      )}
+      </Collapse>
     </Grid>
   );
 };

@@ -119,14 +119,14 @@ export const SwitchNetwork: React.FC = () => {
       </VideoLink>
 
       <FlexRight>
-        <CancelButton
+        {/* <CancelButton
           variant="text"
           onClick={() => {
             closeModal();
           }}
         >
           Cancel
-        </CancelButton>
+        </CancelButton> */}
         <ConfirmButton
           variant="contained"
           onClick={() => {

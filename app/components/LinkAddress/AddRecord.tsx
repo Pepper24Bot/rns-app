@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Grid } from "@mui/material";
+import { Collapse, Grid } from "@mui/material";
 import {
   ModalInputField as InputField,
   FlexRight,
   ActionButton,
   FlexCenter,
   Relative,
-  BoxContainer,
-  Tip,
 } from "../Theme/StyledGlobal";
 import { Address } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -86,7 +84,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
   }, [isCompleted]);
 
   return (
-    <Grid item xs display="grid" alignContent="space-between">
+    <Grid item xs>
       <Grid>
         <InputField disabled value={domain?.name} />
         <InputField
@@ -111,9 +109,9 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
             }
           }}
         />
-        <FlexCenter marginY={2.5}>
-          <Relative width="100%">
-            <BoxContainer isVisible={isProgressVisible}>
+        <Collapse in={isProgressVisible}>
+          <FlexCenter pt={2}>
+            <Relative width="100%">
               <ProgressBar
                 isError={isError}
                 isPaused={!isTransactionLoading}
@@ -121,12 +119,12 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
                 isSuccess={isSuccess}
                 resetProgress={resetProgress}
               />
-            </BoxContainer>
-            <ViewTransaction isVisible={isSuccess} hash={txHash} />
-          </Relative>
-        </FlexCenter>
+              <ViewTransaction isVisible={isSuccess} hash={txHash} />
+            </Relative>
+          </FlexCenter>
+        </Collapse>
       </Grid>
-      <Grid mt={2}>
+      <Grid pt={3}>
         <FlexRight>
           <ActionButton
             disabled={isPending || isSuccess || isWaiting}

@@ -429,9 +429,9 @@ export const BoxContainer = styled(Box, {
 
 export const Tip = styled(SecondaryLabel, {
   shouldForwardProp: (prop) => prop !== "isVisible",
-})<{ isVisible?: boolean }>(({ isVisible, theme }) => ({
+})<{ isVisible?: boolean }>(({ isVisible = true, theme }) => ({
   fontSize: "12px",
-  color: alpha(theme.palette.text.primary, 0.25),
+  color: alpha(theme.palette.text.primary, 0.35),
   width: "calc(100% - 64px)",
   textAlign: "center",
   visibility: isVisible ? "visible" : "hidden",

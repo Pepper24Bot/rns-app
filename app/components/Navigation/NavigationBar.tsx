@@ -89,6 +89,7 @@ export const NavigationBar: React.FC = () => {
         id: "Switch Network",
         title: "Switch Network",
         isCloseDisabled: true,
+        isXDisabled: true,
       });
     } else {
       closeModal();

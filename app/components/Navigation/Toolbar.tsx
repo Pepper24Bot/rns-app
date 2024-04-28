@@ -61,7 +61,8 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
 
 export const Toolbar: React.FC = () => {
   const { address, connector, status, chainId } = useAccount();
-  const { data: ensName } = useEnsName({
+
+  const { data: ensName, refetch } = useEnsName({
     address: address as Address,
   });
 
@@ -95,6 +96,10 @@ export const Toolbar: React.FC = () => {
     const walletIcon = address ? path : "/icons/wallet.svg";
     setIconPath(walletIcon);
   }, [address, ensName]);
+
+  useEffect(() => {
+    refetch();
+  }, [address, chainId]);
 
   return (
     <ToolbarContainer>

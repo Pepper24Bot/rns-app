@@ -24,7 +24,14 @@ export default function usePrimary() {
   const [isPrimaryLoading, setIsPrimaryLoading] = useState(false);
 
   const initializeResponse = (): Response => {
-    return { error: null, isSuccess: false, data: null };
+    return {
+      error: null,
+      isSuccess: false,
+      data: {
+        hash: "",
+        receipt: "",
+      },
+    };
   };
 
   // TODO: Implement block latency here
