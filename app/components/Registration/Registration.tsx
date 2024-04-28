@@ -152,7 +152,7 @@ export const RegisterName: React.FC = () => {
     if (isBalanceSufficient) {
       initializeFlags();
       const hashStr = hash as unknown as string;
-      const { isSuccess, error } = await commit({ hash: hashStr, controller });
+      const { isSuccess, error } = await commit({ hash: hashStr });
 
       if (isSuccess) {
         setCooldown(true);
@@ -279,7 +279,7 @@ export const RegisterName: React.FC = () => {
                 isSuccess={isRegisterSuccess}
               />
               <Collapse orientation="horizontal" in={isCooldown}>
-                <CircularProgress isVisible countdown />
+                <CircularProgress isVisible={isCooldown} countdown />
               </Collapse>
             </Flex>
           </Collapse>
@@ -340,7 +340,17 @@ export const RegisterName: React.FC = () => {
                   disabled={areBtnsDisabled}
                   variant="contained"
                   onClick={() => {
-                    handleCommit();
+                    if (!isApprovalSuccess && isCommitSuccess) {
+                      setIsError(false);
+                      setAreBtnsDisabled(true);
+                      handleApproval();
+                    } else if (!isRegisterSuccess && isApprovalSuccess) {
+                      setIsError(false);
+                      setAreBtnsDisabled(true);
+                      handleRegister();
+                    } else {
+                      handleCommit();
+                    }
                   }}
                 >
                   Confirm

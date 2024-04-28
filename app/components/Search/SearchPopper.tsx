@@ -236,6 +236,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                               toggleModal({
                                 id: "Register Name",
                                 title: "Register",
+                                isCloseDisabled: true,
                               });
                             } else {
                               toggleModal({

@@ -28,7 +28,7 @@ export interface RegisterProps {
 }
 
 export interface CommitProps {
-  controller: ContractDetails;
+  controller?: ContractDetails;
   hash: string;
 }
 
