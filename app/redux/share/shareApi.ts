@@ -94,72 +94,15 @@ export const shareApi = api.injectEndpoints({
             query: ({ token = "" }) => ({
                 url: `${twitterUrl}/users/me`,
                 method: 'GET',
-                credentials: "include"
+                credentials: "include",
             }),
         }),
-        getUserDetailsV1: builder.query<UserResponse, Request>({
-            async queryFn({ token = "" }) {
-                try {
-                    const userResponse = await axios({
-                        url: `${twitterUrl}/users/me`,
-                        method: 'GET',
-                        headers: getHeader(bearer)
-                    })
-
-                    return { data: userResponse.data }
-
-                } catch (error) {
-                    const errorData = error as AxiosError
-
-                    if (errorData?.response?.status === 401) {
-                        // Refresh Token
-                        const newToken = await refetchTwitterToken(token)
-
-                        //  retry user request
-                        const userResponse = await axios({
-                            url: `${twitterUrl}/users/me`,
-                            method: 'GET',
-                            headers: getHeader(newToken)
-                        })
-
-                        return userResponse.status === 200
-                            ? { data: userResponse.data }
-                            : { error: userResponse }
-                    }
-
-                    return { data: error }
-                }
-            },
-        }),
         getTweetById: builder.query<TweetResponse, TweetRequest>({
-            async queryFn({ tweetId }) {
-                try {
-                    const searchResponse = await axios({
-                        url: `${twitterUrl}/tweets/${tweetId}`,
-                        method: 'GET',
-                        headers: getHeader(bearer),
-                    })
-
-                    return { data: searchResponse.data }
-                } catch (error) {
-                    const errorData = error as AxiosError
-
-                    if (errorData?.response?.status === 401) {
-                        const newToken = await refetchTwitterToken(bearer)
-
-                        //  retry user request
-                        const searchResponse = await axios({
-                            url: `${twitterUrl}/tweets/${tweetId}`,
-                            method: 'GET',
-                            headers: getHeader(newToken)
-                        })
-
-                        return { data: searchResponse.data }
-                    }
-
-                    return { error: errorData.response }
-                }
-            },
+            query: ({ tweetId }) => ({
+                url: `${twitterUrl}/tweets/${tweetId}`,
+                method: 'GET',
+                credentials: "include",
+            }),
         }),
     })
 })
