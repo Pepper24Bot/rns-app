@@ -94,6 +94,7 @@ export const shareApi = api.injectEndpoints({
             query: ({ token = "" }) => ({
                 url: `${twitterUrl}/users/me`,
                 method: 'GET',
+                credentials: "include"
             }),
         }),
         getUserDetailsV1: builder.query<UserResponse, Request>({
