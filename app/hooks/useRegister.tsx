@@ -4,9 +4,15 @@ import { Address, encodeFunctionData, namehash } from "viem";
 import { ErrorResponse, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/services/constants";
-import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
+import {
+  readContract,
+  simulateContract,
+  waitForTransactionReceipt,
+} from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
+import { isCommitmentValid } from "@/services/utils";
+import { formatDistanceToNowStrict } from "date-fns";
 
 export interface RegisterProps {
   controller: ContractDetails;
@@ -68,7 +74,7 @@ export default function useRegister() {
 
     if (hash) {
       try {
-        const commitHash = await writeContractAsync({
+        const commitments = await readContract(config, {
           abi,
           address,
           functionName: "commitments",
@@ -76,7 +82,19 @@ export default function useRegister() {
         });
         setCommitLoading(true);
 
-        response = await waitForTransaction(commitHash);
+        const distance =
+          Number(commitments) === 0
+            ? "0 minutes"
+            : formatDistanceToNowStrict(Number(commitments) * 1000, {
+                unit: "minute",
+              });
+
+        response.isSuccess = true;
+        response.data = {
+          commitment: Number(commitments),
+          age: distance,
+          isCommitmentValid: isCommitmentValid(distance),
+        };
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
@@ -112,12 +130,10 @@ export default function useRegister() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
-
-        console.log("cause:: ", error?.cause?.data.errorName);
       }
     }
 
-    console.log("response:: ", response);
+    console.log("commit-response:: ", response);
     setCommitLoading(false);
     return response;
   };

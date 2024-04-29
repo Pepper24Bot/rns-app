@@ -228,3 +228,16 @@ export const isNameSupported = (name: string) => {
     const match = name.match(pattern)
     return isEmpty(match)
 }
+
+/**
+ * The commitment's age is in minute format
+ * 
+ * if commitment's age is less than 1 minute, commitmentToNew = makeCommitment
+ * if commitment's age is more than 24 hours, commitmentToOld = makeCommitment
+ * if commitment's age is within 1 minute to 24 hours (1440 minutes) = register
+ * @param commitmentAge 
+ */
+export const isCommitmentValid = (commitmentAge: string) => {
+    const age = commitmentAge.split(" minute")[0];
+    return Number(age) >= 1 && Number(age) <= 1440
+}

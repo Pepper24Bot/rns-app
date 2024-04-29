@@ -34,6 +34,9 @@ interface ContentProps {
 }
 
 const Dialog = styled(MuiDialog)(({ theme }) => ({
+  "& .MuiDialog-container": {
+    backgroundColor: alpha(theme.palette.background.paper, 0.8),
+  },
   "& .MuiPaper-root": {
     filter: `drop-shadow(0px 10px 15px ${alpha(
       theme.palette.primary.main,

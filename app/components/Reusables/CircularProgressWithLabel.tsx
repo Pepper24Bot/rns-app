@@ -5,12 +5,13 @@ export interface ProgressProps {
   isVisible?: boolean;
   max?: number;
   countdown?: boolean;
+  isSuccess?: boolean;
 }
 
 export const CircularProgressWithLabel: React.FC<ProgressProps> = (
   props: ProgressProps
 ) => {
-  const { isVisible, max = 100, countdown } = props;
+  const { isVisible, max = 100, countdown, isSuccess } = props;
 
   const initial = countdown ? max : 0;
   const [progress, setProgress] = useState<number>(initial);
@@ -22,13 +23,13 @@ export const CircularProgressWithLabel: React.FC<ProgressProps> = (
     if (isVisible) {
       const timer = setInterval(() => {
         if (countdown) {
-          setProgress((prevProgress) =>
-            prevProgress === 0 ? max : prevProgress - 1
-          );
+          setProgress((prevProgress) => {
+            return prevProgress === 0 ? prevProgress : prevProgress - 1;
+          });
         } else {
-          setProgress((prevProgress) =>
-            prevProgress >= max ? 0 : prevProgress + 1
-          );
+          setProgress((prevProgress) => {
+            return prevProgress === max ? prevProgress : prevProgress + 1;
+          });
         }
       }, 600);
       return () => {
@@ -36,6 +37,16 @@ export const CircularProgressWithLabel: React.FC<ProgressProps> = (
       };
     }
   }, [isVisible]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      if (countdown) {
+        setProgress(0);
+      } else {
+        setProgress(max);
+      }
+    }
+  }, [isSuccess]);
 
   return (
     <Box sx={{ position: "relative", display: "inline-flex", mx: 1 }}>
