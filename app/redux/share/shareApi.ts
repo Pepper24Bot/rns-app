@@ -91,6 +91,12 @@ export const shareApi = api.injectEndpoints({
             }),
         }),
         getUserDetails: builder.query<UserResponse, Request>({
+            query: ({ token = "" }) => ({
+                url: `${twitterUrl}/users/me`,
+                method: 'GET',
+            }),
+        }),
+        getUserDetailsV1: builder.query<UserResponse, Request>({
             async queryFn({ token = "" }) {
                 try {
                     const userResponse = await axios({
