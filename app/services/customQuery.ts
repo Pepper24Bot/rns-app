@@ -24,7 +24,10 @@ export const customBaseQuery = (options: CustomRequestOptions): BaseQueryFn<any>
             // Check if the request is from graphql
             // no provided url, graphql
             if (axiosRequestConfig?.url) {
-                const response = await axios({ ...axiosRequestConfig })
+                const response = await axios({
+                    ...axiosRequestConfig,
+                    withCredentials: true
+                })
                 responseData = response.data
             } else {
                 const graphqlQuery = {
