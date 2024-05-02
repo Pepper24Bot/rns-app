@@ -7,7 +7,7 @@ export const getNetworkConfig = (chainId: string) => {
     // Testnet - Porcini
     case "7672":
       return {
-        name: "porcini" as NetworkName,
+        network: "porcini" as NetworkName,
         config: porcini,
         walletConfig: porciniWalletConfig,
       };
@@ -15,7 +15,7 @@ export const getNetworkConfig = (chainId: string) => {
     case "7668":
     default:
       return {
-        name: "root" as NetworkName,
+        network: "root" as NetworkName,
         config: root,
         walletConfig: rootWalletConfig,
       };

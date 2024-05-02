@@ -17,13 +17,13 @@ import {
   Title,
 } from "../Theme/StyledGlobal";
 import { Search as MuiSearchIcon } from "@mui/icons-material";
-import { DEFAULT_DEBOUNCE } from "@/services/constants";
+import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { SearchPopper } from "./SearchPopper";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
-import { isAccountLoading, isNameSupported } from "@/services/utils";
+import { isAccountLoading, isNameSupported } from "@/utils/common";
 import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { normalize } from "viem/ens";
 

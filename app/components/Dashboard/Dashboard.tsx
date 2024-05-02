@@ -18,7 +18,7 @@ import {
   Heading,
 } from "../Theme/StyledGlobal";
 import { Search as MuiSearchIcon, Settings, Tune } from "@mui/icons-material";
-import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/services/constants";
+import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/constants/components";
 import { FONT_SIZE } from "../Theme/Global";
 import {
   useGetNamesByIdQuery,
@@ -26,7 +26,7 @@ import {
 } from "@/redux/graphql/graphqlApi";
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { Address, formatEther } from "viem";
-import { getExpiration } from "@/services/utils";
+import { getExpiration } from "@/utils/common";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
 import { Domain } from "../graphql/hooks"
 import { Address } from "viem"
-import { PAYMENT_METHOD } from "@/services/constants"
+import { PAYMENT_METHOD } from "@/constants/components"
 
 export type PaymentMethod = "ROOT" | "USDC"
 export type NameStatus = "Available" | "Not Available" | "Registered" | "Invalid" | "Not Supported"

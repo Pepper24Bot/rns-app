@@ -1,5 +1,5 @@
 import { Payment } from "@/redux/domain/domainSlice";
-import { PAYMENT_METHOD } from "@/services/constants";
+import { PAYMENT_METHOD } from "@/constants/components";
 import { formatUnits } from "viem";
 
 export interface FeesProps {

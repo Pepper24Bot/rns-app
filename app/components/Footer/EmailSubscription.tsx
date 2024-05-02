@@ -6,10 +6,10 @@ import {
   Heading,
   ModalInputField,
 } from "../Theme/StyledGlobal";
-import { DEFAULT_DEBOUNCE } from "@/services/constants";
+import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce } from "lodash";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { isEmailValid } from "@/services/utils";
+import { isEmailValid } from "@/utils/common";
 import { useSubscribesEmailMutation } from "@/redux/airtable/airtableApi";
 import { green } from "@mui/material/colors";
 import { Check } from "@mui/icons-material";

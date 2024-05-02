@@ -21,12 +21,12 @@ import {
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address } from "viem";
-import { COMMITMENT_AGE } from "@/services/constants";
+import { COMMITMENT_AGE } from "@/constants/components";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
-import { parseCookie } from "@/services/utils";
+import { parseCookie } from "@/utils/common";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -266,7 +266,9 @@ export const RegisterName: React.FC = () => {
       }
     };
 
-    getBalanceOf();
+    if (hash) {
+      getBalanceOf();
+    }
   }, [address, rentFee]);
 
   useEffect(() => {

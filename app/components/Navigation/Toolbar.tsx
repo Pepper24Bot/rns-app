@@ -11,7 +11,7 @@ import {
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { getMaskedAddress, isAccountLoading } from "@/services/utils";
+import { getMaskedAddress, isAccountLoading } from "@/utils/common";
 import { Address } from "viem";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";

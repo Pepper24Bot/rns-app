@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, styled } from "@mui/material";
-import { getExpiration, getMaskedAddress } from "@/services/utils";
+import { getExpiration, getMaskedAddress } from "@/utils/common";
 import {
   FieldContainer,
   FlexCenter,

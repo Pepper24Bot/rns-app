@@ -27,10 +27,10 @@ import {
   SecondaryLabel,
   ShareButton,
 } from "@/components/Theme/StyledGlobal";
-import { getExpiration, getMaskedAddress, parseCookie } from "@/services/utils";
+import { getExpiration, getMaskedAddress, parseCookie } from "@/utils/common";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
-import { EMPTY_ADDRESS } from "@/services/constants";
+import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useAccount, useEnsName } from "wagmi";
 

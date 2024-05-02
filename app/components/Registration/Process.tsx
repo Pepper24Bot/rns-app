@@ -9,8 +9,8 @@ import {
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { REGISTRATION_PROCESS } from "@/services/content";
-import { parseCookie } from "@/services/utils";
+import { REGISTRATION_PROCESS } from "@/constants/content";
+import { parseCookie } from "@/utils/common";
 import { useModalState } from "@/redux/modal/modalSlice";
 
 const Container = styled(Grid)(({ theme }) => ({

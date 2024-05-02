@@ -22,9 +22,9 @@ import {
 } from "@/redux/share/shareApi";
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
-import { TWITTER_AUTH } from "@/services/url";
-import { parseCookie } from "@/services/utils";
-import { TWEET_RNS } from "@/services/content";
+import { TWITTER_AUTH } from "@/constants/url";
+import { TWEET_RNS } from "@/constants/content";
+import { parseCookie } from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useShareState } from "@/redux/share/shareSlice";

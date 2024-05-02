@@ -12,7 +12,7 @@ import {
 import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 import { Payment, useDomainState } from "@/redux/domain/domainSlice";
-import { PAYMENT_METHOD } from "@/services/constants";
+import { PAYMENT_METHOD } from "@/constants/components";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 
 import MenuField from "@/components/Reusables/MenuField";

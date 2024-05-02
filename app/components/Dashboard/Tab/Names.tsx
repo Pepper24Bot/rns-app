@@ -10,9 +10,9 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import { DEFAULT_DEBOUNCE } from "@/services/constants";
+import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
-import { isAccountLoading, scrollIntoElement } from "@/services/utils";
+import { isAccountLoading, scrollIntoElement } from "@/utils/common";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { useAccount } from "wagmi";
 import SkeletonNames from "./Names/SkeletonNames";

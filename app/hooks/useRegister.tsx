@@ -3,7 +3,7 @@ import { useWriteContract } from "wagmi";
 import { Address, encodeFunctionData, namehash } from "viem";
 import { ErrorResponse, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
-import { PAYMENT_METHOD } from "@/services/constants";
+import { PAYMENT_METHOD } from "@/constants/components";
 import {
   readContract,
   simulateContract,
@@ -11,7 +11,7 @@ import {
 } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
-import { isCommitmentValid } from "@/services/utils";
+import { isCommitmentValid } from "@/utils/common";
 import { formatDistanceToNowStrict } from "date-fns";
 
 export interface RegisterProps {

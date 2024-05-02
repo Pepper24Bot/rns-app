@@ -6,7 +6,7 @@ import {
   ThemeProvider,
 } from "@mui/material/styles";
 import { grey, yellow } from "@mui/material/colors";
-import { parseCookie } from "@/services/utils";
+import { parseCookie } from "@/utils/common";
 import { CssBaseline } from "@mui/material";
 import { Theme, useThemeState } from "@/redux/theme/themeSlice";
 

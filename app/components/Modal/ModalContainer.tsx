@@ -13,7 +13,7 @@ import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
 import { Close } from "@mui/icons-material";
 import { PolicyAndTerms } from "../Reusables/PolicyAndTerms";
 import { useSearchParams } from "next/navigation";
-import { getModalFromPath } from "@/services/utils";
+import { getModalFromPath } from "@/utils/common";
 
 import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";

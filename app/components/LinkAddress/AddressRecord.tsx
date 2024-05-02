@@ -7,12 +7,12 @@ import {
   Relative,
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { getMaskedAddress } from "@/services/utils";
+import { getMaskedAddress } from "@/utils/common";
 import { Link } from "./LinkAddress";
 import { Address } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
-import { EMPTY_ADDRESS } from "@/services/constants";
+import { EMPTY_ADDRESS } from "@/constants/components";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";

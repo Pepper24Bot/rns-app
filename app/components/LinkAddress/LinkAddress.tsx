@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import { Domain } from "@/redux/graphql/hooks";
-import { EMPTY_ADDRESS } from "@/services/constants";
+import { EMPTY_ADDRESS } from "@/constants/components";
 
 import AddRecord from "./AddRecord";
 import AddressRecord from "./AddressRecord";

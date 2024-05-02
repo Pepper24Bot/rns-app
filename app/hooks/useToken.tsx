@@ -3,7 +3,7 @@ import { useWriteContract } from "wagmi";
 import { Address, erc20Abi, parseUnits } from "viem";
 import { ErrorResponse, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
-import { PAYMENT_METHOD } from "@/services/constants";
+import { PAYMENT_METHOD } from "@/constants/components";
 import {
   readContract,
   simulateContract,

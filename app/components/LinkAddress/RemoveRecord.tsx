@@ -7,8 +7,8 @@ import {
 } from "../Theme/StyledGlobal";
 import { KeyboardBackspace } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { EMPTY_ADDRESS } from "@/services/constants";
-import { getMaskedAddress } from "@/services/utils";
+import { EMPTY_ADDRESS } from "@/constants/components";
+import { getMaskedAddress } from "@/utils/common";
 
 const ConfirmationLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",

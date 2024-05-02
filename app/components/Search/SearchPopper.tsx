@@ -30,9 +30,7 @@ import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
-import { parseCookie } from "@/services/utils";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { useAccount } from "wagmi";
+import { parseCookie } from "@/utils/common";
 
 import Image from "next/image";
 

@@ -1,7 +1,7 @@
 import { useReadContract, useWriteContract } from "wagmi";
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
-import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
+import { PAYMENT_METHOD, SECONDS } from "@/constants/components";
 import { ErrorResponse, RentPrice, Response } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
