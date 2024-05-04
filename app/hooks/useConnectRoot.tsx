@@ -11,7 +11,7 @@ export interface ConnectProps {
 }
 
 export default function useConnectRoot(props?: ConnectProps) {
-  const { name } = useNetworkConfig();
+  const { network } = useNetworkConfig();
   const { address } = useAccount();
   const { updateRootDetails } = useRootNetworkState();
 

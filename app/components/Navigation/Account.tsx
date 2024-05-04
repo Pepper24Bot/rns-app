@@ -18,11 +18,11 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { green } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { getMaskedAddress } from "@/services/utils";
+import { getMaskedAddress } from "@/utils/common";
 import { useAccount, useDisconnect } from "wagmi";
 import { ContentCopy } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { FUTURE_PASS } from "@/services/url";
+import { FUTURE_PASS } from "@/constants/url";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";

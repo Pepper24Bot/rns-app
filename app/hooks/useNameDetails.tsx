@@ -1,6 +1,6 @@
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData, namehash } from "viem";
-import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
+import { PAYMENT_METHOD, SECONDS } from "@/constants/components";
 import { RentPrice } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { useEffect, useState } from "react";
