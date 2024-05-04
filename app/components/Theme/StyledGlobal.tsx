@@ -163,7 +163,7 @@ export const HighlightText = styled("span")(({ theme }) => ({
 }));
 
 export const Divider = styled(MuiDivider)(({ theme }) => ({
-  margin: "4px 30px",
+  margin: "4px 20px",
   borderColor: alpha(theme.palette.primary.main, 0.2),
 }));
 

@@ -8,6 +8,7 @@ import {
   SkeletonTypography,
   ToggleButtonGroup as StyledToggleButtonGroup,
   ToggleButton as StyledToggleButton,
+  SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -59,6 +60,15 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
   },
 }));
 
+const DocsLabel = styled(SecondaryLabel)(({ theme }) => ({
+  padding: "11px 0",
+  fontSize: "15px",
+
+  "&:hover": {
+    color: theme.palette.primary.main,
+  },
+}));
+
 export const Toolbar: React.FC = () => {
   const { address, connector, status, chainId } = useAccount();
 
@@ -107,12 +117,25 @@ export const Toolbar: React.FC = () => {
         sx={{
           display: {
             xs: "none",
+            sm: "flex",
+          },
+        }}
+      >
+        <Link href="https://docs.rootnameservice.com/" target="_blank">
+          <DocsLabel>Docs</DocsLabel>
+        </Link>
+        <Divider orientation="vertical" flexItem />
+      </Flex>
+      <Flex
+        sx={{
+          display: {
+            xs: "none",
             md: "flex",
           },
         }}
       >
         <Link href="https://twitter.com/RootNameService" target="_blank">
-          <SocialButton variant="outlined">
+          <SocialButton variant="outlined" sx={{ ml: 0 }}>
             <i className="fa-brands fa-discord fa-xl" />
           </SocialButton>
         </Link>
