@@ -5,6 +5,7 @@
 
 export enum FeatureList {
   Names = "true",
+  FAQ = "true",
   Favorites = "false",
   Notifications = "false",
   LoyaltyPoints = "false",

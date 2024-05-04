@@ -35,6 +35,7 @@ import Notifications from "./Tab/Notifications";
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import FeatureToggle from "../Reusables/FeatureToggle";
 import FilterOption from "../Reusables/FilterOption";
+import FrequentlyAsked from "./Tab/Faq/Faq";
 
 const Container = styled(FlexCenter)(({ theme }) => ({
   position: "relative",
@@ -388,16 +389,20 @@ export const Dashboard: React.FC = () => {
                 {activeTab === 0 && <Names />}
               </FeatureToggle>
 
-              <FeatureToggle feature={FeatureList.Names}>
-                {activeTab === 1 && <Favorites />}
+              <FeatureToggle feature={FeatureList.FAQ}>
+                {activeTab === 1 && <FrequentlyAsked />}
               </FeatureToggle>
 
               <FeatureToggle feature={FeatureList.Names}>
-                {activeTab === 2 && <LoyaltyPoints />}
+                {activeTab === 2 && <Favorites />}
               </FeatureToggle>
 
               <FeatureToggle feature={FeatureList.Names}>
-                {activeTab === 3 && <Notifications />}
+                {activeTab === 3 && <LoyaltyPoints />}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.Names}>
+                {activeTab === 4 && <Notifications />}
               </FeatureToggle>
             </Grid>
           </Content>
