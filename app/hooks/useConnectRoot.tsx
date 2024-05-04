@@ -1,9 +1,15 @@
 import "@therootnetwork/api-types"; // optional, for Typescript support
 import { ApiPromise } from "@polkadot/api";
-import { getApiOptions, getPublicProvider } from "@therootnetwork/api";
+import {
+  NetworkName,
+  getApiOptions,
+  getPublicProvider,
+} from "@therootnetwork/api";
 import { useAccount } from "wagmi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { EMPTY_ADDRESS } from "@/constants/components";
+
 import useNetworkConfig from "./useNetworkConfig";
 
 export interface ConnectProps {
@@ -11,25 +17,29 @@ export interface ConnectProps {
 }
 
 export default function useConnectRoot(props?: ConnectProps) {
-  const { name } = useNetworkConfig();
+  const { network } = useNetworkConfig();
   const { address } = useAccount();
   const { updateRootDetails } = useRootNetworkState();
 
-  const setup = async () => {
+  const [api, setApi] = useState<ApiPromise>();
+
+  const getApiPromise = async (network: NetworkName = "root") => {
     const api = await ApiPromise.create({
       ...getApiOptions(),
-      ...getPublicProvider("root"), // todo: change this to name
+      ...getPublicProvider(network),
     });
 
-    const [fpHolder, chain, chainId, nodeName, nodeVersion] = await Promise.all(
-      [
-        api.query.futurepass.holders(address || ""),
-        api.rpc.system.chain(),
-        api.query.evmChainId.chainId(),
-        api.rpc.system.name(),
-        api.rpc.system.version(),
-      ]
-    );
+    setApi(api);
+    return api;
+  };
+
+  const setup = async () => {
+    const api = await getApiPromise();
+    const [fpHolder, chain, chainId] = await Promise.all([
+      api.query.futurepass.holders(address || ""),
+      api.rpc.system.chain(),
+      api.query.evmChainId.chainId(),
+    ]);
 
     // Why does Porcini returns undefined after multiple calls?
     const fpAccount = fpHolder?.unwrapOr(undefined)?.toString();
@@ -39,8 +49,6 @@ export default function useConnectRoot(props?: ConnectProps) {
       eoaAddress: address,
       chain: chain?.toString(),
       chainId: chainId?.toString(),
-      nodeName: nodeName?.toString(),
-      nodeVersion: nodeVersion?.toString(),
     });
   };
 
@@ -51,5 +59,5 @@ export default function useConnectRoot(props?: ConnectProps) {
     }
   }, [address]);
 
-  return { setup };
+  return { setup, api, getApiPromise };
 }

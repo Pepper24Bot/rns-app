@@ -1,6 +1,6 @@
 import { isEmpty } from "lodash";
 import { Address, encodeFunctionData, namehash } from "viem";
-import { PAYMENT_METHOD, SECONDS } from "@/services/constants";
+import { PAYMENT_METHOD, SECONDS } from "@/constants/components";
 import { RentPrice } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import { readContract, readContracts } from "@wagmi/core";
 import { config } from "@/chains/config";
 
 import useContractDetails from "./useContractDetails";
+import useFpRegister from "./FuturePass/useFpRegister";
 
 export interface RegistrationProps {
   /**
@@ -42,6 +43,8 @@ export default function useNameDetails(props: RegistrationProps) {
 
   const controller = useContractDetails({ action: "RegistrarController" });
   const resolver = useContractDetails({ action: "PublicResolver" });
+
+  const { makeFpCommitment } = useFpRegister();
 
   const initialRentPrice: RentPrice = {
     base: BigInt(0),
@@ -115,14 +118,25 @@ export default function useNameDetails(props: RegistrationProps) {
       0,
     ];
 
-    const data = await readContract(config, {
-      abi,
-      address,
-      functionName: "makeCommitment",
-      args: commitmentArgs,
-    });
+    // const data = await readContract(config, {
+    //   abi,
+    //   address,
+    //   functionName: "makeCommitment",
+    //   args: commitmentArgs,
+    // });
 
-    setHash(String(data));
+    makeFpCommitment({
+      nameHash,
+      args: {
+        owner,
+        name,
+        duration,
+        secret,
+        resolverAddr,
+        addressRecord,
+      },
+    });
+    // setHash(String(data));
   };
 
   /**

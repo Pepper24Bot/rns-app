@@ -18,14 +18,15 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { green } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { getMaskedAddress } from "@/services/utils";
+import { getMaskedAddress } from "@/utils/common";
 import { useAccount, useDisconnect } from "wagmi";
 import { ContentCopy } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { FUTURE_PASS } from "@/services/url";
+import { FUTURE_PASS } from "@/constants/url";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
+import useFuturePass from "@/hooks/FuturePass/useFuturePass";
 
 const Container = styled(Grid)(({ theme }) => ({
   minWidth: "275px",
@@ -113,12 +114,12 @@ export interface AccountProps {
 export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const { toggleClose } = props;
 
+  const { address, connector } = useAccount();
+  const { disconnect } = useDisconnect();
+  const {} = useFuturePass();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
   const { data } = useRootNetwork();
-
-  const { address, connector } = useAccount();
-  const { disconnect } = useDisconnect();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
 
   const handleCopy = async (text: string) => {
