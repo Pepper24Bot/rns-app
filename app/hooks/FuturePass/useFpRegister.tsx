@@ -40,10 +40,10 @@ import useContractDetails from "../useContractDetails";
 import { createExtrinsicPayload, sendExtrinsic } from "@/utils/futurepass";
 import { Extrinsic } from "@polkadot/types/interfaces";
 import { AddressOrPair } from "@polkadot/api/types";
-import Keyring from "@polkadot/keyring";
 import { hexToU8a } from "@polkadot/util";
+import { signatureVerify, mnemonicGenerate } from "@polkadot/util-crypto";
 import { api } from "@/redux/baseSlice";
-import { web3Enable } from "@polkadot/extension-dapp";
+import Keyring from "@polkadot/keyring";
 
 export interface ConnectProps {
   state: "initialize" | "reinitialize";
@@ -134,7 +134,7 @@ export default function useFpRegister(props?: ConnectProps) {
 
     // TODO: Check which dependency causes to make the unwrapOr function not available in Codec
     const fpAccount = (await api.query.futurepass.holders(walletAddress || ""))
-      .toHuman()
+      .unwrapOr(undefined)
       ?.toString();
 
     console.log("fpAccount:: ", fpAccount);
@@ -197,7 +197,7 @@ export default function useFpRegister(props?: ConnectProps) {
 
       // Create Extrinsic Payload and Sign it?
       // TODO: Fix this
-      const { payload, message, txU8a } = await createExtrinsicPayload({
+      const { payload, message } = await createExtrinsicPayload({
         api,
         signer: walletAddress ?? "",
         extrinsic,
@@ -209,9 +209,19 @@ export default function useFpRegister(props?: ConnectProps) {
         params: [message, walletAddress],
       });
 
+      const isSignatureValid = signatureVerify(
+        message,
+        signature,
+        walletAddress ?? ""
+      );
+
+      console.log("signature:: ", signature);
+      console.log("isSignatureValid:: ", isSignatureValid);
+      console.log("publicKey:: ", toHex(isSignatureValid.publicKey));
+
       // Add the signature to the extrinsic
       const signedExtrinsic = extrinsic.addSignature(
-        walletAddress ?? "",
+        fpAccount ?? "",
         signature as `0x${string}`,
         payload
       );
@@ -221,7 +231,7 @@ export default function useFpRegister(props?: ConnectProps) {
 
       // const result = await sendExtrinsic({
       //   extrinsic,
-      //   signer: walletAddress ?? "",
+      //   signer: alice,
       // });
       console.log("---------------------");
     }
