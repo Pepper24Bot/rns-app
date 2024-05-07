@@ -8,7 +8,7 @@ import {
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { EMPTY_ADDRESS } from "@/constants/components";
+import { parseCookie } from "@/utils/common";
 
 import useNetworkConfig from "./useNetworkConfig";
 
@@ -21,6 +21,7 @@ export default function useConnectRoot(props?: ConnectProps) {
   const { address } = useAccount();
   const { updateRootDetails } = useRootNetworkState();
 
+  const isFpActive = parseCookie("isFpActive") === "true";
   const [api, setApi] = useState<ApiPromise>();
 
   const getApiPromise = async (network: NetworkName = "root") => {
@@ -49,6 +50,7 @@ export default function useConnectRoot(props?: ConnectProps) {
       eoaAddress: address,
       chain: chain?.toString(),
       chainId: chainId?.toString(),
+      isFpActive: isFpActive,
     });
   };
 

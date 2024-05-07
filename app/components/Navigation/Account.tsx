@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Divider,
@@ -18,7 +18,7 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { green } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { getMaskedAddress } from "@/utils/common";
+import { getMaskedAddress, parseCookie } from "@/utils/common";
 import { useAccount, useDisconnect } from "wagmi";
 import { ContentCopy } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -43,7 +43,7 @@ const Highlight = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 const Label = styled(Highlight)(({ theme }) => ({
-  color: alpha(theme.palette.text.primary, 0.5),
+  color: theme.palette.text.primary,
   paddingRight: "8px",
   fontSize: "12px",
   paddingBottom: "2px",
@@ -114,13 +114,24 @@ export interface AccountProps {
 export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const { toggleClose } = props;
 
+  const isFpEnabled = parseCookie("isFpActive") === "true";
+
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
-  const {} = useFuturePass();
   const { toggleModal } = useModalState();
-  const { useRootNetwork } = useRootNetworkState();
+  const { useRootNetwork, updateRootDetails } = useRootNetworkState();
   const { data } = useRootNetwork();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
+  const [isFpActive, setIsFpActive] = useState<boolean>(isFpEnabled);
+
+  const handleSwitchFuturepass = () => {
+    document.cookie = `isFpActive=${!isFpActive}; path=/`;
+    setIsFpActive(!isFpActive);
+    updateRootDetails({
+      ...data,
+      isFpActive: !isFpActive,
+    });
+  };
 
   const handleCopy = async (text: string) => {
     try {
@@ -151,7 +162,13 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
       </Grid>
       <StyledDivider />
       <Grid py={2.5} pl={2.5}>
-        <Flex>
+        <Flex
+          sx={{
+            transform: isFpActive ? "translate(0, 55px)" : "",
+            transition: "all 0.25s ease-out allow-discrete",
+            opacity: isFpActive ? "0.25" : "1",
+          }}
+        >
           <Logo>
             <Image
               src={path}
@@ -162,13 +179,15 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
             />
           </Logo>
           <Grid>
-            <Label>
-              {data.futurePassAddress
-                ? "EOA Address"
-                : `${connector?.name} Address`}
-            </Label>
+            <Label>{`${connector?.name} Address`}</Label>
             <Flex>
-              <Highlight>{getMaskedAddress(data.eoaAddress || "")}</Highlight>
+              <Highlight
+                sx={{
+                  color: isFpActive ? "text.secondary" : "primary.main",
+                }}
+              >
+                {getMaskedAddress(data.eoaAddress || "")}
+              </Highlight>
               <IconButton
                 sx={{ p: 0, ml: 1 }}
                 onClick={() => {
@@ -181,8 +200,14 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
           </Grid>
         </Flex>
         <Vertical />
-        <Flex>
-          <Logo sx={{ opacity: 0.15 }}>
+        <Flex
+          sx={{
+            transform: isFpActive ? "translate(0, -55px)" : "",
+            transition: "all 0.25s ease-out allow-discrete",
+            opacity: isFpActive ? "1" : "0.25",
+          }}
+        >
+          <Logo>
             <Image
               src="/icons/futurePass.svg"
               alt="Wallet Icon"
@@ -191,44 +216,56 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
               style={{ color: "white", marginRight: address ? "" : "8px" }}
             />
           </Logo>
-          {data.futurePassAddress ? (
-            <Grid>
-              <Label sx={{ opacity: 0.35 }}>FuturePass Address</Label>
+          <Grid>
+            {data.futurePassAddress ? (
+              <Grid>
+                <Label>FuturePass Address</Label>
+                <Flex>
+                  <Highlight
+                    sx={{
+                      color: isFpActive ? "primary.main" : "text.secondary",
+                    }}
+                  >
+                    {getMaskedAddress(data.futurePassAddress || "")}
+                  </Highlight>
+                  <IconButton
+                    sx={{ p: 0, ml: 1 }}
+                    onClick={() => {
+                      handleCopy(data.futurePassAddress || "");
+                    }}
+                  >
+                    <CopyIcon />
+                  </IconButton>
+                </Flex>
+              </Grid>
+            ) : (
               <Flex>
-                <RegularText sx={{ opacity: 0.25 }}>
-                  {getMaskedAddress(data.futurePassAddress || "")}
-                </RegularText>
-                <IconButton
-                  sx={{ p: 0, ml: 1 }}
+                <FpButton
+                  variant="contained"
                   onClick={() => {
-                    handleCopy(data.futurePassAddress || "");
+                    if (typeof window !== "undefined") {
+                      window.open(FUTURE_PASS, "_blank");
+                    }
                   }}
                 >
-                  <CopyIcon />
-                </IconButton>
+                  Create a FuturePass
+                </FpButton>
               </Flex>
-            </Grid>
-          ) : (
-            <Flex>
-              <FpButton
-                variant="contained"
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    window.open(FUTURE_PASS, "_blank");
-                  }
-                }}
-              >
-                Create a FuturePass
-              </FpButton>
-            </Flex>
-          )}
+            )}
+          </Grid>
         </Flex>
         {data.futurePassAddress && (
           <FlexRight pt={2.5}>
-            <InformationTip title="Not yet supported" arrow placement="top">
+            <InformationTip title="" arrow placement="top">
               <Grid>
-                <FpButton disabled variant="contained">
-                  Switch to FuturePass
+                <FpButton
+                  onClick={() => {
+                    handleSwitchFuturepass();
+                  }}
+                >
+                  {isFpActive
+                    ? `Switch to ${connector?.name}`
+                    : " Switch to FuturePass"}
                 </FpButton>
               </Grid>
             </InformationTip>

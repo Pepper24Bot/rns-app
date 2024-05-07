@@ -9,6 +9,7 @@ export interface RootProps {
     chainId?: string,
     nodeName?: string,
     nodeVersion?: string,
+    isFpActive?: boolean
 }
 
 export interface RootNetworkState {
@@ -18,7 +19,8 @@ export interface RootNetworkState {
 const initialState: RootNetworkState = {
     data: {
         futurePassAddress: "",
-        eoaAddress: ""
+        eoaAddress: "",
+        isFpActive: false
     }
 }
 
