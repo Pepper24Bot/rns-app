@@ -132,6 +132,7 @@ export default function useRegister() {
           })) as Address;
           setCommitLoading(true);
           // response = await waitForTransaction(commitHash);
+          console.log("commitmentHash:: ", commitHash);
 
           return {
             isSuccess: true,

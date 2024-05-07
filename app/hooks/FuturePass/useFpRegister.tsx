@@ -1,7 +1,6 @@
 import "@therootnetwork/api-types"; // optional, for Typescript support
 import { useAccount } from "wagmi";
 import { Address, encodeFunctionData } from "viem";
-import { Payment } from "@/redux/domain/domainSlice";
 import { signExtrinsicPayload } from "@/utils/futurepass";
 import { useEffect, useState } from "react";
 import { ApiPromise } from "@polkadot/api";

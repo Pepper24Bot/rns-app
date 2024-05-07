@@ -205,20 +205,15 @@ export const RegisterName: React.FC = () => {
    */
   const handleApproval = async () => {
     if (isCommitSuccess) {
-      if (data.isFpActive && data.futurePassAddress) {
-        // Skip approval and go straight to register
-        setIsApprovalSuccess(true);
-      } else {
-        const { isSuccess } = await approve({
-          payment,
-          fee: rentFee,
-        });
+      const { isSuccess } = await approve({
+        payment,
+        fee: rentFee,
+      });
 
-        if (isSuccess) {
-          setIsApprovalSuccess(isSuccess);
-        } else {
-          setFlagsWhenError();
-        }
+      if (isSuccess) {
+        setIsApprovalSuccess(isSuccess);
+      } else {
+        setFlagsWhenError();
       }
     }
   };
