@@ -35,7 +35,7 @@ export default function useNameDetails(props: RegistrationProps) {
   const {
     name,
     year,
-    payment,
+    payment = PAYMENT_METHOD[0],
     owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account
     isEnabled,
   } = props;
@@ -145,7 +145,7 @@ export default function useNameDetails(props: RegistrationProps) {
     if (!isEmpty(name) && isEnabled) {
       getPriceAndAvailability();
     }
-  }, [name, isEnabled]);
+  }, [name, isEnabled, duration, payment?.address]);
 
   useEffect(() => {
     if (isEnabled && available) {
