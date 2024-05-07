@@ -27,6 +27,7 @@ import {
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { Address, formatEther } from "viem";
 import { getExpiration } from "@/utils/common";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -130,12 +131,16 @@ const TabItem = styled(Tab)(({ theme }) => ({
 }));
 
 export const Dashboard: React.FC = () => {
-  const { address, status } = useAccount();
+  const { address: walletAddress, status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
   const { updateNameList, toggleNamesLoading, useFilters } =
     useDashboardState();
 
+  const { useRootNetwork } = useRootNetworkState();
+  const { data } = useRootNetwork();
+
   const options = useFilters();
+  const address = data.isFpActive ? data.futurePassAddress : walletAddress;
 
   const [activeTab, setActiveTab] = useState<number>(0); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");

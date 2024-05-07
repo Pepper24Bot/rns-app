@@ -112,6 +112,10 @@ export default function useNameDetails(props: RegistrationProps) {
       args: [nameHash, owner],
     });
 
+    /**
+     * If the address is using FuturePass,
+     * use makeFpCommitment to generate a hash
+     */
     if (data.isFpActive) {
       commitmentHash =
         (await makeFpCommitment({

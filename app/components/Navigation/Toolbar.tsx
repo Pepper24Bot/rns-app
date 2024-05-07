@@ -13,6 +13,7 @@ import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/utils/common";
 import { Address } from "viem";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
@@ -60,7 +61,11 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
 }));
 
 export const Toolbar: React.FC = () => {
-  const { address, connector, status, chainId } = useAccount();
+  const { address: walletAddress, connector, status, chainId } = useAccount();
+  const { useRootNetwork } = useRootNetworkState();
+  const { data } = useRootNetwork();
+
+  const address = data.isFpActive ? data.futurePassAddress : walletAddress;
 
   const { data: ensName, refetch } = useEnsName({
     address: address as Address,
@@ -159,6 +164,7 @@ export const Toolbar: React.FC = () => {
           </ToggleButton>
           {address && (
             <ToggleButton
+              sx={{ minWidth: "160px" }}
               value=""
               onClick={(event) => {
                 setIsOpen(!isOpen);
