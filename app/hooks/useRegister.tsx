@@ -49,7 +49,7 @@ export default function useRegister() {
   const { abi, address } = controller;
 
   const { writeContractAsync } = useWriteContract();
-  const { commitFp } = useFpRegister();
+  const { commitUsingFp, registerUsingFp } = useFpRegister();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
@@ -126,11 +126,11 @@ export default function useRegister() {
     if (hash) {
       try {
         if (data.isFpActive) {
-          const commitHash = (await commitFp({
+          setCommitLoading(true);
+          const commitHash = (await commitUsingFp({
             hash,
             fpAccount: data.futurePassAddress,
           })) as Address;
-          // setCommitLoading(true);
           // response = await waitForTransaction(commitHash);
 
           console.log("commitHash:: ", commitHash);
@@ -178,35 +178,68 @@ export default function useRegister() {
     const payment = args.payment || PAYMENT_METHOD[0];
     const nameHash = namehash(`${args.name}.root`);
 
+    const ownerAddress =
+      data.isFpActive && data.futurePassAddress
+        ? data.futurePassAddress
+        : args.owner;
+
     try {
       const addressRecord = encodeFunctionData({
         abi: resolver?.abi || [],
         functionName: "setAddr",
-        args: [nameHash, args.owner],
+        args: [nameHash, ownerAddress],
       });
 
-      const register = await simulateContract(config, {
-        abi,
-        address,
-        functionName: "registerWithERC20",
-        account: args.owner,
-        args: [
-          args.name,
-          args.owner,
-          args.duration,
-          args.secret,
-          args.resolverAddr,
-          [addressRecord],
-          false,
-          0,
-          payment.address,
-        ],
-      });
+      if (data.isFpActive) {
+        setCommitLoading(true);
+        const registerHash = (await registerUsingFp({
+          args: {
+            name: args.name,
+            owner: ownerAddress as Address,
+            duration: args.duration,
+            secret: args.secret,
+            resolverAddr: args.resolverAddr,
+            paymentAddress: payment.address as Address,
+            addressRecord,
+            futurePassAddress: data.futurePassAddress as Address,
+          },
+        })) as Address;
+        // response = await waitForTransaction(commitHash)
 
-      const hash = await writeContractAsync(register.request);
-      setRegisterLoading(true);
+        console.log("registerHash:: ", registerHash);
+        console.log("-----------------");
 
-      response = await waitForTransaction(hash);
+        return {
+          isSuccess: true,
+          error: null,
+          data: {
+            hash: registerHash,
+          },
+        };
+      } else {
+        const register = await simulateContract(config, {
+          abi,
+          address,
+          functionName: "registerWithERC20",
+          account: args.owner,
+          args: [
+            args.name,
+            args.owner,
+            args.duration,
+            args.secret,
+            args.resolverAddr,
+            [addressRecord],
+            false,
+            0,
+            payment.address,
+          ],
+        });
+
+        const hash = await writeContractAsync(register.request);
+        setRegisterLoading(true);
+
+        response = await waitForTransaction(hash);
+      }
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;

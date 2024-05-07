@@ -27,6 +27,7 @@ import { FUTURE_PASS } from "@/constants/url";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
 import useFpCreateAccount from "@/hooks/FuturePass/useFpCreateAccount";
+import useNetworkConfig from "@/hooks/useNetworkConfig";
 
 const Container = styled(Grid)(({ theme }) => ({
   minWidth: "275px",
@@ -52,6 +53,7 @@ const Label = styled(Highlight)(({ theme }) => ({
 const ChainLabel = styled(Label)(({ theme }) => ({
   paddingBottom: 0,
   fontSize: "14px",
+  textTransform: "capitalize",
 }));
 
 const RegularText = styled(Highlight)(({ theme }) => ({
@@ -114,12 +116,15 @@ export interface AccountProps {
 export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const { toggleClose } = props;
 
-  const { createFpAccount } = useFpCreateAccount();
   const { address, connector, chainId } = useAccount();
   const { disconnect } = useDisconnect();
+  const { network } = useNetworkConfig();
+
   const { toggleModal } = useModalState();
   const { useRootNetwork, updateRootDetails } = useRootNetworkState();
   const { data } = useRootNetwork();
+
+  const { createFpAccount } = useFpCreateAccount();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
 
   const isFpEnabled = parseCookie("isFpActive") === "true";
@@ -167,11 +172,11 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
             <Flex>
               <Highlight>The Root Network</Highlight>
               <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-              <ChainLabel>{data.chain}</ChainLabel>
+              <ChainLabel>{network}</ChainLabel>
             </Flex>
             <Flex pt={0.5}>
               <ChainLabel>Chain Id:</ChainLabel>
-              <RegularText>{data.chainId}</RegularText>
+              <RegularText>{chainId}</RegularText>
             </Flex>
           </Grid>
         </FlexTop>

@@ -70,9 +70,7 @@ export const RegisterName: React.FC = () => {
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1, payment } = useDomain();
   const { useRootNetwork } = useRootNetworkState();
-  const {
-    data: { futurePassAddress },
-  } = useRootNetwork();
+  const { data } = useRootNetwork();
 
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
@@ -207,15 +205,20 @@ export const RegisterName: React.FC = () => {
    */
   const handleApproval = async () => {
     if (isCommitSuccess) {
-      const { isSuccess } = await approve({
-        payment,
-        fee: rentFee,
-      });
-
-      if (isSuccess) {
-        setIsApprovalSuccess(isSuccess);
+      if (data.isFpActive && data.futurePassAddress) {
+        // Skip approval and go straight to register
+        setIsApprovalSuccess(true);
       } else {
-        setFlagsWhenError();
+        const { isSuccess } = await approve({
+          payment,
+          fee: rentFee,
+        });
+
+        if (isSuccess) {
+          setIsApprovalSuccess(isSuccess);
+        } else {
+          setFlagsWhenError();
+        }
       }
     }
   };
