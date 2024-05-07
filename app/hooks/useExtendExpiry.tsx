@@ -9,7 +9,6 @@ import { config } from "@/chains/config";
 import { useState } from "react";
 
 import useContractDetails from "./useContractDetails";
-import useEstimateRegistration from "./useEstimateRegistration";
 
 export interface ExtendProps {
   /**

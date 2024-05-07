@@ -104,52 +104,35 @@ export default function useNameDetails(props: RegistrationProps) {
    */
   const makeCommitment = async () => {
     const nameHash = namehash(`${name}.root`);
-    let commitmentHash = "";
+
+    const ownerAddress =
+      data.isFpActive && data.futurePassAddress
+        ? data.futurePassAddress
+        : owner;
 
     const addressRecord = encodeFunctionData({
       abi: resolver.abi,
       functionName: "setAddr",
-      args: [nameHash, owner],
+      args: [nameHash, ownerAddress],
     });
 
-    /**
-     * If the address is using FuturePass,
-     * use makeFpCommitment to generate a hash
-     */
-    if (data.isFpActive) {
-      commitmentHash =
-        (await makeFpCommitment({
-          nameHash,
-          args: {
-            owner,
-            name,
-            duration,
-            secret,
-            resolverAddr,
-            addressRecord,
-            futurePassAddress: data.futurePassAddress,
-          },
-        })) || "";
-      setHash(commitmentHash);
-    } else {
-      const data =
-        (await readContract(config, {
-          abi,
-          address,
-          functionName: "makeCommitment",
-          args: [
-            name,
-            owner as Address,
-            duration,
-            secret,
-            resolverAddr,
-            [addressRecord],
-            false,
-            0,
-          ],
-        })) || "";
-      setHash(String(data));
-    }
+    const response = await readContract(config, {
+      abi,
+      address,
+      functionName: "makeCommitment",
+      args: [
+        name,
+        ownerAddress as Address,
+        duration,
+        secret,
+        resolverAddr,
+        [addressRecord],
+        false,
+        0,
+      ],
+    });
+    console.log("makeCommit-response:: ", response);
+    setHash(String(response));
   };
 
   /**

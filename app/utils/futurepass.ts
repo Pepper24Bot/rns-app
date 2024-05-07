@@ -79,7 +79,7 @@ export const sendExtrinsic = async (props: SubmittableRequest) => {
  * @param props 
  * @returns 
  */
-export const createExtrinsicPayload = async (props: ExtrinsicPayload) => {
+export const signExtrinsicPayload = async (props: ExtrinsicPayload) => {
     const { api, address, extrinsic, options } = props
 
     const { method, tip, assetId } = extrinsic
@@ -113,15 +113,23 @@ export const createExtrinsicPayload = async (props: ExtrinsicPayload) => {
     const payload = api.registry.createTypeUnsafe('SignerPayload', [payloadOptions]) as unknown as GenericSignerPayload;
 
     const { data } = payload.toRaw();
+
     const hashed = data.length > (256 + 1) * 2 ? blake2AsHex(data) : data;
     const ethPayload = blake2AsHex(hashed);
 
-    return {
-        payload,
-        ethPayload,
-    }
-}
+    // Get the user to sign the message
+    const signature = await window.ethereum.request({
+        method: "personal_sign",
+        params: [ethPayload, address],
+    });
+    console.log(`signature:: ${signature}`)
 
-export const sendSignedExtrinsic = () => {
+    // Add the signature to the extrinsic
+    const signedExtrinsic = extrinsic.addSignature(
+        address ?? "",
+        signature as `0x${string}`,
+        payload.toPayload()
+    );
 
+    return signedExtrinsic
 }

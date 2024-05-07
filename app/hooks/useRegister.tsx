@@ -13,6 +13,9 @@ import { config } from "@/chains/config";
 import { useState } from "react";
 import { isCommitmentValid } from "@/utils/common";
 import { formatDistanceToNowStrict } from "date-fns";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+
+import useFpRegister from "./FuturePass/useFpRegister";
 
 export interface RegisterProps {
   controller: ContractDetails;
@@ -39,10 +42,14 @@ export interface CommitProps {
 }
 
 export default function useRegister() {
+  const { useRootNetwork } = useRootNetworkState();
+  const { data } = useRootNetwork();
+
   const controller = useContractDetails({ action: "RegistrarController" });
   const { abi, address } = controller;
 
   const { writeContractAsync } = useWriteContract();
+  const { commitFp } = useFpRegister();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
@@ -118,15 +125,35 @@ export default function useRegister() {
 
     if (hash) {
       try {
-        const commitHash = await writeContractAsync({
-          abi,
-          address,
-          functionName: "commit",
-          args: [hash],
-        });
-        setCommitLoading(true);
+        if (data.isFpActive) {
+          const commitHash = (await commitFp({
+            hash,
+            fpAccount: data.futurePassAddress,
+          })) as Address;
+          // setCommitLoading(true);
+          // response = await waitForTransaction(commitHash);
 
-        response = await waitForTransaction(commitHash);
+          console.log("commitHash:: ", commitHash);
+          console.log("-----------------");
+
+          return {
+            isSuccess: true,
+            error: null,
+            data: {
+              hash: commitHash,
+            },
+          };
+        } else {
+          const commitHash = await writeContractAsync({
+            abi,
+            address,
+            functionName: "commit",
+            args: [hash],
+          });
+          setCommitLoading(true);
+
+          response = await waitForTransaction(commitHash);
+        }
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;

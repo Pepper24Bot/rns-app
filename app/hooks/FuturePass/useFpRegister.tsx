@@ -2,13 +2,13 @@ import "@therootnetwork/api-types"; // optional, for Typescript support
 import { useAccount } from "wagmi";
 import { Address, encodeFunctionData } from "viem";
 import { Payment } from "@/redux/domain/domainSlice";
-import { estimateGas, getFeeHistory } from "@wagmi/core";
-import { config } from "@/chains/config";
-import { createExtrinsicPayload } from "@/utils/futurepass";
+import { signExtrinsicPayload } from "@/utils/futurepass";
+import { useEffect, useState } from "react";
+import { ApiPromise } from "@polkadot/api";
 
 import useConnectRoot from "../useConnectRoot";
 import useContractDetails from "../useContractDetails";
-import Keyring from "@polkadot/keyring";
+import useEstimateFees from "../useEstimateFees";
 
 export interface ConnectProps {
   state: "initialize" | "reinitialize";
@@ -28,19 +28,24 @@ export interface RegisterProps {
   };
 }
 
+export interface CommitProps {
+  hash: string;
+  fpAccount?: string;
+}
+
 export default function useFpRegister() {
   const { getApiPromise } = useConnectRoot();
   const { address: walletAddress } = useAccount();
+  const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
 
   const controller = useContractDetails({ action: "RegistrarController" });
+  const [api, setApiPromise] = useState<ApiPromise>();
 
   const makeCommitment = async (props: RegisterProps) => {
     const { nameHash, args } = props;
-
-    const api = await getApiPromise("porcini");
     const fpAccount = args?.futurePassAddress;
 
-    if (nameHash && args && fpAccount) {
+    if (nameHash && args && fpAccount && api) {
       // Get transaction data using encodeFunctionData
       const data = encodeFunctionData({
         abi: controller.abi,
@@ -58,20 +63,14 @@ export default function useFpRegister() {
       });
 
       // Estimate Contract Gas
-      const estimatedGas = await estimateGas(config, {
-        account: walletAddress,
-        to: controller.address,
+      const gasLimit = await getEstimatedGas({
+        account: walletAddress as Address,
+        contractAddr: controller.address,
         data,
       });
-      const gasLimit = Number(estimatedGas);
 
       // Get Fee History
-      const feeHistory = await getFeeHistory(config, {
-        blockCount: 2,
-        rewardPercentiles: [25, 75],
-      });
-      const maxFee = feeHistory.baseFeePerGas[0] || BigInt(7500000000000);
-      const maxFeePerGas = Number(maxFee);
+      const maxFeePerGas = await getMaxFeePerGas();
 
       // Prepare Transaction Call
       const evmCall = api.tx.evm.call(
@@ -93,24 +92,11 @@ export default function useFpRegister() {
       );
 
       // Create Extrinsic Payload and Sign it using the wallet/eoa address
-      const { payload, ethPayload } = await createExtrinsicPayload({
+      const signedExtrinsic = await signExtrinsicPayload({
         api,
         address: walletAddress ?? "",
         extrinsic,
       });
-
-      // Get the user to sign the message
-      const signature = await window.ethereum.request({
-        method: "personal_sign",
-        params: [ethPayload, walletAddress],
-      });
-
-      // Add the signature to the extrinsic
-      const signedExtrinsic = extrinsic.addSignature(
-        walletAddress ?? "",
-        signature as `0x${string}`,
-        payload.toPayload()
-      );
 
       // Submit the transaction
       const result = await api.tx(signedExtrinsic).send();
@@ -118,10 +104,78 @@ export default function useFpRegister() {
     }
   };
 
+  const commit = async (props: CommitProps) => {
+    const { hash, fpAccount } = props;
+    if (hash && fpAccount && api) {
+      try {
+        // Get transaction data using encodeFunctionData
+        const data = encodeFunctionData({
+          abi: controller.abi,
+          functionName: "commit",
+          args: [hash],
+        });
+
+        // Estimate Contract Gas
+        const gasLimit = await getEstimatedGas({
+          account: walletAddress as Address,
+          contractAddr: controller.address,
+          data,
+        });
+
+        // Get Fee History
+        const maxFeePerGas = await getMaxFeePerGas();
+
+        // Prepare Transaction Call
+        const evmCall = api.tx.evm.call(
+          fpAccount,
+          controller.address,
+          data,
+          0,
+          gasLimit,
+          maxFeePerGas,
+          0,
+          null,
+          []
+        );
+
+        // Call ProxyExtrinsic
+        const extrinsic = api.tx.futurepass.proxyExtrinsic(
+          fpAccount ?? "",
+          evmCall
+        );
+
+        // Create Extrinsic Payload and Sign it using the wallet/eoa address
+        const signedExtrinsic = await signExtrinsicPayload({
+          api,
+          address: walletAddress ?? "",
+          extrinsic,
+        });
+
+        // Submit the transaction
+        const result = await api.tx(signedExtrinsic).send();
+
+        return result.toHex();
+      } catch (error) {
+        console.log("error:: ", error);
+        throw new Error(`${error}`);
+      }
+    }
+  };
+
   const register = async () => {};
+
+  useEffect(() => {
+    const initialize = async () => {
+      const api = await getApiPromise();
+      setApiPromise(api);
+    };
+
+    initialize();
+  }, []);
 
   return {
     registerUsingFp: register,
     makeFpCommitment: makeCommitment,
+    commitFp: commit,
   };
 }
