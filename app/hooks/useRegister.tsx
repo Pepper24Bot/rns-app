@@ -21,9 +21,9 @@ export interface RegisterProps {
   controller: ContractDetails;
   resolver?: ContractDetails;
   fees?: {
-    gasPrice: bigint;
-    rent: number;
-    totalFee: number;
+    gasPrice?: bigint;
+    rent: bigint;
+    totalFee?: number;
   };
   args: {
     name: string;
@@ -126,15 +126,12 @@ export default function useRegister() {
     if (hash) {
       try {
         if (data.isFpActive) {
-          setCommitLoading(true);
           const commitHash = (await commitUsingFp({
             hash,
             fpAccount: data.futurePassAddress,
           })) as Address;
+          setCommitLoading(true);
           // response = await waitForTransaction(commitHash);
-
-          console.log("commitHash:: ", commitHash);
-          console.log("-----------------");
 
           return {
             isSuccess: true,
@@ -183,15 +180,14 @@ export default function useRegister() {
         ? data.futurePassAddress
         : args.owner;
 
-    try {
-      const addressRecord = encodeFunctionData({
-        abi: resolver?.abi || [],
-        functionName: "setAddr",
-        args: [nameHash, ownerAddress],
-      });
+    const addressRecord = encodeFunctionData({
+      abi: resolver?.abi || [],
+      functionName: "setAddr",
+      args: [nameHash, ownerAddress],
+    });
 
+    try {
       if (data.isFpActive) {
-        setCommitLoading(true);
         const registerHash = (await registerUsingFp({
           args: {
             name: args.name,
@@ -204,6 +200,7 @@ export default function useRegister() {
             futurePassAddress: data.futurePassAddress as Address,
           },
         })) as Address;
+        setRegisterLoading(true);
         // response = await waitForTransaction(commitHash)
 
         console.log("registerHash:: ", registerHash);

@@ -154,6 +154,7 @@ export default function useFpRegister() {
 
       // Submit the transaction
       const result = await api.tx(signedExtrinsic).send();
+      console.log("register-tx:: ", result);
       return result.toHex();
     }
   };
