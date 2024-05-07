@@ -84,15 +84,12 @@ export default function useFuturePass() {
       provider as Provider
     );
     const fpAccount = await registrar.futurepassOf(walletAddress);
-    console.log("fpAccount:: ", fpAccount);
 
     return fpAccount;
   };
 
   const getFuturePass = async () => {
     const fpAccount = await getFpAccount();
-    // const wallet = getEthersWallet();
-    // const contract = getFuturepassContract(fpAccount).connect(wallet);
     const contract = getFuturepassContract(fpAccount).connect(signer as Signer);
 
     console.log("contract:: ", contract);
@@ -112,6 +109,7 @@ export default function useFuturePass() {
   return {
     getFuturepassContract,
     getFuturePass,
+    getFpAccount,
     provider,
     signer,
   };

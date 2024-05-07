@@ -65,7 +65,10 @@ export const Toolbar: React.FC = () => {
   const { useRootNetwork } = useRootNetworkState();
   const { data } = useRootNetwork();
 
-  const address = data.isFpActive ? data.futurePassAddress : walletAddress;
+  const address =
+    data.isFpActive && data.futurePassAddress
+      ? data.futurePassAddress
+      : walletAddress;
 
   const { data: ensName, refetch } = useEnsName({
     address: address as Address,

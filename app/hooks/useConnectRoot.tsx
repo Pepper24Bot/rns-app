@@ -24,7 +24,7 @@ export default function useConnectRoot(props?: ConnectProps) {
   const isFpActive = parseCookie("isFpActive") === "true";
   const [api, setApi] = useState<ApiPromise>();
 
-  const getApiPromise = async (network: NetworkName = "root") => {
+  const getApiPromise = async () => {
     const api = await ApiPromise.create({
       ...getApiOptions(),
       ...getPublicProvider(network),
@@ -35,23 +35,17 @@ export default function useConnectRoot(props?: ConnectProps) {
   };
 
   const setup = async () => {
-    const api = await getApiPromise();
-    const [fpHolder, chain, chainId] = await Promise.all([
-      api.query.futurepass.holders(address || ""),
-      api.rpc.system.chain(),
-      api.query.evmChainId.chainId(),
-    ]);
+    if (address) {
+      const api = await getApiPromise();
+      const fpHolder = await api.query.futurepass.holders(address);
+      const fpAccount = fpHolder.unwrapOr(undefined)?.toString();
 
-    // Why does Porcini returns undefined after multiple calls?
-    const fpAccount = fpHolder?.unwrapOr(undefined)?.toString();
-
-    updateRootDetails({
-      futurePassAddress: fpAccount,
-      eoaAddress: address,
-      chain: chain?.toString(),
-      chainId: chainId?.toString(),
-      isFpActive: isFpActive,
-    });
+      updateRootDetails({
+        futurePassAddress: fpAccount,
+        eoaAddress: address,
+        isFpActive: isFpActive,
+      });
+    }
   };
 
   // Initial load only

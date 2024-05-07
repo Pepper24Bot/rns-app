@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Divider,
@@ -26,7 +26,7 @@ import { FUTURE_PASS } from "@/constants/url";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
-import useFuturePass from "@/hooks/FuturePass/useFuturePass";
+import useFpCreateAccount from "@/hooks/FuturePass/useFpCreateAccount";
 
 const Container = styled(Grid)(({ theme }) => ({
   minWidth: "275px",
@@ -114,14 +114,15 @@ export interface AccountProps {
 export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const { toggleClose } = props;
 
-  const isFpEnabled = parseCookie("isFpActive") === "true";
-
-  const { address, connector } = useAccount();
+  const { createFpAccount } = useFpCreateAccount();
+  const { address, connector, chainId } = useAccount();
   const { disconnect } = useDisconnect();
   const { toggleModal } = useModalState();
   const { useRootNetwork, updateRootDetails } = useRootNetworkState();
   const { data } = useRootNetwork();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
+
+  const isFpEnabled = parseCookie("isFpActive") === "true";
   const [isFpActive, setIsFpActive] = useState<boolean>(isFpEnabled);
 
   const handleSwitchFuturepass = () => {
@@ -140,6 +141,21 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
       console.log(`failed to copy ${text}`);
     }
   };
+
+  const handleCreateFp = async () => {
+    await createFpAccount();
+  };
+
+  useEffect(() => {
+    if (isFpEnabled && !data.futurePassAddress) {
+      document.cookie = `isFpActive=${false}; path=/`;
+      setIsFpActive(false);
+      updateRootDetails({
+        ...data,
+        isFpActive: false,
+      });
+    }
+  }, [isFpEnabled]);
 
   return (
     <Container>
@@ -243,8 +259,13 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
                 <FpButton
                   variant="contained"
                   onClick={() => {
-                    if (typeof window !== "undefined") {
-                      window.open(FUTURE_PASS, "_blank");
+                    if (chainId === 7668) {
+                      if (typeof window !== "undefined") {
+                        window.open(FUTURE_PASS, "_blank");
+                      }
+                    } else {
+                      // Create futurepass account via code - porcini only
+                      handleCreateFp();
                     }
                   }}
                 >
