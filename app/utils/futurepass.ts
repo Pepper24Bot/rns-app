@@ -1,11 +1,9 @@
 import { ApiPromise } from "@polkadot/api";
-import { AddressOrPair, SubmittableExtrinsic, SubmittableResultValue } from "@polkadot/api/submittable/types";
-import { KeyringPair } from "@polkadot/keyring/types";
-import { createTypeUnsafe } from "@polkadot/types";
-import { Extrinsic } from "@polkadot/types/interfaces/types";
-import { AnyJson, ExtrinsicPayloadValue, ISubmittableResult } from "@polkadot/types/types";
-import { objectSpread, u8aToHex, stringToU8a } from "@polkadot/util";
-import { toHex } from "viem";
+import { AddressOrPair, SignerOptions, SubmittableExtrinsic, SubmittableResultValue } from "@polkadot/api/submittable/types";
+import { ISubmittableResult } from "@polkadot/types/types";
+import { GenericSignerPayload } from "@polkadot/types";
+import { Address } from "viem";
+import { blake2AsHex } from '@polkadot/util-crypto';
 
 export interface SubmittableResponse {
     blockHash: string;
@@ -22,8 +20,9 @@ export interface SubmittableRequest {
 
 export interface ExtrinsicPayload {
     api: ApiPromise,
-    signer: string | KeyringPair,
-    extrinsic: Extrinsic
+    address: string | Address,
+    extrinsic: SubmittableExtrinsic<'promise'>,
+    options?: Partial<SignerOptions>
 }
 
 /**
@@ -34,13 +33,10 @@ export interface ExtrinsicPayload {
 export const sendExtrinsic = async (props: SubmittableRequest) => {
     const { extrinsic, signer } = props
 
-    console.log("extrinsic:: ", extrinsic)
-
     return new Promise((resolve, reject) => {
         let unsubscribe: () => void
 
         extrinsic.signAndSend(signer, (result) => {
-            console.log("result:: ", result)
             const { status, dispatchError, txHash, txIndex, blockNumber } = result as SubmittableResultValue
             if (!status.isFinalized) return;
             if (!txIndex || !blockNumber) return;
@@ -84,45 +80,48 @@ export const sendExtrinsic = async (props: SubmittableRequest) => {
  * @returns 
  */
 export const createExtrinsicPayload = async (props: ExtrinsicPayload) => {
-    const { api, signer, extrinsic } = props
-    const { method, era, version, nonce, tip, assetId, hash } = extrinsic
+    const { api, address, extrinsic, options } = props
 
-    // console.log("api:: ", api)
+    const { method, tip, assetId } = extrinsic
+    const { genesisHash, runtimeVersion, extrinsicVersion, registry } = api
 
-    // console.log("extrinsic:: ", extrinsic)
-    // console.log("signer:: ", extrinsic.signer.toHex())
-    // console.log("method:: ", extrinsic.method)
-    // console.log("api:: ", api.registry)
+    const { header, mortalLength, nonce } = await api.derive.tx.signingInfo(address);
 
-    // console.log("getHeader:: ", (await api.rpc.chain.getHeader()))
+    const era = api.registry.createTypeUnsafe('ExtrinsicEra', [{
+        current: header?.number,
+        period: mortalLength
+    }])
 
-    const result: Record<string, AnyJson> = {};
-
-    // TODO: Check this furter - Am I using the correct values here?
-    const payload: ExtrinsicPayloadValue = {
-        blockHash: hash.toHex(),
-        era: era.toHex(),
-        method: method.toHex(),
-        nonce: nonce.toHex(),
-        tip: tip.toHex(),
+    const payloadOptions = {
+        address,
+        blockHash: header?.hash,
+        blockNumber: header?.number,
+        era,
+        method: method,
+        nonce,
         assetId,
-        genesisHash: api.genesisHash.toHex(),
-        specVersion: api.runtimeVersion.specVersion.toHex(),
-        transactionVersion: api.runtimeVersion.transactionVersion.toHex(),
+        tip,
+        genesisHash,
+        runtimeVersion,
+        specVersion: runtimeVersion.specVersion,
+        transactionVersion: runtimeVersion.transactionVersion,
+        version: extrinsicVersion,
+        signedExtensions: registry.signedExtensions,
+        ...options
     }
 
-    const payloadObj = objectSpread(result, payload)
+    const payload = api.registry.createTypeUnsafe('SignerPayload', [payloadOptions]) as unknown as GenericSignerPayload;
 
-    // const extrinsicPayload = api.createType('ExtrinsicPayload', payloadObj).toU8a({ method: true })
-    const extrinsicPayload = api.registry
-        .createTypeUnsafe('ExtrinsicPayload', [payloadObj, { version }])
-    const data = u8aToHex(extrinsicPayload.toU8a({ method: true }))
-
-    console.log("extrinsicPayload:: ", extrinsicPayload)
+    const { data } = payload.toRaw();
+    const hashed = data.length > (256 + 1) * 2 ? blake2AsHex(data) : data;
+    const ethPayload = blake2AsHex(hashed);
 
     return {
-        payload: data,
-        message: toHex("Register a name: Trial and Error")
+        payload,
+        ethPayload,
     }
+}
+
+export const sendSignedExtrinsic = () => {
 
 }

@@ -6,6 +6,7 @@ import { Payment } from "@/redux/domain/domainSlice";
 import { useEffect, useState } from "react";
 import { readContract, readContracts } from "@wagmi/core";
 import { config } from "@/chains/config";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useContractDetails from "./useContractDetails";
 import useFpRegister from "./FuturePass/useFpRegister";
@@ -43,6 +44,9 @@ export default function useNameDetails(props: RegistrationProps) {
 
   const controller = useContractDetails({ action: "RegistrarController" });
   const resolver = useContractDetails({ action: "PublicResolver" });
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data } = useRootNetwork();
 
   const { makeFpCommitment } = useFpRegister();
 
@@ -100,6 +104,7 @@ export default function useNameDetails(props: RegistrationProps) {
    */
   const makeCommitment = async () => {
     const nameHash = namehash(`${name}.root`);
+    let commitmentHash = "";
 
     const addressRecord = encodeFunctionData({
       abi: resolver.abi,
@@ -107,36 +112,40 @@ export default function useNameDetails(props: RegistrationProps) {
       args: [nameHash, owner],
     });
 
-    const commitmentArgs = [
-      name,
-      owner as Address,
-      duration,
-      secret,
-      resolverAddr,
-      [addressRecord],
-      false,
-      0,
-    ];
-
-    // const data = await readContract(config, {
-    //   abi,
-    //   address,
-    //   functionName: "makeCommitment",
-    //   args: commitmentArgs,
-    // });
-
-    makeFpCommitment({
-      nameHash,
-      args: {
-        owner,
-        name,
-        duration,
-        secret,
-        resolverAddr,
-        addressRecord,
-      },
-    });
-    // setHash(String(data));
+    if (data.isFpActive) {
+      commitmentHash =
+        (await makeFpCommitment({
+          nameHash,
+          args: {
+            owner,
+            name,
+            duration,
+            secret,
+            resolverAddr,
+            addressRecord,
+            futurePassAddress: data.futurePassAddress,
+          },
+        })) || "";
+      setHash(commitmentHash);
+    } else {
+      const data =
+        (await readContract(config, {
+          abi,
+          address,
+          functionName: "makeCommitment",
+          args: [
+            name,
+            owner as Address,
+            duration,
+            secret,
+            resolverAddr,
+            [addressRecord],
+            false,
+            0,
+          ],
+        })) || "";
+      setHash(String(data));
+    }
   };
 
   /**
