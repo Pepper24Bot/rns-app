@@ -49,7 +49,7 @@ export default function useRegister() {
   const { abi, address } = controller;
 
   const { writeContractAsync } = useWriteContract();
-  const { commitUsingFp, registerUsingFp } = useFpRegister();
+  const { commitUsingFp, registerUsingFp, commitEvm } = useFpRegister();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
@@ -125,12 +125,16 @@ export default function useRegister() {
     if (hash) {
       try {
         if (root.isFpActive) {
-          const commitHash = (await commitUsingFp({
+          // const commitHash = (await commitUsingFp({
+          //   hash,
+          //   fpAccount: root.futurePassAddress,
+          // })) as Address;
+
+          const commitHash = await commitEvm({
             hash,
             fpAccount: root.futurePassAddress,
-          })) as Address;
+          });
           setCommitLoading(true);
-          // response = await waitForTransaction(commitHash);
           console.log("commitmentHash:: ", commitHash);
 
           return {

@@ -1,13 +1,24 @@
 import "@therootnetwork/api-types"; // optional, for Typescript support
 import { useAccount } from "wagmi";
-import { Address, encodeFunctionData } from "viem";
+import {
+  Address,
+  encodeFunctionData,
+  serializeTransaction,
+  toHex,
+  hexToSignature,
+  recoverAddress,
+  recoverPublicKey,
+} from "viem";
 import { signExtrinsicPayload } from "@/utils/futurepass";
 import { useEffect, useState } from "react";
 import { ApiPromise } from "@polkadot/api";
+import { utils } from "ethers";
+import { blake2AsHex } from "@polkadot/util-crypto";
 
 import useConnectRoot from "../useConnectRoot";
 import useContractDetails from "../useContractDetails";
 import useEstimateFees from "../useEstimateFees";
+import useFuturePass from "./useFuturePass";
 
 export interface ConnectProps {
   state: "initialize" | "reinitialize";
@@ -32,13 +43,112 @@ export interface CommitProps {
   fpAccount?: string;
 }
 
+const CALL_TYPE = {
+  StaticCall: 0,
+  Call: 1,
+  DelegateCall: 2,
+  Create: 3,
+  Create2: 4,
+};
+
 export default function useFpRegister() {
   const { getApiPromise } = useConnectRoot();
   const { address: walletAddress } = useAccount();
   const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
+  const { getFuturepassContract, getFuturePass, signer } = useFuturePass();
 
   const controller = useContractDetails({ action: "RegistrarController" });
+
   const [api, setApiPromise] = useState<ApiPromise>();
+
+  const commitEvm = async (props: CommitProps) => {
+    const { hash, fpAccount } = props;
+
+    console.log("fpAccount:: ", fpAccount);
+
+    if (hash && fpAccount) {
+      const fpContract = getFuturepassContract(fpAccount);
+      const data = new utils.Interface(controller.abi).encodeFunctionData(
+        "commit",
+        [hash]
+      ) as Address;
+
+      console.log("fpContract:: ", fpContract);
+      // fpAccount,
+      //       controller.address,
+      //       data,
+      //       0,
+      //       gasLimit,
+      //       maxFeePerGas,
+      //       0,
+      //       null,
+      //       []
+
+      // Estimate Contract Gas
+      const gasLimit = await getEstimatedGas({
+        account: walletAddress as Address,
+        contractAddr: controller.address,
+        data,
+      });
+
+      // Get Fee History
+      const maxFeePerGas = await getMaxFeePerGas();
+
+      const unsignedTx = {
+        type: 2,
+        from: fpAccount,
+        to: controller.address,
+        nonce: null,
+        data,
+        gasLimit,
+        maxFeePerGas,
+      };
+
+      // const serialized = serializeTransaction(unsignedTx)
+      // const txData = toHex(unsignedTx);
+
+      // const hashed = data.length > (256 + 1) * 2 ? blake2AsHex(data) : data;
+      // const ethPayload = blake2AsHex(hashed);
+
+      const message = toHex("approve: commit transaction");
+
+      const signature = await window.ethereum.request({
+        method: "personal_sign",
+        params: [message, walletAddress],
+      });
+      console.log("signature:: ", signature);
+
+      const parsedSignature = hexToSignature(signature);
+      console.log("parsedSignature:: ", parsedSignature);
+      // console.log("ethPayload:: ", ethPayload);
+
+      const recoveredAddr = await recoverAddress({
+        hash: message,
+        signature,
+      });
+      console.log("recoveredAddr:: ", recoveredAddr);
+
+      const publicKey = await recoverPublicKey({
+        hash: message,
+        signature,
+      });
+      console.log("publicKey:: ", publicKey);
+
+      // fp.provider.
+      const tx = await fpContract.proxyCall(
+        CALL_TYPE.Call,
+        controller.address,
+        "0",
+        data
+      );
+
+      console.log("transaction:: ", tx);
+
+      // const receipt =
+      //   (await makeCommitmentTx.wait()) as unknown as ContractReceipt;
+      // console.log("receipt:: ", receipt);
+    }
+  };
 
   const commit = async (props: CommitProps) => {
     const { hash, fpAccount } = props;
@@ -50,6 +160,7 @@ export default function useFpRegister() {
         args: [hash],
       });
 
+      console.log("encoded:: ", data);
       // Estimate Contract Gas
       const gasLimit = await getEstimatedGas({
         account: walletAddress as Address,
@@ -88,7 +199,6 @@ export default function useFpRegister() {
 
       // Submit the transaction
       const result = await api.tx(signedExtrinsic).send();
-
       return result.toHex();
     }
   };
@@ -170,5 +280,6 @@ export default function useFpRegister() {
   return {
     registerUsingFp: register,
     commitUsingFp: commit,
+    commitEvm,
   };
 }

@@ -1,5 +1,5 @@
 import { ApiPromise } from "@polkadot/api";
-import { AddressOrPair, SignerOptions, SubmittableExtrinsic, SubmittableResultValue } from "@polkadot/api/submittable/types";
+import { SignerOptions, SubmittableExtrinsic, SubmittableResultValue } from "@polkadot/api/submittable/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { GenericSignerPayload } from "@polkadot/types";
 import { Address } from "viem";
@@ -111,10 +111,16 @@ export const signExtrinsicPayload = async (props: ExtrinsicPayload) => {
 
     const payload = api.registry.createTypeUnsafe('SignerPayload', [payloadOptions]) as unknown as GenericSignerPayload;
 
+    // The hex-encoded data for this request
     const { data } = payload.toRaw();
 
     const hashed = data.length > (256 + 1) * 2 ? blake2AsHex(data) : data;
     const ethPayload = blake2AsHex(hashed);
+
+    console.log("raw-data:: ", data)
+    console.log("payload:: ", payload)
+    console.log("payload.toPayload:: ", payload.toPayload())
+    console.log("ethPayload:: ", ethPayload)
 
     // Get the user to sign the message
     const signature = await window.ethereum.request({

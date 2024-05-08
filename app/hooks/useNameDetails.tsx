@@ -9,7 +9,6 @@ import { config } from "@/chains/config";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useContractDetails from "./useContractDetails";
-import useFpRegister from "./FuturePass/useFpRegister";
 
 export interface RegistrationProps {
   /**
@@ -120,22 +119,6 @@ export default function useNameDetails(props: RegistrationProps) {
     });
     console.log("makeCommit-response:: ", response);
     setHash(String(response));
-  };
-
-  /**
-   * Note: Enable this when needed
-   * #7. Get the estimated gas fee to be used in Transaction Fee field
-   */
-  const getEstimatedGas = () => {
-    // const encodedFunction = encodeFunctionData({
-    //   abi,
-    //   functionName: "registerWithERC20",
-    //   args: [...commitmentArgs, token],
-    // });
-    // const { estimatedGas, gasPrice } = useEstimateRegistration({
-    //   encodedFunction,
-    //   owner,
-    // });
   };
 
   useEffect(() => {
