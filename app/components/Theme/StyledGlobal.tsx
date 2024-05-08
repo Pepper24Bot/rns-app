@@ -148,6 +148,13 @@ export const ShareButton = styled(ActionButton)(({ theme }) => ({
     border: `solid 1px ${alpha(theme.palette.primary.dark, 0.75)}`,
     backgroundColor: theme.palette.background.paper,
     padding: 0,
+
+    "&.Mui-disabled": {
+      opacity: 0.5,
+      color: grey[700],
+      border: `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`,
+      backgroundColor: alpha(theme.palette.primary.dark, 0.15),
+    },
   },
 }));
 
