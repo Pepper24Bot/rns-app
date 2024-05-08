@@ -47,7 +47,7 @@ export const root = {
     blockExplorers: {
         default: {
             name: 'Root Mainnet',
-            url: 'https://explorer.rootnet.live',
+            url: 'https://rootscan.io/',
         },
     },
     contracts: {
@@ -63,5 +63,5 @@ export const rootWalletConfig = {
     chainName: 'The Root Network',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: ['https://root.rootnet.live/'],
-    blockExplorerUrls: ['https://explorer.rootnet.live'],
+    blockExplorerUrls: ['https://rootscan.io/'],
 }

@@ -61,7 +61,7 @@ export const porcini = {
     blockExplorers: {
         default: {
             name: 'Root Testnet',
-            url: 'https://explorer.rootnet.cloud',
+            url: 'https://porcini.rootscan.io/',
         },
     },
     contracts: {
@@ -78,5 +78,5 @@ export const porciniWalletConfig = {
     chainName: 'The Root Network - Porcini Testnet',
     nativeCurrency: { name: 'Ripple', symbol: 'XRP', decimals: 18 },
     rpcUrls: ['https://porcini.rootnet.app/archive'],
-    blockExplorerUrls: ['https://explorer.rootnet.cloud'],
+    blockExplorerUrls: ['https://porcini.rootscan.io/'],
 }
