@@ -12,13 +12,14 @@ import {
 import { signExtrinsicPayload } from "@/utils/futurepass";
 import { useEffect, useState } from "react";
 import { ApiPromise } from "@polkadot/api";
-import { utils } from "ethers";
+import { Contract, utils } from "ethers";
 import { blake2AsHex } from "@polkadot/util-crypto";
 
 import useConnectRoot from "../useConnectRoot";
 import useContractDetails from "../useContractDetails";
 import useEstimateFees from "../useEstimateFees";
 import useFuturePass from "./useFuturePass";
+import { FUTUREPASS_REGISTRAR_PRECOMPILE_ADDRESS } from "@therootnetwork/evm";
 
 export interface ConnectProps {
   state: "initialize" | "reinitialize";
@@ -61,92 +62,62 @@ export default function useFpRegister() {
 
   const [api, setApiPromise] = useState<ApiPromise>();
 
-  const commitEvm = async (props: CommitProps) => {
+  const commitProxyCall = async (props: CommitProps) => {
     const { hash, fpAccount } = props;
 
     console.log("fpAccount:: ", fpAccount);
 
     if (hash && fpAccount) {
       const fpContract = getFuturepassContract(fpAccount);
-      const data = new utils.Interface(controller.abi).encodeFunctionData(
-        "commit",
-        [hash]
-      ) as Address;
 
-      console.log("fpContract:: ", fpContract);
-      // fpAccount,
-      //       controller.address,
-      //       data,
-      //       0,
-      //       gasLimit,
-      //       maxFeePerGas,
-      //       0,
-      //       null,
-      //       []
+      const controllerContract = new Contract(
+        controller.address,
+        controller.abi,
+        signer
+      );
+
+      const commitData = controllerContract.interface.encodeFunctionData(
+        "commit(bytes32)",
+        [hash]
+      );
+
+      console.log("commitData:: ", commitData);
 
       // Estimate Contract Gas
       const gasLimit = await getEstimatedGas({
         account: walletAddress as Address,
         contractAddr: controller.address,
-        data,
+        data: commitData as Address,
       });
 
       // Get Fee History
       const maxFeePerGas = await getMaxFeePerGas();
 
-      const unsignedTx = {
-        type: 2,
-        from: fpAccount,
-        to: controller.address,
-        nonce: null,
-        data,
-        gasLimit,
-        maxFeePerGas,
-      };
-
-      // const serialized = serializeTransaction(unsignedTx)
-      // const txData = toHex(unsignedTx);
-
-      // const hashed = data.length > (256 + 1) * 2 ? blake2AsHex(data) : data;
-      // const ethPayload = blake2AsHex(hashed);
-
-      const message = toHex("approve: commit transaction");
-
-      const signature = await window.ethereum.request({
-        method: "personal_sign",
-        params: [message, walletAddress],
-      });
-      console.log("signature:: ", signature);
-
-      const parsedSignature = hexToSignature(signature);
-      console.log("parsedSignature:: ", parsedSignature);
-      // console.log("ethPayload:: ", ethPayload);
-
-      const recoveredAddr = await recoverAddress({
-        hash: message,
-        signature,
-      });
-      console.log("recoveredAddr:: ", recoveredAddr);
-
-      const publicKey = await recoverPublicKey({
-        hash: message,
-        signature,
-      });
-      console.log("publicKey:: ", publicKey);
-
-      // fp.provider.
-      const tx = await fpContract.proxyCall(
+      // Get encoded ProxyCall data
+      const proxyData = fpContract.interface.encodeFunctionData("proxyCall", [
         CALL_TYPE.Call,
         controller.address,
-        "0",
-        data
-      );
+        0,
+        commitData,
+      ]) as Address;
 
-      console.log("transaction:: ", tx);
+      // Send the proxy transaction
+      const ethTx = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            to: fpAccount, // controller.address,
+            from: walletAddress,
+            gas: toHex(gasLimit),
+            value: gasLimit,
+            data: proxyData,
+            gasPrice: toHex(maxFeePerGas),
+          },
+        ],
+      });
+      console.log("ethTx:: ", ethTx);
 
-      // const receipt =
-      //   (await makeCommitmentTx.wait()) as unknown as ContractReceipt;
-      // console.log("receipt:: ", receipt);
+      return ethTx;
     }
   };
 
@@ -280,6 +251,6 @@ export default function useFpRegister() {
   return {
     registerUsingFp: register,
     commitUsingFp: commit,
-    commitEvm,
+    commitEvm: commitProxyCall,
   };
 }
