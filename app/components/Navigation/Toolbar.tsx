@@ -63,12 +63,9 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
 export const Toolbar: React.FC = () => {
   const { address: walletAddress, connector, status, chainId } = useAccount();
   const { useRootNetwork } = useRootNetworkState();
-  const { data } = useRootNetwork();
-
-  const address =
-    data.isFpActive && data.futurePassAddress
-      ? data.futurePassAddress
-      : walletAddress;
+  const {
+    data: { address },
+  } = useRootNetwork();
 
   const { data: ensName, refetch } = useEnsName({
     address: address as Address,
@@ -107,7 +104,7 @@ export const Toolbar: React.FC = () => {
 
   useEffect(() => {
     refetch();
-  }, [address, chainId]);
+  }, [walletAddress, chainId]);
 
   return (
     <ToolbarContainer>

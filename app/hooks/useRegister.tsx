@@ -43,7 +43,7 @@ export interface CommitProps {
 
 export default function useRegister() {
   const { useRootNetwork } = useRootNetworkState();
-  const { data } = useRootNetwork();
+  const { data: root } = useRootNetwork();
 
   const controller = useContractDetails({ action: "RegistrarController" });
   const { abi, address } = controller;
@@ -58,7 +58,6 @@ export default function useRegister() {
     return { error: null, isSuccess: false, data: null };
   };
 
-  // TODO: Implement block latency here
   const waitForTransaction = async (hash: Address) => {
     const receipt = await waitForTransactionReceipt(config, {
       hash,
@@ -125,10 +124,10 @@ export default function useRegister() {
 
     if (hash) {
       try {
-        if (data.isFpActive) {
+        if (root.isFpActive) {
           const commitHash = (await commitUsingFp({
             hash,
-            fpAccount: data.futurePassAddress,
+            fpAccount: root.futurePassAddress,
           })) as Address;
           setCommitLoading(true);
           // response = await waitForTransaction(commitHash);
@@ -176,29 +175,24 @@ export default function useRegister() {
     const payment = args.payment || PAYMENT_METHOD[0];
     const nameHash = namehash(`${args.name}.root`);
 
-    const ownerAddress =
-      data.isFpActive && data.futurePassAddress
-        ? data.futurePassAddress
-        : args.owner;
-
     const addressRecord = encodeFunctionData({
       abi: resolver?.abi || [],
       functionName: "setAddr",
-      args: [nameHash, ownerAddress],
+      args: [nameHash, root.address],
     });
 
     try {
-      if (data.isFpActive) {
+      if (root.isFpActive) {
         const registerHash = (await registerUsingFp({
           args: {
             name: args.name,
-            owner: ownerAddress as Address,
+            owner: root.address as Address,
             duration: args.duration,
             secret: args.secret,
             resolverAddr: args.resolverAddr,
             paymentAddress: payment.address as Address,
             addressRecord,
-            futurePassAddress: data.futurePassAddress as Address,
+            futurePassAddress: root.futurePassAddress as Address,
           },
         })) as Address;
         setRegisterLoading(true);

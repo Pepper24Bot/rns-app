@@ -9,6 +9,8 @@ import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { parseCookie } from "@/utils/common";
+import { Address } from "viem";
+import { isEmpty } from "lodash";
 
 import useNetworkConfig from "./useNetworkConfig";
 
@@ -18,7 +20,7 @@ export interface ConnectProps {
 
 export default function useConnectRoot(props?: ConnectProps) {
   const { network } = useNetworkConfig();
-  const { address } = useAccount();
+  const { address: walletAddress } = useAccount();
   const { updateRootDetails } = useRootNetworkState();
 
   const isFpActive = parseCookie("isFpActive") === "true";
@@ -35,25 +37,32 @@ export default function useConnectRoot(props?: ConnectProps) {
   };
 
   const setup = async () => {
-    if (address) {
+    if (walletAddress) {
       const api = await getApiPromise();
-      const fpHolder = await api.query.futurepass.holders(address);
+      const fpHolder = await api.query.futurepass.holders(walletAddress);
       const fpAccount = fpHolder.unwrapOr(undefined)?.toString();
+      const isFpEnabled = isFpActive && !isEmpty(fpAccount);
+      const address = isFpEnabled ? fpAccount : walletAddress;
+
+      if (!isFpEnabled) {
+        document.cookie = `isFpActive=${false}; path=/`;
+      }
 
       updateRootDetails({
         futurePassAddress: fpAccount,
-        eoaAddress: address,
-        isFpActive: isFpActive,
+        eoaAddress: walletAddress,
+        isFpActive: isFpEnabled,
+        address: address as Address,
       });
     }
   };
 
   // Initial load only
   useEffect(() => {
-    if (address && props?.state === "initialize") {
+    if (walletAddress && props?.state === "initialize") {
       setup();
     }
-  }, [address]);
+  }, [walletAddress]);
 
   return { setup, api, getApiPromise };
 }

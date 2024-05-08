@@ -27,7 +27,6 @@ import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { parseCookie } from "@/utils/common";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -69,8 +68,6 @@ export const RegisterName: React.FC = () => {
   const { address } = useAccount();
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1, payment } = useDomain();
-  const { useRootNetwork } = useRootNetworkState();
-  const { data } = useRootNetwork();
 
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
@@ -115,7 +112,6 @@ export const RegisterName: React.FC = () => {
   } = useNameDetails({
     name,
     year,
-    owner: address,
     payment,
     isEnabled: isDetailsEnabled,
   });

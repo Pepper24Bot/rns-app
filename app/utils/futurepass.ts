@@ -15,7 +15,6 @@ export interface SubmittableResponse {
 
 export interface SubmittableRequest {
     extrinsic: SubmittableExtrinsic<"promise", ISubmittableResult>,
-    signer: AddressOrPair,
 }
 
 export interface ExtrinsicPayload {
@@ -31,12 +30,12 @@ export interface ExtrinsicPayload {
  * @returns 
  */
 export const sendExtrinsic = async (props: SubmittableRequest) => {
-    const { extrinsic, signer } = props
+    const { extrinsic } = props
 
     return new Promise((resolve, reject) => {
         let unsubscribe: () => void
 
-        extrinsic.signAndSend(signer, (result) => {
+        extrinsic.send((result) => {
             const { status, dispatchError, txHash, txIndex, blockNumber } = result as SubmittableResultValue
             if (!status.isFinalized) return;
             if (!txIndex || !blockNumber) return;

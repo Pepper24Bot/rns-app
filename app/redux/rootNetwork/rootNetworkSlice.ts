@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
+import { Address } from "viem";
 
 export interface RootProps {
     futurePassAddress?: string,
@@ -9,7 +10,15 @@ export interface RootProps {
     chainId?: string,
     nodeName?: string,
     nodeVersion?: string,
-    isFpActive?: boolean
+    isFpActive?: boolean,
+
+    /**
+     * Active address
+     * When isFpActive = true, 
+     * this address will be FpAddress
+     * otherwise, wallet address
+     */
+    address?: Address
 }
 
 export interface RootNetworkState {

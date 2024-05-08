@@ -137,13 +137,10 @@ export const Dashboard: React.FC = () => {
     useDashboardState();
 
   const { useRootNetwork } = useRootNetworkState();
-  const { data } = useRootNetwork();
+  const { data: root } = useRootNetwork();
 
   const options = useFilters();
-  const address =
-    data.isFpActive && data.futurePassAddress
-      ? data.futurePassAddress
-      : walletAddress;
+  const address = root.address;
 
   const [activeTab, setActiveTab] = useState<number>(0); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");

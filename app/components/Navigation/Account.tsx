@@ -18,11 +18,12 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { green } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { getMaskedAddress, parseCookie } from "@/utils/common";
+import { getMaskedAddress } from "@/utils/common";
 import { useAccount, useDisconnect } from "wagmi";
 import { ContentCopy } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FUTURE_PASS } from "@/constants/url";
+import { Address } from "viem";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
@@ -116,26 +117,30 @@ export interface AccountProps {
 export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const { toggleClose } = props;
 
-  const { address, connector, chainId } = useAccount();
+  const { connector, chainId } = useAccount();
   const { disconnect } = useDisconnect();
   const { network } = useNetworkConfig();
 
   const { toggleModal } = useModalState();
   const { useRootNetwork, updateRootDetails } = useRootNetworkState();
-  const { data } = useRootNetwork();
+  const { data: root } = useRootNetwork();
 
   const { createFpAccount } = useFpCreateAccount();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
 
-  const isFpEnabled = parseCookie("isFpActive") === "true";
-  const [isFpActive, setIsFpActive] = useState<boolean>(isFpEnabled);
+  const [isFpActive, setIsFpActive] = useState<boolean>(
+    root.isFpActive || false
+  );
 
-  const handleSwitchFuturepass = () => {
+  const handleSwitchAddress = () => {
     document.cookie = `isFpActive=${!isFpActive}; path=/`;
     setIsFpActive(!isFpActive);
     updateRootDetails({
-      ...data,
+      ...root,
       isFpActive: !isFpActive,
+      address: (!isFpActive
+        ? root.futurePassAddress
+        : root.eoaAddress) as Address,
     });
   };
 
@@ -150,17 +155,6 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const handleCreateFp = async () => {
     await createFpAccount();
   };
-
-  useEffect(() => {
-    if (isFpEnabled && !data.futurePassAddress) {
-      document.cookie = `isFpActive=${false}; path=/`;
-      setIsFpActive(false);
-      updateRootDetails({
-        ...data,
-        isFpActive: false,
-      });
-    }
-  }, [isFpEnabled]);
 
   return (
     <Container>
@@ -196,7 +190,10 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
               alt="Wallet Icon"
               width={20}
               height={20}
-              style={{ color: "white", marginRight: address ? "" : "8px" }}
+              style={{
+                color: "white",
+                marginRight: root.eoaAddress ? "" : "8px",
+              }}
             />
           </Logo>
           <Grid>
@@ -207,12 +204,12 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
                   color: isFpActive ? "text.secondary" : "primary.main",
                 }}
               >
-                {getMaskedAddress(data.eoaAddress || "")}
+                {getMaskedAddress(root.eoaAddress || "")}
               </Highlight>
               <IconButton
                 sx={{ p: 0, ml: 1 }}
                 onClick={() => {
-                  handleCopy(data.eoaAddress || "");
+                  handleCopy(root.eoaAddress || "");
                 }}
               >
                 <CopyIcon />
@@ -234,11 +231,14 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
               alt="Wallet Icon"
               width={20}
               height={20}
-              style={{ color: "white", marginRight: address ? "" : "8px" }}
+              style={{
+                color: "white",
+                marginRight: root.eoaAddress ? "" : "8px",
+              }}
             />
           </Logo>
           <Grid>
-            {data.futurePassAddress ? (
+            {root.futurePassAddress ? (
               <Grid>
                 <Label>FuturePass Address</Label>
                 <Flex>
@@ -247,12 +247,12 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
                       color: isFpActive ? "primary.main" : "text.secondary",
                     }}
                   >
-                    {getMaskedAddress(data.futurePassAddress || "")}
+                    {getMaskedAddress(root.futurePassAddress || "")}
                   </Highlight>
                   <IconButton
                     sx={{ p: 0, ml: 1 }}
                     onClick={() => {
-                      handleCopy(data.futurePassAddress || "");
+                      handleCopy(root.futurePassAddress || "");
                     }}
                   >
                     <CopyIcon />
@@ -280,13 +280,13 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
             )}
           </Grid>
         </Flex>
-        {data.futurePassAddress && (
+        {root.futurePassAddress && (
           <FlexRight pt={2.5}>
             <InformationTip title="" arrow placement="top">
               <Grid>
                 <FpButton
                   onClick={() => {
-                    handleSwitchFuturepass();
+                    handleSwitchAddress();
                   }}
                 >
                   {isFpActive

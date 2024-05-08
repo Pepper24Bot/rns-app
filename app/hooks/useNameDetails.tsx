@@ -23,7 +23,7 @@ export interface RegistrationProps {
    */
   year: number;
 
-  owner: Address | undefined;
+  owner?: Address;
 
   payment?: Payment;
 
@@ -34,19 +34,13 @@ export interface RegistrationProps {
 
 /** TODO: Optimize this hook */
 export default function useNameDetails(props: RegistrationProps) {
-  const {
-    name,
-    year,
-    payment = PAYMENT_METHOD[0],
-    owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account
-    isEnabled,
-  } = props;
+  const { name, year, payment = PAYMENT_METHOD[0], isEnabled } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
   const resolver = useContractDetails({ action: "PublicResolver" });
 
   const { useRootNetwork } = useRootNetworkState();
-  const { data } = useRootNetwork();
+  const { data: root } = useRootNetwork();
 
   const initialRentPrice: RentPrice = {
     base: BigInt(0),
@@ -103,15 +97,10 @@ export default function useNameDetails(props: RegistrationProps) {
   const makeCommitment = async () => {
     const nameHash = namehash(`${name}.root`);
 
-    const ownerAddress =
-      data.isFpActive && data.futurePassAddress
-        ? data.futurePassAddress
-        : owner;
-
     const addressRecord = encodeFunctionData({
       abi: resolver.abi,
       functionName: "setAddr",
-      args: [nameHash, ownerAddress],
+      args: [nameHash, root.address],
     });
 
     const response = await readContract(config, {
@@ -120,7 +109,7 @@ export default function useNameDetails(props: RegistrationProps) {
       functionName: "makeCommitment",
       args: [
         name,
-        ownerAddress as Address,
+        root.address as Address,
         duration,
         secret,
         resolverAddr,

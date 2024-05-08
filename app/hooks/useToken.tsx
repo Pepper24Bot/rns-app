@@ -25,7 +25,7 @@ export default function useToken() {
   const controller = useContractDetails({ action: "RegistrarController" });
 
   const { useRootNetwork } = useRootNetworkState();
-  const { data } = useRootNetwork();
+  const { data: root } = useRootNetwork();
   const { approveFp } = useFpToken();
 
   const { address } = controller;
@@ -68,12 +68,12 @@ export default function useToken() {
     const value = parseUnits(fee.toString(), payment?.decimals);
 
     try {
-      if (data.isFpActive) {
+      if (root.isFpActive) {
         const approveHash = (await approveFp({
           spender,
           tokenAddr,
           amount: value,
-          fpAccount: data.futurePassAddress as Address,
+          fpAccount: root.futurePassAddress as Address,
         })) as Address;
         setApprovalLoading(true);
         // response = await waitForTransaction(commitHash);
