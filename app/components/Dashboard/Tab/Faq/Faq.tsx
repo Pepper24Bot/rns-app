@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Grid, IconButton, alpha, darken, styled } from "@mui/material";
+import { Grid, IconButton, Link, alpha, darken, styled } from "@mui/material";
 import { FAQ } from "@/constants/content";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { scrollIntoElement } from "@/utils/common";
+import { isEmpty } from "lodash";
+import { FONT_WEIGHT } from "@/components/Theme/Global";
 
 const Container = styled(Grid)(({ theme }) => ({
   margin: "35px 0",
@@ -42,7 +44,7 @@ const AnswerBox = styled(Grid, {
 
 const Answer = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "14px",
-  color: darken(theme.palette.text.primary, 0.25),
+  color: darken(theme.palette.text.primary, 0.35),
   whiteSpace: "pre-line",
 }));
 
@@ -68,8 +70,38 @@ const ArrowUpIcon = styled(KeyboardArrowUp)(({ theme }) => ({
   },
 }));
 
+const Highlight = styled("span")(({ theme }) => ({
+  color: theme.palette.text.primary,
+  fontWeight: FONT_WEIGHT.Bold,
+}));
+
 export const FrequentlyAsked: React.FC = () => {
   const [moreIndex, setMoreIndex] = useState<number>(0);
+
+  const getHighlightedTexts = (
+    content: string,
+    highlights: { text: string; isUrl: boolean }[] = []
+  ) => {
+    const highlightedTexts = highlights.map((option) => {
+      return `(${option.text})`;
+    });
+
+    const pattern = RegExp(highlightedTexts.join("|"));
+    const texts = content.split(pattern);
+
+    return texts;
+  };
+
+  const getHighlight = (
+    text: string,
+    highlights: { text: string; isUrl: boolean }[] = []
+  ) => {
+    const option = highlights.find((highlight) => {
+      return highlight.text === text;
+    });
+
+    return option;
+  };
 
   return (
     <Container>
@@ -90,11 +122,37 @@ export const FrequentlyAsked: React.FC = () => {
       )}
       <Content>
         {FAQ.map((item, index) => {
+          const texts = !isEmpty(item.highlights)
+            ? getHighlightedTexts(item.content, item.highlights)
+            : [];
           return (
             <Grid id={`Question-${index}`} key={item.title} pb={5}>
               <Question>{item.title}</Question>
               <AnswerBox isActive={index === moreIndex}>
-                <Answer>{item.content}</Answer>
+                {!isEmpty(texts) ? (
+                  <Answer>
+                    {texts.map((text, index) => {
+                      const highlight = getHighlight(text, item.highlights);
+                      return highlight && highlight.isUrl ? (
+                        <Link
+                          key={`link-${text}-${index}`}
+                          href="https://www.docs.rootnameservice.com"
+                          target="_blank"
+                        >
+                          <Highlight>{text}</Highlight>
+                        </Link>
+                      ) : highlight && !highlight.isUrl ? (
+                        <Highlight key={`highlight-${text}-${index}`}>
+                          {text}
+                        </Highlight>
+                      ) : (
+                        <span key={`span-${index}`}>{text}</span>
+                      );
+                    })}
+                  </Answer>
+                ) : (
+                  <Answer>{item.content}</Answer>
+                )}
               </AnswerBox>
             </Grid>
           );

@@ -26,12 +26,22 @@ export const REGISTRATION_PROCESS = [
 export const FAQ = [
     {
         title: `What does “Link Identity” mean?`,
-        content: `Linking an RNS Identity to a waller address simply means that you are turning your long and complex address into a human readable Identity. Therefore, this results in taking an identity such as figjam.root, and converting it to an address, such as 0x565f137127d9067788314bc7fcc1f36746a3c6Y7. This is called “forward lockup”.
+        content: `Linking an RNS Identity to a wallet address simply means that you are turning your long and complex address into a human readable Identity. Therefore, this results in taking an identity such as figjam.root, and converting it to an address, such as 0x565f137127d9067788314bc7fcc1f36746a3c6Y7. This is called “forward lookup”.
         
         Figjam.root = 0x565f137127d9067788314bc7fcc1f36746a3c6Y7
 
         So next time you need to send someone funds, ask them for their RNS Identity.
-        `
+        `,
+        highlights: [
+            {
+                text: "forward lookup",
+                isUrl: false
+            },
+            {
+                text: "Figjam.root = 0x565f137127d9067788314bc7fcc1f36746a3c6Y7",
+                isUrl: false
+            },
+        ],
     },
     {
         title: `What does “Set as Primary” mean?`,
@@ -42,8 +52,8 @@ export const FAQ = [
         In addition, if you have an RNS Identity that is linked to another wallet address other than the one it is held in then when you “Set as Primary” the linked address will be automatically updated to the address that it is held in. 
         
         Eg.
+
         figjam.root held in wallet Ox23_1234
-        
         Linked to wallet Ox23_6789
         Primary = False
         
@@ -54,14 +64,38 @@ export const FAQ = [
         figjam.root held in wallet Ox23_1234
         Linked to wallet Ox23_1234
         Primary = True
-        `
+        `,
+        highlights: [
+            {
+                text: "reverse lookup",
+                isUrl: false
+            },
+            {
+                text: "Note:",
+                isUrl: false
+            },
+            {
+                text: "Eg.",
+                isUrl: false
+            },
+            {
+                text: "New records will be:",
+                isUrl: false
+            },
+        ],
     },
     {
         title: `What address can I link my RNS Identity to?`,
         content: `Your RNS Identity will automatically be linked to the address in which you register your RNS Identity with. You can then amend the address the RNS Identity is linked to via “My Dashboard” by clicking the 3 dots on the tile of the RNS you want to amend, and then selecting “Link Identity”.
         
         Note: You can have multiple RNS Identities all linked to the same address. 
-        `
+        `,
+        highlights: [
+            {
+                text: "Note:",
+                isUrl: false
+            },
+        ],
     },
     {
         title: `What happens to a linked address when an RNS Identity is transferred to a new wallet?`,
@@ -71,7 +105,13 @@ export const FAQ = [
         title: `Can I transfer my RNS between my FuturePass address and EOA address?`,
         content: `Yes.
         
-        Note: Transferring an RNS will remove it as your Primary and the linked address will remain the same. `
+        Note: Transferring an RNS will remove it as your Primary and the linked address will remain the same.`,
+        highlights: [
+            {
+                text: "Note:",
+                isUrl: false
+            },
+        ],
     },
     {
         title: `What happens to the registration period if I sell my RNS or transfer it to a new wallet?`,
@@ -99,7 +139,11 @@ export const FAQ = [
         
         2 character identities per year - $350 USD paid in USDC or ROOT.
         
-        1 character identities per year - $750 USD paid in USDC or ROOT.`
+        1 character identities per year - $750 USD paid in USDC or ROOT.`,
+        highlights: [{
+            text: "Pricing:",
+            isUrl: false
+        }],
     },
     {
         title: `Do I save on transaction fees by registering my RNS for a longer period of time?`,
@@ -113,13 +157,31 @@ export const FAQ = [
         
         Step 2. Wait for 1 Minute: After the initial request, there's a compulsory one-minute waiting period. This acts as a buffer to prevent others from front-running the registration by submitting a higher gas fee transaction to claim the identity first.
         
-        Step 3. Register: Finally, the user reveals their intention to register the RNS identity on-chain. The user will be asked to approve the spend of their ERC-20 payment token and then the registration transaction is made, the RNS identity is officially registered, and an ERC-721 NFT representing the RNS identity is minted and transferred to the holder's wallet.
+        Step 3. Register: Finally, the user reveals their intention to register the RNS identity on-chain. The user will be asked to approve the spend of their ERC-20 payment token and then the registration transaction is made, the RNS identity is officially registered, and an ERC-1155 NFT representing the RNS identity is minted and transferred to the holder's wallet.
         
-        The design of this process mitigates potential front-runners as they would be required to submit their own hashed secret, endure the one-minute waiting period, and then attempt to register the identity. However, they cannot circumvent the need for the original user's secret, making unauthorized registration via front-running infeasible.`
+        The design of this process mitigates potential front-runners as they would be required to submit their own hashed secret, endure the one-minute waiting period, and then attempt to register the identity. However, they cannot circumvent the need for the original user's secret, making unauthorized registration via front-running infeasible.`,
+        highlights: [
+            {
+                text: "Step 1.",
+                isUrl: false
+            },
+            {
+                text: "Step 2.",
+                isUrl: false
+            },
+            {
+                text: "Step 3.",
+                isUrl: false
+            },
+        ],
     },
     {
         title: `How can I integrate RNS into my app?`,
-        content: `Integration docs can be found at https://www.docs.rootnameservice.com.`
+        content: 'Integration docs can be found at https://www.docs.rootnameservice.com.',
+        highlights: [{
+            text: "https://www.docs.rootnameservice.com",
+            isUrl: true
+        }],
     },
     {
         title: `How can I contact you with a suggestion, feedback or issue?`,
