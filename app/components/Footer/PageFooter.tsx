@@ -56,6 +56,10 @@ const TermsPolicy = styled(Link)(({ theme }) => ({
   color: alpha(grey[50], 0.35),
   padding: "0 8px",
   cursor: "pointer",
+
+  "&:hover": {
+    color: alpha(grey[50], 0.85),
+  },
 }));
 
 export const PageFooter: React.FC = () => {
@@ -112,6 +116,12 @@ export const PageFooter: React.FC = () => {
           <Terms>
             <Copyright>©2024 All Rights Reserved</Copyright>
             <FlexCenter>
+              <TermsPolicy
+                href="https://docs.rootnameservice.com/"
+                target="_blank"
+              >
+                Docs
+              </TermsPolicy>
               <TermsPolicy
                 onClick={() => {
                   toggleModal({

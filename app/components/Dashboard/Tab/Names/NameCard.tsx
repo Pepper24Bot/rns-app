@@ -356,6 +356,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                   <SubContainer>
                     <ShareButton
                       variant="contained"
+                      disabled
                       onClick={() => {
                         toggleModal({
                           id: "Share RNS",
@@ -367,7 +368,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                     >
                       <TwitterIcon fontSize="small" />
                       <Divider orientation="vertical" flexItem />
-                      <ShareLabel>Share</ShareLabel>
+                      <ShareLabel isDisabled={true}>Share</ShareLabel>
                     </ShareButton>
                   </SubContainer>
                   <FeatureToggle feature={FeatureList.ShareStatus}>

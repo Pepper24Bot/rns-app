@@ -5,6 +5,7 @@
 
 export enum FeatureList {
   Names = "true",
+  FAQ = "true",
   Favorites = "false",
   Notifications = "false",
   LoyaltyPoints = "false",
@@ -12,6 +13,7 @@ export enum FeatureList {
   ViewOptions = "false",
   SocialAccounts = "false",
   ShareStatus = "false",
+  ShareRegistration = "false",
 }
 
 export default function useFeatureToggle() {

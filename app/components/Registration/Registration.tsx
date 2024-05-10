@@ -423,16 +423,17 @@ export const RegisterName: React.FC = () => {
         </Grid>
       </Collapse>
 
-      {/* Only show the share button when the registration is successful */}
-      <Collapse in={!isTweetVerified && isRegisterSuccess}>
+      {/* <Collapse in={!isTweetVerified && isRegisterSuccess}> */}
+      <Collapse in={false}>
         <Grid mt={3}>
           <FlexCenter>
-            <ShareTip>
+            <ShareTip isDisabled={true}>
               Help us spread the word by sharing your new RNS on X.
             </ShareTip>
           </FlexCenter>
           <FlexCenter>
             <ShareButton
+              disabled
               variant="contained"
               onClick={() => {
                 toggleModal({
@@ -445,7 +446,7 @@ export const RegisterName: React.FC = () => {
             >
               <TwitterIcon fontSize="small" />
               <Divider orientation="vertical" flexItem />
-              <ShareLabel>Share</ShareLabel>
+              <ShareLabel isDisabled={true}>Share</ShareLabel>
             </ShareButton>
           </FlexCenter>
         </Grid>

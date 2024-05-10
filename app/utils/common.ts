@@ -199,12 +199,15 @@ export const isAddressFuturePass = (url: string = "") => {
  * 
  * @param elementId 
  */
-export const scrollIntoElement = (elementId: string) => {
+export const scrollIntoElement = (elementId: string, options?: ScrollIntoViewOptions) => {
+    const block = options?.block || "start"
+    const inline = options?.inline || "nearest"
+
     const element = document.getElementById(elementId)
     element?.scrollIntoView({
         behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
+        block,
+        inline
     });
 }
 
