@@ -49,7 +49,7 @@ export default function useRegister() {
   const { abi, address } = controller;
 
   const { writeContractAsync } = useWriteContract();
-  const { commitUsingFp, registerUsingFp, commitEvm } = useFpRegister();
+  const { registerProxyCall, commitProxyCall } = useFpRegister();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
@@ -125,12 +125,7 @@ export default function useRegister() {
     if (hash) {
       try {
         if (root.isFpActive) {
-          // const commitHash = (await commitUsingFp({
-          //   hash,
-          //   fpAccount: root.futurePassAddress,
-          // })) as Address;
-
-          const commitHash = await commitEvm({
+          const commitHash = await commitProxyCall({
             hash,
             fpAccount: root.futurePassAddress,
           });
@@ -187,7 +182,7 @@ export default function useRegister() {
 
     try {
       if (root.isFpActive) {
-        const registerHash = (await registerUsingFp({
+        const registerHash = (await registerProxyCall({
           args: {
             name: args.name,
             owner: root.address as Address,

@@ -26,7 +26,7 @@ export default function useToken() {
 
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
-  const { approveFp } = useFpToken();
+  const { approveTokenProxyCall } = useFpToken();
 
   const { address } = controller;
   const { writeContractAsync } = useWriteContract();
@@ -69,7 +69,7 @@ export default function useToken() {
 
     try {
       if (root.isFpActive) {
-        const approveHash = (await approveFp({
+        const approveHash = (await approveTokenProxyCall({
           spender,
           tokenAddr,
           amount: value,

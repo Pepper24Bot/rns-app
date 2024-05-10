@@ -25,7 +25,10 @@ export default function useEstimateFees() {
       data,
     });
 
-    return Number(estimatedGas);
+    const multiplier = 1.25; // For testing
+    const fee = Number(estimatedGas) * multiplier;
+
+    return Math.floor(fee);
   };
 
   const getMaxFeePerGas = async () => {
