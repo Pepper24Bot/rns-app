@@ -32,12 +32,19 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
-import { useAccount, useEnsName } from "wagmi";
+import { useAccount, useEnsAvatar, useEnsName } from "wagmi";
+import { namehash } from "viem";
+import {
+  useGetMetadataQuery,
+  useGetNftImageQuery,
+} from "@/redux/metadata/metadataApi";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
 import Image from "next/image";
 import EnsImage from "@/components/Reusables/EnsImage";
+import useNetworkConfig from "@/hooks/useNetworkConfig";
+import useContractDetails from "@/hooks/useContractDetails";
 
 const Container = styled(Grid)(({ theme }) => ({
   background: "linear-gradient(180deg, #0C0C0C 50%, rgba(194,24,91,0.75) 100%)",
@@ -205,7 +212,12 @@ export interface CardProps {
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item } = props;
   const { toggleModal } = useModalState();
+  const { network } = useNetworkConfig();
+  const { address: contractAddr } = useContractDetails({
+    action: "NameWrapper",
+  });
 
+  const nameHash = namehash(item.name ?? "");
   const nameRef = useRef<HTMLDivElement | null>(null);
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
 
@@ -213,6 +225,13 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { data: ensName } = useEnsName({
     address, // use address from wagmi to trigger refetch from other components
   });
+
+  const image = useGetNftImageQuery({
+    hash: nameHash,
+    network,
+    contractAddr,
+  });
+  console.log("image:: ", image);
 
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
@@ -254,7 +273,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         <ItemContainer>
           <ImageContainer>
             <Image
-              src="/images/rns-default.gif"
+              src={`https://rns-metadata.fly.dev/${network}/${contractAddr}/${nameHash}/image`}
               alt="Wallet Icon"
               width={290}
               height={200}
@@ -266,9 +285,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
               }}
             />
-            <RnsName>
+            {/* <RnsName>
               <RnsNameText>{item.name}</RnsNameText>
-            </RnsName>
+            </RnsName> */}
           </ImageContainer>
           <Grid mt="-40px">
             <Divider flexItem />

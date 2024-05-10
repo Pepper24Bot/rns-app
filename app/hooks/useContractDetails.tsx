@@ -8,6 +8,7 @@ import * as PorciniOwnedResolver from "../abis/porcini/OwnedResolver.json";
 import * as PorciniUniversalResolver from "../abis/porcini/UniversalResolver.json";
 import * as PorciniReverseRegistrar from "../abis/porcini/ReverseRegistrar.json";
 import * as PorciniPublicResolver from "../abis/porcini/PublicResolver.json";
+import * as PorciniNameWrapper from "../abis/porcini/NameWrapper.json";
 
 // Root
 import * as EthRegistrarController from "../abis/root/ETHRegistrarController.json";
@@ -17,6 +18,7 @@ import * as OwnedResolver from "../abis/root/OwnedResolver.json";
 import * as UniversalResolver from "../abis/root/UniversalResolver.json";
 import * as ReverseRegistrar from "../abis/root/ReverseRegistrar.json";
 import * as PublicResolver from "../abis/root/PublicResolver.json";
+import * as NameWrapper from "../abis/root/NameWrapper.json";
 
 import useNetworkConfig from "./useNetworkConfig";
 
@@ -31,7 +33,8 @@ export type Contract =
   | "Base"
   | "UniversalResolver"
   | "PublicResolver"
-  | "ReverseRegistrar";
+  | "ReverseRegistrar"
+  | "NameWrapper";
 
 export interface ContractProps {
   action: Contract;
@@ -61,6 +64,8 @@ export const getMainnetContractAbi = (action: Contract) => {
       return ReverseRegistrar as ContractDetails;
     case "PublicResolver":
       return PublicResolver as ContractDetails;
+    case "NameWrapper":
+      return NameWrapper as ContractDetails;
     case "Registration":
     case "RegistrarController":
     default:
@@ -84,6 +89,8 @@ export const getPorciniContractAbi = (action: Contract) => {
       return PorciniReverseRegistrar as ContractDetails;
     case "PublicResolver":
       return PorciniPublicResolver as ContractDetails;
+    case "NameWrapper":
+      return PorciniNameWrapper as ContractDetails;
     case "Registration":
     case "RegistrarController":
     default:
