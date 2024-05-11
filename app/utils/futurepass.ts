@@ -122,7 +122,6 @@ export const signExtrinsicPayload = async (props: ExtrinsicPayload) => {
         method: "personal_sign",
         params: [ethPayload, address],
     });
-    console.log(`signature:: ${signature}`)
 
     // Add the signature to the extrinsic
     const signedExtrinsic = extrinsic.addSignature(

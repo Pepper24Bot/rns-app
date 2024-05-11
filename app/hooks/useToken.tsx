@@ -11,8 +11,6 @@ import {
 } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import useFpToken from "./FuturePass/useFpToken";
 
 export interface TokenProps {
   payment?: Payment;
@@ -24,10 +22,6 @@ export interface TokenProps {
 export default function useToken() {
   const controller = useContractDetails({ action: "RegistrarController" });
 
-  const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
-  const { approveTokenProxyCall } = useFpToken();
-
   const { address } = controller;
   const { writeContractAsync } = useWriteContract();
 
@@ -37,7 +31,6 @@ export default function useToken() {
     return { error: null, isSuccess: false, data: null };
   };
 
-  // TODO: Implement block latency here
   const waitForTransaction = async (hash: Address) => {
     const receipt = await waitForTransactionReceipt(config, {
       hash,
@@ -68,36 +61,16 @@ export default function useToken() {
     const value = parseUnits(fee.toString(), payment?.decimals);
 
     try {
-      if (root.isFpActive) {
-        const approveHash = (await approveTokenProxyCall({
-          spender,
-          tokenAddr,
-          amount: value,
-          fpAccount: root.futurePassAddress as Address,
-        })) as Address;
-        setApprovalLoading(true);
-        // response = await waitForTransaction(commitHash);
-        console.log("approvalHash:: ", approveHash);
+      const token = await simulateContract(config, {
+        abi: erc20Abi,
+        address: tokenAddr,
+        functionName: "approve",
+        args: [spender, value],
+      });
+      const hash = await writeContractAsync(token.request);
+      setApprovalLoading(true);
 
-        return {
-          isSuccess: true,
-          error: null,
-          data: {
-            hash: approveHash,
-          },
-        };
-      } else {
-        const token = await simulateContract(config, {
-          abi: erc20Abi,
-          address: tokenAddr,
-          functionName: "approve",
-          args: [spender, value],
-        });
-        const hash = await writeContractAsync(token.request);
-        setApprovalLoading(true);
-
-        response = await waitForTransaction(hash);
-      }
+      response = await waitForTransaction(hash);
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;

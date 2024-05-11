@@ -21,7 +21,7 @@ import {
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address } from "viem";
-import { COMMITMENT_AGE } from "@/constants/components";
+import { COMMITMENT_AGE, PAYMENT_METHOD } from "@/constants/components";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
@@ -65,7 +65,7 @@ const ViewProcessText = styled(SecondaryLabel, {
 }));
 
 export const RegisterName: React.FC = () => {
-  const { address } = useAccount();
+  const { address = "" } = useAccount();
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1, payment } = useDomain();
 
@@ -86,10 +86,17 @@ export const RegisterName: React.FC = () => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [areBtnsDisabled, setAreBtnsDisabled] = useState<boolean>(true);
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [isSkipCommit, setSkipCommit] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
+
+  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [isApprovedStarted, setIsApprovedStarted] = useState<boolean>(false);
+
+  const { isCompleted: isApproved } = useBlockLatency({
+    enabled: isApprovedStarted,
+    blocksToWait: 2,
+  });
 
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
@@ -102,7 +109,6 @@ export const RegisterName: React.FC = () => {
    * useNameDetails calls makeCommitment - look for #5
    */
   const {
-    controller,
     rentPrice: { base },
     hash,
     duration,
@@ -208,6 +214,7 @@ export const RegisterName: React.FC = () => {
 
       if (isSuccess) {
         setIsApprovalSuccess(isSuccess);
+        setIsApprovedStarted(true);
       } else {
         setFlagsWhenError();
       }
@@ -221,17 +228,19 @@ export const RegisterName: React.FC = () => {
    * This will only be triggered when the commit is successful - see useEffect listener
    */
   const handleRegister = async () => {
-    if (isApprovalSuccess) {
+    const paymentAddress = (payment?.address ||
+      PAYMENT_METHOD[0].address) as Address;
+
+    if (isApprovalSuccess && isApproved) {
       const { isSuccess, data } = await register({
-        controller,
         resolver,
         args: {
           name,
-          owner: address as Address,
+          owner: address,
           duration,
           secret,
           resolverAddr,
-          payment,
+          paymentAddress,
         },
       });
 
@@ -286,7 +295,7 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     handleRegister();
-  }, [isApprovalSuccess]);
+  }, [isApprovalSuccess, isApproved]);
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
