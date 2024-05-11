@@ -4,10 +4,7 @@ import { Address, encodeFunctionData } from "viem";
 import { signExtrinsicPayload } from "@/utils/futurepass";
 import { useEffect, useState } from "react";
 import { ApiPromise } from "@polkadot/api";
-import {
-  CommitProps,
-  RegisterProps,
-} from "@/interfaces/futurepass/registration";
+import { CommitProps, RegisterProps } from "@/interfaces/registration";
 
 import useContractDetails from "../useContractDetails";
 import useEstimateFees from "../useEstimateFees";

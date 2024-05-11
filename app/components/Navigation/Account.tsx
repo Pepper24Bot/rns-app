@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Divider,
@@ -27,7 +27,7 @@ import { Address } from "viem";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
-import useFpCreateAccount from "@/hooks/FuturePass/useFpCreateAccount";
+import useCreateAccount from "@/hooks/FuturePass/useCreateAccount";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 
 const Container = styled(Grid)(({ theme }) => ({
@@ -125,7 +125,7 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const { useRootNetwork, updateRootDetails } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
-  const { createFpAccount } = useFpCreateAccount();
+  const { createFpAccount } = useCreateAccount();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
 
   const [isFpActive, setIsFpActive] = useState<boolean>(

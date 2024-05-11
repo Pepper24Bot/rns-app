@@ -3,34 +3,30 @@ import { useAccount } from "wagmi";
 import { Address, toHex } from "viem";
 import { Contract } from "ethers";
 import { CALL_TYPE } from "@/interfaces/futurepass/types";
-import {
-  CommitProps,
-  RegisterProps,
-} from "@/interfaces/futurepass/registration";
+import { CommitProps, RegisterProps } from "@/interfaces/registration";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { ProxyProps } from "@/interfaces/proxy";
 
-import useContractDetails from "../useContractDetails";
 import useEstimateFees from "../useEstimateFees";
 import useFuturePass from "./useFuturePass";
 
-export interface ConnectProps {
-  state: "initialize" | "reinitialize";
-}
-
-export default function useProxyRegister() {
+export default function useProxyRegister(props: ProxyProps) {
+  const { registrarController } = props;
   const { address: walletAddress } = useAccount();
   const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
   const { getFuturepassContract, signer } = useFuturePass();
+  const { useRootNetwork } = useRootNetworkState();
+  const {
+    data: { futurePassAddress: fpAccount },
+  } = useRootNetwork();
 
-  const controller = useContractDetails({ action: "RegistrarController" });
-
+  const controller = registrarController!; // assert to always be not undefined
   const getEthContract = () => {
-    const contract = new Contract(controller.address, controller.abi, signer);
-
-    return contract;
+    return new Contract(controller.address, controller.abi, signer);
   };
 
   const commitProxyCall = async (props: CommitProps) => {
-    const { hash, fpAccount } = props;
+    const { hash } = props;
 
     if (hash && fpAccount) {
       const fpContract = getFuturepassContract(fpAccount);
@@ -85,7 +81,6 @@ export default function useProxyRegister() {
 
   const registerProxyCall = async (props: RegisterProps) => {
     const { args } = props;
-    const fpAccount = args?.futurePassAddress;
 
     if (args && fpAccount) {
       const fpContract = getFuturepassContract(fpAccount);

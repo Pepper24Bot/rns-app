@@ -11,10 +11,7 @@ import { useState } from "react";
 import { isCommitmentValid } from "@/utils/common";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import {
-  CommitProps,
-  RegisterProps,
-} from "@/interfaces/futurepass/registration";
+import { CommitProps, RegisterProps } from "@/interfaces/registration";
 
 import useContractDetails from "./useContractDetails";
 import useProxyRegister from "./FuturePass/useProxyRegister";
@@ -25,9 +22,10 @@ export default function useRegister() {
 
   const controller = useContractDetails({ action: "RegistrarController" });
   const { abi, address } = controller;
-
   const { writeContractAsync } = useWriteContract();
-  const { registerProxyCall, commitProxyCall } = useProxyRegister();
+  const { registerProxyCall, commitProxyCall } = useProxyRegister({
+    registrarController: controller,
+  });
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
@@ -103,10 +101,7 @@ export default function useRegister() {
     if (hash) {
       try {
         if (root.isFpActive) {
-          const commitHash = await commitProxyCall({
-            hash,
-            fpAccount: root.futurePassAddress,
-          });
+          const commitHash = await commitProxyCall({ hash });
           setCommitLoading(true);
           response = await waitForTransaction(commitHash);
         } else {
@@ -162,7 +157,6 @@ export default function useRegister() {
             resolverAddr,
             paymentAddress,
             addressRecord,
-            futurePassAddress: root.futurePassAddress,
           },
         })) as Address;
 

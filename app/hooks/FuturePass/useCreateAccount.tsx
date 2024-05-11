@@ -3,17 +3,13 @@ import { signExtrinsicPayload } from "@/utils/futurepass";
 import useNetworkConfig from "../useNetworkConfig";
 import useConnectRoot from "../useConnectRoot";
 
-export default function useFpCreateAccount() {
+export default function useCreateAccount() {
   const { network } = useNetworkConfig();
   const { address: walletAddress } = useAccount();
   const { getApiPromise } = useConnectRoot();
 
   const createFpAccount = async () => {
     const api = await getApiPromise();
-    console.log(`
-    network:: ${network}
-    walletAddress:: ${walletAddress}
-    `);
 
     // Only allow this function when on porcini network
     if (network === "porcini" && walletAddress) {
