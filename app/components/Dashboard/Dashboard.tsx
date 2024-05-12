@@ -132,7 +132,7 @@ const TabItem = styled(Tab)(({ theme }) => ({
 }));
 
 export const Dashboard: React.FC = () => {
-  const { address: walletAddress, status } = useAccount();
+  const { status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
   const { updateNameList, toggleNamesLoading, useFilters } =
     useDashboardState();

@@ -32,12 +32,12 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
-import { useAccount, useEnsName } from "wagmi";
+import { useEnsName } from "wagmi";
+import { Address } from "viem";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
 import Image from "next/image";
-import EnsImage from "@/components/Reusables/EnsImage";
 
 const Container = styled(Grid)(({ theme }) => ({
   background: "linear-gradient(180deg, #0C0C0C 50%, rgba(194,24,91,0.75) 100%)",
@@ -192,6 +192,7 @@ const PrimaryChip = styled(Chip)(({ theme }) => ({
 
 export interface NameProps {
   item: NameWrapped;
+  activeAddress: Address;
 }
 
 export interface CardProps {
@@ -200,18 +201,18 @@ export interface CardProps {
   refetchEnsName?: () => void;
   ensName?: string;
   ensAddr?: string;
+  activeAddress?: Address;
 }
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
-  const { item } = props;
+  const { item, activeAddress } = props;
   const { toggleModal } = useModalState();
 
   const nameRef = useRef<HTMLDivElement | null>(null);
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
 
-  const { address } = useAccount();
   const { data: ensName } = useEnsName({
-    address, // use address from wagmi to trigger refetch from other components
+    address: activeAddress,
   });
 
   // Check if name is linked to the wallet address
@@ -230,6 +231,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       domain: item.domain,
       owner: item.owner,
       ensName: ensName || "",
+      activeAddress,
     };
 
     toggleModal({
