@@ -1,17 +1,21 @@
 import "@therootnetwork/api-types"; // optional, for Typescript support
 import { useAccount } from "wagmi";
-import { Address, toHex } from "viem";
+import { Address, erc20Abi, toHex } from "viem";
 import { Contract } from "ethers";
 import { CALL_TYPE } from "@/interfaces/futurepass/types";
-import { RenewProps } from "@/interfaces/expiry";
-import { ProxyProps } from "@/interfaces/proxy";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useEstimateFees from "../useEstimateFees";
 import useFuturePass from "./useFuturePass";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
-export default function useProxyExtend(props: ProxyProps) {
-  const { registrarController } = props;
+export interface TokenProps {
+  fpAccount?: Address;
+  spender: Address;
+  tokenAddr: Address;
+  amount: bigint;
+}
+
+export default function useProxyToken() {
   const { address: walletAddress } = useAccount();
   const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
   const { getFuturepassContract, signer } = useFuturePass();
@@ -21,27 +25,27 @@ export default function useProxyExtend(props: ProxyProps) {
     data: { futurePassAddress: fpAccount },
   } = useRootNetwork();
 
-  const controller = registrarController!; // assert to always be not undefined
-  const getEthContract = () => {
-    return new Contract(controller.address, controller.abi, signer);
+  const getERCContract = (address: string) => {
+    return new Contract(address, erc20Abi, signer);
   };
 
-  const extendProxyCall = async (props: RenewProps) => {
-    const { name, duration, token } = props;
+  const approveProxyCall = async (props: TokenProps) => {
+    const { spender, tokenAddr, amount } = props;
 
-    if (name && duration && fpAccount) {
+    if (fpAccount) {
       const fpContract = getFuturepassContract(fpAccount);
-      const ethContract = getEthContract();
-      const extendData = ethContract.interface.encodeFunctionData(
-        "renewWithERC20",
-        [name, duration, token]
-      );
+      const ercContract = getERCContract(tokenAddr);
+
+      const approvalData = ercContract.interface.encodeFunctionData("approve", [
+        spender,
+        amount,
+      ]);
 
       // Estimate Contract Gas
       const gasLimit = await getEstimatedGas({
         account: walletAddress as Address,
-        contractAddr: controller.address,
-        data: extendData as Address,
+        contractAddr: tokenAddr,
+        data: approvalData as Address,
       });
 
       // Get Fee History
@@ -50,13 +54,13 @@ export default function useProxyExtend(props: ProxyProps) {
       // Get encoded ProxyCall data
       const proxyData = fpContract.interface.encodeFunctionData("proxyCall", [
         CALL_TYPE.Call,
-        ethContract.address,
+        tokenAddr,
         0,
-        extendData,
+        approvalData,
       ]) as Address;
 
+      // Send the proxy transaction
       try {
-        // Send the proxy transaction
         const ethTx = await window.ethereum.request({
           method: "eth_sendTransaction",
           params: [
@@ -70,17 +74,15 @@ export default function useProxyExtend(props: ProxyProps) {
             },
           ],
         });
-
-        console.log("extend-transaction:: ", ethTx);
         return ethTx;
       } catch (error) {
         console.log("error:: ", error);
-        throw new Error("Error has been encountered during extend");
+        throw new Error("Error has been encountered during approval");
       }
     }
   };
 
   return {
-    extendProxyCall,
+    approveProxyCall,
   };
 }

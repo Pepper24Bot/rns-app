@@ -16,18 +16,15 @@ export default function useProxyRegister(props: ProxyProps) {
   const { address: walletAddress } = useAccount();
   const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
   const { getFuturepassContract, signer } = useFuturePass();
+
   const { useRootNetwork } = useRootNetworkState();
   const {
     data: { futurePassAddress: fpAccount },
   } = useRootNetwork();
 
-  // const controller = registrarController!; // assert to always be not undefined
-  const controller = useContractDetails({ action: "RegistrarController" });
-
+  const controller = registrarController!; // assert to always be not undefined
   const getEthContract = () => {
-    const contract = new Contract(controller.address, controller.abi, signer);
-
-    return contract;
+    return new Contract(controller.address, controller.abi, signer);
   };
 
   const commitProxyCall = async (props: CommitProps) => {

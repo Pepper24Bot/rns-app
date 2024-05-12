@@ -11,6 +11,8 @@ import {
 } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import useProxyToken from "./FuturePass/useProxyToken";
 
 export interface TokenProps {
   payment?: Payment;
@@ -21,6 +23,10 @@ export interface TokenProps {
 
 export default function useToken() {
   const controller = useContractDetails({ action: "RegistrarController" });
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+  const { approveProxyCall } = useProxyToken();
 
   const { address } = controller;
   const { writeContractAsync } = useWriteContract();
@@ -61,21 +67,33 @@ export default function useToken() {
     const value = parseUnits(fee.toString(), payment?.decimals);
 
     try {
-      const token = await simulateContract(config, {
-        abi: erc20Abi,
-        address: tokenAddr,
-        functionName: "approve",
-        args: [spender, value],
-      });
-      const hash = await writeContractAsync(token.request);
-      setApprovalLoading(true);
+      if (root.isFpActive) {
+        const approveHash = (await approveProxyCall({
+          spender,
+          tokenAddr,
+          amount: value,
+        })) as Address;
 
-      response = await waitForTransaction(hash);
+        setApprovalLoading(true);
+        response = await waitForTransaction(approveHash);
+      } else {
+        const token = await simulateContract(config, {
+          abi: erc20Abi,
+          address: tokenAddr,
+          functionName: "approve",
+          args: [spender, value],
+        });
+        const hash = await writeContractAsync(token.request);
+
+        setApprovalLoading(true);
+        response = await waitForTransaction(hash);
+      }
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
     }
 
+    console.log("approval-response:: ", response);
     setApprovalLoading(false);
     return response;
   };
