@@ -7,7 +7,7 @@ import useSendProxyCall from "./useSendProxyCall";
 
 export default function useProxyPrimary(props: ProxyProps) {
   const { reverseRegistrar } = props;
-  const { sendProxyCall } = useSendProxyCall();
+  const { sendProxyCallNoGas } = useSendProxyCall();
 
   const reverse = reverseRegistrar!; // assert to always be not undefined
   const getResolverContract = () => {
@@ -25,7 +25,7 @@ export default function useProxyPrimary(props: ProxyProps) {
       );
 
       try {
-        const transaction = await sendProxyCall({
+        const transaction = await sendProxyCallNoGas({
           evmContract: {
             address: reverseContract.address as Address,
             data: primaryData as Address,

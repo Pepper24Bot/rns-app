@@ -7,7 +7,7 @@ import useSendProxyCall from "./useSendProxyCall";
 
 export default function useProxyRecord(props: ProxyProps) {
   const { publicResolver } = props;
-  const { sendProxyCall } = useSendProxyCall();
+  const { sendProxyCallNoGas } = useSendProxyCall();
 
   const resolver = publicResolver!; // assert to always be not undefined
   const getResolverContract = () => {
@@ -21,11 +21,11 @@ export default function useProxyRecord(props: ProxyProps) {
       const resolverContract = getResolverContract();
       const addressData = resolverContract.interface.encodeFunctionData(
         "setAddr(bytes32,address)",
-        [nameHash, address as Address]
+        [nameHash, address]
       );
 
       try {
-        const transaction = await sendProxyCall({
+        const transaction = await sendProxyCallNoGas({
           evmContract: {
             address: resolverContract.address as Address,
             data: addressData as Address,

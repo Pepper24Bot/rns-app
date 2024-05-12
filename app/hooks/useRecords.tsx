@@ -69,7 +69,7 @@ export default function useRecords() {
         if (root.isFpActive) {
           txHash = await setAddressProxyCall({
             nameHash,
-            address,
+            address: addr,
           });
         } else {
           txHash = await writeContractAsync({

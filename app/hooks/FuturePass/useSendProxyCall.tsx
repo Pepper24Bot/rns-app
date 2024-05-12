@@ -71,7 +71,49 @@ export default function useSendProxyCall() {
     }
   };
 
+  const sendProxyCallNoGas = async (props: SendProxyProps) => {
+    const { evmContract } = props;
+
+    if (futurePass) {
+      const fpContract = getFuturepassContract(futurePass);
+
+      // Get Fee History
+      const maxFeePerGas = await getMaxFeePerGas();
+
+      // Get encoded ProxyCall data
+      const proxyData = fpContract.interface.encodeFunctionData("proxyCall", [
+        CALL_TYPE.Call,
+        evmContract.address,
+        0,
+        evmContract.data,
+      ]) as Address;
+
+      try {
+        // Send the proxy transaction
+        const ethTx = await window.ethereum.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              to: futurePass,
+              from: wallet,
+              value: 0,
+              data: proxyData,
+              gasPrice: toHex(maxFeePerGas),
+            },
+          ],
+        });
+
+        console.log("extend-transaction:: ", ethTx);
+        return ethTx;
+      } catch (error) {
+        console.log("error:: ", error);
+        throw new Error("Error has been encountered during extend");
+      }
+    }
+  };
+
   return {
     sendProxyCall,
+    sendProxyCallNoGas,
   };
 }
