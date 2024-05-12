@@ -1,107 +1,96 @@
-import { useReadContract, useWriteContract } from "wagmi";
+import { useWriteContract } from "wagmi";
 import { isEmpty } from "lodash";
-import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
-import { PAYMENT_METHOD, SECONDS } from "@/constants/components";
-import { ErrorResponse, RentPrice, Response } from "@/services/interfaces";
-import { Payment } from "@/redux/domain/domainSlice";
-import { simulateContract, waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/chains/config";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { SECONDS } from "@/constants/components";
+import { readContract, waitForTransactionReceipt } from "@wagmi/core";
+import { ErrorResponse, RentPrice, Response } from "@/services/interfaces";
+import { ExtendProps, RenewProps } from "@/interfaces/expiry";
+import { Address } from "viem";
 
 import useContractDetails from "./useContractDetails";
-
-export interface ExtendProps {
-  /**
-   * name to be registered.
-   * raw name, without .root
-   */
-  name: string;
-
-  /**
-   * year count, to be converted into seconds
-   */
-  year: number;
-
-  owner: Address | undefined;
-
-  payment?: Payment;
-
-  isEnabled?: boolean;
-}
-
-export interface RenewProps {
-  name: string;
-  duration: number;
-  owner: Address | undefined;
-  fees?: {
-    rent: number;
-    totalFee: number;
-  };
-}
-
-export interface ApprovalProps {
-  fee: number;
-}
+import useProxyExtend from "./FuturePass/useProxyExtend";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 /** TODO: Optimize this hook */
 export default function useExtend(props: ExtendProps) {
-  const { name, year, owner, payment = PAYMENT_METHOD[0], isEnabled } = props;
+  const { name, year, owner, token, isEnabled } = props;
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
 
   const controller = useContractDetails({ action: "RegistrarController" });
-
   const { abi, address } = controller;
   const { writeContractAsync } = useWriteContract();
-
-  const [isExtendLoading, setExtendLoading] = useState(false);
-
-  const duration = year * SECONDS;
-  const token = payment.address;
-
-  // #1. Get the estimated gas fee to be used in Transaction Fee field
-  // const encodedFunction = encodeFunctionData({
-  //   abi,
-  //   functionName: "renewWithERC20",
-  //   args: [name, duration, token],
-  // });
-
-  // const { estimatedGas, gasPrice } = useEstimateRegistration({
-  //   encodedFunction,
-  //   owner,
-  // });
-
-  // #2. Get the rent price based on the name and duration
-  const { data: rentPrice } = useReadContract({
-    abi,
-    address,
-    functionName: "rentERC20Price",
-    args: [token, name, duration],
-    query: { enabled: !isEmpty(name) && isEnabled },
+  const { extendProxyCall } = useProxyExtend({
+    registrarController: controller,
   });
 
+  const initialRentPrice: RentPrice = {
+    base: BigInt(0),
+    premium: BigInt(0),
+  };
+
+  const [isExtendLoading, setExtendLoading] = useState(false);
+  const [rentPrice, setRentPrice] = useState<RentPrice>(initialRentPrice);
+
+  const duration = year * SECONDS;
+
+  const initializeResponse = (): Response => {
+    return { error: null, isSuccess: false, data: null };
+  };
+
+  const getRentPrice = async () => {
+    const data = await readContract(config, {
+      abi,
+      address,
+      functionName: "rentERC20Price",
+      args: [token, name, duration],
+    });
+
+    setRentPrice(data as unknown as RentPrice);
+  };
+
+  const waitForTransaction = async (hash: Address) => {
+    const receipt = await waitForTransactionReceipt(config, {
+      hash,
+    });
+
+    return {
+      isSuccess: true,
+      error: null,
+      data: {
+        hash,
+        receipt,
+      },
+    };
+  };
+
   const handleExtend = async (props: RenewProps) => {
-    const { name, duration, fees } = props;
-    const response: Response = { error: null, isSuccess: false, data: null };
+    const { name, duration } = props;
+    let response = { ...initializeResponse() };
 
     if (name && duration) {
       try {
-        const renewResponse = await writeContractAsync({
-          abi,
-          address,
-          functionName: "renewWithERC20",
-          account: owner,
-          args: [name, duration, token],
-        });
-        setExtendLoading(true);
-
-        const receipt = await waitForTransactionReceipt(config, {
-          hash: renewResponse,
-        });
-
-        response.isSuccess = true;
-        response.data = {
-          hash: renewResponse,
-          receipt,
-        };
+        if (root.isFpActive) {
+          const renewHash = await extendProxyCall({
+            name,
+            duration,
+            token,
+          });
+          setExtendLoading(true);
+          response = await waitForTransaction(renewHash);
+        } else {
+          const renewHash = await writeContractAsync({
+            abi,
+            address,
+            functionName: "renewWithERC20",
+            account: owner as Address,
+            args: [name, duration, token],
+          });
+          setExtendLoading(true);
+          response = await waitForTransaction(renewHash);
+        }
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
@@ -113,14 +102,15 @@ export default function useExtend(props: ExtendProps) {
     return response;
   };
 
-  const fallBackRent: RentPrice = {
-    base: BigInt(0),
-    premium: BigInt(0),
-  };
+  useEffect(() => {
+    if (!isEmpty(name) && isEnabled) {
+      getRentPrice();
+    }
+  }, [name, isEnabled, duration, token]);
 
   const rentFee = rentPrice
     ? (rentPrice as unknown as RentPrice)
-    : fallBackRent;
+    : initialRentPrice;
 
   return {
     duration,

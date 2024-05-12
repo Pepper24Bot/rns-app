@@ -19,6 +19,7 @@ import { KeyboardBackspace } from "@mui/icons-material";
 import { Domain } from "@/redux/graphql/hooks";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
+import { PAYMENT_METHOD } from "@/constants/components";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -61,7 +62,7 @@ export interface Expiry {
 export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const { domain } = props;
 
-  const { address } = useAccount();
+  const { address = "" } = useAccount();
   const { useDomain, updateName } = useDomainState();
   const { year = 1, payment } = useDomain();
 
@@ -69,7 +70,9 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const { isModalOpen } = useModal();
 
   const dispatch = useDispatch();
+
   const labelName = domain?.labelName || "";
+  const token = payment?.address || PAYMENT_METHOD[0].address;
 
   /**
    * Page 01 = Extend Expiry Form
@@ -84,9 +87,16 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [txHash, setTxHash] = useState<string>("");
+
+  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [isApprovedStarted, setIsApprovedStarted] = useState<boolean>(false);
+
+  const { isCompleted: isApproved } = useBlockLatency({
+    enabled: isApprovedStarted,
+    blocksToWait: 4,
+  });
 
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
@@ -101,9 +111,9 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     isLoading,
   } = useExtend({
     name: labelName,
-    year,
     owner: address,
-    payment,
+    year,
+    token,
     isEnabled: isDetailsEnabled,
   });
 
@@ -133,6 +143,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
     if (isSuccess) {
       setIsApprovalSuccess(isSuccess);
+      setIsApprovedStarted(true);
     } else {
       setIsError(true);
       setIsPending(false);
@@ -140,11 +151,10 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   };
 
   const handleExtend = async () => {
-    if (isApprovalSuccess) {
+    if (isApprovalSuccess && isApproved) {
       const { isSuccess, error, data } = await renew({
         name: labelName,
         duration,
-        owner: address,
       });
 
       if (isSuccess) {
@@ -184,7 +194,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   useEffect(() => {
     handleExtend();
-  }, [isApprovalSuccess]);
+  }, [isApprovalSuccess, isApproved]);
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component

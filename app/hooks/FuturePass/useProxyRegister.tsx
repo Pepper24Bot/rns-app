@@ -9,6 +9,7 @@ import { ProxyProps } from "@/interfaces/proxy";
 
 import useEstimateFees from "../useEstimateFees";
 import useFuturePass from "./useFuturePass";
+import useContractDetails from "../useContractDetails";
 
 export default function useProxyRegister(props: ProxyProps) {
   const { registrarController } = props;
@@ -20,9 +21,13 @@ export default function useProxyRegister(props: ProxyProps) {
     data: { futurePassAddress: fpAccount },
   } = useRootNetwork();
 
-  const controller = registrarController!; // assert to always be not undefined
+  // const controller = registrarController!; // assert to always be not undefined
+  const controller = useContractDetails({ action: "RegistrarController" });
+
   const getEthContract = () => {
-    return new Contract(controller.address, controller.abi, signer);
+    const contract = new Contract(controller.address, controller.abi, signer);
+
+    return contract;
   };
 
   const commitProxyCall = async (props: CommitProps) => {
