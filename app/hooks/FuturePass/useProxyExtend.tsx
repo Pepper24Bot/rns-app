@@ -1,78 +1,39 @@
 import "@therootnetwork/api-types"; // optional, for Typescript support
-import { useAccount } from "wagmi";
-import { Address, toHex } from "viem";
+import { Address } from "viem";
 import { Contract } from "ethers";
-import { CALL_TYPE } from "@/interfaces/futurepass/types";
 import { RenewProps } from "@/interfaces/expiry";
 import { ProxyProps } from "@/interfaces/proxy";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-
-import useEstimateFees from "../useEstimateFees";
-import useFuturePass from "./useFuturePass";
+import useSendProxyCall from "./useSendProxyCall";
 
 export default function useProxyExtend(props: ProxyProps) {
   const { registrarController } = props;
-  const { address: walletAddress } = useAccount();
-  const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
-  const { getFuturepassContract, signer } = useFuturePass();
-
-  const { useRootNetwork } = useRootNetworkState();
-  const {
-    data: { futurePassAddress: fpAccount },
-  } = useRootNetwork();
+  const { sendProxyCall } = useSendProxyCall();
 
   const controller = registrarController!; // assert to always be not undefined
   const getEthContract = () => {
-    return new Contract(controller.address, controller.abi, signer);
+    return new Contract(controller.address, controller.abi);
   };
 
   const extendProxyCall = async (props: RenewProps) => {
     const { name, duration, token } = props;
 
-    if (name && duration && fpAccount) {
-      const fpContract = getFuturepassContract(fpAccount);
+    if (name && duration) {
       const ethContract = getEthContract();
       const extendData = ethContract.interface.encodeFunctionData(
         "renewWithERC20",
         [name, duration, token]
       );
 
-      // Estimate Contract Gas
-      const gasLimit = await getEstimatedGas({
-        account: walletAddress as Address,
-        contractAddr: controller.address,
-        data: extendData as Address,
-      });
-
-      // Get Fee History
-      const maxFeePerGas = await getMaxFeePerGas();
-
-      // Get encoded ProxyCall data
-      const proxyData = fpContract.interface.encodeFunctionData("proxyCall", [
-        CALL_TYPE.Call,
-        ethContract.address,
-        0,
-        extendData,
-      ]) as Address;
-
       try {
-        // Send the proxy transaction
-        const ethTx = await window.ethereum.request({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              to: fpAccount,
-              from: walletAddress,
-              gas: toHex(gasLimit),
-              value: 0,
-              data: proxyData,
-              gasPrice: toHex(maxFeePerGas),
-            },
-          ],
+        const transaction = await sendProxyCall({
+          evmContract: {
+            address: ethContract.address as Address,
+            data: extendData as Address,
+          },
         });
 
-        console.log("extend-transaction:: ", ethTx);
-        return ethTx;
+        console.log("extend-transaction:: ", transaction);
+        return transaction;
       } catch (error) {
         console.log("error:: ", error);
         throw new Error("Error has been encountered during extend");
