@@ -17,15 +17,15 @@ import useContractDetails from "./useContractDetails";
 import useProxyRegister from "./FuturePass/useProxyRegister";
 
 export default function useRegister() {
-  const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
-
   const controller = useContractDetails({ action: "RegistrarController" });
   const { abi, address } = controller;
   const { writeContractAsync } = useWriteContract();
   const { registerProxyCall, commitProxyCall } = useProxyRegister({
     registrarController: controller,
   });
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
