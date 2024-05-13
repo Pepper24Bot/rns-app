@@ -95,7 +95,7 @@ export const RegisterName: React.FC = () => {
 
   const { isCompleted: isApproved } = useBlockLatency({
     enabled: isApprovedStarted,
-    blocksToWait: 3,
+    blocksToWait: 6,
   });
 
   const { isWaiting, isCompleted } = useBlockLatency({
