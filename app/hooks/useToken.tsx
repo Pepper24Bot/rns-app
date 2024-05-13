@@ -99,12 +99,11 @@ export default function useToken() {
   };
 
   const getBalanceOf = async (props: TokenProps) => {
-    const { address, payment = PAYMENT_METHOD[0], fee = 0 } = props;
+    const { payment = PAYMENT_METHOD[0], fee = 0 } = props;
 
     let response = { ...initializeResponse() };
 
     const tokenAddr = payment?.address as Address;
-    const walletAddr = address as Address;
     const totalFee = parseUnits(fee.toString(), payment?.decimals);
 
     try {
@@ -112,7 +111,9 @@ export default function useToken() {
         abi: erc20Abi,
         address: tokenAddr,
         functionName: "balanceOf",
-        args: [walletAddr],
+        // root.address is the current active address
+        // futurepass or eoa address
+        args: [root.address as Address],
       });
 
       response.isSuccess = true;

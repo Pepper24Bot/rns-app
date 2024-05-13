@@ -4,7 +4,6 @@ import { Contract } from "ethers";
 import useSendProxyCall from "./useSendProxyCall";
 
 export interface TokenProps {
-  fpAccount?: Address;
   spender: Address;
   tokenAddr: Address;
   amount: bigint;

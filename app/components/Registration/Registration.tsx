@@ -263,22 +263,19 @@ export const RegisterName: React.FC = () => {
   // check wallet balance before doing transaction
   useEffect(() => {
     const getBalanceOf = async () => {
-      if (address) {
-        const { data } = await getBalance({
-          address,
-          payment,
-          fee: rentFee,
-        });
+      const { data } = await getBalance({
+        payment,
+        fee: rentFee,
+      });
 
-        setBalanceSufficient(data.isBalanceSufficient);
-        setAreBtnsDisabled(!data.isBalanceSufficient);
-      }
+      setBalanceSufficient(data.isBalanceSufficient);
+      setAreBtnsDisabled(!data.isBalanceSufficient);
     };
 
     if (hash) {
       getBalanceOf();
     }
-  }, [address, rentFee]);
+  }, [rentFee, hash]);
 
   useEffect(() => {
     if (isCompleted) {
