@@ -42,7 +42,12 @@ export default function useConnectRoot(props?: ConnectProps) {
       const fpHolder = await api.query.futurepass.holders(walletAddress);
       const fpAccount = fpHolder.unwrapOr(undefined)?.toString();
       const isFpEnabled = isFpActive && !isEmpty(fpAccount);
-      const address = isFpEnabled ? fpAccount : walletAddress;
+      const address =
+        isFpEnabled && fpAccount
+          ? fpAccount
+          : walletAddress
+          ? walletAddress
+          : undefined;
 
       if (!isFpEnabled) {
         document.cookie = `isFpActive=${false}; path=/`;

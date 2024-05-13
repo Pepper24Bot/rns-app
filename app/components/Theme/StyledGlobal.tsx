@@ -93,7 +93,7 @@ export const ActionButton = styled(BaseButton)(({ theme }) => ({
     },
   },
   "&.MuiButton-text": {
-    color: "white",
+    color: theme.palette.text.primary,
     border: "none",
     padding: "8px 16px",
 

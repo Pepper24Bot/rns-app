@@ -110,11 +110,11 @@ export const Toolbar: React.FC = () => {
 
     const walletIcon = address ? path : "/icons/wallet.svg";
     setIconPath(walletIcon);
-  }, [address, ensName]);
+  }, [walletAddress, address, ensName]);
 
   useEffect(() => {
     refetch();
-  }, [walletAddress, chainId]);
+  }, [walletAddress, address, chainId]);
 
   return (
     <ToolbarContainer>

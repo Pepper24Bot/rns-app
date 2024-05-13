@@ -98,10 +98,10 @@ const FpButton = styled(ActionButton)(({ theme }) => ({
     padding: "4px 12px",
   },
   "&.MuiButton-contained": {
-    backgroundColor: alpha(theme.palette.primary.dark, 0.2),
+    backgroundColor: alpha(theme.palette.primary.dark, 0.5),
 
     "&:hover": {
-      backgroundColor: alpha(theme.palette.primary.dark, 0.5),
+      backgroundColor: alpha(theme.palette.primary.dark, 0.75),
     },
 
     "&.Mui-disabled": {
@@ -150,6 +150,14 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
     } catch (error) {
       console.log(`failed to copy ${text}`);
     }
+  };
+
+  const handleDisconnect = () => {
+    updateRootDetails({
+      ...root,
+      address: undefined,
+    });
+    disconnect();
   };
 
   const handleCreateFp = async () => {
@@ -222,10 +230,9 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
           sx={{
             transform: isFpActive ? "translate(0, -55px)" : "",
             transition: "all 0.25s ease-out allow-discrete",
-            opacity: isFpActive ? "1" : "0.25",
           }}
         >
-          <Logo>
+          <Logo sx={{ opacity: isFpActive ? "1" : "0.25" }}>
             <Image
               src="/icons/futurePass.svg"
               alt="Wallet Icon"
@@ -239,7 +246,7 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
           </Logo>
           <Grid>
             {root.futurePassAddress ? (
-              <Grid>
+              <Grid sx={{ opacity: isFpActive ? "1" : "0.25" }}>
                 <Label>FuturePass Address</Label>
                 <Flex>
                   <Highlight
@@ -325,7 +332,7 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
               if (toggleClose) {
                 toggleClose();
               }
-              disconnect();
+              handleDisconnect();
             }}
           >
             Disconnect

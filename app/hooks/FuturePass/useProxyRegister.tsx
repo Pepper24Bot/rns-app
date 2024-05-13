@@ -8,7 +8,7 @@ import useSendProxyCall from "./useSendProxyCall";
 
 export default function useProxyRegister(props: ProxyProps) {
   const { registrarController } = props;
-  const { sendProxyCall } = useSendProxyCall();
+  const { sendProxyCallNoGas } = useSendProxyCall();
 
   const controller = registrarController!; // assert to always be not undefined
   const getEthContract = () => {
@@ -25,7 +25,7 @@ export default function useProxyRegister(props: ProxyProps) {
       ]);
 
       try {
-        const transaction = await sendProxyCall({
+        const transaction = await sendProxyCallNoGas({
           evmContract: {
             address: ethContract.address as Address,
             data: commitData as Address,
@@ -61,7 +61,7 @@ export default function useProxyRegister(props: ProxyProps) {
     );
 
     try {
-      const transaction = await sendProxyCall({
+      const transaction = await sendProxyCallNoGas({
         evmContract: {
           address: ethContract.address as Address,
           data: registerData as Address,

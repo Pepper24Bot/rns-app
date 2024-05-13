@@ -62,7 +62,6 @@ export default function useSendProxyCall() {
           ],
         });
 
-        console.log("extend-transaction:: ", ethTx);
         return ethTx;
       } catch (error) {
         console.log("error:: ", error);
@@ -103,7 +102,6 @@ export default function useSendProxyCall() {
           ],
         });
 
-        console.log("extend-transaction:: ", ethTx);
         return ethTx;
       } catch (error) {
         console.log("error:: ", error);

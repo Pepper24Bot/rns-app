@@ -10,7 +10,7 @@ export interface TokenProps {
 }
 
 export default function useProxyToken() {
-  const { sendProxyCall } = useSendProxyCall();
+  const { sendProxyCallNoGas } = useSendProxyCall();
 
   const getErcContract = (address: string) => {
     return new Contract(address, erc20Abi);
@@ -26,7 +26,7 @@ export default function useProxyToken() {
     ]);
 
     try {
-      const transaction = await sendProxyCall({
+      const transaction = await sendProxyCallNoGas({
         evmContract: {
           address: tokenAddr as Address,
           data: approvalData as Address,

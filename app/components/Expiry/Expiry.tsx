@@ -95,7 +95,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   const { isCompleted: isApproved } = useBlockLatency({
     enabled: isApprovedStarted,
-    blocksToWait: 6,
+    blocksToWait: 3,
   });
 
   const { isWaiting, isCompleted } = useBlockLatency({
@@ -136,9 +136,14 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const handleApproval = async () => {
     initializeFlags();
 
+    /**
+     * Recommended slippage: 5-10%
+     * https://docs.ens.domains/registry/eth#registering
+     */
+    const slippage = 0.1;
     const { isSuccess } = await approve({
       payment,
-      fee: rentFee,
+      fee: rentFee * (1 + slippage),
     });
 
     if (isSuccess) {
