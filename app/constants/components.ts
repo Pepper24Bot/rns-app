@@ -32,7 +32,7 @@ export const SECONDS = 31536000;
 
 // Dashboard Tabs
 export const DASHBOARD_TAB_ITEMS = [
-    "Names",
+    "Identities",
     "FAQ",
     "Favorites",
     "Notifications",

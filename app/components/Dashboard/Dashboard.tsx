@@ -382,7 +382,7 @@ export const Dashboard: React.FC = () => {
                 {DASHBOARD_TAB_ITEMS.map((item, index) => {
                   return (
                     isFeatureEnabled(item) && (
-                      <TabItem key={item} label={item} />
+                      <TabItem key={item} label={item.toUpperCase()} />
                     )
                   );
                 })}
@@ -390,7 +390,7 @@ export const Dashboard: React.FC = () => {
             </Grid>
             <Grid>
               {/* TODO: Add page routing */}
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 0 && <Names />}
               </FeatureToggle>
 
@@ -398,15 +398,15 @@ export const Dashboard: React.FC = () => {
                 {activeTab === 1 && <FrequentlyAsked />}
               </FeatureToggle>
 
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 2 && <Favorites />}
               </FeatureToggle>
 
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 3 && <LoyaltyPoints />}
               </FeatureToggle>
 
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 4 && <Notifications />}
               </FeatureToggle>
             </Grid>
