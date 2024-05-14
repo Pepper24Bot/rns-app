@@ -280,11 +280,25 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
       <Container>
         <ItemContainer>
-          <ImageContainer>
+          <ImageContainer position="relative">
+            <Image
+              src={`https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png`}
+              alt="Wallet Icon"
+              width={200}
+              height={200}
+              style={{
+                // width: "-webkit-fill-available",
+                // height: "-webkit-fill-available",
+                border: `solid 1px ${alpha(grey[700], 0.25)}`,
+                borderRadius: "4px",
+                boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
+                position: "absolute",
+              }}
+            />
             <Image
               src={`https://rns-metadata.fly.dev/${network}/${contractAddr}/${nameHash}/image`}
               alt="Wallet Icon"
-              width={290}
+              width={200}
               height={200}
               style={{
                 width: "-webkit-fill-available",
@@ -292,13 +306,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 border: `solid 1px ${alpha(grey[700], 0.25)}`,
                 borderRadius: "4px",
                 boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
+                position: "relative",
               }}
             />
-            {/* <RnsName>
-              <RnsNameText>{item.name}</RnsNameText>
-            </RnsName> */}
           </ImageContainer>
-          <Grid mt="-40px">
+          <Grid>
             <Divider flexItem />
             <Summary container>
               <Grid item xs={12}>
