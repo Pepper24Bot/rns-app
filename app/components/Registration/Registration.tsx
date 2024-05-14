@@ -186,7 +186,6 @@ export const RegisterName: React.FC = () => {
 
         setTimeout(() => {
           setIsCommitSuccess(isSuccess);
-          setCooldown(false);
         }, COMMITMENT_AGE);
       } else {
         setCooldown(true);
@@ -293,6 +292,9 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     handleApproval();
+    if (!isSkipCommit) {
+      setCooldown(false);
+    }
   }, [isCommitSuccess]);
 
   useEffect(() => {
