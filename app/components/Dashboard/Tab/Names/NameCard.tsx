@@ -287,12 +287,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               width={200}
               height={200}
               style={{
-                // width: "-webkit-fill-available",
-                // height: "-webkit-fill-available",
-                border: `solid 1px ${alpha(grey[700], 0.25)}`,
-                borderRadius: "4px",
-                boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
+                width: "-webkit-fill-available",
+                height: "-webkit-fill-available",
                 position: "absolute",
+                padding: "0 20px 25px 0",
               }}
             />
             <Image
