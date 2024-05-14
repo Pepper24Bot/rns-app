@@ -12,7 +12,8 @@ export interface CustomRequestOptions {
 
 export interface CustomRequestConfig extends AxiosRequestConfig {
     document?: string,
-    variables?: any
+    variables?: any,
+    credentials: string
 }
 
 export const customBaseQuery = (options: CustomRequestOptions): BaseQueryFn<any> => {
@@ -27,7 +28,7 @@ export const customBaseQuery = (options: CustomRequestOptions): BaseQueryFn<any>
             if (axiosRequestConfig?.url) {
                 const response = await axios({
                     ...axiosRequestConfig,
-                    // withCredentials: true
+                    withCredentials: axiosRequestConfig.credentials === "include"
                 })
                 responseData = response.data
             } else {

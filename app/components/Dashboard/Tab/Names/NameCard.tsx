@@ -215,24 +215,25 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item, activeAddress } = props;
   const { toggleModal } = useModalState();
   const { network } = useNetworkConfig();
+
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
   });
 
   const nameHash = namehash(item.name ?? "");
   const nameRef = useRef<HTMLDivElement | null>(null);
+
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
 
   const { data: ensName } = useEnsName({
     address: activeAddress,
   });
 
-  const image = useGetNftImageQuery({
+  const { data, isLoading, isSuccess } = useGetMetadataQuery({
     hash: nameHash,
     network,
     contractAddr,
   });
-  console.log("image:: ", image);
 
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
@@ -259,6 +260,12 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       data,
     });
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("metadata:: ", data);
+    }
+  }, [isLoading, isSuccess]);
 
   useEffect(() => {
     const scrollWidth = nameRef?.current?.scrollWidth || 0;
