@@ -38,7 +38,7 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
   const [txHash, setTxHash] = useState<string>("");
 
   /** Use the isLoading Flag here for the progress bar */
-  const { setAddressRecord, isLoading } = useRecords({ type: "AddressRecord" });
+  const { setAddressRecord, isLoading } = useRecords();
 
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
@@ -62,7 +62,6 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
     const { isSuccess, data } = await setAddressRecord({
       name: domain?.name || "",
       address: inputAddr as Address,
-      resolverAddress: domain?.resolver?.address,
     });
 
     if (isSuccess) {

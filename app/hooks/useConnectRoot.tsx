@@ -1,9 +1,17 @@
 import "@therootnetwork/api-types"; // optional, for Typescript support
 import { ApiPromise } from "@polkadot/api";
-import { getApiOptions, getPublicProvider } from "@therootnetwork/api";
+import {
+  NetworkName,
+  getApiOptions,
+  getPublicProvider,
+} from "@therootnetwork/api";
 import { useAccount } from "wagmi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { parseCookie } from "@/utils/common";
+import { Address } from "viem";
+import { isEmpty } from "lodash";
+
 import useNetworkConfig from "./useNetworkConfig";
 
 export interface ConnectProps {
@@ -12,44 +20,54 @@ export interface ConnectProps {
 
 export default function useConnectRoot(props?: ConnectProps) {
   const { network } = useNetworkConfig();
-  const { address } = useAccount();
+  const { address: walletAddress } = useAccount();
   const { updateRootDetails } = useRootNetworkState();
 
-  const setup = async () => {
+  const isFpActive = parseCookie("isFpActive") === "true";
+  const [api, setApi] = useState<ApiPromise>();
+
+  const getApiPromise = async () => {
     const api = await ApiPromise.create({
       ...getApiOptions(),
-      ...getPublicProvider("root"), // todo: change this to name
+      ...getPublicProvider(network),
     });
 
-    const [fpHolder, chain, chainId, nodeName, nodeVersion] = await Promise.all(
-      [
-        api.query.futurepass.holders(address || ""),
-        api.rpc.system.chain(),
-        api.query.evmChainId.chainId(),
-        api.rpc.system.name(),
-        api.rpc.system.version(),
-      ]
-    );
+    setApi(api);
+    return api;
+  };
 
-    // Why does Porcini returns undefined after multiple calls?
-    const fpAccount = fpHolder?.unwrapOr(undefined)?.toString();
+  const setup = async () => {
+    if (walletAddress) {
+      const api = await getApiPromise();
+      const fpHolder = await api.query.futurepass.holders(walletAddress);
+      const fpAccount = fpHolder.unwrapOr(undefined)?.toString();
+      const isFpEnabled = isFpActive && !isEmpty(fpAccount);
+      const address =
+        isFpEnabled && fpAccount
+          ? fpAccount
+          : walletAddress
+          ? walletAddress
+          : undefined;
 
-    updateRootDetails({
-      futurePassAddress: fpAccount,
-      eoaAddress: address,
-      chain: chain?.toString(),
-      chainId: chainId?.toString(),
-      nodeName: nodeName?.toString(),
-      nodeVersion: nodeVersion?.toString(),
-    });
+      if (!isFpEnabled) {
+        document.cookie = `isFpActive=${false}; path=/`;
+      }
+
+      updateRootDetails({
+        futurePassAddress: fpAccount,
+        eoaAddress: walletAddress,
+        isFpActive: isFpEnabled,
+        address: address as Address,
+      });
+    }
   };
 
   // Initial load only
   useEffect(() => {
-    if (address && props?.state === "initialize") {
+    if (walletAddress && props?.state === "initialize") {
       setup();
     }
-  }, [address]);
+  }, [walletAddress]);
 
-  return { setup };
+  return { setup, api, getApiPromise };
 }

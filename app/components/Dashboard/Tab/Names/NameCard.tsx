@@ -33,7 +33,7 @@ import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useAccount, useEnsAvatar, useEnsName } from "wagmi";
-import { namehash } from "viem";
+import { namehash, Address } from "viem";
 import {
   useGetMetadataQuery,
   useGetNftImageQuery,
@@ -199,6 +199,7 @@ const PrimaryChip = styled(Chip)(({ theme }) => ({
 
 export interface NameProps {
   item: NameWrapped;
+  activeAddress: Address;
 }
 
 export interface CardProps {
@@ -207,10 +208,11 @@ export interface CardProps {
   refetchEnsName?: () => void;
   ensName?: string;
   ensAddr?: string;
+  activeAddress?: Address;
 }
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
-  const { item } = props;
+  const { item, activeAddress } = props;
   const { toggleModal } = useModalState();
   const { network } = useNetworkConfig();
   const { address: contractAddr } = useContractDetails({
@@ -221,9 +223,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const nameRef = useRef<HTMLDivElement | null>(null);
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
 
-  const { address } = useAccount();
   const { data: ensName } = useEnsName({
-    address, // use address from wagmi to trigger refetch from other components
+    address: activeAddress,
   });
 
   const image = useGetNftImageQuery({
@@ -249,6 +250,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       domain: item.domain,
       owner: item.owner,
       ensName: ensName || "",
+      activeAddress,
     };
 
     toggleModal({

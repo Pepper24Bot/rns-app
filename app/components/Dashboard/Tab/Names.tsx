@@ -15,6 +15,8 @@ import { debounce as _debounce, isEmpty } from "lodash";
 import { isAccountLoading, scrollIntoElement } from "@/utils/common";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { useAccount } from "wagmi";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { Address } from "viem";
 import SkeletonNames from "./Names/SkeletonNames";
 
 const Container = styled(Grid)(({ theme }) => ({
@@ -93,6 +95,9 @@ export const Names: React.FC = () => {
   const { useDashboard } = useDashboardState();
   const { names, isNameListLoading } = useDashboard();
 
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(4);
   const [itemCountField, setItemCountField] = useState(4);
@@ -167,7 +172,10 @@ export const Names: React.FC = () => {
                 return (
                   <React.Fragment key={name.name}>
                     {shouldItemShow(index) ? (
-                      <NameCard item={name as NameWrapped} />
+                      <NameCard
+                        item={name as NameWrapped}
+                        activeAddress={root.address as Address}
+                      />
                     ) : (
                       <></>
                     )}

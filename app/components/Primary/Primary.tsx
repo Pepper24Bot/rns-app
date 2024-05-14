@@ -18,7 +18,7 @@ import { Address, namehash } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
-import { useAccount, useEnsAddress, useEnsName } from "wagmi";
+import { useEnsAddress, useEnsName } from "wagmi";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -40,6 +40,7 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 export interface Primary {
+  activeAddress?: Address;
   domain?: Partial<Domain>;
   ensName?: string;
   ensAddr?: string;
@@ -50,7 +51,7 @@ export interface Primary {
 }
 
 export const Primary: React.FC<Primary> = (props: Primary) => {
-  const { domain, ensName } = props;
+  const { domain, ensName, activeAddress } = props;
   const name = domain?.name || "";
   const resolverAddress = domain?.resolver?.address;
 
@@ -66,8 +67,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
 
-  const { address } = useAccount();
-  const { refetch } = useEnsName({ address });
+  const { refetch } = useEnsName({ address: activeAddress });
   const { data: ensAddr } = useEnsAddress({ name });
   const { closeModal } = useModalState();
   const { setAddressRecord } = useRecords();
@@ -76,11 +76,12 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
     enabled: isBlockEnabled,
   });
 
-  const ownerId = address?.toLowerCase() as Address;
+  const ownerId = activeAddress?.toLowerCase() as Address;
   const ensAddress = ensAddr?.toLowerCase();
   const isTransactionLoading = isLoading || isWaiting;
 
   const setEnsRecord = async () => {
+    console.log("ensName:: ", ensName);
     if (isEmpty(ensName)) {
       const reverseNode = `${ownerId.slice(2)}.addr.reverse`;
       const reverseNamehash = namehash(reverseNode);
@@ -88,6 +89,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
         domainId: reverseNamehash,
       });
 
+      console.log("ensPublicName:: ", ensPublicName);
       setEnsPublicName(String(ensPublicName));
     }
   };

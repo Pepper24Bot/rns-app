@@ -54,10 +54,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
 
-  const { setAddressRecord, isLoading } = useRecords({
-    type: "AddressRecord",
-  });
-
+  const { setAddressRecord, isLoading } = useRecords();
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
   });
@@ -87,7 +84,6 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     const { isSuccess, data } = await setAddressRecord({
       name: domain?.name || "",
       address: value as Address,
-      resolverAddress: domain?.resolver?.address,
     });
 
     if (isSuccess) {

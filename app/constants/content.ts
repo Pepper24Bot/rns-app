@@ -25,6 +25,56 @@ export const REGISTRATION_PROCESS = [
 
 export const FAQ = [
     {
+        title: `Can I register an RNS with both my FuturePass address and EOA address (Ethereum address on The Root Network)?`,
+        content: `Yes, but it’s important to note the following:
+        
+        Currently ALL gas fees are paid in $XRP from your EOA address. Even if you are connected to the RNS app with your FuturePass address, gas will be paid from your EOA address.
+        
+
+        When connected with your FuturePass address:
+        
+        - Gas fees are paid in XRP by the associated EOA address.
+        
+        - Registration fees are paid in ROOT or USDC by the connected FuturePass address.
+        
+        When registering via your FuturePass address there is no need to change connected wallets during the registration process, just ensure you have XRP in your EOA address for gas fees.
+        
+        
+        When connected with your EOA address:
+        
+        - Gas fees are paid in XRP by the connected EOA address.
+        
+        - Registration fees are paid in ROOT or USDC by the connected EOA address.
+        
+        
+        Why?
+                
+        To enable the FuturePass to pay for gas fees we would need to implement proxyExtrinsic and if we wanted, feeProxy (for any gas token functionality) of which both require using an extrinsic call (Substrate transaction). However, this won't emit any EVM event logs, rendering it unusable for our protocol.
+        `,
+        highlights: [
+            {
+                text: "ALL",
+                isUrl: false
+            },
+            {
+                text: "EOA address. ",
+                isUrl: false
+            },
+            {
+                text: "When connected with your FuturePass address:",
+                isUrl: false
+            },
+            {
+                text: "When connected with your EOA address:",
+                isUrl: false
+            },
+            {
+                text: "Why\\?",
+                isUrl: false
+            },
+        ],
+    },
+    {
         title: `What does “Link Identity” mean?`,
         content: `Linking an RNS Identity to a wallet address simply means that you are turning your long and complex address into a human readable Identity. Therefore, this results in taking an identity such as figjam.root, and converting it to an address, such as 0x565f137127d9067788314bc7fcc1f36746a3c6Y7. This is called “forward lookup”.
         

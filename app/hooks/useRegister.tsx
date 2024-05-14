@@ -1,9 +1,6 @@
-import useContractDetails, { ContractDetails } from "./useContractDetails";
 import { useWriteContract } from "wagmi";
 import { Address, encodeFunctionData, namehash } from "viem";
 import { ErrorResponse, Response } from "@/services/interfaces";
-import { Payment } from "@/redux/domain/domainSlice";
-import { PAYMENT_METHOD } from "@/constants/components";
 import {
   readContract,
   simulateContract,
@@ -13,36 +10,22 @@ import { config } from "@/chains/config";
 import { useState } from "react";
 import { isCommitmentValid } from "@/utils/common";
 import { formatDistanceToNowStrict } from "date-fns";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { CommitProps, RegisterProps } from "@/interfaces/registration";
 
-export interface RegisterProps {
-  controller: ContractDetails;
-  resolver?: ContractDetails;
-  fees?: {
-    gasPrice: bigint;
-    rent: number;
-    totalFee: number;
-  };
-  args: {
-    name: string;
-    owner: Address;
-    duration: number;
-    secret: string;
-    resolverAddr: Address;
-    payment?: Payment;
-    futurePassAddress?: string;
-  };
-}
-
-export interface CommitProps {
-  controller?: ContractDetails;
-  hash: string;
-}
+import useContractDetails from "./useContractDetails";
+import useProxyRegister from "./FuturePass/useProxyRegister";
 
 export default function useRegister() {
   const controller = useContractDetails({ action: "RegistrarController" });
   const { abi, address } = controller;
-
   const { writeContractAsync } = useWriteContract();
+  const { registerProxyCall, commitProxyCall } = useProxyRegister({
+    registrarController: controller,
+  });
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
@@ -51,7 +34,6 @@ export default function useRegister() {
     return { error: null, isSuccess: false, data: null };
   };
 
-  // TODO: Implement block latency here
   const waitForTransaction = async (hash: Address) => {
     const receipt = await waitForTransactionReceipt(config, {
       hash,
@@ -118,15 +100,21 @@ export default function useRegister() {
 
     if (hash) {
       try {
-        const commitHash = await writeContractAsync({
-          abi,
-          address,
-          functionName: "commit",
-          args: [hash],
-        });
-        setCommitLoading(true);
+        if (root.isFpActive) {
+          const commitHash = await commitProxyCall({ hash });
+          setCommitLoading(true);
+          response = await waitForTransaction(commitHash);
+        } else {
+          const commitHash = await writeContractAsync({
+            abi,
+            address,
+            functionName: "commit",
+            args: [hash],
+          });
+          setCommitLoading(true);
 
-        response = await waitForTransaction(commitHash);
+          response = await waitForTransaction(commitHash);
+        }
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
@@ -145,41 +133,59 @@ export default function useRegister() {
    */
   const handleRegister = async (props: RegisterProps) => {
     const { resolver, args } = props;
+    const { name, owner, duration, secret, resolverAddr, paymentAddress } =
+      args;
 
     let response = { ...initializeResponse() };
 
-    const payment = args.payment || PAYMENT_METHOD[0];
     const nameHash = namehash(`${args.name}.root`);
 
+    const addressRecord = encodeFunctionData({
+      abi: resolver?.abi || [],
+      functionName: "setAddr",
+      args: [nameHash, root.address],
+    });
+
     try {
-      const addressRecord = encodeFunctionData({
-        abi: resolver?.abi || [],
-        functionName: "setAddr",
-        args: [nameHash, args.owner],
-      });
+      if (root.isFpActive) {
+        const registerHash = (await registerProxyCall({
+          args: {
+            name,
+            owner: root.address ?? "",
+            duration,
+            secret,
+            resolverAddr,
+            paymentAddress,
+            addressRecord,
+          },
+        })) as Address;
 
-      const register = await simulateContract(config, {
-        abi,
-        address,
-        functionName: "registerWithERC20",
-        account: args.owner,
-        args: [
-          args.name,
-          args.owner,
-          args.duration,
-          args.secret,
-          args.resolverAddr,
-          [addressRecord],
-          false,
-          0,
-          payment.address,
-        ],
-      });
+        setRegisterLoading(true);
+        response = await waitForTransaction(registerHash);
+      } else {
+        const register = await simulateContract(config, {
+          abi,
+          address,
+          functionName: "registerWithERC20",
+          account: args.owner as Address,
+          args: [
+            name,
+            owner,
+            duration,
+            secret,
+            resolverAddr,
+            [addressRecord],
+            false,
+            0,
+            paymentAddress ?? "",
+          ],
+        });
 
-      const hash = await writeContractAsync(register.request);
-      setRegisterLoading(true);
+        const hash = await writeContractAsync(register.request);
+        setRegisterLoading(true);
 
-      response = await waitForTransaction(hash);
+        response = await waitForTransaction(hash);
+      }
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;

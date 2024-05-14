@@ -6,6 +6,7 @@ import { Payment } from "@/redux/domain/domainSlice";
 import { useEffect, useState } from "react";
 import { readContract, readContracts } from "@wagmi/core";
 import { config } from "@/chains/config";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useContractDetails from "./useContractDetails";
 
@@ -21,7 +22,7 @@ export interface RegistrationProps {
    */
   year: number;
 
-  owner: Address | undefined;
+  owner?: Address;
 
   payment?: Payment;
 
@@ -32,16 +33,13 @@ export interface RegistrationProps {
 
 /** TODO: Optimize this hook */
 export default function useNameDetails(props: RegistrationProps) {
-  const {
-    name,
-    year,
-    payment = PAYMENT_METHOD[0],
-    owner = "0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf", // personal-account
-    isEnabled,
-  } = props;
+  const { name, year, payment = PAYMENT_METHOD[0], isEnabled } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
   const resolver = useContractDetails({ action: "PublicResolver" });
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
 
   const initialRentPrice: RentPrice = {
     base: BigInt(0),
@@ -101,44 +99,26 @@ export default function useNameDetails(props: RegistrationProps) {
     const addressRecord = encodeFunctionData({
       abi: resolver.abi,
       functionName: "setAddr",
-      args: [nameHash, owner],
+      args: [nameHash, root.address],
     });
 
-    const commitmentArgs = [
-      name,
-      owner as Address,
-      duration,
-      secret,
-      resolverAddr,
-      [addressRecord],
-      false,
-      0,
-    ];
-
-    const data = await readContract(config, {
+    const response = await readContract(config, {
       abi,
       address,
       functionName: "makeCommitment",
-      args: commitmentArgs,
+      args: [
+        name,
+        root.address as Address,
+        duration,
+        secret,
+        resolverAddr,
+        [addressRecord],
+        false,
+        0,
+      ],
     });
-
-    setHash(String(data));
-  };
-
-  /**
-   * Note: Enable this when needed
-   * #7. Get the estimated gas fee to be used in Transaction Fee field
-   */
-  const getEstimatedGas = () => {
-    // const encodedFunction = encodeFunctionData({
-    //   abi,
-    //   functionName: "registerWithERC20",
-    //   args: [...commitmentArgs, token],
-    // });
-    // const { estimatedGas, gasPrice } = useEstimateRegistration({
-    //   encodedFunction,
-    //   owner,
-    // });
+    console.log("makeCommit-response:: ", response);
+    setHash(String(response));
   };
 
   useEffect(() => {
@@ -151,7 +131,7 @@ export default function useNameDetails(props: RegistrationProps) {
     if (isEnabled && available) {
       makeCommitment();
     }
-  }, [available, name, isEnabled]);
+  }, [name, isEnabled, duration, available]);
 
   const rentFee = rentPrice
     ? (rentPrice as unknown as RentPrice)

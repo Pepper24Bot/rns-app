@@ -4,20 +4,22 @@ import { ErrorResponse, Response } from "@/services/interfaces";
 import { config } from "@/chains/config";
 import { readContract, waitForTransactionReceipt } from "@wagmi/core";
 import { useState } from "react";
+import { PrimaryName } from "@/interfaces/primary";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useContractDetails from "./useContractDetails";
-
-export interface PrimaryName {
-  name?: string;
-  address?: Address;
-  domainId?: string;
-  resolverAddress?: Address;
-  addressRecord?: Address;
-}
+import useProxyPrimary from "./FuturePass/useProxyPrimary";
 
 export default function usePrimary() {
   const reverse = useContractDetails({ action: "ReverseRegistrar" });
   const publicResolver = useContractDetails({ action: "PublicResolver" });
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+
+  const { setPrimaryProxyCall } = useProxyPrimary({
+    reverseRegistrar: reverse,
+  });
 
   const { writeContractAsync } = useWriteContract();
 
@@ -90,15 +92,22 @@ export default function usePrimary() {
 
     if (name && address && resolverAddress) {
       try {
-        const hash = await writeContractAsync({
-          abi: reverse.abi,
-          address: reverse.address,
-          functionName: "setName",
-          args: [name],
-        });
-        setIsPrimaryLoading(true);
+        if (root.isFpActive) {
+          const hash = await setPrimaryProxyCall({ name });
+          setIsPrimaryLoading(true);
 
-        response = await waitForTransaction(hash);
+          response = await waitForTransaction(hash);
+        } else {
+          const hash = await writeContractAsync({
+            abi: reverse.abi,
+            address: reverse.address,
+            functionName: "setName",
+            args: [name],
+          });
+          setIsPrimaryLoading(true);
+
+          response = await waitForTransaction(hash);
+        }
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;

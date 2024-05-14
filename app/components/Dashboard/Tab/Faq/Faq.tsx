@@ -78,9 +78,11 @@ const Highlight = styled("span")(({ theme }) => ({
 export const FrequentlyAsked: React.FC = () => {
   const [moreIndex, setMoreIndex] = useState<number>(0);
 
+  // TODO: Optimize this
   const getHighlightedTexts = (
     content: string,
-    highlights: { text: string; isUrl: boolean }[] = []
+    highlights: { text: string; isUrl: boolean }[] = [],
+    index: number = 0
   ) => {
     const highlightedTexts = highlights.map((option) => {
       return `(${option.text})`;
@@ -92,12 +94,13 @@ export const FrequentlyAsked: React.FC = () => {
     return texts;
   };
 
+  // TODO: Optimize this
   const getHighlight = (
     text: string,
     highlights: { text: string; isUrl: boolean }[] = []
   ) => {
     const option = highlights.find((highlight) => {
-      return highlight.text === text;
+      return highlight.text.match(text);
     });
 
     return option;
@@ -123,7 +126,7 @@ export const FrequentlyAsked: React.FC = () => {
       <Content>
         {FAQ.map((item, index) => {
           const texts = !isEmpty(item.highlights)
-            ? getHighlightedTexts(item.content, item.highlights)
+            ? getHighlightedTexts(item.content, item.highlights, index)
             : [];
           return (
             <Grid id={`Question-${index}`} key={item.title} pb={5}>
@@ -146,7 +149,7 @@ export const FrequentlyAsked: React.FC = () => {
                           {text}
                         </Highlight>
                       ) : (
-                        <span key={`span-${index}`}>{text}</span>
+                        text && <span key={`span-${index}`}>{text}</span>
                       );
                     })}
                   </Answer>

@@ -27,6 +27,7 @@ import {
 import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { Address, formatEther } from "viem";
 import { getExpiration } from "@/utils/common";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -131,12 +132,16 @@ const TabItem = styled(Tab)(({ theme }) => ({
 }));
 
 export const Dashboard: React.FC = () => {
-  const { address, status } = useAccount();
+  const { status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
   const { updateNameList, toggleNamesLoading, useFilters } =
     useDashboardState();
 
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+
   const options = useFilters();
+  const address = root.address;
 
   const [activeTab, setActiveTab] = useState<number>(0); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");
@@ -377,7 +382,7 @@ export const Dashboard: React.FC = () => {
                 {DASHBOARD_TAB_ITEMS.map((item, index) => {
                   return (
                     isFeatureEnabled(item) && (
-                      <TabItem key={item} label={item} />
+                      <TabItem key={item} label={item.toUpperCase()} />
                     )
                   );
                 })}
@@ -385,7 +390,7 @@ export const Dashboard: React.FC = () => {
             </Grid>
             <Grid>
               {/* TODO: Add page routing */}
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 0 && <Names />}
               </FeatureToggle>
 
@@ -393,15 +398,15 @@ export const Dashboard: React.FC = () => {
                 {activeTab === 1 && <FrequentlyAsked />}
               </FeatureToggle>
 
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 2 && <Favorites />}
               </FeatureToggle>
 
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 3 && <LoyaltyPoints />}
               </FeatureToggle>
 
-              <FeatureToggle feature={FeatureList.Names}>
+              <FeatureToggle feature={FeatureList.Identities}>
                 {activeTab === 4 && <Notifications />}
               </FeatureToggle>
             </Grid>

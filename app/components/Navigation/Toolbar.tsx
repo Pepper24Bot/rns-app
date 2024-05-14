@@ -14,6 +14,7 @@ import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/utils/common";
 import { Address } from "viem";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
@@ -70,7 +71,11 @@ const DocsLabel = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 export const Toolbar: React.FC = () => {
-  const { address, connector, status, chainId } = useAccount();
+  const { address: walletAddress, connector, status, chainId } = useAccount();
+  const { useRootNetwork } = useRootNetworkState();
+  const {
+    data: { address },
+  } = useRootNetwork();
 
   const { data: ensName, refetch } = useEnsName({
     address: address as Address,
@@ -105,11 +110,11 @@ export const Toolbar: React.FC = () => {
 
     const walletIcon = address ? path : "/icons/wallet.svg";
     setIconPath(walletIcon);
-  }, [address, ensName]);
+  }, [walletAddress, address, ensName]);
 
   useEffect(() => {
     refetch();
-  }, [address, chainId]);
+  }, [walletAddress, address, chainId]);
 
   return (
     <ToolbarContainer>
@@ -182,6 +187,7 @@ export const Toolbar: React.FC = () => {
           </ToggleButton>
           {address && (
             <ToggleButton
+              sx={{ minWidth: "160px" }}
               value=""
               onClick={(event) => {
                 setIsOpen(!isOpen);
