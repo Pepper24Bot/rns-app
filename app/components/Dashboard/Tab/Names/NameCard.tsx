@@ -289,12 +289,13 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               style={{
                 width: "-webkit-fill-available",
                 height: "-webkit-fill-available",
+                borderRadius: "4px",
                 position: "absolute",
-                padding: "0 20px 25px 0",
+                padding: "0 20px 27px 0",
               }}
             />
             <Image
-              src={`https://rns-metadata.fly.dev/${network}/${contractAddr}/${nameHash}/image`}
+              src={data?.image_url || "https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png"}
               alt="Wallet Icon"
               width={200}
               height={200}
