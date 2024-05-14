@@ -235,6 +235,12 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     contractAddr,
   });
 
+  const { data: dataNft } = useGetNftImageQuery({
+    hash: nameHash,
+    network,
+    contractAddr,
+  });
+
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
@@ -264,6 +270,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   useEffect(() => {
     if (isSuccess) {
       console.log("metadata:: ", data);
+      console.log("image:: ", dataNft);
     }
   }, [isLoading, isSuccess]);
 
