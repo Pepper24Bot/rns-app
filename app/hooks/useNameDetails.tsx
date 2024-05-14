@@ -131,7 +131,7 @@ export default function useNameDetails(props: RegistrationProps) {
     if (isEnabled && available) {
       makeCommitment();
     }
-  }, [available, name, isEnabled]);
+  }, [name, isEnabled, duration, available]);
 
   const rentFee = rentPrice
     ? (rentPrice as unknown as RentPrice)
