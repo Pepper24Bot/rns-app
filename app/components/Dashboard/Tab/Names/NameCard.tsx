@@ -229,11 +229,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: activeAddress,
   });
 
-  const { data, isLoading, isSuccess } = useGetMetadataQuery({
-    hash: nameHash,
-    network,
-    contractAddr,
-  });
+  // const { data, isLoading, isSuccess } = useGetMetadataQuery({
+  //   hash: nameHash,
+  //   network,
+  //   contractAddr,
+  // });
 
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
@@ -274,9 +274,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
       <Container>
         <ItemContainer>
-          <ImageContainer position="relative">
+          <ImageContainer>
             <Image
-              src={data?.image_url || "https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png"}
+              // src={data?.image_url || "https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png"}
+              src={`https://rns-metadata.fly.dev/${network}/${contractAddr}/${nameHash}/image`}
               alt="Wallet Icon"
               width={200}
               height={200}
@@ -286,7 +287,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 border: `solid 1px ${alpha(grey[700], 0.25)}`,
                 borderRadius: "4px",
                 boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
-                position: "relative",
+                // backgroundImage: "url(https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png)",
+                // backgroundSize: "cover",
               }}
             />
           </ImageContainer>
