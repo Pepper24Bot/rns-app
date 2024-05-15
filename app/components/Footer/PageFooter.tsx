@@ -11,6 +11,7 @@ import {
 } from "../Theme/StyledGlobal";
 import { grey } from "@mui/material/colors";
 import { FeatureList } from "@/hooks/useFeatureToggle";
+import { DISCORD, DOCS, EMAIL, TWITTER } from "@/constants/url";
 
 import Image from "next/image";
 import EmailSubscription from "./EmailSubscription";
@@ -86,26 +87,17 @@ export const PageFooter: React.FC = () => {
             />
             <Content>
               <FlexCenter>
-                <Link
-                  href="https://twitter.com/RootNameService"
-                  target="_blank"
-                >
+                <Link href={DISCORD} target="_blank">
                   <SocialButton variant="outlined">
                     <i className="fa-brands fa-discord fa-xl" />
                   </SocialButton>
                 </Link>
-                <Link
-                  href="https://twitter.com/RootNameService"
-                  target="_blank"
-                >
+                <Link href={TWITTER} target="_blank">
                   <SocialButton variant="outlined">
                     <i className="fa-brands fa-x-twitter fa-xl" />
                   </SocialButton>
                 </Link>
-                <Link
-                  href="https://twitter.com/RootNameService"
-                  target="_blank"
-                >
+                <Link href={`mailto:${EMAIL}`} target="_blank">
                   <SocialButton variant="outlined">
                     <i className="fa-solid fa-envelope fa-lg" />
                   </SocialButton>
@@ -116,10 +108,7 @@ export const PageFooter: React.FC = () => {
           <Terms>
             <Copyright>©2024 All Rights Reserved</Copyright>
             <FlexCenter>
-              <TermsPolicy
-                href="https://docs.rootnameservice.com/"
-                target="_blank"
-              >
+              <TermsPolicy href={DOCS} target="_blank">
                 Docs
               </TermsPolicy>
               <TermsPolicy
