@@ -8,7 +8,7 @@ import {
   Chip,
 } from "@mui/material";
 import { Account, Domain, NameWrapped } from "@/redux/graphql/hooks";
-import { amber, green, grey, red, yellow } from "@mui/material/colors";
+import { amber, green, grey, pink, red, yellow } from "@mui/material/colors";
 import {
   CheckCircle,
   MoreVert,
@@ -229,12 +229,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: activeAddress,
   });
 
-  // const { data, isLoading, isSuccess } = useGetMetadataQuery({
-  //   hash: nameHash,
-  //   network,
-  //   contractAddr,
-  // });
-
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
@@ -276,7 +270,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         <ItemContainer>
           <ImageContainer>
             <Image
-              // src={data?.image_url || "https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png"}
               src={`https://rns-metadata.fly.dev/${network}/${contractAddr}/${nameHash}/image`}
               alt="Wallet Icon"
               width={200}
@@ -284,11 +277,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               style={{
                 width: "-webkit-fill-available",
                 height: "-webkit-fill-available",
-                border: `solid 1px ${alpha(grey[700], 0.25)}`,
+                border: `solid 1px ${alpha(pink[900], 0.25)}`,
                 borderRadius: "4px",
                 boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
-                // backgroundImage: "url(https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png)",
-                // backgroundSize: "cover",
               }}
             />
           </ImageContainer>
