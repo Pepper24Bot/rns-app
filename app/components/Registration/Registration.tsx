@@ -12,6 +12,7 @@ import {
   FlexLeft,
   ErrorTip,
   Flex,
+  InformationTip,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, alpha, styled } from "@mui/material";
 import {
@@ -389,25 +390,30 @@ export const RegisterName: React.FC = () => {
                 >
                   Cancel
                 </ActionButton>
-                <ActionButton
-                  disabled={areBtnsDisabled}
-                  variant="contained"
-                  onClick={() => {
-                    if (!isApprovalSuccess && isCommitSuccess) {
-                      setIsError(false);
-                      setAreBtnsDisabled(true);
-                      handleApproval();
-                    } else if (!isRegisterSuccess && isApprovalSuccess) {
-                      setIsError(false);
-                      setAreBtnsDisabled(true);
-                      handleRegister();
-                    } else {
-                      handleCommit();
-                    }
-                  }}
-                >
-                  Confirm
-                </ActionButton>
+                <InformationTip title="Ooops! We are not live yet!" arrow>
+                  <Grid>
+                    <ActionButton
+                      // disabled={areBtnsDisabled}
+                      disabled
+                      variant="contained"
+                      onClick={() => {
+                        if (!isApprovalSuccess && isCommitSuccess) {
+                          setIsError(false);
+                          setAreBtnsDisabled(true);
+                          handleApproval();
+                        } else if (!isRegisterSuccess && isApprovalSuccess) {
+                          setIsError(false);
+                          setAreBtnsDisabled(true);
+                          handleRegister();
+                        } else {
+                          handleCommit();
+                        }
+                      }}
+                    >
+                      Confirm
+                    </ActionButton>
+                  </Grid>
+                </InformationTip>
               </FlexRight>
             </FlexJustified>
           ) : (
