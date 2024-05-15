@@ -29,7 +29,7 @@ export type Contract =
   | "Link"
   | "Transfer"
   | "OwnedResolver"
-  | "ENS"
+  | "ENSRegistry"
   | "Base"
   | "UniversalResolver"
   | "PublicResolver"
@@ -54,7 +54,7 @@ export const getMainnetContractAbi = (action: Contract) => {
     case "Base":
       return BaseRegistrar as ContractDetails;
     case "Link":
-    case "ENS":
+    case "ENSRegistry":
       return ENSRegistry as ContractDetails;
     case "OwnedResolver":
       return OwnedResolver as ContractDetails;
@@ -79,7 +79,7 @@ export const getPorciniContractAbi = (action: Contract) => {
     case "Base":
       return PorciniBaseRegistrar as ContractDetails;
     case "Link":
-    case "ENS":
+    case "ENSRegistry":
       return PorciniENSRegistry as ContractDetails;
     case "OwnedResolver":
       return PorciniOwnedResolver as ContractDetails;

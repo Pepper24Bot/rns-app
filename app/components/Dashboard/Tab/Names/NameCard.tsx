@@ -322,8 +322,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                           icon: <PrimaryIcon />,
                           disabled: ensName === item.name,
                         },
+                        { label: "Transfer", icon: <TransferIcon /> },
                         // { label: "Update Image", icon: <PhotoIcon /> },
-                        // { label: "Transfer", icon: <TransferIcon /> },
                       ]}
                       hasButton
                       iconButton={<MoreIcon />}

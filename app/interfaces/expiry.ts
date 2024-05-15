@@ -12,7 +12,7 @@ export interface ExtendProps {
      * year count, to be converted into seconds
      */
     year: number;
-    owner: Address | string;
+    owner?: Address | string;
     isEnabled?: boolean;
     token: Address | string
 }
