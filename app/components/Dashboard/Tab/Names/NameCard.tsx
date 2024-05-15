@@ -235,12 +235,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     contractAddr,
   });
 
-  const { data: dataNft } = useGetNftImageQuery({
-    hash: nameHash,
-    network,
-    contractAddr,
-  });
-
   // Check if name is linked to the wallet address
   const linkedAddr = item?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
@@ -268,13 +262,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   useEffect(() => {
-    if (isSuccess) {
-      console.log("metadata:: ", data);
-      console.log("image:: ", dataNft);
-    }
-  }, [isLoading, isSuccess]);
-
-  useEffect(() => {
     const scrollWidth = nameRef?.current?.scrollWidth || 0;
     const clientWidth = nameRef?.current?.clientWidth || 0;
 
@@ -288,19 +275,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       <Container>
         <ItemContainer>
           <ImageContainer position="relative">
-            <Image
-              src={`https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png`}
-              alt="Wallet Icon"
-              width={200}
-              height={200}
-              style={{
-                width: "-webkit-fill-available",
-                height: "-webkit-fill-available",
-                borderRadius: "4px",
-                position: "absolute",
-                padding: "0 20px 27px 0",
-              }}
-            />
             <Image
               src={data?.image_url || "https://i.ibb.co/z8FZMQ2/RNS-AVATAR.png"}
               alt="Wallet Icon"
