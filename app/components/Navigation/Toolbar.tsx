@@ -15,6 +15,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress, isAccountLoading } from "@/utils/common";
 import { Address } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { DISCORD, DOCS, TWITTER } from "@/constants/url";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
@@ -126,7 +127,7 @@ export const Toolbar: React.FC = () => {
           },
         }}
       >
-        <Link href="https://docs.rootnameservice.com/" target="_blank">
+        <Link href={DOCS} target="_blank">
           <DocsLabel>Docs</DocsLabel>
         </Link>
         <Divider orientation="vertical" flexItem />
@@ -139,12 +140,12 @@ export const Toolbar: React.FC = () => {
           },
         }}
       >
-        <Link href="https://twitter.com/RootNameService" target="_blank">
+        <Link href={DISCORD} target="_blank">
           <SocialButton variant="outlined" sx={{ ml: 0 }}>
             <i className="fa-brands fa-discord fa-xl" />
           </SocialButton>
         </Link>
-        <Link href="https://twitter.com/RootNameService" target="_blank">
+        <Link href={TWITTER} target="_blank">
           <SocialButton variant="outlined">
             <i className="fa-brands fa-x-twitter fa-xl" />
           </SocialButton>
