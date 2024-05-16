@@ -39,22 +39,6 @@ const StyledImage = styled(Image)(({ theme }) => ({
   },
 }));
 
-const RnsName = styled(Grid)(({ theme }) => ({
-  position: "absolute",
-  bottom: "20px",
-  backgroundColor: alpha(theme.palette.primary.dark, 0.1),
-  padding: "8px",
-  width: "-webkit-fill-available",
-}));
-
-const RnsNameText = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "14px",
-  color: alpha(theme.palette.text.primary, 0.5),
-  textAlign: "center",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-}));
-
 export interface EnsImage {
   path?: string;
   name?: string;

@@ -60,11 +60,7 @@ const ConfirmButton = styled(CancelButton)(({ theme }) => ({
 }));
 
 export const SwitchNetwork: React.FC = () => {
-  const { chains, switchChain } = useSwitchChain();
-  const { closeModal } = useModalState();
   const { walletConfig } = useNetworkConfig();
-
-  // console.log("chains:: ", chains);
 
   /**
    * TODO:
@@ -74,20 +70,17 @@ export const SwitchNetwork: React.FC = () => {
    *
    * 2. Get environment variable and check for the network
    */
-  // switchChain({ chainId: chains[0].id });
   const switchNetwork = async () => {
     const config = walletConfig;
 
     if (typeof window.ethereum !== "undefined") {
       try {
-        const result = await window.ethereum.request({
+        await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [config],
         });
-
-        console.log("result:: ", result);
       } catch (error) {
-        console.log("Error:: ", error);
+        console.log("Error Switching Network:: ", error);
       }
     }
   };
@@ -119,18 +112,9 @@ export const SwitchNetwork: React.FC = () => {
       </VideoLink>
 
       <FlexRight>
-        {/* <CancelButton
-          variant="text"
-          onClick={() => {
-            closeModal();
-          }}
-        >
-          Cancel
-        </CancelButton> */}
         <ConfirmButton
           variant="contained"
           onClick={() => {
-            // chains only include the root testnet
             switchNetwork();
           }}
         >

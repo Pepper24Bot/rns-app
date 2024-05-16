@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { styled, Grid, alpha, Collapse } from "@mui/material";
-import { Domain } from "@/redux/graphql/hooks";
 import { FONT_WEIGHT } from "../Theme/Global";
 import {
   FlexTop,
@@ -12,14 +11,15 @@ import {
   Relative,
 } from "../Theme/StyledGlobal";
 
-import EnsImage from "../Reusables/EnsImage";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address, namehash } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
 import { useEnsAddress, useEnsName } from "wagmi";
+import { PrimaryProps } from "@/interfaces/components/transaction";
 
+import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import usePrimary from "@/hooks/usePrimary";
@@ -39,19 +39,9 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.35),
 }));
 
-export interface Primary {
-  activeAddress?: Address;
-  domain?: Partial<Domain>;
-  ensName?: string;
-  ensAddr?: string;
-  refetchEnsName?: () => void;
-  owner?: {
-    id?: string;
-  };
-}
-
-export const Primary: React.FC<Primary> = (props: Primary) => {
+export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const { domain, ensName, activeAddress } = props;
+
   const name = domain?.name || "";
   const resolverAddress = domain?.resolver?.address;
 
@@ -61,7 +51,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
   const [isError, setIsError] = useState<boolean>(false);
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [resetProgress, setResetProgress] = useState<boolean>(false);
 
   const [ensNameData, setEnsPublicName] = useState<string>(String(ensName));
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
@@ -81,7 +70,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
   const isTransactionLoading = isLoading || isWaiting;
 
   const setEnsRecord = async () => {
-    console.log("ensName:: ", ensName);
     if (isEmpty(ensName)) {
       const reverseNode = `${ownerId.slice(2)}.addr.reverse`;
       const reverseNamehash = namehash(reverseNode);
@@ -89,7 +77,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
         domainId: reverseNamehash,
       });
 
-      console.log("ensPublicName:: ", ensPublicName);
       setEnsPublicName(String(ensPublicName));
     }
   };
@@ -98,8 +85,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
     // display progress bar
     setIsPending(true);
     setIsProgressVisible(true);
-    // should always start to 0
-    setResetProgress(true);
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
     setIsSuccess(false);
@@ -113,8 +98,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
       setIsError(true);
       setIsPending(false);
     }
-
-    setResetProgress(false);
   };
 
   const handleSetPrimaryName = async () => {

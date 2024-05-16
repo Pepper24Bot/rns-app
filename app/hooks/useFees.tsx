@@ -12,16 +12,6 @@ export interface FeesProps {
   payment?: Payment;
 }
 
-export interface FeesResponse {
-  rentFee: number;
-  transactionFee: number;
-  totalFee: number;
-}
-
-export interface Options {
-  raw?: boolean;
-}
-
 export default function useFees(props: FeesProps) {
   const { rent = 0, gasFee = 0, payment = PAYMENT_METHOD[0] } = props;
 

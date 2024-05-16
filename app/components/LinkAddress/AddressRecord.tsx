@@ -8,12 +8,12 @@ import {
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/utils/common";
-import { Link } from "./LinkAddress";
 import { Address } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { useAccount, useEnsAddress, useEnsName } from "wagmi";
+import { LinkProps } from "@/interfaces/components/transaction";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -22,7 +22,7 @@ import RemoveAddress from "./RemoveRecord";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 
-export const AddressRecord: React.FC<Link> = (props: Link) => {
+export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain: domainState, owner, ensName } = props;
 
   const dispatch = useDispatch();
@@ -36,6 +36,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
   const { refetch: refetchEnsAddr } = useEnsAddress({
     name: domainState?.name || "",
   });
+
   const { refetch: refetchEnsName } = useEnsName({ address });
   const { closeModal } = useModalState();
 

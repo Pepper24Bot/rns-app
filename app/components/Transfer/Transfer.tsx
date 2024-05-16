@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Collapse, Grid, styled } from "@mui/material";
-import { Domain } from "@/redux/graphql/hooks";
 import {
   ActionButton,
   FlexCenter,
@@ -13,6 +12,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address } from "viem";
+import { TransactionProps } from "@/interfaces/components/transaction";
 
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -35,14 +35,9 @@ const Container = styled(Grid)(({ theme }) => ({
   },
 }));
 
-export interface Transfer {
-  domain?: Partial<Domain>;
-  owner?: {
-    id?: string;
-  };
-}
-
-export const Transfer: React.FC<Transfer> = (props: Transfer) => {
+export const Transfer: React.FC<TransactionProps> = (
+  props: TransactionProps
+) => {
   const dispatch = useDispatch();
 
   const { domain } = props;

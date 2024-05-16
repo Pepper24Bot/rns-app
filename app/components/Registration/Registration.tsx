@@ -74,6 +74,7 @@ export const RegisterName: React.FC = () => {
   const { isModalOpen } = useModal();
 
   const dispatch = useDispatch();
+  const token = payment?.address || (PAYMENT_METHOD[0].address as Address);
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
@@ -118,7 +119,7 @@ export const RegisterName: React.FC = () => {
   } = useNameDetails({
     name,
     year,
-    payment,
+    token,
     isEnabled: isDetailsEnabled,
   });
 

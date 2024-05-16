@@ -16,9 +16,6 @@ export const CircularProgressWithLabel: React.FC<ProgressProps> = (
   const initial = countdown ? max : 0;
   const [progress, setProgress] = useState<number>(initial);
 
-  // TODO: make sure to always make the speed 1 second
-  // const speed =
-
   useEffect(() => {
     if (isVisible) {
       const timer = setInterval(() => {

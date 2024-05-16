@@ -12,14 +12,14 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 import { isEmpty } from "lodash";
-import { Link } from "./LinkAddress";
+import { LinkProps } from "@/interfaces/components/transaction";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 
-export const AddRecord: React.FC<Link> = (props: Link) => {
+export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain } = props;
   const { closeModal } = useModalState();
 

@@ -39,7 +39,6 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
   width: "350px",
-  // height: "425px",
   display: "grid",
   alignContent: "space-between",
 

@@ -26,7 +26,6 @@ import { TWITTER_AUTH } from "@/constants/url";
 import { TWEET_RNS } from "@/constants/content";
 import { parseCookie } from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { useModalState } from "@/redux/modal/modalSlice";
 import { useShareState } from "@/redux/share/shareSlice";
 
 const Container = styled(Grid)(({ theme }) => ({

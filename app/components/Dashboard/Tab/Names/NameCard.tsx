@@ -97,7 +97,6 @@ const NameContainer = styled(Grid)(({ theme }) => ({
   textOverflow: "ellipsis",
   overflow: "hidden",
   fontSize: "18px",
-  // fontWeight: FONT_WEIGHT.Bold,
 }));
 
 const Detail = styled(SecondaryLabel)(({ theme }) => ({

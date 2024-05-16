@@ -138,7 +138,6 @@ export const SearchForm: React.FC = () => {
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
   const [isNameNotSupported, setIsNameNotSupported] = useState<boolean>(false);
 
-  // TODO: Normalize names -- validate
   const { data, isLoading } = useGetNamesByNameQuery(
     { labelName: `${searchValue}` },
     { skip: searchValue === null || isNameInvalid }

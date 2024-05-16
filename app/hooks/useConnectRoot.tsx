@@ -1,10 +1,6 @@
 import "@therootnetwork/api-types"; // optional, for Typescript support
 import { ApiPromise } from "@polkadot/api";
-import {
-  NetworkName,
-  getApiOptions,
-  getPublicProvider,
-} from "@therootnetwork/api";
+import { getApiOptions, getPublicProvider } from "@therootnetwork/api";
 import { useAccount } from "wagmi";
 import { useEffect, useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
