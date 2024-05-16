@@ -12,7 +12,7 @@ import { Address } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
-import { useAccount, useEnsAddress, useEnsName } from "wagmi";
+import { useEnsAddress, useEnsName } from "wagmi";
 import { LinkProps } from "@/interfaces/components/transaction";
 
 import useRecords from "@/hooks/useRecords";
@@ -23,7 +23,7 @@ import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 
 export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
-  const { domain: domainState, owner, ensName } = props;
+  const { domain: domainState, owner, ensName, activeAddress } = props;
 
   const dispatch = useDispatch();
 
@@ -32,12 +32,11 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
     { skip: domainState?.name === null }
   );
 
-  const { address } = useAccount();
   const { refetch: refetchEnsAddr } = useEnsAddress({
     name: domainState?.name || "",
   });
 
-  const { refetch: refetchEnsName } = useEnsName({ address });
+  const { refetch: refetchEnsName } = useEnsName({ address: activeAddress });
   const { closeModal } = useModalState();
 
   const domain = data?.wrappedDomains[0]?.domain;
@@ -105,7 +104,11 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
       setIsPending(false);
       refetchEnsAddr();
 
-      // What is this again for?
+      /**
+       * Trigger the refetch when setting the address
+       * record of a primary name so that the components listening
+       * to useEnsName hook will update the state
+       */
       if (ensName === domainState?.name) {
         refetchEnsName();
       }
@@ -148,7 +151,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
       ) : (
         <RemoveAddress
           futurePassInput={linkedAddr}
-          disableBack={isPending || isSuccess}
+          disableBack={isTransactionLoading || isPending || isSuccess}
           toggleRemoveMode={() => {
             setIsProgressVisible(false);
             setIsRemoveMode(!isRemoveMode);

@@ -13,6 +13,7 @@ import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 import { isEmpty } from "lodash";
 import { LinkProps } from "@/interfaces/components/transaction";
+import { useEnsName } from "wagmi";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -20,7 +21,7 @@ import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 
 export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
-  const { domain } = props;
+  const { domain, activeAddress } = props;
   const { closeModal } = useModalState();
 
   const dispatch = useDispatch();
@@ -36,6 +37,8 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const [inputAddr, setInputAddr] = useState<string>("");
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
+
+  const { refetch } = useEnsName({ address: activeAddress });
 
   /** Use the isLoading Flag here for the progress bar */
   const { setAddressRecord, isLoading } = useRecords();
@@ -79,6 +82,8 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
     if (isCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      setIsPending(false);
+      refetch();
     }
   }, [isCompleted]);
 

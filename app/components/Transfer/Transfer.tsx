@@ -59,9 +59,8 @@ export const Transfer: React.FC<TransactionProps> = (
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
 
-  const [isWatchingAddrUpdate, setWatchingAddrUpdate] =
-    useState<boolean>(false);
-  const [isWatchingTransfer, setWatchingTransfer] = useState<boolean>(false);
+  const [isWatchingAddrUpdate, setWatchAddrUpdate] = useState<boolean>(false);
+  const [isWatchingTransfer, setWatchTransfer] = useState<boolean>(false);
 
   const [inputAddr, setInputAddr] = useState<string>("");
   const [txHash, setTxHash] = useState<string>("");
@@ -72,13 +71,11 @@ export const Transfer: React.FC<TransactionProps> = (
   const { isWaiting: isAddrUpdating, isCompleted: isAddrUpdated } =
     useBlockLatency({
       enabled: isWatchingAddrUpdate,
-      blocksToWait: 3,
     });
 
   const { isWaiting: isTransferring, isCompleted: isTransferred } =
     useBlockLatency({
       enabled: isWatchingTransfer,
-      blocksToWait: 3,
     });
 
   const isTransactionLoading =
@@ -102,7 +99,7 @@ export const Transfer: React.FC<TransactionProps> = (
     });
 
     if (isSuccess) {
-      setWatchingAddrUpdate(true);
+      setWatchAddrUpdate(true);
       refetch();
     } else {
       setIsError(true);
@@ -117,7 +114,7 @@ export const Transfer: React.FC<TransactionProps> = (
       const { data, isSuccess } = await transfer({ name, newOwner: inputAddr });
 
       if (isSuccess) {
-        setWatchingTransfer(true);
+        setWatchTransfer(true);
         setTxHash(data.hash);
       } else {
         setIsError(true);

@@ -49,12 +49,13 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
+  const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
+
   const [ensNameData, setEnsPublicName] = useState<string>(String(ensName));
-  const [isWatchingSetPrimary, setWatchingPrimary] = useState<boolean>(false);
-  const [isWatchingSetAddr, setWatchingSetAddr] = useState<boolean>(false);
+  const [isWatchingSetPrimary, setWatchPrimary] = useState<boolean>(false);
+  const [isWatchingSetAddr, setWatchSetAddr] = useState<boolean>(false);
 
   const [txHash, setTxHash] = useState<string>("");
 
@@ -101,7 +102,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   const postTransaction = (isSuccess: boolean, hash: string) => {
     if (isSuccess) {
-      setWatchingPrimary(true);
+      setWatchPrimary(true);
       setTxHash(hash);
     } else {
       setIsError(true);
@@ -152,6 +153,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     };
   };
 
+  // TODO: Clean this up
   const handleSetPrimary = async () => {
     const { transaction } = getStep();
 
@@ -163,12 +165,18 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
       const { isSuccess, data } = await handleSetAddress();
       postTransaction(isSuccess, data.hash);
     } else {
-      const { isSuccess, data } = await handleSetAddress();
-      if (isSuccess) {
-        setWatchingSetAddr(true);
+      if (!isSetAddrCompleted) {
+        const { isSuccess } = await handleSetAddress();
+        if (isSuccess) {
+          setWatchSetAddr(true);
+        } else {
+          setIsError(true);
+          setIsPending(false);
+        }
       } else {
-        setIsError(true);
-        setIsPending(false);
+        initializeFlags();
+        const { isSuccess, data } = await handleSetPrimaryName();
+        postTransaction(isSuccess, data.hash);
       }
     }
   };

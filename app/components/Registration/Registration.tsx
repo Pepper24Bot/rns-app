@@ -78,31 +78,29 @@ export const RegisterName: React.FC = () => {
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
-  const [isApprovalSuccess, setIsApprovalSuccess] = useState<boolean>(false);
-  const [isRegisterSuccess, setIsRegisterSuccess] = useState<boolean>(false);
 
   const [isError, setIsError] = useState<boolean>(false);
   const [isCooldown, setCooldown] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
+
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [areBtnsDisabled, setAreBtnsDisabled] = useState<boolean>(true);
+
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [isSkipCommit, setSkipCommit] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
 
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
-  const [isApprovedStarted, setIsApprovedStarted] = useState<boolean>(false);
+  const [isWatchingApproval, setWatchApproval] = useState<boolean>(false);
 
   const { isWaiting: isApproving, isCompleted: isApproved } = useBlockLatency({
-    enabled: isApprovedStarted,
-    blocksToWait: 3,
+    enabled: isWatchingApproval,
   });
 
   const { isWaiting: isRegistering, isCompleted: isRegistered } =
     useBlockLatency({
       enabled: isBlockEnabled,
-      blocksToWait: 2,
     });
 
   /**
@@ -177,7 +175,7 @@ export const RegisterName: React.FC = () => {
       initializeFlags();
 
       if (!isSkipCommit) {
-        const { isSuccess, error } = await commit({ hash: hashStr });
+        const { isSuccess } = await commit({ hash: hashStr });
 
         if (isSuccess) {
           setCooldown(true);
@@ -206,23 +204,20 @@ export const RegisterName: React.FC = () => {
    * calls approval handler from useRegister hook
    */
   const handleApproval = async () => {
-    if (isCommitSuccess) {
-      /**
-       * Recommended slippage: 5-10%
-       * https://docs.ens.domains/registry/eth#registering
-       */
-      const slippage = 0.1;
-      const { isSuccess } = await approve({
-        payment,
-        fee: rentFee * (1 + slippage),
-      });
+    /**
+     * Recommended slippage: 5-10%
+     * https://docs.ens.domains/registry/eth#registering
+     */
+    const slippage = 0.1;
+    const { isSuccess } = await approve({
+      payment,
+      fee: rentFee * (1 + slippage),
+    });
 
-      if (isSuccess) {
-        setIsApprovalSuccess(isSuccess);
-        setIsApprovedStarted(true);
-      } else {
-        setFlagsWhenError();
-      }
+    if (isSuccess) {
+      setWatchApproval(true);
+    } else {
+      setFlagsWhenError();
     }
   };
 
@@ -236,25 +231,23 @@ export const RegisterName: React.FC = () => {
     const paymentAddress = (payment?.address ||
       PAYMENT_METHOD[0].address) as Address;
 
-    if (isApprovalSuccess && isApproved) {
-      const { isSuccess, data } = await register({
-        resolver,
-        args: {
-          name,
-          owner: address,
-          duration,
-          secret,
-          resolverAddr,
-          paymentAddress,
-        },
-      });
+    const { isSuccess, data } = await register({
+      resolver,
+      args: {
+        name,
+        owner: address,
+        duration,
+        secret,
+        resolverAddr,
+        paymentAddress,
+      },
+    });
 
-      if (isSuccess) {
-        setIsBlockEnabled(true);
-        setTxHash(data.hash);
-      } else {
-        setFlagsWhenError();
-      }
+    if (isSuccess) {
+      setIsBlockEnabled(true);
+      setTxHash(data.hash);
+    } else {
+      setFlagsWhenError();
     }
   };
 
@@ -287,20 +280,24 @@ export const RegisterName: React.FC = () => {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       updateName({ status: "Registered" });
-      setIsRegisterSuccess(true);
     }
   }, [isRegistered]);
 
   useEffect(() => {
-    handleApproval();
+    if (isCommitSuccess) {
+      handleApproval();
+    }
+
     if (!isSkipCommit) {
       setCooldown(false);
     }
   }, [isCommitSuccess]);
 
   useEffect(() => {
-    handleRegister();
-  }, [isApprovalSuccess, isApproved]);
+    if (isApproved) {
+      handleRegister();
+    }
+  }, [isApproved]);
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
@@ -312,7 +309,7 @@ export const RegisterName: React.FC = () => {
 
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
-      <Form isShowing={!isRegisterSuccess} rentFee={rentFee} />
+      <Form isShowing={!isRegistered} rentFee={rentFee} />
       <FlexCenter py={2}>
         <Relative>
           <Collapse in={!isBalanceSufficient}>
@@ -326,7 +323,7 @@ export const RegisterName: React.FC = () => {
                 isError={isError}
                 isPaused={!isTransactionLoading}
                 isVisible={isProgressVisible}
-                isSuccess={isRegisterSuccess}
+                isSuccess={isRegistered}
               />
               <Collapse orientation="horizontal" in={isCooldown}>
                 <CircularProgress
@@ -344,7 +341,7 @@ export const RegisterName: React.FC = () => {
               </Tip>
             </FlexLeft>
           </Collapse>
-          <ViewTransaction isVisible={isRegisterSuccess} hash={txHash} />
+          <ViewTransaction isVisible={isRegistered} hash={txHash} />
           <Collapse in={!isProgressVisible}>
             <FlexCenter>
               <Tip>
@@ -357,7 +354,7 @@ export const RegisterName: React.FC = () => {
       </FlexCenter>
 
       {/* Hide these action buttons after the registration */}
-      <Collapse in={!isRegisterSuccess}>
+      <Collapse in={!isRegistered}>
         <Grid pt={2}>
           {address ? (
             <FlexJustified>
@@ -381,14 +378,14 @@ export const RegisterName: React.FC = () => {
               </ActionButton>
               <FlexRight>
                 <ActionButton
-                  disabled={areBtnsDisabled && !isRegisterSuccess}
+                  disabled={areBtnsDisabled && !isRegistered}
                   sx={{ marginRight: 1 }}
                   variant="text"
                   onClick={() => {
                     closeModal();
                   }}
                 >
-                  {isRegisterSuccess ? "Close" : "Cancel"}
+                  {isRegistered ? "Close" : "Cancel"}
                 </ActionButton>
                 <InformationTip title="Ooops! We are not live yet!" arrow>
                   <Grid>
@@ -396,11 +393,11 @@ export const RegisterName: React.FC = () => {
                       disabled={areBtnsDisabled}
                       variant="contained"
                       onClick={() => {
-                        if (!isApprovalSuccess && isCommitSuccess) {
+                        if (!isApproved && isCommitSuccess) {
                           setIsError(false);
                           setAreBtnsDisabled(true);
                           handleApproval();
-                        } else if (!isRegisterSuccess && isApprovalSuccess) {
+                        } else if (!isRegistered && isApproved) {
                           setIsError(false);
                           setAreBtnsDisabled(true);
                           handleRegister();

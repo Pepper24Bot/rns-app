@@ -18,4 +18,5 @@ export interface PrimaryProps extends TransactionProps {
 
 export interface LinkProps extends TransactionProps {
     ensName?: string;
+    activeAddress?: Address;
 }

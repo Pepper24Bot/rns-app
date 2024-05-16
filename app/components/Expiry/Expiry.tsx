@@ -78,28 +78,25 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
    * Page 02 = Summary Form
    */
   const [extendPage, setExtendPage] = useState<number>(1);
-  const [isPending, setIsPending] = useState<boolean>(false);
 
-  const [isApprovalSuccess, setIsApprovalSuccess] = useState<boolean>(false);
-  const [isExtendSuccess, setIsExtendSuccess] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [txHash, setTxHash] = useState<string>("");
 
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
-  const [isApprovedStarted, setIsApprovedStarted] = useState<boolean>(false);
+  const [isWatchingExtend, setWatchExtend] = useState<boolean>(false);
+  const [isWatchingApproval, setWatchApproval] = useState<boolean>(false);
 
   const { isWaiting: isApproving, isCompleted: isApproved } = useBlockLatency({
-    enabled: isApprovedStarted,
-    blocksToWait: 3,
+    enabled: isWatchingApproval,
   });
 
   const { isWaiting: isExtending, isCompleted: isExtended } = useBlockLatency({
-    enabled: isBlockEnabled,
-    blocksToWait: 2,
+    enabled: isWatchingExtend,
   });
 
   const { approve, isApprovalLoading, getBalance } = useToken();
@@ -146,8 +143,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     });
 
     if (isSuccess) {
-      setIsApprovalSuccess(isSuccess);
-      setIsApprovedStarted(true);
+      setWatchApproval(true);
     } else {
       setIsError(true);
       setIsPending(false);
@@ -155,19 +151,17 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   };
 
   const handleExtend = async () => {
-    if (isApprovalSuccess && isApproved) {
-      const { isSuccess, data } = await renew({
-        name: labelName,
-        duration,
-      });
+    const { isSuccess, data } = await renew({
+      name: labelName,
+      duration,
+    });
 
-      if (isSuccess) {
-        setIsBlockEnabled(true);
-        setTxHash(data.hash);
-      } else {
-        setIsError(true);
-        setIsPending(false);
-      }
+    if (isSuccess) {
+      setWatchExtend(true);
+      setTxHash(data.hash);
+    } else {
+      setIsError(true);
+      setIsPending(false);
     }
   };
 
@@ -192,14 +186,16 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     if (isExtended) {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsExtendSuccess(true);
+      setIsSuccess(true);
       setIsPending(false);
     }
   }, [isExtended]);
 
   useEffect(() => {
-    handleExtend();
-  }, [isApprovalSuccess, isApproved]);
+    if (isApproved) {
+      handleExtend();
+    }
+  }, [isApproved]);
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
@@ -228,7 +224,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               title={
                 <FlexLeft>
                   <IconButton
-                    disabled={isPending || isExtendSuccess}
+                    disabled={isPending || isSuccess}
                     onClick={() => {
                       // Go back to the previous page
                       setExtendPage(extendPage - 1);
@@ -248,9 +244,9 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                     isError={isError}
                     isPaused={!isTransactionLoading}
                     isVisible={isProgressVisible}
-                    isSuccess={isExtendSuccess}
+                    isSuccess={isSuccess}
                   />
-                  <ViewTransaction isVisible={isExtendSuccess} hash={txHash} />
+                  <ViewTransaction isVisible={isSuccess} hash={txHash} />
                 </Relative>
               </FlexCenter>
             </Collapse>
@@ -266,15 +262,12 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                 closeModal();
               }}
             >
-              {isExtendSuccess ? "Close" : "Cancel"}
+              {isSuccess ? "Close" : "Cancel"}
             </ActionButton>
-            <Collapse orientation="horizontal" in={!isExtendSuccess}>
+            <Collapse orientation="horizontal" in={!isSuccess}>
               <ActionButton
                 disabled={
-                  isPending ||
-                  isExtendSuccess ||
-                  isExtending ||
-                  !isBalanceSufficient
+                  isPending || isSuccess || isExtending || !isBalanceSufficient
                 }
                 variant="contained"
                 onClick={() => {
@@ -283,7 +276,12 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                     setExtendPage(extendPage + 1);
                     updateName({ fee: { total: rentFee } });
                   } else {
-                    handleApproval();
+                    if (isApproved) {
+                      initializeFlags();
+                      handleExtend();
+                    } else {
+                      handleApproval();
+                    }
                   }
                 }}
               >
