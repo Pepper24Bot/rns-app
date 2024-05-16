@@ -3,24 +3,26 @@ import { isEmpty } from "lodash";
 import { config } from "@/chains/config";
 import { useEffect, useState } from "react";
 import { SECONDS } from "@/constants/components";
-import { readContract, waitForTransactionReceipt } from "@wagmi/core";
-import { ErrorResponse, RentPrice, Response } from "@/services/interfaces";
+import { readContract } from "@wagmi/core";
+import { ErrorResponse, RentPrice } from "@/services/interfaces";
 import { ExtendProps, RenewProps } from "@/interfaces/expiry";
 import { Address } from "viem";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { initializeResponse } from "@/utils/common";
 
 import useContractDetails from "./useContractDetails";
 import useProxyExtend from "./FuturePass/useProxyExtend";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import useWaitTransaction from "./useWaitTransaction";
 
 /** TODO: Optimize this hook */
 export default function useExtend(props: ExtendProps) {
-  const { name, year, owner, token, isEnabled } = props;
+  const { name, year, token, isEnabled } = props;
+  const controller = useContractDetails({ action: "RegistrarController" });
 
+  const { abi, address } = controller;
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
-
-  const controller = useContractDetails({ action: "RegistrarController" });
-  const { abi, address } = controller;
+  const { waitForWriteTransaction } = useWaitTransaction();
   const { writeContractAsync } = useWriteContract();
   const { extendProxyCall } = useProxyExtend({
     registrarController: controller,
@@ -36,10 +38,6 @@ export default function useExtend(props: ExtendProps) {
 
   const duration = year * SECONDS;
 
-  const initializeResponse = (): Response => {
-    return { error: null, isSuccess: false, data: null };
-  };
-
   const getRentPrice = async () => {
     const data = await readContract(config, {
       abi,
@@ -51,19 +49,8 @@ export default function useExtend(props: ExtendProps) {
     setRentPrice(data as unknown as RentPrice);
   };
 
-  const waitForTransaction = async (hash: Address) => {
-    const receipt = await waitForTransactionReceipt(config, {
-      hash,
-    });
-
-    return {
-      isSuccess: true,
-      error: null,
-      data: {
-        hash,
-        receipt,
-      },
-    };
+  const getRentFee = () => {
+    return rentPrice ? (rentPrice as unknown as RentPrice) : initialRentPrice;
   };
 
   const handleExtend = async (props: RenewProps) => {
@@ -72,25 +59,26 @@ export default function useExtend(props: ExtendProps) {
 
     if (name && duration) {
       try {
+        let renewHash = "0x" as Address;
+
         if (root.isFpActive) {
-          const renewHash = await extendProxyCall({
+          renewHash = await extendProxyCall({
             name,
             duration,
             token,
           });
-          setExtendLoading(true);
-          response = await waitForTransaction(renewHash);
         } else {
-          const renewHash = await writeContractAsync({
+          renewHash = await writeContractAsync({
             abi,
             address,
             functionName: "renewWithERC20",
-            account: owner as Address,
+            account: root.address as Address,
             args: [name, duration, token],
           });
-          setExtendLoading(true);
-          response = await waitForTransaction(renewHash);
         }
+
+        setExtendLoading(true);
+        response = await waitForWriteTransaction(renewHash);
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
@@ -98,7 +86,7 @@ export default function useExtend(props: ExtendProps) {
     }
 
     setExtendLoading(false);
-    console.log("extend response:: ", response);
+    console.log("Extend-Response:: ", response);
     return response;
   };
 
@@ -108,13 +96,9 @@ export default function useExtend(props: ExtendProps) {
     }
   }, [name, isEnabled, duration, token]);
 
-  const rentFee = rentPrice
-    ? (rentPrice as unknown as RentPrice)
-    : initialRentPrice;
-
   return {
     duration,
-    rentPrice: rentFee,
+    rentPrice: getRentFee(),
     renew: handleExtend,
     isLoading: isExtendLoading,
     isExtendLoading,

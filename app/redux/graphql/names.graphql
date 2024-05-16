@@ -1,5 +1,5 @@
 query GetNamesByName($labelName: String!) {
-  nameWrappeds(where: { domain_: { labelName: $labelName } }) {
+  wrappedDomains(where: { domain_: { labelName: $labelName } }) {
     id
     name
     owner {
@@ -40,14 +40,12 @@ query GetNamesByName($labelName: String!) {
       }
     }
     fuses
-    transactionID
     expiryDate
-    blockNumber
   }
 }
 
 query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
-  nameWrappeds(
+  wrappedDomains(
     where: { domain_: { labelName_contains: $labelName }, owner_: { id: $id } }
   ) {
     id
@@ -90,14 +88,12 @@ query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
       }
     }
     fuses
-    transactionID
     expiryDate
-    blockNumber
   }
 }
 
 query GetNamesById($id: ID!) {
-  nameWrappeds(where: { owner_: { id: $id } }) {
+  wrappedDomains(where: { owner_: { id: $id } }) {
     id
     name
     owner {
@@ -138,14 +134,12 @@ query GetNamesById($id: ID!) {
       }
     }
     fuses
-    transactionID
     expiryDate
-    blockNumber
   }
 }
 
 query GetPrimaryNameResolver($id: ID!) {
-  nameWrappeds(where: { owner_: { id: $id } }, first: 1) {
+  wrappedDomains(where: { owner_: { id: $id } }, first: 1) {
     owner {
       id
       domains(where: { resolver_: { address_not: "" } }) {

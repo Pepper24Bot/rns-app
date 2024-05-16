@@ -54,7 +54,7 @@ const Button = styled(BaseButton)(({ theme }) => ({
   },
 }));
 
-export interface Form {
+export interface FormProps {
   name?: string;
   rentFee?: number;
   transactionFee?: number;
@@ -64,7 +64,7 @@ export interface Form {
   isShowing?: boolean;
 }
 
-export const Form: React.FC<Form> = (props: Form) => {
+export const Form: React.FC<FormProps> = (props: FormProps) => {
   const { name: nameProp, isShowing = true, rentFee } = props;
   const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
     useDomainState();

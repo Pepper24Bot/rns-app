@@ -3,7 +3,8 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: process.env.NEXT_PUBLIC_GRAPHQL_URL,
+  // schema: `${process.env.NEXT_PUBLIC_GRAPHQL_URL}/graphql`,
+  schema: "https://subgraph-stage.rootnameservice.com/subgraphs/name/graphprotocol/ens",
   documents: "app/**/*.graphql",
   generates: {
     "app/redux/graphql/hooks.ts": {

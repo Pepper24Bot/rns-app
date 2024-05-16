@@ -12,11 +12,11 @@ import {
 import { grey } from "@mui/material/colors";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 import { DISCORD, DOCS, EMAIL, TWITTER } from "@/constants/url";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 import Image from "next/image";
 import EmailSubscription from "./EmailSubscription";
 import FeatureToggle from "../Reusables/FeatureToggle";
-import { FONT_WEIGHT } from "../Theme/Global";
 
 const Page = styled(Grid)(({ theme }) => ({
   width: "100%",

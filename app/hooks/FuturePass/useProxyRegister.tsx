@@ -32,7 +32,7 @@ export default function useProxyRegister(props: ProxyProps) {
           },
         });
 
-        console.log("commit-transaction:: ", transaction);
+        console.log("Commit-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
         console.log("error:: ", error);
@@ -68,7 +68,7 @@ export default function useProxyRegister(props: ProxyProps) {
         },
       });
 
-      console.log("register-transaction:: ", transaction);
+      console.log("Register-Transaction:: ", transaction);
       return transaction;
     } catch (error) {
       console.log("error:: ", error);

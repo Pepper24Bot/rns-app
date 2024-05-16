@@ -39,7 +39,6 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
   width: "350px",
-  // height: "425px",
   display: "grid",
   alignContent: "space-between",
 
@@ -79,28 +78,25 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
    * Page 02 = Summary Form
    */
   const [extendPage, setExtendPage] = useState<number>(1);
-  const [isPending, setIsPending] = useState<boolean>(false);
 
-  const [isApprovalSuccess, setIsApprovalSuccess] = useState<boolean>(false);
-  const [isExtendSuccess, setIsExtendSuccess] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [txHash, setTxHash] = useState<string>("");
 
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
-  const [isApprovedStarted, setIsApprovedStarted] = useState<boolean>(false);
+  const [isWatchingExtend, setWatchExtend] = useState<boolean>(false);
+  const [isWatchingApproval, setWatchApproval] = useState<boolean>(false);
 
-  const { isCompleted: isApproved } = useBlockLatency({
-    enabled: isApprovedStarted,
-    blocksToWait: 3,
+  const { isWaiting: isApproving, isCompleted: isApproved } = useBlockLatency({
+    enabled: isWatchingApproval,
   });
 
-  const { isWaiting, isCompleted } = useBlockLatency({
-    enabled: isBlockEnabled,
-    blocksToWait: 2,
+  const { isWaiting: isExtending, isCompleted: isExtended } = useBlockLatency({
+    enabled: isWatchingExtend,
   });
 
   const { approve, isApprovalLoading, getBalance } = useToken();
@@ -111,7 +107,6 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     isLoading,
   } = useExtend({
     name: labelName,
-    owner: address,
     year,
     token,
     isEnabled: isDetailsEnabled,
@@ -122,7 +117,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     payment,
   });
 
-  const isTransactionLoading = isLoading || isApprovalLoading || isWaiting;
+  const isTransactionLoading =
+    isLoading || isApprovalLoading || isExtending || isApproving;
 
   const initializeFlags = () => {
     // display progress bar
@@ -147,8 +143,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     });
 
     if (isSuccess) {
-      setIsApprovalSuccess(isSuccess);
-      setIsApprovedStarted(true);
+      setWatchApproval(true);
     } else {
       setIsError(true);
       setIsPending(false);
@@ -156,19 +151,17 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   };
 
   const handleExtend = async () => {
-    if (isApprovalSuccess && isApproved) {
-      const { isSuccess, error, data } = await renew({
-        name: labelName,
-        duration,
-      });
+    const { isSuccess, data } = await renew({
+      name: labelName,
+      duration,
+    });
 
-      if (isSuccess) {
-        setIsBlockEnabled(true);
-        setTxHash(data.hash);
-      } else {
-        setIsError(true);
-        setIsPending(false);
-      }
+    if (isSuccess) {
+      setWatchExtend(true);
+      setTxHash(data.hash);
+    } else {
+      setIsError(true);
+      setIsPending(false);
     }
   };
 
@@ -190,16 +183,19 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   }, [address, rentFee]);
 
   useEffect(() => {
-    if (isCompleted) {
+    if (isExtended) {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsExtendSuccess(true);
+      setIsSuccess(true);
+      setIsPending(false);
     }
-  }, [isCompleted]);
+  }, [isExtended]);
 
   useEffect(() => {
-    handleExtend();
-  }, [isApprovalSuccess, isApproved]);
+    if (isApproved) {
+      handleExtend();
+    }
+  }, [isApproved]);
 
   useEffect(() => {
     // TODO: Fix this, should not manually resetting the name details here in this component
@@ -228,7 +224,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               title={
                 <FlexLeft>
                   <IconButton
-                    disabled={isPending}
+                    disabled={isPending || isSuccess}
                     onClick={() => {
                       // Go back to the previous page
                       setExtendPage(extendPage - 1);
@@ -248,9 +244,9 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
                     isError={isError}
                     isPaused={!isTransactionLoading}
                     isVisible={isProgressVisible}
-                    isSuccess={isExtendSuccess}
+                    isSuccess={isSuccess}
                   />
-                  <ViewTransaction isVisible={isExtendSuccess} hash={txHash} />
+                  <ViewTransaction isVisible={isSuccess} hash={txHash} />
                 </Relative>
               </FlexCenter>
             </Collapse>
@@ -259,35 +255,39 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
         <Grid mt={2}>
           <FlexRight>
             <ActionButton
-              disabled={isPending || isExtendSuccess || isWaiting}
+              disabled={isPending || isExtending}
               sx={{ marginRight: 1 }}
               variant="text"
               onClick={() => {
                 closeModal();
               }}
             >
-              Cancel
+              {isSuccess ? "Close" : "Cancel"}
             </ActionButton>
-            <ActionButton
-              disabled={
-                isPending ||
-                isExtendSuccess ||
-                isWaiting ||
-                !isBalanceSufficient
-              }
-              variant="contained"
-              onClick={() => {
-                if (extendPage === 1) {
-                  // Move to the next page
-                  setExtendPage(extendPage + 1);
-                  updateName({ fee: { total: rentFee } });
-                } else {
-                  handleApproval();
+            <Collapse orientation="horizontal" in={!isSuccess}>
+              <ActionButton
+                disabled={
+                  isPending || isSuccess || isExtending || !isBalanceSufficient
                 }
-              }}
-            >
-              {extendPage === 1 ? "Next" : "Confirm"}
-            </ActionButton>
+                variant="contained"
+                onClick={() => {
+                  if (extendPage === 1) {
+                    // Move to the next page
+                    setExtendPage(extendPage + 1);
+                    updateName({ fee: { total: rentFee } });
+                  } else {
+                    if (isApproved) {
+                      initializeFlags();
+                      handleExtend();
+                    } else {
+                      handleApproval();
+                    }
+                  }
+                }}
+              >
+                {extendPage === 1 ? "Next" : "Confirm"}
+              </ActionButton>
+            </Collapse>
           </FlexRight>
         </Grid>
       </DetailsContainer>

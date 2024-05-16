@@ -12,15 +12,16 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 import { isEmpty } from "lodash";
-import { Link } from "./LinkAddress";
+import { LinkProps } from "@/interfaces/components/transaction";
+import { useEnsName } from "wagmi";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 
-export const AddRecord: React.FC<Link> = (props: Link) => {
-  const { domain } = props;
+export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
+  const { domain, activeAddress } = props;
   const { closeModal } = useModalState();
 
   const dispatch = useDispatch();
@@ -36,6 +37,8 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
   const [inputAddr, setInputAddr] = useState<string>("");
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
+
+  const { refetch } = useEnsName({ address: activeAddress });
 
   /** Use the isLoading Flag here for the progress bar */
   const { setAddressRecord, isLoading } = useRecords();
@@ -79,6 +82,8 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
     if (isCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      setIsPending(false);
+      refetch();
     }
   }, [isCompleted]);
 
@@ -126,24 +131,28 @@ export const AddRecord: React.FC<Link> = (props: Link) => {
       <Grid pt={3}>
         <FlexRight>
           <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
+            disabled={isPending || isWaiting}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
               closeModal();
             }}
           >
-            Cancel
+            {isSuccess ? "Close" : "Cancel"}
           </ActionButton>
-          <ActionButton
-            disabled={isEmpty(inputAddr) || isPending || isSuccess || isWaiting}
-            variant="contained"
-            onClick={() => {
-              handleSetAddress();
-            }}
-          >
-            Confirm
-          </ActionButton>
+          <Collapse orientation="horizontal" in={!isSuccess}>
+            <ActionButton
+              disabled={
+                isEmpty(inputAddr) || isPending || isSuccess || isWaiting
+              }
+              variant="contained"
+              onClick={() => {
+                handleSetAddress();
+              }}
+            >
+              Confirm
+            </ActionButton>
+          </Collapse>
         </FlexRight>
       </Grid>
     </Grid>

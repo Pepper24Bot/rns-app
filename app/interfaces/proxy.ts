@@ -4,4 +4,5 @@ export interface ProxyProps {
     registrarController?: ContractDetails;
     publicResolver?: ContractDetails;
     reverseRegistrar?: ContractDetails
+    nameWrapper?: ContractDetails
 }

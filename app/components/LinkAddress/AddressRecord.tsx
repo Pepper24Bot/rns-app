@@ -8,11 +8,12 @@ import {
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/utils/common";
-import { Link } from "./LinkAddress";
 import { Address } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
+import { useEnsAddress, useEnsName } from "wagmi";
+import { LinkProps } from "@/interfaces/components/transaction";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -20,10 +21,9 @@ import UpdateRecord from "./UpdateRecord";
 import RemoveAddress from "./RemoveRecord";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
-import { useAccount, useEnsAddress, useEnsName } from "wagmi";
 
-export const AddressRecord: React.FC<Link> = (props: Link) => {
-  const { domain: domainState, owner, ensName } = props;
+export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
+  const { domain: domainState, owner, ensName, activeAddress } = props;
 
   const dispatch = useDispatch();
 
@@ -32,14 +32,14 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     { skip: domainState?.name === null }
   );
 
-  const { address } = useAccount();
   const { refetch: refetchEnsAddr } = useEnsAddress({
     name: domainState?.name || "",
   });
-  const { refetch: refetchEnsName } = useEnsName({ address });
+
+  const { refetch: refetchEnsName } = useEnsName({ address: activeAddress });
   const { closeModal } = useModalState();
 
-  const domain = data?.nameWrappeds[0]?.domain;
+  const domain = data?.wrappedDomains[0]?.domain;
   const linkedAddr = domain?.resolver?.addr?.id || "";
 
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -101,8 +101,14 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
     if (isCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      setIsPending(false);
       refetchEnsAddr();
 
+      /**
+       * Trigger the refetch when setting the address
+       * record of a primary name so that the components listening
+       * to useEnsName hook will update the state
+       */
       if (ensName === domainState?.name) {
         refetchEnsName();
       }
@@ -145,7 +151,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
       ) : (
         <RemoveAddress
           futurePassInput={linkedAddr}
-          disableBack={isPending || isSuccess}
+          disableBack={isTransactionLoading || isPending || isSuccess}
           toggleRemoveMode={() => {
             setIsProgressVisible(false);
             setIsRemoveMode(!isRemoveMode);
@@ -167,18 +173,21 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
         </FlexCenter>
       </Collapse>
 
-      <Collapse in={isEditMode || isRemoveMode}>
-        <FlexRight pt={3}>
-          <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
-            sx={{ marginRight: 1 }}
-            variant="text"
-            onClick={() => {
-              closeModal();
-            }}
-          >
-            Cancel
-          </ActionButton>
+      <FlexRight pt={3}>
+        <ActionButton
+          disabled={isPending || isWaiting}
+          sx={{ marginRight: 1 }}
+          variant="text"
+          onClick={() => {
+            closeModal();
+          }}
+        >
+          {isSuccess ? "Close" : "Cancel"}
+        </ActionButton>
+        <Collapse
+          orientation="horizontal"
+          in={(isEditMode || isRemoveMode) && !isSuccess}
+        >
           <ActionButton
             disabled={
               inputValue === linkedAddr || isPending || isSuccess || isWaiting
@@ -194,8 +203,8 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
           >
             Confirm
           </ActionButton>
-        </FlexRight>
-      </Collapse>
+        </Collapse>
+      </FlexRight>
     </Grid>
   );
 };

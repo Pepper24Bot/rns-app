@@ -1,15 +1,10 @@
 import { ContractDetails } from "@/hooks/useContractDetails";
+import { Payment } from "@/redux/domain/domainSlice";
 import { Address } from "viem";
 
-// TODO: Clean Address | string types here
 export interface RegisterProps {
     nameHash?: Address;
     resolver?: ContractDetails;
-    fees?: {
-        gasPrice?: bigint;
-        rent: bigint;
-        totalFee?: number;
-    };
     args: {
         name: string;
         owner: Address | string;
@@ -17,13 +12,35 @@ export interface RegisterProps {
         secret: string;
         resolverAddr: Address | string;
         paymentAddress?: Address | string;
-        futurePassAddress?: Address | string;
         addressRecord?: string;
     };
 }
 
 export interface CommitProps {
+    /**
+     * The hash returned by the makeCommitment function
+     */
     hash: string;
-    controller?: ContractDetails;
-    fpAccount?: string;
+}
+
+export interface MakeCommitProps {
+    /**
+     * name to be registered.
+     * raw name, without .root
+     */
+    name: string;
+
+    /**
+     * year count, to be converted into seconds
+     */
+    year: number;
+
+    /**
+     * Payment Address:
+     * ROOT = 0xcCcCCccC00000001000000000000000000000000
+     * USDC = 0xCCcCCcCC00000C64000000000000000000000000
+     */
+    token: Address;
+
+    isEnabled?: boolean;
 }

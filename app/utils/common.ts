@@ -1,6 +1,7 @@
 import { ModalState } from "@/redux/modal/modalSlice";
 import { formatDistanceStrict } from "date-fns";
 import { isEmpty } from "lodash";
+import { Response } from "@/services/interfaces";
 
 /**
  * This will get the value of the provided key
@@ -244,3 +245,18 @@ export const isCommitmentValid = (commitmentAge: string) => {
     const age = commitmentAge.split(" minute")[0];
     return Number(age) >= 1 && Number(age) <= 1440
 }
+
+/**
+ * Use this util to initialize the response of the hooks
+ * @returns 
+ */
+export const initializeResponse = (): Response => {
+    return {
+        error: null,
+        isSuccess: false,
+        data: {
+            hash: "",
+            receipt: "",
+        },
+    };
+}; 

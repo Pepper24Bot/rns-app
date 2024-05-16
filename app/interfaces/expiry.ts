@@ -1,9 +1,8 @@
-import { Payment } from "@/redux/domain/domainSlice";
 import { Address } from "viem";
 
 export interface ExtendProps {
     /**
-     * name to be registered.
+     * name to extend.
      * raw name, without .root
      */
     name: string;
@@ -12,18 +11,10 @@ export interface ExtendProps {
      * year count, to be converted into seconds
      */
     year: number;
-    owner: Address | string;
+    token: Address | string;
     isEnabled?: boolean;
-    token: Address | string
 }
 
-export interface RenewProps {
-    name: string;
+export interface RenewProps extends Partial<ExtendProps> {
     duration: number;
-    owner?: Address | string;
-    token?: Address | string
-}
-
-export interface ApprovalProps {
-    fee: number;
 }

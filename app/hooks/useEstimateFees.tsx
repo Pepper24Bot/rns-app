@@ -28,7 +28,6 @@ export default function useEstimateFees() {
     const multiplier = 1.25; // For testing
     const fee = Number(estimatedGas) * multiplier;
 
-    console.log("fee:: ", fee);
     return Math.floor(fee);
   };
 

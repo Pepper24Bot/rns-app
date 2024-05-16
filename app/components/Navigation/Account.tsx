@@ -27,7 +27,7 @@ import { Address } from "viem";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import Image from "next/image";
-import useCreateAccount from "@/hooks/FuturePass/useCreateAccount";
+import useCreateAccount from "@/hooks/FuturePass/ProxyExtrinsic/useCreateAccount";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 
 const Container = styled(Grid)(({ theme }) => ({

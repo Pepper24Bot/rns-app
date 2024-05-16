@@ -2,7 +2,7 @@ import "@therootnetwork/api-types"; // optional, for Typescript support
 import { Address } from "viem";
 import { Contract } from "ethers";
 import { ProxyProps } from "@/interfaces/proxy";
-import { FuturePassRecord } from "@/interfaces/record";
+import { RecordProps } from "@/interfaces/record";
 import useSendProxyCall from "./useSendProxyCall";
 
 export default function useProxyRecord(props: ProxyProps) {
@@ -14,7 +14,7 @@ export default function useProxyRecord(props: ProxyProps) {
     return new Contract(resolver.address, resolver.abi);
   };
 
-  const setAddressProxyCall = async (props: FuturePassRecord) => {
+  const setAddressProxyCall = async (props: RecordProps) => {
     const { nameHash, address } = props;
 
     if (nameHash) {
@@ -32,7 +32,7 @@ export default function useProxyRecord(props: ProxyProps) {
           },
         });
 
-        console.log("address-record-transaction:: ", transaction);
+        console.log("SetAddress-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
         console.log("error:: ", error);

@@ -97,7 +97,6 @@ const NameContainer = styled(Grid)(({ theme }) => ({
   textOverflow: "ellipsis",
   overflow: "hidden",
   fontSize: "18px",
-  // fontWeight: FONT_WEIGHT.Bold,
 }));
 
 const Detail = styled(SecondaryLabel)(({ theme }) => ({
@@ -252,6 +251,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       id: menuOption.label,
       title: menuOption.title || menuOption.label,
       data,
+      isCloseDisabled: true,
+      isXDisabled: true,
     });
   };
 
@@ -322,8 +323,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                           icon: <PrimaryIcon />,
                           disabled: ensName === item.name,
                         },
+                        { label: "Transfer", icon: <TransferIcon /> },
                         // { label: "Update Image", icon: <PhotoIcon /> },
-                        // { label: "Transfer", icon: <TransferIcon /> },
                       ]}
                       hasButton
                       iconButton={<MoreIcon />}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { styled, Grid, alpha, Collapse } from "@mui/material";
-import { Domain } from "@/redux/graphql/hooks";
 import { FONT_WEIGHT } from "../Theme/Global";
 import {
   FlexTop,
@@ -12,14 +11,15 @@ import {
   Relative,
 } from "../Theme/StyledGlobal";
 
-import EnsImage from "../Reusables/EnsImage";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address, namehash } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
 import { useEnsAddress, useEnsName } from "wagmi";
+import { PrimaryProps } from "@/interfaces/components/transaction";
 
+import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import usePrimary from "@/hooks/usePrimary";
@@ -39,19 +39,9 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.35),
 }));
 
-export interface Primary {
-  activeAddress?: Address;
-  domain?: Partial<Domain>;
-  ensName?: string;
-  ensAddr?: string;
-  refetchEnsName?: () => void;
-  owner?: {
-    id?: string;
-  };
-}
-
-export const Primary: React.FC<Primary> = (props: Primary) => {
+export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const { domain, ensName, activeAddress } = props;
+
   const name = domain?.name || "";
   const resolverAddress = domain?.resolver?.address;
 
@@ -59,12 +49,14 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [resetProgress, setResetProgress] = useState<boolean>(false);
+
+  const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
 
   const [ensNameData, setEnsPublicName] = useState<string>(String(ensName));
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [isWatchingSetPrimary, setWatchPrimary] = useState<boolean>(false);
+  const [isWatchingSetAddr, setWatchSetAddr] = useState<boolean>(false);
+
   const [txHash, setTxHash] = useState<string>("");
 
   const { refetch } = useEnsName({ address: activeAddress });
@@ -72,16 +64,22 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
   const { closeModal } = useModalState();
   const { setAddressRecord } = useRecords();
   const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
-  const { isWaiting, isCompleted } = useBlockLatency({
-    enabled: isBlockEnabled,
-  });
+
+  const { isWaiting: isSettingAddr, isCompleted: isSetAddrCompleted } =
+    useBlockLatency({
+      enabled: isWatchingSetAddr,
+    });
+
+  const { isWaiting: isSettingPrimary, isCompleted: isPrimaryCompleted } =
+    useBlockLatency({
+      enabled: isWatchingSetPrimary,
+    });
 
   const ownerId = activeAddress?.toLowerCase() as Address;
   const ensAddress = ensAddr?.toLowerCase();
-  const isTransactionLoading = isLoading || isWaiting;
+  const isTransactionLoading = isLoading || isSettingPrimary || isSettingAddr;
 
   const setEnsRecord = async () => {
-    console.log("ensName:: ", ensName);
     if (isEmpty(ensName)) {
       const reverseNode = `${ownerId.slice(2)}.addr.reverse`;
       const reverseNamehash = namehash(reverseNode);
@@ -89,7 +87,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
         domainId: reverseNamehash,
       });
 
-      console.log("ensPublicName:: ", ensPublicName);
       setEnsPublicName(String(ensPublicName));
     }
   };
@@ -98,8 +95,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
     // display progress bar
     setIsPending(true);
     setIsProgressVisible(true);
-    // should always start to 0
-    setResetProgress(true);
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
     setIsSuccess(false);
@@ -107,20 +102,17 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
 
   const postTransaction = (isSuccess: boolean, hash: string) => {
     if (isSuccess) {
-      setIsBlockEnabled(true);
+      setWatchPrimary(true);
       setTxHash(hash);
     } else {
       setIsError(true);
       setIsPending(false);
     }
-
-    setResetProgress(false);
   };
 
   const handleSetPrimaryName = async () => {
     const reponse = await setPrimaryName({
       name,
-      address: ownerId,
       resolverAddress,
     });
 
@@ -161,10 +153,7 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
     };
   };
 
-  /**
-   * Conditions:
-   * Test deploy
-   */
+  // TODO: Clean this up
   const handleSetPrimary = async () => {
     const { transaction } = getStep();
 
@@ -176,25 +165,45 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
       const { isSuccess, data } = await handleSetAddress();
       postTransaction(isSuccess, data.hash);
     } else {
-      const { isSuccess, data } = await handleSetAddress();
-
-      if (isSuccess) {
-        const { isSuccess: primarySuccess, data: primaryData } =
-          await handleSetPrimaryName();
-        postTransaction(primarySuccess, primaryData.hash);
+      if (!isSetAddrCompleted) {
+        const { isSuccess } = await handleSetAddress();
+        if (isSuccess) {
+          setWatchSetAddr(true);
+        } else {
+          setIsError(true);
+          setIsPending(false);
+        }
       } else {
+        initializeFlags();
+        const { isSuccess, data } = await handleSetPrimaryName();
         postTransaction(isSuccess, data.hash);
       }
     }
   };
 
   useEffect(() => {
-    if (isCompleted) {
+    if (isSetAddrCompleted) {
+      // Refresh dashboard, in case the user cancels the transaction midway
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+
+      const setPrimaryName = async () => {
+        const { isSuccess: primarySuccess, data: primaryData } =
+          await handleSetPrimaryName();
+        postTransaction(primarySuccess, primaryData.hash);
+      };
+
+      setPrimaryName();
+    }
+  }, [isSetAddrCompleted]);
+
+  useEffect(() => {
+    if (isPrimaryCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      setIsPending(false);
       refetch();
     }
-  }, [isCompleted]);
+  }, [isPrimaryCompleted]);
 
   useEffect(() => {
     setEnsRecord();
@@ -255,24 +264,26 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
         </Collapse>
         <FlexRight pt={3}>
           <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
+            disabled={isPending || isTransactionLoading}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
               closeModal();
             }}
           >
-            Cancel
+            {isSuccess ? "Close" : "Cancel"}
           </ActionButton>
-          <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
-            variant="contained"
-            onClick={() => {
-              handleSetPrimary();
-            }}
-          >
-            Confirm
-          </ActionButton>
+          <Collapse orientation="horizontal" in={!isSuccess}>
+            <ActionButton
+              disabled={isSuccess || isPending || isTransactionLoading}
+              variant="contained"
+              onClick={() => {
+                handleSetPrimary();
+              }}
+            >
+              Confirm
+            </ActionButton>
+          </Collapse>
         </FlexRight>
       </Grid>
     </Container>

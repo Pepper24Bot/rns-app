@@ -33,7 +33,7 @@ export default function useProxyToken() {
         },
       });
 
-      console.log("approve-token-transaction:: ", transaction);
+      console.log("Approval-Transaction:: ", transaction);
       return transaction;
     } catch (error) {
       console.log("error:: ", error);

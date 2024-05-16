@@ -1,27 +1,17 @@
 import React from "react";
 import { Grid } from "@mui/material";
-import { Domain } from "@/redux/graphql/hooks";
 import { EMPTY_ADDRESS } from "@/constants/components";
+import { LinkProps } from "@/interfaces/components/transaction";
 
 import AddRecord from "./AddRecord";
 import AddressRecord from "./AddressRecord";
 import EnsImage from "../Reusables/EnsImage";
 
-export interface Link {
-  domain?: Partial<Domain>;
-  ensName?: string;
-  owner?: {
-    id?: string;
-  };
-}
-
-export const LinkAddress: React.FC<Link> = (props: Link) => {
+export const LinkAddress: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain } = props;
 
-  const futurePassAddr = domain?.resolver?.addr?.id;
-
-  // TODO: This is temporary
-  const hasLinkedAddr = futurePassAddr && futurePassAddr !== EMPTY_ADDRESS;
+  const linkedAddr = domain?.resolver?.addr?.id;
+  const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
 
   return (
     <Grid container mt={6} minWidth={250} maxWidth={700}>

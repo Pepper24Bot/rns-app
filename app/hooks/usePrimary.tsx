@@ -1,14 +1,16 @@
 import { useWriteContract } from "wagmi";
 import { Address } from "viem";
-import { ErrorResponse, Response } from "@/services/interfaces";
+import { ErrorResponse } from "@/services/interfaces";
 import { config } from "@/chains/config";
-import { readContract, waitForTransactionReceipt } from "@wagmi/core";
+import { readContract } from "@wagmi/core";
 import { useState } from "react";
-import { PrimaryName } from "@/interfaces/primary";
+import { PrimaryNameProps } from "@/interfaces/primary";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { initializeResponse } from "@/utils/common";
 
 import useContractDetails from "./useContractDetails";
 import useProxyPrimary from "./FuturePass/useProxyPrimary";
+import useWaitTransaction from "./useWaitTransaction";
 
 export default function usePrimary() {
   const reverse = useContractDetails({ action: "ReverseRegistrar" });
@@ -16,48 +18,20 @@ export default function usePrimary() {
 
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
-
+  const { waitForWriteTransaction } = useWaitTransaction();
+  const { writeContractAsync } = useWriteContract();
   const { setPrimaryProxyCall } = useProxyPrimary({
     reverseRegistrar: reverse,
   });
 
-  const { writeContractAsync } = useWriteContract();
-
   const [isPrimaryLoading, setIsPrimaryLoading] = useState(false);
-
-  const initializeResponse = (): Response => {
-    return {
-      error: null,
-      isSuccess: false,
-      data: {
-        hash: "",
-        receipt: "",
-      },
-    };
-  };
-
-  // TODO: Implement block latency here
-  const waitForTransaction = async (hash: Address) => {
-    const receipt = await waitForTransactionReceipt(config, {
-      hash,
-    });
-
-    return {
-      isSuccess: true,
-      error: null,
-      data: {
-        hash,
-        receipt,
-      },
-    };
-  };
 
   /**
    *
    * @param props
    * @returns
    */
-  const getPrimaryName = async (props: PrimaryName) => {
+  const getPrimaryName = async (props: PrimaryNameProps) => {
     const { domainId = "" } = props;
     const response = { ...initializeResponse() };
 
@@ -86,35 +60,34 @@ export default function usePrimary() {
    * @param props
    * @returns
    */
-  const handlePrimaryName = async (props: PrimaryName) => {
-    const { name, address, resolverAddress } = props;
+  const handlePrimaryName = async (props: PrimaryNameProps) => {
+    const { name, resolverAddress } = props;
     let response = { ...initializeResponse() };
 
-    if (name && address && resolverAddress) {
+    if (name && resolverAddress) {
       try {
-        if (root.isFpActive) {
-          const hash = await setPrimaryProxyCall({ name });
-          setIsPrimaryLoading(true);
+        let primaryHash = "0x" as Address;
 
-          response = await waitForTransaction(hash);
+        if (root.isFpActive) {
+          primaryHash = await setPrimaryProxyCall({ name });
         } else {
-          const hash = await writeContractAsync({
+          primaryHash = await writeContractAsync({
             abi: reverse.abi,
             address: reverse.address,
             functionName: "setName",
             args: [name],
           });
-          setIsPrimaryLoading(true);
-
-          response = await waitForTransaction(hash);
         }
+
+        setIsPrimaryLoading(true);
+        response = await waitForWriteTransaction(primaryHash);
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
       }
     }
 
-    console.log("set-response:: ", response);
+    console.log("SetPrimary-Response:: ", response);
     setIsPrimaryLoading(false);
     return response;
   };
@@ -122,9 +95,6 @@ export default function usePrimary() {
   return {
     setPrimaryName: handlePrimaryName,
     getPrimaryName,
-    /**
-     * Loading Flags
-     */
     isLoading: isPrimaryLoading,
   };
 }

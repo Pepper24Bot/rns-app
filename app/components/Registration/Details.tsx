@@ -50,7 +50,7 @@ export const Details: React.FC = () => {
     { skip: name === null }
   );
 
-  const details = data?.nameWrappeds[0];
+  const details = data?.wrappedDomains[0];
 
   const { expiration, distanceToExpiration } = getExpiration(
     details?.domain.createdAt,

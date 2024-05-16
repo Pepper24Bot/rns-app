@@ -6,7 +6,6 @@ import {
   styled,
   Popper as MuiPopper,
   Divider,
-  Link,
 } from "@mui/material";
 import { isEmpty } from "lodash";
 import {
@@ -151,6 +150,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
     isNameInvalid,
     isNameNotSupported,
   } = props;
+
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
 

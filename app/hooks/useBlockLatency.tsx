@@ -26,8 +26,6 @@ export default function useBlockLatency(props: BlockLatency) {
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [unwatchFn, setUnwatchFn] = useState<{ fn: WatchBlocksReturnType }>();
 
-  //   0x8f8faa9ebb54deda91a62b4fc33550b19b9d33bf
-  //   0xffffffff00000000000000000000000000038e08
   useEffect(() => {
     if (enabled) {
       setIsWaiting(true);
@@ -35,7 +33,7 @@ export default function useBlockLatency(props: BlockLatency) {
 
       const unwatch = watchBlocks(config, {
         onBlock(block) {
-          console.log("watching block number::", block.number);
+          console.log("Watching Block Number::", block.number);
           setCurrentBlock(block.number);
         },
       });
