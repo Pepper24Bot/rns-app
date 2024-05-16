@@ -92,12 +92,12 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [isApprovedStarted, setIsApprovedStarted] = useState<boolean>(false);
 
-  const { isCompleted: isApproved } = useBlockLatency({
+  const { isWaiting: isApproving, isCompleted: isApproved } = useBlockLatency({
     enabled: isApprovedStarted,
     blocksToWait: 3,
   });
 
-  const { isWaiting, isCompleted } = useBlockLatency({
+  const { isWaiting: isExtending, isCompleted: isExtended } = useBlockLatency({
     enabled: isBlockEnabled,
     blocksToWait: 2,
   });
@@ -110,7 +110,6 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     isLoading,
   } = useExtend({
     name: labelName,
-    owner: address,
     year,
     token,
     isEnabled: isDetailsEnabled,
@@ -121,7 +120,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     payment,
   });
 
-  const isTransactionLoading = isLoading || isApprovalLoading || isWaiting;
+  const isTransactionLoading =
+    isLoading || isApprovalLoading || isExtending || isApproving;
 
   const initializeFlags = () => {
     // display progress bar
@@ -156,7 +156,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   const handleExtend = async () => {
     if (isApprovalSuccess && isApproved) {
-      const { isSuccess, error, data } = await renew({
+      const { isSuccess, data } = await renew({
         name: labelName,
         duration,
       });
@@ -189,12 +189,13 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   }, [address, rentFee]);
 
   useEffect(() => {
-    if (isCompleted) {
+    if (isExtended) {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsExtendSuccess(true);
+      setIsPending(false);
     }
-  }, [isCompleted]);
+  }, [isExtended]);
 
   useEffect(() => {
     handleExtend();
@@ -227,7 +228,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
               title={
                 <FlexLeft>
                   <IconButton
-                    disabled={isPending}
+                    disabled={isPending || isExtendSuccess}
                     onClick={() => {
                       // Go back to the previous page
                       setExtendPage(extendPage - 1);
@@ -258,35 +259,37 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
         <Grid mt={2}>
           <FlexRight>
             <ActionButton
-              disabled={isPending || isExtendSuccess || isWaiting}
+              disabled={isPending || isExtending}
               sx={{ marginRight: 1 }}
               variant="text"
               onClick={() => {
                 closeModal();
               }}
             >
-              Cancel
+              {isExtendSuccess ? "Close" : "Cancel"}
             </ActionButton>
-            <ActionButton
-              disabled={
-                isPending ||
-                isExtendSuccess ||
-                isWaiting ||
-                !isBalanceSufficient
-              }
-              variant="contained"
-              onClick={() => {
-                if (extendPage === 1) {
-                  // Move to the next page
-                  setExtendPage(extendPage + 1);
-                  updateName({ fee: { total: rentFee } });
-                } else {
-                  handleApproval();
+            <Collapse orientation="horizontal" in={!isExtendSuccess}>
+              <ActionButton
+                disabled={
+                  isPending ||
+                  isExtendSuccess ||
+                  isExtending ||
+                  !isBalanceSufficient
                 }
-              }}
-            >
-              {extendPage === 1 ? "Next" : "Confirm"}
-            </ActionButton>
+                variant="contained"
+                onClick={() => {
+                  if (extendPage === 1) {
+                    // Move to the next page
+                    setExtendPage(extendPage + 1);
+                    updateName({ fee: { total: rentFee } });
+                  } else {
+                    handleApproval();
+                  }
+                }}
+              >
+                {extendPage === 1 ? "Next" : "Confirm"}
+              </ActionButton>
+            </Collapse>
           </FlexRight>
         </Grid>
       </DetailsContainer>

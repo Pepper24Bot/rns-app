@@ -11,9 +11,8 @@ export interface ExtendProps {
      * year count, to be converted into seconds
      */
     year: number;
-    owner?: Address | string;
-    isEnabled?: boolean;
     token: Address | string;
+    isEnabled?: boolean;
 }
 
 export interface RenewProps extends Partial<ExtendProps> {

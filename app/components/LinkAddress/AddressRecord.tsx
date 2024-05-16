@@ -102,8 +102,10 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
     if (isCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      setIsPending(false);
       refetchEnsAddr();
 
+      // What is this again for?
       if (ensName === domainState?.name) {
         refetchEnsName();
       }
@@ -168,18 +170,21 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
         </FlexCenter>
       </Collapse>
 
-      <Collapse in={isEditMode || isRemoveMode}>
-        <FlexRight pt={3}>
-          <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
-            sx={{ marginRight: 1 }}
-            variant="text"
-            onClick={() => {
-              closeModal();
-            }}
-          >
-            Cancel
-          </ActionButton>
+      <FlexRight pt={3}>
+        <ActionButton
+          disabled={isPending || isWaiting}
+          sx={{ marginRight: 1 }}
+          variant="text"
+          onClick={() => {
+            closeModal();
+          }}
+        >
+          {isSuccess ? "Close" : "Cancel"}
+        </ActionButton>
+        <Collapse
+          orientation="horizontal"
+          in={(isEditMode || isRemoveMode) && !isSuccess}
+        >
           <ActionButton
             disabled={
               inputValue === linkedAddr || isPending || isSuccess || isWaiting
@@ -195,8 +200,8 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
           >
             Confirm
           </ActionButton>
-        </FlexRight>
-      </Collapse>
+        </Collapse>
+      </FlexRight>
     </Grid>
   );
 };

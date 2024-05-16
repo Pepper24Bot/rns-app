@@ -126,24 +126,28 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
       <Grid pt={3}>
         <FlexRight>
           <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
+            disabled={isPending || isWaiting}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
               closeModal();
             }}
           >
-            Cancel
+            {isSuccess ? "Close" : "Cancel"}
           </ActionButton>
-          <ActionButton
-            disabled={isEmpty(inputAddr) || isPending || isSuccess || isWaiting}
-            variant="contained"
-            onClick={() => {
-              handleSetAddress();
-            }}
-          >
-            Confirm
-          </ActionButton>
+          <Collapse orientation="horizontal" in={!isSuccess}>
+            <ActionButton
+              disabled={
+                isEmpty(inputAddr) || isPending || isSuccess || isWaiting
+              }
+              variant="contained"
+              onClick={() => {
+                handleSetAddress();
+              }}
+            >
+              Confirm
+            </ActionButton>
+          </Collapse>
         </FlexRight>
       </Grid>
     </Grid>

@@ -43,12 +43,14 @@ export const Transfer: React.FC<TransactionProps> = (
   const { domain } = props;
   const { closeModal } = useModalState();
 
+  const [isPending, setIsPending] = useState<boolean>(false);
   const [isTransferSuccess, setIsTransferSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
-  const [isAddrUpdating, setIsAddrUpdating] = useState<boolean>(false);
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [isWatchingAddrUpdate, setWatchingAddrUpdate] =
+    useState<boolean>(false);
+  const [isWatchingTransfer, setWatchingTransfer] = useState<boolean>(false);
 
   const [inputAddr, setInputAddr] = useState<string>("");
   const [txHash, setTxHash] = useState<string>("");
@@ -56,20 +58,24 @@ export const Transfer: React.FC<TransactionProps> = (
   const { transfer, isLoading: isTransferLoading } = useTransfer();
   const { setAddressRecord, isLoading: isAddrLoading } = useRecords();
 
-  const { isCompleted: isAddrUpdated } = useBlockLatency({
-    enabled: isAddrUpdating,
-    blocksToWait: 3,
-  });
+  const { isWaiting: isAddrUpdating, isCompleted: isAddrUpdated } =
+    useBlockLatency({
+      enabled: isWatchingAddrUpdate,
+      blocksToWait: 3,
+    });
 
-  const { isWaiting, isCompleted } = useBlockLatency({
-    enabled: isBlockEnabled,
-    blocksToWait: 3,
-  });
+  const { isWaiting: isTransferring, isCompleted: isTransferred } =
+    useBlockLatency({
+      enabled: isWatchingTransfer,
+      blocksToWait: 3,
+    });
 
-  const isTransactionLoading = isTransferLoading || isWaiting || isAddrLoading;
+  const isTransactionLoading =
+    isTransferLoading || isTransferring || isAddrUpdating || isAddrLoading;
 
   const initializeFlags = () => {
     // display progress bar
+    setIsPending(true);
     setIsProgressVisible(true);
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
@@ -90,9 +96,10 @@ export const Transfer: React.FC<TransactionProps> = (
     });
 
     if (isSuccess) {
-      setIsAddrUpdating(true);
+      setWatchingAddrUpdate(true);
     } else {
       setIsError(true);
+      setIsPending(false);
     }
   };
 
@@ -103,21 +110,23 @@ export const Transfer: React.FC<TransactionProps> = (
       const { data, isSuccess } = await transfer({ name, newOwner: inputAddr });
 
       if (isSuccess) {
-        setIsBlockEnabled(true);
+        setWatchingTransfer(true);
         setTxHash(data.hash);
       } else {
         setIsError(true);
+        setIsPending(false);
       }
     }
   };
 
   useEffect(() => {
-    if (isCompleted) {
+    if (isTransferred) {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsTransferSuccess(true);
+      setIsPending(false);
     }
-  }, [isCompleted]);
+  }, [isTransferred]);
 
   useEffect(() => {
     handleTransfer();
@@ -156,24 +165,31 @@ export const Transfer: React.FC<TransactionProps> = (
         <Grid pt={3}>
           <FlexRight>
             <ActionButton
-              disabled={isTransactionLoading || isTransferSuccess}
+              disabled={isPending || isTransactionLoading}
               sx={{ marginRight: 1 }}
               variant="text"
               onClick={() => {
                 closeModal();
               }}
             >
-              Cancel
+              {isTransferSuccess ? "Close" : "Cancel"}
             </ActionButton>
-            <ActionButton
-              disabled={isEmpty(inputAddr) || isTransactionLoading}
-              variant="contained"
-              onClick={() => {
-                handleUpdateAddress();
-              }}
-            >
-              Confirm
-            </ActionButton>
+            <Collapse orientation="horizontal" in={!isTransferSuccess}>
+              <ActionButton
+                disabled={
+                  isEmpty(inputAddr) ||
+                  isPending ||
+                  isTransferSuccess ||
+                  isTransactionLoading
+                }
+                variant="contained"
+                onClick={() => {
+                  handleUpdateAddress();
+                }}
+              >
+                Confirm
+              </ActionButton>
+            </Collapse>
           </FlexRight>
         </Grid>
       </Container>

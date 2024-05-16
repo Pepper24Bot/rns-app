@@ -251,6 +251,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       id: menuOption.label,
       title: menuOption.title || menuOption.label,
       data,
+      isCloseDisabled: true,
+      isXDisabled: true,
     });
   };
 

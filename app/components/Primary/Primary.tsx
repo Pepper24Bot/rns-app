@@ -53,7 +53,9 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const [ensNameData, setEnsPublicName] = useState<string>(String(ensName));
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [isWatchingSetPrimary, setWatchingPrimary] = useState<boolean>(false);
+  const [isWatchingSetAddr, setWatchingSetAddr] = useState<boolean>(false);
+
   const [txHash, setTxHash] = useState<string>("");
 
   const { refetch } = useEnsName({ address: activeAddress });
@@ -61,13 +63,20 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const { closeModal } = useModalState();
   const { setAddressRecord } = useRecords();
   const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
-  const { isWaiting, isCompleted } = useBlockLatency({
-    enabled: isBlockEnabled,
-  });
+
+  const { isWaiting: isSettingAddr, isCompleted: isSetAddrCompleted } =
+    useBlockLatency({
+      enabled: isWatchingSetAddr,
+    });
+
+  const { isWaiting: isSettingPrimary, isCompleted: isPrimaryCompleted } =
+    useBlockLatency({
+      enabled: isWatchingSetPrimary,
+    });
 
   const ownerId = activeAddress?.toLowerCase() as Address;
   const ensAddress = ensAddr?.toLowerCase();
-  const isTransactionLoading = isLoading || isWaiting;
+  const isTransactionLoading = isLoading || isSettingPrimary || isSettingAddr;
 
   const setEnsRecord = async () => {
     if (isEmpty(ensName)) {
@@ -92,7 +101,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   const postTransaction = (isSuccess: boolean, hash: string) => {
     if (isSuccess) {
-      setIsBlockEnabled(true);
+      setWatchingPrimary(true);
       setTxHash(hash);
     } else {
       setIsError(true);
@@ -143,10 +152,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     };
   };
 
-  /**
-   * Conditions:
-   * Test deploy
-   */
   const handleSetPrimary = async () => {
     const { transaction } = getStep();
 
@@ -159,24 +164,38 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
       postTransaction(isSuccess, data.hash);
     } else {
       const { isSuccess, data } = await handleSetAddress();
-
       if (isSuccess) {
-        const { isSuccess: primarySuccess, data: primaryData } =
-          await handleSetPrimaryName();
-        postTransaction(primarySuccess, primaryData.hash);
+        setWatchingSetAddr(true);
       } else {
-        postTransaction(isSuccess, data.hash);
+        setIsError(true);
+        setIsPending(false);
       }
     }
   };
 
   useEffect(() => {
-    if (isCompleted) {
+    if (isSetAddrCompleted) {
+      // Refresh dashboard, in case the user cancels the transaction midway
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+
+      const setPrimaryName = async () => {
+        const { isSuccess: primarySuccess, data: primaryData } =
+          await handleSetPrimaryName();
+        postTransaction(primarySuccess, primaryData.hash);
+      };
+
+      setPrimaryName();
+    }
+  }, [isSetAddrCompleted]);
+
+  useEffect(() => {
+    if (isPrimaryCompleted) {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
+      setIsPending(false);
       refetch();
     }
-  }, [isCompleted]);
+  }, [isPrimaryCompleted]);
 
   useEffect(() => {
     setEnsRecord();
@@ -237,24 +256,26 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
         </Collapse>
         <FlexRight pt={3}>
           <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
+            disabled={isPending || isTransactionLoading}
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
               closeModal();
             }}
           >
-            Cancel
+            {isSuccess ? "Close" : "Cancel"}
           </ActionButton>
-          <ActionButton
-            disabled={isPending || isSuccess || isWaiting}
-            variant="contained"
-            onClick={() => {
-              handleSetPrimary();
-            }}
-          >
-            Confirm
-          </ActionButton>
+          <Collapse orientation="horizontal" in={!isSuccess}>
+            <ActionButton
+              disabled={isSuccess || isPending || isTransactionLoading}
+              variant="contained"
+              onClick={() => {
+                handleSetPrimary();
+              }}
+            >
+              Confirm
+            </ActionButton>
+          </Collapse>
         </FlexRight>
       </Grid>
     </Container>

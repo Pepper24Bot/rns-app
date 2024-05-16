@@ -16,7 +16,7 @@ import useWaitTransaction from "./useWaitTransaction";
 
 /** TODO: Optimize this hook */
 export default function useExtend(props: ExtendProps) {
-  const { name, year, owner, token, isEnabled } = props;
+  const { name, year, token, isEnabled } = props;
   const controller = useContractDetails({ action: "RegistrarController" });
 
   const { abi, address } = controller;
@@ -72,7 +72,7 @@ export default function useExtend(props: ExtendProps) {
             abi,
             address,
             functionName: "renewWithERC20",
-            account: owner as Address,
+            account: root.address as Address,
             args: [name, duration, token],
           });
         }

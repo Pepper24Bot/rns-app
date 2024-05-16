@@ -94,15 +94,16 @@ export const RegisterName: React.FC = () => {
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [isApprovedStarted, setIsApprovedStarted] = useState<boolean>(false);
 
-  const { isCompleted: isApproved } = useBlockLatency({
+  const { isWaiting: isApproving, isCompleted: isApproved } = useBlockLatency({
     enabled: isApprovedStarted,
     blocksToWait: 3,
   });
 
-  const { isWaiting, isCompleted } = useBlockLatency({
-    enabled: isBlockEnabled,
-    blocksToWait: 2,
-  });
+  const { isWaiting: isRegistering, isCompleted: isRegistered } =
+    useBlockLatency({
+      enabled: isBlockEnabled,
+      blocksToWait: 2,
+    });
 
   /**
    * Step #1:
@@ -131,7 +132,9 @@ export const RegisterName: React.FC = () => {
     payment,
   });
 
-  const isTransactionLoading = isLoading || isApprovalLoading || isWaiting;
+  const isTransactionLoading =
+    isLoading || isApprovalLoading || isRegistering || isApproving;
+
   const hashStr = hash as unknown as string;
 
   const initializeFlags = () => {
@@ -280,13 +283,13 @@ export const RegisterName: React.FC = () => {
   }, [rentFee, hash]);
 
   useEffect(() => {
-    if (isCompleted) {
+    if (isRegistered) {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       updateName({ status: "Registered" });
       setIsRegisterSuccess(true);
     }
-  }, [isCompleted]);
+  }, [isRegistered]);
 
   useEffect(() => {
     handleApproval();
@@ -378,20 +381,19 @@ export const RegisterName: React.FC = () => {
               </ActionButton>
               <FlexRight>
                 <ActionButton
-                  disabled={areBtnsDisabled}
+                  disabled={areBtnsDisabled && !isRegisterSuccess}
                   sx={{ marginRight: 1 }}
                   variant="text"
                   onClick={() => {
                     closeModal();
                   }}
                 >
-                  Cancel
+                  {isRegisterSuccess ? "Close" : "Cancel"}
                 </ActionButton>
                 <InformationTip title="Ooops! We are not live yet!" arrow>
                   <Grid>
                     <ActionButton
-                      // disabled={areBtnsDisabled}
-                      disabled
+                      disabled={areBtnsDisabled}
                       variant="contained"
                       onClick={() => {
                         if (!isApprovalSuccess && isCommitSuccess) {
