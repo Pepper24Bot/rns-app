@@ -3029,6 +3029,8 @@ export type Registration = {
   registrant: Account;
   /** The registration date of the domain */
   registrationDate: Scalars['BigInt']['output'];
+  /** The address of ERC20 used for payment */
+  token?: Maybe<Account>;
 };
 
 
@@ -3217,6 +3219,27 @@ export type Registration_Filter = {
   registrationDate_lte?: InputMaybe<Scalars['BigInt']['input']>;
   registrationDate_not?: InputMaybe<Scalars['BigInt']['input']>;
   registrationDate_not_in?: InputMaybe<Array<Scalars['BigInt']['input']>>;
+  token?: InputMaybe<Scalars['String']['input']>;
+  token_?: InputMaybe<Account_Filter>;
+  token_contains?: InputMaybe<Scalars['String']['input']>;
+  token_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  token_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  token_gt?: InputMaybe<Scalars['String']['input']>;
+  token_gte?: InputMaybe<Scalars['String']['input']>;
+  token_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  token_lt?: InputMaybe<Scalars['String']['input']>;
+  token_lte?: InputMaybe<Scalars['String']['input']>;
+  token_not?: InputMaybe<Scalars['String']['input']>;
+  token_not_contains?: InputMaybe<Scalars['String']['input']>;
+  token_not_contains_nocase?: InputMaybe<Scalars['String']['input']>;
+  token_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token_not_ends_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  token_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  token_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token_not_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
+  token_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token_starts_with_nocase?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum Registration_OrderBy {
@@ -3237,7 +3260,9 @@ export enum Registration_OrderBy {
   LabelName = 'labelName',
   Registrant = 'registrant',
   RegistrantId = 'registrant__id',
-  RegistrationDate = 'registrationDate'
+  RegistrationDate = 'registrationDate',
+  Token = 'token',
+  TokenId = 'token__id'
 }
 
 export type Resolver = {
@@ -4656,7 +4681,7 @@ export type GetNamesByNameQueryVariables = Exact<{
 }>;
 
 
-export type GetNamesByNameQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
+export type GetNamesByNameQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
 
 export type GetNamesByUserAndLabelQueryVariables = Exact<{
   labelName: Scalars['String']['input'];
@@ -4664,26 +4689,26 @@ export type GetNamesByUserAndLabelQueryVariables = Exact<{
 }>;
 
 
-export type GetNamesByUserAndLabelQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
+export type GetNamesByUserAndLabelQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
 
 export type GetNamesByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetNamesByIdQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', id: string, name?: string | null, fuses: number, transactionID: any, expiryDate: any, blockNumber: number, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
+export type GetNamesByIdQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
 
 export type GetPrimaryNameResolverQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetPrimaryNameResolverQuery = { __typename?: 'Query', nameWrappeds: Array<{ __typename?: 'NameWrapped', owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> } }> };
+export type GetPrimaryNameResolverQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> } }> };
 
 
 export const GetNamesByNameDocument = `
     query GetNamesByName($labelName: String!) {
-  nameWrappeds(where: {domain_: {labelName: $labelName}}) {
+  wrappedDomains(where: {domain_: {labelName: $labelName}}) {
     id
     name
     owner {
@@ -4724,15 +4749,13 @@ export const GetNamesByNameDocument = `
       }
     }
     fuses
-    transactionID
     expiryDate
-    blockNumber
   }
 }
     `;
 export const GetNamesByUserAndLabelDocument = `
     query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
-  nameWrappeds(
+  wrappedDomains(
     where: {domain_: {labelName_contains: $labelName}, owner_: {id: $id}}
   ) {
     id
@@ -4775,15 +4798,13 @@ export const GetNamesByUserAndLabelDocument = `
       }
     }
     fuses
-    transactionID
     expiryDate
-    blockNumber
   }
 }
     `;
 export const GetNamesByIdDocument = `
     query GetNamesById($id: ID!) {
-  nameWrappeds(where: {owner_: {id: $id}}) {
+  wrappedDomains(where: {owner_: {id: $id}}) {
     id
     name
     owner {
@@ -4824,15 +4845,13 @@ export const GetNamesByIdDocument = `
       }
     }
     fuses
-    transactionID
     expiryDate
-    blockNumber
   }
 }
     `;
 export const GetPrimaryNameResolverDocument = `
     query GetPrimaryNameResolver($id: ID!) {
-  nameWrappeds(where: {owner_: {id: $id}}, first: 1) {
+  wrappedDomains(where: {owner_: {id: $id}}, first: 1) {
     owner {
       id
       domains(where: {resolver_: {address_not: ""}}) {

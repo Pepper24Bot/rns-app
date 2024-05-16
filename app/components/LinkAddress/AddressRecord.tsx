@@ -13,6 +13,7 @@ import { Address } from "viem";
 import { useDispatch } from "react-redux";
 import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
+import { useAccount, useEnsAddress, useEnsName } from "wagmi";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -20,7 +21,6 @@ import UpdateRecord from "./UpdateRecord";
 import RemoveAddress from "./RemoveRecord";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
-import { useAccount, useEnsAddress, useEnsName } from "wagmi";
 
 export const AddressRecord: React.FC<Link> = (props: Link) => {
   const { domain: domainState, owner, ensName } = props;
@@ -39,7 +39,7 @@ export const AddressRecord: React.FC<Link> = (props: Link) => {
   const { refetch: refetchEnsName } = useEnsName({ address });
   const { closeModal } = useModalState();
 
-  const domain = data?.nameWrappeds[0]?.domain;
+  const domain = data?.wrappedDomains[0]?.domain;
   const linkedAddr = domain?.resolver?.addr?.id || "";
 
   const [isEditMode, setIsEditMode] = useState<boolean>(false);

@@ -246,10 +246,10 @@ export const Dashboard: React.FC = () => {
 
     // #1. Filter based on the name being searched
     if (searchValue !== "") {
-      list = (searchedName?.nameWrappeds as Name[]) || [];
+      list = (searchedName?.wrappedDomains as Name[]) || [];
     } else {
       // For now, the only filter option we have is the views
-      list = namesList?.nameWrappeds
+      list = namesList?.wrappedDomains
         // #2. Then apply the filter options
         ?.filter((item) => {
           const views = options?.filter?.views;

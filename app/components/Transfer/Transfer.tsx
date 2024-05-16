@@ -50,7 +50,6 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
 
   const [isTransferSuccess, setIsTransferSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [resetProgress, setResetProgress] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isAddrUpdating, setIsAddrUpdating] = useState<boolean>(false);
@@ -59,7 +58,7 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
   const [inputAddr, setInputAddr] = useState<string>("");
   const [txHash, setTxHash] = useState<string>("");
 
-  const { transfer, getOwner, isLoading: isTransferLoading } = useTransfer();
+  const { transfer, isLoading: isTransferLoading } = useTransfer();
   const { setAddressRecord, isLoading: isAddrLoading } = useRecords();
 
   const { isCompleted: isAddrUpdated } = useBlockLatency({
@@ -77,8 +76,6 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
   const initializeFlags = () => {
     // display progress bar
     setIsProgressVisible(true);
-    // should always start to 0
-    setResetProgress(true);
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
     setIsTransferSuccess(false);
@@ -102,8 +99,6 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
     } else {
       setIsError(true);
     }
-
-    setResetProgress(false);
   };
 
   const handleTransfer = async () => {
@@ -179,7 +174,6 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
               disabled={isEmpty(inputAddr) || isTransactionLoading}
               variant="contained"
               onClick={() => {
-                // handleTransfer();
                 handleUpdateAddress();
               }}
             >

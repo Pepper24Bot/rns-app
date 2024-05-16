@@ -149,11 +149,11 @@ export const SearchForm: React.FC = () => {
   const isWalletLoading = isAccountLoading(status);
 
   const getNameStatus = () => {
-    const isAvailable = isEmpty(data?.nameWrappeds);
+    const isAvailable = isEmpty(data?.wrappedDomains);
 
     const isNotAvailable =
-      !isEmpty(data?.nameWrappeds) &&
-      data?.nameWrappeds[0].owner.id !== address?.toLowerCase();
+      !isEmpty(data?.wrappedDomains) &&
+      data?.wrappedDomains[0].owner.id !== address?.toLowerCase();
 
     return isNameInvalid
       ? "Invalid"
