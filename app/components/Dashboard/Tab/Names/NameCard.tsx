@@ -214,7 +214,7 @@ export interface CardProps {
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item, activeAddress } = props;
   const { toggleModal } = useModalState();
-  const { network } = useNetworkConfig();
+  const { name: networkName } = useNetworkConfig();
 
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
@@ -270,7 +270,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         <ItemContainer>
           <ImageContainer>
             <Image
-              src={`https://rns-metadata.fly.dev/${network}/${contractAddr}/${nameHash}/image`}
+              src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
               alt="Wallet Icon"
               width={200}
               height={200}
