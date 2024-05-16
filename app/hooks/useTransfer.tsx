@@ -17,6 +17,7 @@ export default function useTransfer() {
   const { data: root } = useRootNetwork();
 
   const registry = useContractDetails({ action: "ENSRegistry" });
+  const nameWrapper = useContractDetails({ action: "NameWrapper" });
 
   const { abi, address } = registry;
   const { writeContractAsync } = useWriteContract();
@@ -45,21 +46,54 @@ export default function useTransfer() {
     };
   };
 
+  const getOwner = async (props: TransferProps) => {
+    const { name } = props;
+    let response = { ...initializeResponse() };
+
+    const nameHash = namehash(name);
+    if (name) {
+      try {
+        if (root.isFpActive) {
+        } else {
+          const ownerHash = await readContract(config, {
+            abi,
+            address,
+            functionName: "owner",
+            account: root.address as Address,
+            args: [nameHash],
+          });
+          console.log("owner:: ", ownerHash);
+          setTransferLoading(true);
+          // response = await waitForTransaction(ownerHash);
+        }
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
+      }
+    }
+    setTransferLoading(false);
+    console.log("transfer response:: ", response);
+    return response;
+  };
+
   const handleTransfer = async (props: TransferProps) => {
     const { name, newOwner } = props;
     let response = { ...initializeResponse() };
 
     const nameHash = namehash(name);
-    if (name && newOwner) {
+    const nameId = BigInt(nameHash);
+    const amount = BigInt(1);
+
+    if (name && newOwner && root.address) {
       try {
         if (root.isFpActive) {
         } else {
           const transferHash = await writeContractAsync({
-            abi,
-            address,
-            functionName: "setOwner",
+            abi: nameWrapper.abi,
+            address: nameWrapper.address,
+            functionName: "safeTransferFrom",
             account: root.address as Address,
-            args: [nameHash, newOwner],
+            args: [root.address, newOwner, nameId, amount, "0x"],
           });
           console.log("hash:: ", transferHash);
           setTransferLoading(true);
@@ -76,6 +110,7 @@ export default function useTransfer() {
   };
 
   return {
+    getOwner,
     transfer: handleTransfer,
     isLoading: isTransferLoading,
   };

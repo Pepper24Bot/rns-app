@@ -12,12 +12,14 @@ import { isEmpty } from "lodash";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
+import { Address } from "viem";
 
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useTransfer from "@/hooks/useTransfer";
 import useBlockLatency from "@/hooks/useBlockLatency";
+import useRecords from "@/hooks/useRecords";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "350px",
@@ -48,39 +50,66 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
 
   const [isTransferSuccess, setIsTransferSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [isPending, setIsPending] = useState<boolean>(false);
+  const [resetProgress, setResetProgress] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
+  const [isAddrUpdating, setIsAddrUpdating] = useState<boolean>(false);
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
 
   const [inputAddr, setInputAddr] = useState<string>("");
   const [txHash, setTxHash] = useState<string>("");
 
-  const { transfer, isLoading } = useTransfer();
+  const { transfer, getOwner, isLoading: isTransferLoading } = useTransfer();
+  const { setAddressRecord, isLoading: isAddrLoading } = useRecords();
+
+  const { isCompleted: isAddrUpdated } = useBlockLatency({
+    enabled: isAddrUpdating,
+    blocksToWait: 3,
+  });
 
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
     blocksToWait: 3,
   });
 
-  const isTransactionLoading = isLoading || isWaiting || isPending;
+  const isTransactionLoading = isTransferLoading || isWaiting || isAddrLoading;
 
   const initializeFlags = () => {
     // display progress bar
-    setIsPending(true);
     setIsProgressVisible(true);
     // should always start to 0
-    // setResetProgress(true);
+    setResetProgress(true);
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
     setIsTransferSuccess(false);
   };
 
-  const handleTransfer = async () => {
+  /**
+   * TODO: Add check if the address record is not the same as the new owner
+   * TODO: Add check if the address or name are valid
+   * @param value
+   */
+  const handleUpdateAddress = async () => {
     initializeFlags();
+
+    const { isSuccess, data } = await setAddressRecord({
+      name: domain?.name || "",
+      address: inputAddr as Address,
+    });
+
+    if (isSuccess) {
+      setIsAddrUpdating(true);
+    } else {
+      setIsError(true);
+    }
+
+    setResetProgress(false);
+  };
+
+  const handleTransfer = async () => {
     const name = domain?.name;
 
-    if (name) {
+    if (name && isAddrUpdated) {
       const { data, isSuccess } = await transfer({ name, newOwner: inputAddr });
 
       if (isSuccess) {
@@ -88,7 +117,6 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
         setTxHash(data.hash);
       } else {
         setIsError(true);
-        setIsPending(false);
       }
     }
   };
@@ -100,6 +128,10 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
       setIsTransferSuccess(true);
     }
   }, [isCompleted]);
+
+  useEffect(() => {
+    handleTransfer();
+  }, [isAddrUpdated]);
 
   return (
     <Grid container mt={6} minWidth={250}>
@@ -147,7 +179,8 @@ export const Transfer: React.FC<Transfer> = (props: Transfer) => {
               disabled={isEmpty(inputAddr) || isTransactionLoading}
               variant="contained"
               onClick={() => {
-                handleTransfer();
+                // handleTransfer();
+                handleUpdateAddress();
               }}
             >
               Confirm
