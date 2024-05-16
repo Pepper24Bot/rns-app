@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Collapse, Grid, styled } from "@mui/material";
+import { Collapse, Grid, styled, alpha } from "@mui/material";
 import {
   ActionButton,
   FlexCenter,
   FlexRight,
   ModalInputField as InputField,
   Relative,
+  SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { isEmpty } from "lodash";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -13,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address } from "viem";
 import { TransactionProps } from "@/interfaces/components/transaction";
+import { useEnsAddress } from "wagmi";
 
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -35,6 +37,11 @@ const Container = styled(Grid)(({ theme }) => ({
   },
 }));
 
+const Note = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "14px",
+  color: alpha(theme.palette.text.primary, 0.35),
+}));
+
 export const Transfer: React.FC<TransactionProps> = (
   props: TransactionProps
 ) => {
@@ -42,12 +49,16 @@ export const Transfer: React.FC<TransactionProps> = (
 
   const { domain } = props;
   const { closeModal } = useModalState();
+  const { data: addressRecord, refetch } = useEnsAddress({
+    name: domain?.name || "",
+  });
 
   const [isPending, setIsPending] = useState<boolean>(false);
-  const [isTransferSuccess, setIsTransferSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
+
   const [isWatchingAddrUpdate, setWatchingAddrUpdate] =
     useState<boolean>(false);
   const [isWatchingTransfer, setWatchingTransfer] = useState<boolean>(false);
@@ -56,7 +67,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const [txHash, setTxHash] = useState<string>("");
 
   const { transfer, isLoading: isTransferLoading } = useTransfer();
-  const { setAddressRecord, isLoading: isAddrLoading } = useRecords();
+  const { setAddressRecord, isLoading: isRecordLoading } = useRecords();
 
   const { isWaiting: isAddrUpdating, isCompleted: isAddrUpdated } =
     useBlockLatency({
@@ -71,7 +82,7 @@ export const Transfer: React.FC<TransactionProps> = (
     });
 
   const isTransactionLoading =
-    isTransferLoading || isTransferring || isAddrUpdating || isAddrLoading;
+    isTransferLoading || isRecordLoading || isTransferring || isAddrUpdating;
 
   const initializeFlags = () => {
     // display progress bar
@@ -79,24 +90,20 @@ export const Transfer: React.FC<TransactionProps> = (
     setIsProgressVisible(true);
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
-    setIsTransferSuccess(false);
+    setIsSuccess(false);
   };
 
-  /**
-   * TODO: Add check if the address record is not the same as the new owner
-   * TODO: Add check if the address or name are valid
-   * @param value
-   */
   const handleUpdateAddress = async () => {
     initializeFlags();
 
-    const { isSuccess, data } = await setAddressRecord({
+    const { isSuccess } = await setAddressRecord({
       name: domain?.name || "",
       address: inputAddr as Address,
     });
 
     if (isSuccess) {
       setWatchingAddrUpdate(true);
+      refetch();
     } else {
       setIsError(true);
       setIsPending(false);
@@ -106,7 +113,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const handleTransfer = async () => {
     const name = domain?.name;
 
-    if (name && isAddrUpdated) {
+    if (name) {
       const { data, isSuccess } = await transfer({ name, newOwner: inputAddr });
 
       if (isSuccess) {
@@ -123,13 +130,17 @@ export const Transfer: React.FC<TransactionProps> = (
     if (isTransferred) {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      setIsTransferSuccess(true);
+      setIsSuccess(true);
       setIsPending(false);
     }
   }, [isTransferred]);
 
   useEffect(() => {
-    handleTransfer();
+    if (isAddrUpdated) {
+      // Refresh dashboard, in case the user cancels the transaction midway
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      handleTransfer();
+    }
   }, [isAddrUpdated]);
 
   return (
@@ -148,6 +159,10 @@ export const Transfer: React.FC<TransactionProps> = (
               setInputAddr(value);
             }}
           />
+          <Note py={2}>
+            Please note that transferring this identity will also set the
+            address record to the receiver's address.
+          </Note>
           <Collapse in={isProgressVisible}>
             <FlexCenter pt={2}>
               <Relative width="100%">
@@ -155,9 +170,9 @@ export const Transfer: React.FC<TransactionProps> = (
                   isError={isError}
                   isPaused={!isTransactionLoading}
                   isVisible={isProgressVisible}
-                  isSuccess={isTransferSuccess}
+                  isSuccess={isSuccess}
                 />
-                <ViewTransaction isVisible={isTransferSuccess} hash={txHash} />
+                <ViewTransaction isVisible={isSuccess} hash={txHash} />
               </Relative>
             </FlexCenter>
           </Collapse>
@@ -172,19 +187,24 @@ export const Transfer: React.FC<TransactionProps> = (
                 closeModal();
               }}
             >
-              {isTransferSuccess ? "Close" : "Cancel"}
+              {isSuccess ? "Close" : "Cancel"}
             </ActionButton>
-            <Collapse orientation="horizontal" in={!isTransferSuccess}>
+            <Collapse orientation="horizontal" in={!isSuccess}>
               <ActionButton
                 disabled={
                   isEmpty(inputAddr) ||
                   isPending ||
-                  isTransferSuccess ||
+                  isSuccess ||
                   isTransactionLoading
                 }
                 variant="contained"
                 onClick={() => {
-                  handleUpdateAddress();
+                  if (addressRecord === inputAddr) {
+                    initializeFlags();
+                    handleTransfer();
+                  } else {
+                    handleUpdateAddress();
+                  }
                 }}
               >
                 Confirm
