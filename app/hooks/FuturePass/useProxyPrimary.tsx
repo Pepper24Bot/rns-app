@@ -2,7 +2,7 @@ import "@therootnetwork/api-types"; // optional, for Typescript support
 import { Address } from "viem";
 import { Contract } from "ethers";
 import { ProxyProps } from "@/interfaces/proxy";
-import { PrimaryName } from "@/interfaces/primary";
+import { PrimaryNameProps } from "@/interfaces/primary";
 import useSendProxyCall from "./useSendProxyCall";
 
 export default function useProxyPrimary(props: ProxyProps) {
@@ -14,7 +14,7 @@ export default function useProxyPrimary(props: ProxyProps) {
     return new Contract(reverse.address, reverse.abi);
   };
 
-  const setPrimaryProxyCall = async (props: PrimaryName) => {
+  const setPrimaryProxyCall = async (props: PrimaryNameProps) => {
     const { name } = props;
 
     if (name) {

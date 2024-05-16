@@ -4,7 +4,7 @@ import { ErrorResponse } from "@/services/interfaces";
 import { config } from "@/chains/config";
 import { readContract } from "@wagmi/core";
 import { useState } from "react";
-import { PrimaryName } from "@/interfaces/primary";
+import { PrimaryNameProps } from "@/interfaces/primary";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { initializeResponse } from "@/utils/common";
 
@@ -31,7 +31,7 @@ export default function usePrimary() {
    * @param props
    * @returns
    */
-  const getPrimaryName = async (props: PrimaryName) => {
+  const getPrimaryName = async (props: PrimaryNameProps) => {
     const { domainId = "" } = props;
     const response = { ...initializeResponse() };
 
@@ -60,11 +60,11 @@ export default function usePrimary() {
    * @param props
    * @returns
    */
-  const handlePrimaryName = async (props: PrimaryName) => {
-    const { name, address, resolverAddress } = props;
+  const handlePrimaryName = async (props: PrimaryNameProps) => {
+    const { name, resolverAddress } = props;
     let response = { ...initializeResponse() };
 
-    if (name && address && resolverAddress) {
+    if (name && resolverAddress) {
       try {
         let primaryHash = "0x" as Address;
 

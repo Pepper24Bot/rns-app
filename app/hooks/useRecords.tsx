@@ -3,8 +3,9 @@ import { Address, namehash } from "viem";
 import { ErrorResponse } from "@/services/interfaces";
 import { useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { FuturePassRecord } from "@/interfaces/record";
+import { RecordProps } from "@/interfaces/record";
 import { initializeResponse } from "@/utils/common";
+
 import useContractDetails from "./useContractDetails";
 import useProxyRecord from "./FuturePass/useProxyRecord";
 import useWaitTransaction from "./useWaitTransaction";
@@ -25,7 +26,7 @@ export default function useRecords() {
    * @param props
    * @returns
    */
-  const handleAddressRecord = async (props: FuturePassRecord) => {
+  const handleAddressRecord = async (props: RecordProps) => {
     const { name, address } = props;
 
     let response = { ...initializeResponse() };

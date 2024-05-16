@@ -120,7 +120,6 @@ export const Primary: React.FC<Primary> = (props: Primary) => {
   const handleSetPrimaryName = async () => {
     const reponse = await setPrimaryName({
       name,
-      address: ownerId,
       resolverAddress,
     });
 

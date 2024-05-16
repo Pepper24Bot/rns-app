@@ -5,6 +5,7 @@ import { signExtrinsicPayload } from "@/utils/futurepass";
 import { useEffect, useState } from "react";
 import { ApiPromise } from "@polkadot/api";
 import { CommitProps, RegisterProps } from "@/interfaces/registration";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import useContractDetails from "../../useContractDetails";
 import useEstimateFees from "../../useEstimateFees";
@@ -20,12 +21,16 @@ export default function useExtrinsicRegister() {
   const { address: walletAddress } = useAccount();
   const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
   const { getApiPromise } = useConnectRoot();
+  const { useRootNetwork } = useRootNetworkState();
+  const {
+    data: { futurePassAddress: futurePass },
+  } = useRootNetwork();
 
   const [api, setApiPromise] = useState<ApiPromise>();
 
   const commitExtrinsic = async (props: CommitProps) => {
-    const { hash, fpAccount } = props;
-    if (hash && fpAccount && api) {
+    const { hash } = props;
+    if (hash && futurePass && api) {
       // Get transaction data using encodeFunctionData
       const data = encodeFunctionData({
         abi: controller.abi,
@@ -45,7 +50,7 @@ export default function useExtrinsicRegister() {
 
       // Prepare Transaction Call
       const evmCall = api.tx.evm.call(
-        fpAccount,
+        futurePass,
         controller.address,
         data,
         0,
@@ -58,7 +63,7 @@ export default function useExtrinsicRegister() {
 
       // Call ProxyExtrinsic
       const extrinsic = api.tx.futurepass.proxyExtrinsic(
-        fpAccount ?? "",
+        futurePass ?? "",
         evmCall
       );
 
@@ -77,9 +82,8 @@ export default function useExtrinsicRegister() {
 
   const registerExtrinsic = async (props: RegisterProps) => {
     const { args } = props;
-    const fpAccount = args?.futurePassAddress;
 
-    if (args && fpAccount && api) {
+    if (args && futurePass && api) {
       // Get transaction data using encodeFunctionData
       const data = encodeFunctionData({
         abi: controller.abi,
@@ -109,7 +113,7 @@ export default function useExtrinsicRegister() {
 
       // Prepare Transaction Call
       const evmCall = api.tx.evm.call(
-        fpAccount,
+        futurePass,
         controller.address,
         data,
         0,
@@ -122,7 +126,7 @@ export default function useExtrinsicRegister() {
 
       // Call ProxyExtrinsic
       const extrinsic = api.tx.futurepass.proxyExtrinsic(
-        fpAccount ?? "",
+        futurePass ?? "",
         evmCall
       );
 
