@@ -117,7 +117,7 @@ export default function useNameDetails(props: RegistrationProps) {
         0,
       ],
     });
-    console.log("makeCommit-response:: ", response);
+    console.log("MakeCommit-Response:: ", response);
     setHash(String(response));
   };
 

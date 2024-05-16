@@ -1,57 +1,27 @@
 import { useWriteContract } from "wagmi";
 import { Address, namehash } from "viem";
-import { ErrorResponse, Response } from "@/services/interfaces";
-import { config } from "@/chains/config";
-import { waitForTransactionReceipt } from "@wagmi/core";
+import { ErrorResponse } from "@/services/interfaces";
 import { useState } from "react";
-
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { FuturePassRecord } from "@/interfaces/record";
+import { initializeResponse } from "@/utils/common";
 import useContractDetails from "./useContractDetails";
 import useProxyRecord from "./FuturePass/useProxyRecord";
-
-export interface RecordProps {
-  type: "TextRecord" | "AddressRecord";
-}
+import useWaitTransaction from "./useWaitTransaction";
 
 export default function useRecords() {
   const publicResolver = useContractDetails({ action: "PublicResolver" });
 
-  const { setAddressProxyCall } = useProxyRecord({ publicResolver });
   const { writeContractAsync } = useWriteContract();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
+  const { waitForWriteTransaction } = useWaitTransaction();
+  const { setAddressProxyCall } = useProxyRecord({ publicResolver });
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
-  const initializeResponse = (): Response => {
-    return {
-      error: null,
-      isSuccess: false,
-      data: {
-        hash: "",
-        receipt: "",
-      },
-    };
-  };
-
-  const waitForTransaction = async (hash: Address) => {
-    const receipt = await waitForTransactionReceipt(config, {
-      hash,
-    });
-
-    return {
-      isSuccess: true,
-      error: null,
-      data: {
-        hash,
-        receipt,
-      },
-    };
-  };
-
   /**
-   * 0x8F8faa9eBB54DEda91a62B4FC33550B19B9d33bf
+   *
    * @param props
    * @returns
    */
@@ -80,16 +50,15 @@ export default function useRecords() {
           });
         }
 
-        // will only set the loading flag as soon as the transasction is approved
         setIsAddressLoading(true);
-        response = await waitForTransaction(txHash);
+        response = await waitForWriteTransaction(txHash);
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
       }
     }
 
-    console.log("address-record:: ", response);
+    console.log("AddressRecord-Response:: ", response);
     setIsAddressLoading(false);
     return response;
   };

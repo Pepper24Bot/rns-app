@@ -32,7 +32,7 @@ export default function useProxyTransfer(props: ProxyProps) {
           },
         });
 
-        console.log("transfer-transaction:: ", transaction);
+        console.log("Transfer-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
         console.log("error:: ", error);

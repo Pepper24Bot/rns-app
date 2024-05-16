@@ -32,7 +32,7 @@ export default function useProxyRecord(props: ProxyProps) {
           },
         });
 
-        console.log("address-record-transaction:: ", transaction);
+        console.log("SetAddress-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
         console.log("error:: ", error);

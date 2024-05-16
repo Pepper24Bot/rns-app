@@ -1,22 +1,22 @@
 import { useWriteContract } from "wagmi";
-import { config } from "@/chains/config";
 import { useState } from "react";
-import { waitForTransactionReceipt } from "@wagmi/core";
-import { ErrorResponse, Response } from "@/services/interfaces";
+import { ErrorResponse } from "@/services/interfaces";
 import { Address, namehash } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { TransferProps } from "@/interfaces/transfer";
+import { initializeResponse } from "@/utils/common";
 
 import useContractDetails from "./useContractDetails";
 import useProxyTransfer from "./FuturePass/useProxyTransfer";
+import useWaitTransaction from "./useWaitTransaction";
 
 /** TODO: Optimize this hook */
 export default function useTransfer() {
-  const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
-
   const nameWrapper = useContractDetails({ action: "NameWrapper" });
 
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+  const { waitForWriteTransaction } = useWaitTransaction();
   const { writeContractAsync } = useWriteContract();
   const { transferProxyCall } = useProxyTransfer({
     nameWrapper: nameWrapper,
@@ -24,35 +24,16 @@ export default function useTransfer() {
 
   const [isTransferLoading, setTransferLoading] = useState(false);
 
-  const initializeResponse = (): Response => {
-    return { error: null, isSuccess: false, data: null };
-  };
-
-  const waitForTransaction = async (hash: Address) => {
-    const receipt = await waitForTransactionReceipt(config, {
-      hash,
-    });
-
-    return {
-      isSuccess: true,
-      error: null,
-      data: {
-        hash,
-        receipt,
-      },
-    };
-  };
-
   const handleTransfer = async (props: TransferProps) => {
     const { name, newOwner } = props;
     let response = { ...initializeResponse() };
 
     if (name && newOwner && root.address) {
-      const nameHash = namehash(name);
-      const tokenId = BigInt(nameHash);
-      const amount = BigInt(1);
-
       try {
+        const nameHash = namehash(name);
+        const tokenId = BigInt(nameHash);
+        const amount = BigInt(1);
+
         let transferHash = "0x" as Address;
 
         if (root.isFpActive) {
@@ -72,16 +53,15 @@ export default function useTransfer() {
           });
         }
 
-        console.log("hash:: ", transferHash);
         setTransferLoading(true);
-        response = await waitForTransaction(transferHash);
+        response = await waitForWriteTransaction(transferHash);
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
       }
     }
     setTransferLoading(false);
-    console.log("transfer response:: ", response);
+    console.log("Transfer-Response:: ", response);
     return response;
   };
 

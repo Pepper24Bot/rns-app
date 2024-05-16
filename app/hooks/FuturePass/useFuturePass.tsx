@@ -6,7 +6,7 @@ import {
   getPublicProviderUrl,
 } from "@therootnetwork/evm";
 import { Contract, Signer, providers } from "ethers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   JsonRpcProvider,
   JsonRpcSigner,
@@ -66,17 +66,9 @@ export default function useFuturePass() {
     return contract;
   };
 
-  useEffect(() => {
-    if (provider) {
-      getJSONRpcSigner();
-    }
-  }, [provider]);
-
-  useEffect(() => {
-    getEthersProvider();
-  }, []);
-
   return {
+    getEthersProvider,
+    getJSONRpcSigner,
     getFuturepassContract,
     getFuturePass,
     getFpAccount,

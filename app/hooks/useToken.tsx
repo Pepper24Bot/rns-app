@@ -1,18 +1,17 @@
-import useContractDetails from "./useContractDetails";
 import { useWriteContract } from "wagmi";
 import { Address, erc20Abi, parseUnits } from "viem";
-import { ErrorResponse, Response } from "@/services/interfaces";
+import { ErrorResponse } from "@/services/interfaces";
 import { Payment } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/constants/components";
-import {
-  readContract,
-  simulateContract,
-  waitForTransactionReceipt,
-} from "@wagmi/core";
+import { readContract } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { initializeResponse } from "@/utils/common";
+
+import useContractDetails from "./useContractDetails";
 import useProxyToken from "./FuturePass/useProxyToken";
+import useWaitTransaction from "./useWaitTransaction";
 
 export interface TokenProps {
   payment?: Payment;
@@ -27,30 +26,11 @@ export default function useToken() {
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
   const { approveProxyCall } = useProxyToken();
-
-  const { address } = controller;
+  const { waitForWriteTransaction } = useWaitTransaction();
   const { writeContractAsync } = useWriteContract();
+  const { address } = controller;
 
   const [isApprovalLoading, setApprovalLoading] = useState(false);
-
-  const initializeResponse = (): Response => {
-    return { error: null, isSuccess: false, data: null };
-  };
-
-  const waitForTransaction = async (hash: Address) => {
-    const receipt = await waitForTransactionReceipt(config, {
-      hash,
-    });
-
-    return {
-      isSuccess: true,
-      error: null,
-      data: {
-        hash,
-        receipt,
-      },
-    };
-  };
 
   /**
    *
@@ -62,38 +42,37 @@ export default function useToken() {
 
     let response = { ...initializeResponse() };
 
-    const spender = address as Address; // ETHRegistrarCntroller address
-    const tokenAddr = payment?.address as Address;
-    const value = parseUnits(fee.toString(), payment?.decimals);
-
     try {
+      let approveHash = "0x" as Address;
+
+      // The spender is the ETHRegistrarCntroller address
+      const spender = address as Address;
+      const tokenAddr = payment?.address as Address;
+      const value = parseUnits(fee.toString(), payment?.decimals);
+
       if (root.isFpActive) {
-        const approveHash = (await approveProxyCall({
+        approveHash = (await approveProxyCall({
           spender,
           tokenAddr,
           amount: value,
         })) as Address;
-
-        setApprovalLoading(true);
-        response = await waitForTransaction(approveHash);
       } else {
-        const token = await simulateContract(config, {
+        approveHash = await writeContractAsync({
           abi: erc20Abi,
           address: tokenAddr,
           functionName: "approve",
           args: [spender, value],
         });
-        const hash = await writeContractAsync(token.request);
-
-        setApprovalLoading(true);
-        response = await waitForTransaction(hash);
       }
+
+      setApprovalLoading(true);
+      response = await waitForWriteTransaction(approveHash);
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
     }
 
-    console.log("approval-response:: ", response);
+    console.log("Approval-Response:: ", response);
     setApprovalLoading(false);
     return response;
   };
@@ -103,16 +82,14 @@ export default function useToken() {
 
     let response = { ...initializeResponse() };
 
-    const tokenAddr = payment?.address as Address;
-    const totalFee = parseUnits(fee.toString(), payment?.decimals);
-
     try {
+      const tokenAddr = payment?.address as Address;
+      const totalFee = parseUnits(fee.toString(), payment?.decimals);
+
       const balance = await readContract(config, {
         abi: erc20Abi,
         address: tokenAddr,
         functionName: "balanceOf",
-        // root.address is the current active address
-        // futurepass or eoa address
         args: [root.address as Address],
       });
 

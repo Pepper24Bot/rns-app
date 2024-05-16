@@ -33,16 +33,6 @@ export default function useFees(props: FeesProps) {
     return gasFee ? Number(formatUnits(gasFee, 6)) : 0;
   };
 
-  const getTotalFee = () => {
-    const rent = getRentFee();
-    const transaction = getTransactionFee();
-
-    const totalFee =
-      rent && transaction ? Number(rent) + Number(transaction) : 0;
-
-    return totalFee || 0;
-  };
-
   return {
     rentFee: getRentFee(),
     transactionFee: getTransactionFee(),

@@ -6,22 +6,22 @@ import { useEffect, useState } from "react";
 import { ApiPromise } from "@polkadot/api";
 import { CommitProps, RegisterProps } from "@/interfaces/registration";
 
-import useContractDetails from "../useContractDetails";
-import useEstimateFees from "../useEstimateFees";
-import useConnectRoot from "../useConnectRoot";
+import useContractDetails from "../../useContractDetails";
+import useEstimateFees from "../../useEstimateFees";
+import useConnectRoot from "../../useConnectRoot";
 
 export interface ConnectProps {
   state: "initialize" | "reinitialize";
 }
 
-export default function useProxyRegister() {
+export default function useExtrinsicRegister() {
+  const controller = useContractDetails({ action: "RegistrarController" });
+
   const { address: walletAddress } = useAccount();
   const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
   const { getApiPromise } = useConnectRoot();
 
   const [api, setApiPromise] = useState<ApiPromise>();
-
-  const controller = useContractDetails({ action: "RegistrarController" });
 
   const commitExtrinsic = async (props: CommitProps) => {
     const { hash, fpAccount } = props;

@@ -32,7 +32,7 @@ export default function useProxyExtend(props: ProxyProps) {
           },
         });
 
-        console.log("extend-transaction:: ", transaction);
+        console.log("ExtendExpiry-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
         console.log("error:: ", error);

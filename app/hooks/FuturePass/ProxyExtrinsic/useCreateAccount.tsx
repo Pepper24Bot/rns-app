@@ -1,7 +1,7 @@
 import { useAccount } from "wagmi";
 import { signExtrinsicPayload } from "@/utils/futurepass";
-import useNetworkConfig from "../useNetworkConfig";
-import useConnectRoot from "../useConnectRoot";
+import useNetworkConfig from "../../useNetworkConfig";
+import useConnectRoot from "../../useConnectRoot";
 
 export default function useCreateAccount() {
   const { network } = useNetworkConfig();

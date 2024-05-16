@@ -32,7 +32,7 @@ export default function useProxyPrimary(props: ProxyProps) {
           },
         });
 
-        console.log("primary-name-transaction:: ", transaction);
+        console.log("SetPrimary-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
         console.log("error:: ", error);

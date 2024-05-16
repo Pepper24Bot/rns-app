@@ -82,7 +82,6 @@ export const RegisterName: React.FC = () => {
 
   const [isError, setIsError] = useState<boolean>(false);
   const [isCooldown, setCooldown] = useState<boolean>(false);
-  const [resetProgress, setResetProgress] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
@@ -137,8 +136,6 @@ export const RegisterName: React.FC = () => {
   const initializeFlags = () => {
     // display progress bar
     setIsProgressVisible(true);
-    // should always start to 0
-    setResetProgress(true);
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
     setIsDetailsEnabled(false);
@@ -148,7 +145,6 @@ export const RegisterName: React.FC = () => {
   const setFlagsWhenError = () => {
     setIsError(true);
     setAreBtnsDisabled(false);
-    setResetProgress(false);
   };
 
   /**
