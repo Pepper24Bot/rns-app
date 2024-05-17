@@ -32,12 +32,8 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
-import { useAccount, useEnsAvatar, useEnsName } from "wagmi";
+import { useEnsAddress, useEnsName } from "wagmi";
 import { namehash, Address } from "viem";
-import {
-  useGetMetadataQuery,
-  useGetNftImageQuery,
-} from "@/redux/metadata/metadataApi";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -228,10 +224,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: activeAddress,
   });
 
-  // Check if name is linked to the wallet address
-  const linkedAddr = item?.domain?.resolver?.addr?.id;
-  const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
+  const { data: ensAddr } = useEnsAddress({
+    name: item.domain.name || "",
+  });
 
+  const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const { expiration, distanceToExpiration } = getExpiration(
@@ -305,7 +302,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       title={
                         <Grid>
                           <TooltipText>{`${item.name} is linked to `}</TooltipText>
-                          <Highlight>{linkedAddr}</Highlight>
+                          <Highlight>{ensAddr}</Highlight>
                         </Grid>
                       }
                       arrow
@@ -336,7 +333,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                   {hasLinkedAddr ? (
                     <Detail>
                       <Label>Linked to</Label>
-                      {getMaskedAddress(String(linkedAddr), 6)}
+                      {getMaskedAddress(String(ensAddr), 6)}
                     </Detail>
                   ) : (
                     <Detail>

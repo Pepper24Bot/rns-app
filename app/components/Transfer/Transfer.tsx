@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address, isAddress } from "viem";
 import { TransactionProps } from "@/interfaces/components/transaction";
-import { useEnsAddress } from "wagmi";
+import { useEnsAddress, useEnsName } from "wagmi";
 import { isRootName } from "@/utils/common";
 import { config } from "@/chains/config";
 import { normalize } from "viem/ens";
@@ -60,10 +60,15 @@ export const Transfer: React.FC<TransactionProps> = (
 ) => {
   const dispatch = useDispatch();
 
-  const { domain, owner } = props;
+  const { domain, owner, activeAddress } = props;
   const { closeModal } = useModalState();
+
   const { data: addressRecord, refetch } = useEnsAddress({
     name: domain?.name || "",
+  });
+
+  const { refetch: refetchEnsName } = useEnsName({
+    address: activeAddress as Address,
   });
 
   // Transaction status
@@ -173,6 +178,8 @@ export const Transfer: React.FC<TransactionProps> = (
 
     if (isSuccess) {
       setWatchAddrUpdate(true);
+      // Refresh the address record, in case the user cancels the transaction midway.
+      // so the Dashboard will have an updated value
       refetch();
     } else {
       setIsError(true);
@@ -200,6 +207,8 @@ export const Transfer: React.FC<TransactionProps> = (
     if (isTransferred) {
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      // Refetch the ens name so that the toolbar will update the primary name
+      refetchEnsName();
       setIsSuccess(true);
       setIsPending(false);
     }
@@ -207,8 +216,6 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isAddrUpdated) {
-      // Refresh dashboard, in case the user cancels the transaction midway
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       handleTransfer();
     }
   }, [isAddrUpdated]);

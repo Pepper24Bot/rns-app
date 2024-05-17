@@ -99,9 +99,10 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
       setIsPending(false);
+
+      // Refetch the address so that the Dashboard will have an updated value
       refetchEnsAddr();
 
       /**
