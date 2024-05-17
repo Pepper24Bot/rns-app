@@ -274,6 +274,11 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
         color: alpha(theme.palette.text.primary, 0.5),
       },
     },
+
+    "& .MuiFormHelperText-root": {
+      position: "absolute",
+      bottom: "-24px",
+    },
   },
   ".MuiInputBase-root": {
     backgroundColor: alpha(theme.palette.primary.dark, 0.15),

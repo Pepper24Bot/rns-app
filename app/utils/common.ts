@@ -184,20 +184,6 @@ export const getModalFromPath = (pathId: string = "", id: string = ""): ModalSta
 
 /**
  * 
- * @param url 
- * @returns 
- */
-export const isAddressFuturePass = (url: string = "") => {
-    const pattern = new RegExp(
-        /(?:0xffff)/g
-    );
-
-    const match = url.toLowerCase().match(pattern)
-    return !isEmpty(match)
-}
-
-/**
- * 
  * @param elementId 
  */
 export const scrollIntoElement = (elementId: string, options?: ScrollIntoViewOptions) => {
@@ -259,4 +245,32 @@ export const initializeResponse = (): Response => {
             receipt: "",
         },
     };
-}; 
+};
+
+/**
+ * 
+ * @param name 
+ * @returns 
+ */
+export const isRootName = (name: string) => {
+    const pattern = new RegExp(
+        /(?:.root)/g
+    );
+
+    const match = name.toLowerCase().match(pattern)
+    return !isEmpty(match)
+}
+
+/**
+ * 
+ * @param url 
+ * @returns 
+ */
+export const isAddressFuturePass = (address: string = "") => {
+    const pattern = new RegExp(
+        /(?:0xffff)/g
+    );
+
+    const match = address.toLowerCase().match(pattern)
+    return !isEmpty(match)
+}

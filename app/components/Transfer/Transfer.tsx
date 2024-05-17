@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Collapse, Grid, styled, alpha } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Collapse,
+  Grid,
+  styled,
+  alpha,
+  InputAdornment,
+  CircularProgress,
+} from "@mui/material";
 import {
   ActionButton,
   FlexCenter,
@@ -12,9 +19,15 @@ import { isEmpty } from "lodash";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import { TransactionProps } from "@/interfaces/components/transaction";
 import { useEnsAddress } from "wagmi";
+import { isRootName } from "@/utils/common";
+import { config } from "@/chains/config";
+import { normalize } from "viem/ens";
+import { getEnsAddress } from "@wagmi/core";
+import { debounce as _debounce } from "lodash";
+import { DEFAULT_DEBOUNCE } from "@/constants/components";
 
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -47,12 +60,13 @@ export const Transfer: React.FC<TransactionProps> = (
 ) => {
   const dispatch = useDispatch();
 
-  const { domain } = props;
+  const { domain, owner } = props;
   const { closeModal } = useModalState();
   const { data: addressRecord, refetch } = useEnsAddress({
     name: domain?.name || "",
   });
 
+  // Transaction status
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -62,7 +76,13 @@ export const Transfer: React.FC<TransactionProps> = (
   const [isWatchingAddrUpdate, setWatchAddrUpdate] = useState<boolean>(false);
   const [isWatchingTransfer, setWatchTransfer] = useState<boolean>(false);
 
+  const [isFieldError, setFieldError] = useState<boolean>(false);
+  const [isFieldValidating, setFieldValidating] = useState<boolean>(false);
+  const [helperText, setHelperText] = useState<string>("");
+
   const [inputAddr, setInputAddr] = useState<string>("");
+  const [newOwner, setNewOwner] = useState<string>("");
+
   const [txHash, setTxHash] = useState<string>("");
 
   const { transfer, isLoading: isTransferLoading } = useTransfer();
@@ -90,12 +110,65 @@ export const Transfer: React.FC<TransactionProps> = (
     setIsSuccess(false);
   };
 
+  const setErrorFieldData = (helper: string) => {
+    setFieldError(true);
+    setHelperText(helper);
+    setNewOwner("");
+  };
+
+  const setValidAddress = async (value: string) => {
+    setFieldValidating(true);
+    const isValidAddress = isAddress(value);
+    const isValidName = isRootName(value);
+
+    if (!isValidAddress && !isValidName) {
+      setErrorFieldData("Invalid Address or RNS!");
+    }
+
+    if (isValidName && !isValidAddress) {
+      const addressRecord = await getEnsAddress(config, {
+        name: normalize(value),
+      });
+
+      if (!addressRecord) {
+        setErrorFieldData("The RNS is not linked to any address!");
+      } else if (addressRecord.toLowerCase() === owner?.id) {
+        setErrorFieldData("You are sending this identity to your own address!");
+      } else {
+        setNewOwner(addressRecord);
+      }
+    } else if (!isValidName && isValidAddress) {
+      if (value.toLowerCase() === owner?.id) {
+        setErrorFieldData("You are sending this identity to your own address!");
+      } else {
+        setNewOwner(value);
+      }
+    }
+    setFieldValidating(false);
+  };
+
+  const handleDebounceOnChange = async (value: string) => {
+    setFieldError(false);
+    setHelperText("");
+
+    if (!value) {
+      setNewOwner("");
+    } else {
+      await setValidAddress(value);
+    }
+  };
+
+  const debounceFn = useCallback(
+    _debounce(handleDebounceOnChange, DEFAULT_DEBOUNCE),
+    []
+  );
+
   const handleUpdateAddress = async () => {
     initializeFlags();
 
     const { isSuccess } = await setAddressRecord({
       name: domain?.name || "",
-      address: inputAddr as Address,
+      address: newOwner as Address,
     });
 
     if (isSuccess) {
@@ -111,7 +184,7 @@ export const Transfer: React.FC<TransactionProps> = (
     const name = domain?.name;
 
     if (name) {
-      const { data, isSuccess } = await transfer({ name, newOwner: inputAddr });
+      const { data, isSuccess } = await transfer({ name, newOwner });
 
       if (isSuccess) {
         setWatchTransfer(true);
@@ -147,18 +220,30 @@ export const Transfer: React.FC<TransactionProps> = (
         <Grid>
           <InputField disabled value={domain?.name} />
           <InputField
+            error={isFieldError}
+            helperText={helperText}
             label="Transfer To"
-            placeholder="Enter FuturePass Address or RNS"
+            placeholder="Enter Wallet Address or RNS"
             focused
             value={inputAddr}
             onChange={(event) => {
               const { value } = event.target;
               setInputAddr(value);
+              debounceFn(value);
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end" sx={{ mt: 1 }}>
+                  <Collapse in={isFieldValidating}>
+                    <CircularProgress size={18} />
+                  </Collapse>
+                </InputAdornment>
+              ),
             }}
           />
-          <Note py={2}>
+          <Note pt={4} pb={2}>
             Please note that transferring this identity will also set the
-            address record to the receiver's address.
+            address record (Linked Address) to the receiver's address.
           </Note>
           <Collapse in={isProgressVisible}>
             <FlexCenter pt={2}>
@@ -189,14 +274,14 @@ export const Transfer: React.FC<TransactionProps> = (
             <Collapse orientation="horizontal" in={!isSuccess}>
               <ActionButton
                 disabled={
-                  isEmpty(inputAddr) ||
+                  isEmpty(newOwner) ||
                   isPending ||
                   isSuccess ||
                   isTransactionLoading
                 }
                 variant="contained"
                 onClick={() => {
-                  if (addressRecord === inputAddr) {
+                  if (addressRecord === newOwner) {
                     initializeFlags();
                     handleTransfer();
                   } else {
