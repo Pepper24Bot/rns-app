@@ -46,6 +46,7 @@ const Contents = styled(FlexJustified)(({ theme }) => ({
   maxWidth: "1420px",
   width: "100%",
   padding: "0 40px",
+  cursor: "pointer",
 
   [theme.breakpoints.down("sm")]: {
     padding: "0 20px",
@@ -111,6 +112,11 @@ export const NavigationBar: React.FC = () => {
                 width: "-webkit-fill-available",
                 maxWidth: "260px",
                 padding: "10px 0",
+              }}
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.open("https://www.rootnameservice.com/", "_blank");
+                }
               }}
             />
             <Toolbar />

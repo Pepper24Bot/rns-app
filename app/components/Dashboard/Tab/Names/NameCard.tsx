@@ -26,6 +26,7 @@ import {
   InformationTip,
   SecondaryLabel,
   ShareButton,
+  SkeletonRectangular,
 } from "@/components/Theme/StyledGlobal";
 import { getExpiration, getMaskedAddress, parseCookie } from "@/utils/common";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -51,6 +52,7 @@ const Container = styled(Grid)(({ theme }) => ({
 const ItemContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   borderRadius: "8px",
+  boxShadow: `0px 0px 25px 0px ${darken(grey[900], 1)}`,
 }));
 
 const ImageContainer = styled(Grid)(({ theme }) => ({
@@ -219,6 +221,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const nameRef = useRef<HTMLDivElement | null>(null);
 
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
+  const [isImageLoading, setImageLoading] = useState<boolean>(true);
 
   const { data: ensName } = useEnsName({
     address: activeAddress,
@@ -266,18 +269,31 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
       <Container>
         <ItemContainer>
-          <ImageContainer>
+          <ImageContainer sx={{ position: "relative" }}>
+            <SkeletonRectangular
+              isloading={isImageLoading}
+              style={{
+                width: "calc(100% - 40px)",
+                height: "calc(100% - 45px)",
+                position: "absolute",
+                WebkitTransformOrigin: "top",
+                transform: "scale(1)",
+              }}
+            />
             <Image
               src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
               alt="RNS Name"
               width={200}
               height={200}
+              onLoad={() => {
+                setImageLoading(false);
+              }}
               style={{
                 width: "-webkit-fill-available",
                 height: "-webkit-fill-available",
-                border: `solid 1px ${alpha(pink[900], 0.25)}`,
+                border: `solid 1px ${alpha(grey[800], 0.25)}`,
                 borderRadius: "4px",
-                boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
+                boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
               }}
             />
           </ImageContainer>

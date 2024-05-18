@@ -158,7 +158,10 @@ export const Dashboard: React.FC = () => {
 
   const { data: searchedName, isLoading: searchedNameLoading } =
     useGetNamesByUserAndLabelQuery(
-      { labelName: searchValue, id: address?.toLowerCase() as Address },
+      {
+        labelName: searchValue.toLowerCase(),
+        id: address?.toLowerCase() as Address,
+      },
       {
         skip: isEmpty(searchValue) || isEmpty(address),
         refetchOnMountOrArgChange: true,
