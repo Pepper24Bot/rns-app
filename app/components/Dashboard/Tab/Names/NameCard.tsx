@@ -34,6 +34,7 @@ import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { namehash, Address } from "viem";
+import { getDataUrl } from "@/images/default";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -269,9 +270,12 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
           <ImageContainer>
             <Image
               src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
+              overrideSrc={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
               alt="Wallet Icon"
+              placeholder={getDataUrl() as "data:image/${string}"}
               width={200}
               height={200}
+              priority={true}
               style={{
                 width: "-webkit-fill-available",
                 height: "-webkit-fill-available",
