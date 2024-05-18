@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FieldContainer,
   Flex,
@@ -24,6 +24,10 @@ const PaymentLabel = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 const ArrowDownIcon = styled(ArrowDropDown)(({ theme }) => ({
+  cursor: "pointer",
+}));
+
+const MenuContainer = styled(FieldContainer)(({ theme }) => ({
   cursor: "pointer",
 }));
 
@@ -59,6 +63,7 @@ const Menu = styled(MuiMenu, {
 
 export const MenuField: React.FC<Menu> = (props: Menu) => {
   const { label, options, selectedOption, handleOptionSelect } = props;
+  const [isPaymentMenuOpen, setPaymentMenuOpen] = useState<boolean>(false);
 
   return (
     <Flex>
@@ -68,16 +73,29 @@ export const MenuField: React.FC<Menu> = (props: Menu) => {
             <PaymentLabel>{label}</PaymentLabel>
           </Grid>
         )}
-        <FieldContainer item xs>
+        <MenuContainer
+          item
+          xs
+          onClick={() => {
+            setPaymentMenuOpen(!isPaymentMenuOpen);
+          }}
+        >
           <SecondaryLabel>{selectedOption.label}</SecondaryLabel>
           <DropDownMenu
             selectedOption={selectedOption}
             options={options}
             hasButton
             iconButton={<ArrowDownIcon />}
+            isOpen={isPaymentMenuOpen}
+            handleOpen={() => {
+              setPaymentMenuOpen(true);
+            }}
+            handleClose={() => {
+              setPaymentMenuOpen(false);
+            }}
             handleSelect={handleOptionSelect}
           />
-        </FieldContainer>
+        </MenuContainer>
       </FlexCenter>
     </Flex>
   );
