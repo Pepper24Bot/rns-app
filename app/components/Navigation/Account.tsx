@@ -20,7 +20,7 @@ import { green } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { getMaskedAddress } from "@/utils/common";
 import { useAccount, useDisconnect } from "wagmi";
-import { ContentCopy } from "@mui/icons-material";
+import { Check, ContentCopy } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FUTURE_PASS } from "@/constants/url";
 import { Address } from "viem";
@@ -93,6 +93,12 @@ const CopyIcon = styled(ContentCopy)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.25),
 }));
 
+const CheckIcon = styled(Check)(({ theme }) => ({
+  width: "16px",
+  height: "16px",
+  color: alpha(theme.palette.text.primary, 0.25),
+}));
+
 const FpButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButtonBase-root": {
     padding: "4px 12px",
@@ -127,6 +133,8 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
 
   const { createFpAccount } = useCreateAccount();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
+
+  const [isCopied, setIsCopied] = useState("");
 
   const [isFpActive, setIsFpActive] = useState<boolean>(
     root.isFpActive || false
@@ -189,7 +197,6 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
           sx={{
             transform: isFpActive ? "translate(0, 55px)" : "",
             transition: "all 0.25s ease-out allow-discrete",
-            opacity: isFpActive ? "0.25" : "1",
           }}
         >
           <Logo>
@@ -199,28 +206,35 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
               width={20}
               height={20}
               style={{
-                color: "white",
+                color: "text.primary",
                 marginRight: root.eoaAddress ? "" : "8px",
+                opacity: isFpActive ? "0.25" : "1",
               }}
             />
           </Logo>
           <Grid>
-            <Label>{`${connector?.name} Address`}</Label>
+            <Label
+              sx={{
+                opacity: isFpActive ? "0.25" : "1",
+              }}
+            >{`${connector?.name} Address`}</Label>
             <Flex>
               <Highlight
                 sx={{
                   color: isFpActive ? "text.secondary" : "primary.main",
+                  opacity: isFpActive ? "0.25" : "1",
                 }}
               >
                 {getMaskedAddress(root.eoaAddress || "")}
               </Highlight>
               <IconButton
-                sx={{ p: 0, ml: 1 }}
+                sx={{ p: 0, ml: 3 }}
                 onClick={() => {
+                  setIsCopied("eoa");
                   handleCopy(root.eoaAddress || "");
                 }}
               >
-                <CopyIcon />
+                {isCopied === "eoa" ? <CheckIcon /> : <CopyIcon />}
               </IconButton>
             </Flex>
           </Grid>
@@ -239,30 +253,34 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
               width={20}
               height={20}
               style={{
-                color: "white",
+                color: "text.primary",
                 marginRight: root.eoaAddress ? "" : "8px",
               }}
             />
           </Logo>
           <Grid>
             {root.futurePassAddress ? (
-              <Grid sx={{ opacity: isFpActive ? "1" : "0.25" }}>
-                <Label>FuturePass Address</Label>
+              <Grid>
+                <Label sx={{ opacity: isFpActive ? "1" : "0.25" }}>
+                  FuturePass Address
+                </Label>
                 <Flex>
                   <Highlight
                     sx={{
                       color: isFpActive ? "primary.main" : "text.secondary",
+                      opacity: isFpActive ? "1" : "0.25",
                     }}
                   >
                     {getMaskedAddress(root.futurePassAddress || "")}
                   </Highlight>
                   <IconButton
-                    sx={{ p: 0, ml: 1 }}
+                    sx={{ p: 0, ml: 3 }}
                     onClick={() => {
+                      setIsCopied("fp");
                       handleCopy(root.futurePassAddress || "");
                     }}
                   >
-                    <CopyIcon />
+                    {isCopied === "fp" ? <CheckIcon /> : <CopyIcon />}
                   </IconButton>
                 </Flex>
               </Grid>
@@ -298,7 +316,7 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
                 >
                   {isFpActive
                     ? `Switch to ${connector?.name}`
-                    : " Switch to FuturePass"}
+                    : "Switch to FuturePass"}
                 </FpButton>
               </Grid>
             </InformationTip>
