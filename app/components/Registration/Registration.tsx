@@ -21,7 +21,7 @@ import {
 } from "@/redux/domain/domainSlice";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { Address } from "viem";
+import { Address, formatUnits } from "viem";
 import { COMMITMENT_AGE, PAYMENT_METHOD } from "@/constants/components";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
@@ -78,20 +78,19 @@ export const RegisterName: React.FC = () => {
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
-
   const [isError, setIsError] = useState<boolean>(false);
   const [isCooldown, setCooldown] = useState<boolean>(false);
 
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
-
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [areBtnsDisabled, setAreBtnsDisabled] = useState<boolean>(true);
 
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [isSkipCommit, setSkipCommit] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
+  const [walletBalance, setWalletBalance] = useState<number>(0);
 
-  const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
+  const [isWatchingRegister, setWatchRegister] = useState<boolean>(false);
   const [isWatchingApproval, setWatchApproval] = useState<boolean>(false);
 
   const { isWaiting: isApproving, isCompleted: isApproved } = useBlockLatency({
@@ -100,7 +99,7 @@ export const RegisterName: React.FC = () => {
 
   const { isWaiting: isRegistering, isCompleted: isRegistered } =
     useBlockLatency({
-      enabled: isBlockEnabled,
+      enabled: isWatchingRegister,
     });
 
   /**
@@ -244,7 +243,7 @@ export const RegisterName: React.FC = () => {
     });
 
     if (isSuccess) {
-      setIsBlockEnabled(true);
+      setWatchRegister(true);
       setTxHash(data.hash);
     } else {
       setFlagsWhenError();
@@ -265,6 +264,9 @@ export const RegisterName: React.FC = () => {
         payment,
         fee: rentFee,
       });
+
+      const balance = formatUnits(data.balance, payment?.decimals ?? 6);
+      setWalletBalance(Number(balance));
 
       setBalanceSufficient(data.isBalanceSufficient);
       setAreBtnsDisabled(!data.isBalanceSufficient);
@@ -309,7 +311,11 @@ export const RegisterName: React.FC = () => {
 
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
-      <Form isShowing={!isRegistered} rentFee={rentFee} />
+      <Form
+        isShowing={!isRegistered}
+        rentFee={rentFee}
+        walletBalance={walletBalance}
+      />
       <FlexCenter py={2}>
         <Relative>
           <Collapse in={!isBalanceSufficient}>
@@ -387,11 +393,11 @@ export const RegisterName: React.FC = () => {
                 >
                   {isRegistered ? "Close" : "Cancel"}
                 </ActionButton>
-                <InformationTip title="Ooops! We are not live yet!" arrow>
+                <InformationTip title="" arrow>
                   <Grid>
                     <ActionButton
-                      // disabled={areBtnsDisabled}
-                      disabled
+                      disabled={areBtnsDisabled}
+                      // disabled
                       variant="contained"
                       onClick={() => {
                         if (!isApproved && isCommitSuccess) {

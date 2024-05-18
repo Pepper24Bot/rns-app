@@ -20,6 +20,7 @@ import { Domain } from "@/redux/graphql/hooks";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 import { PAYMENT_METHOD } from "@/constants/components";
+import { formatUnits } from "viem";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -38,7 +39,7 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
-  width: "350px",
+  width: "360px",
   display: "grid",
   alignContent: "space-between",
 
@@ -86,6 +87,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
+  const [walletBalance, setWalletBalance] = useState<number>(0);
   const [txHash, setTxHash] = useState<string>("");
 
   const [isWatchingExtend, setWatchExtend] = useState<boolean>(false);
@@ -175,6 +177,8 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
           fee: rentFee,
         });
 
+        const balance = formatUnits(data.balance, payment?.decimals ?? 6);
+        setWalletBalance(Number(balance));
         setBalanceSufficient(data.isBalanceSufficient);
       }
     };
@@ -211,7 +215,11 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
       <DetailsContainer item>
         {extendPage === 1 ? (
           <>
-            <Form name={domain?.name || ""} rentFee={rentFee} />
+            <Form
+              name={domain?.name || ""}
+              rentFee={rentFee}
+              walletBalance={walletBalance}
+            />
             <Collapse in={!isBalanceSufficient}>
               <FlexCenter py={2}>
                 <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BaseButton,
   ModalInputField,
@@ -14,6 +14,8 @@ import { Add, Remove } from "@mui/icons-material";
 import { Payment, useDomainState } from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/constants/components";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
+import { useAccount, useBalance } from "wagmi";
+import { formatEther } from "ethers/lib/utils";
 
 import MenuField from "@/components/Reusables/MenuField";
 
@@ -25,18 +27,21 @@ const NameField = styled(ModalInputField)(({ theme }) => ({
   maxWidth: "500px",
 }));
 
-const Transaction = styled(FlexJustified)(({ theme }) => ({
-  padding: "5px 0",
-}));
+const Transaction = styled(FlexJustified)(({ theme }) => ({}));
 
 const TransactionLabel = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "16px",
-  fontWeight: FONT_WEIGHT.Light,
-  color: alpha(theme.palette.text.primary, 0.5),
+  fontSize: "18px",
+  fontWeight: FONT_WEIGHT.Regular,
+  color: alpha(theme.palette.text.primary, 0.6),
 }));
 
 const Value = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "16px",
+  fontSize: "18px",
+}));
+
+const Balance = styled(TransactionLabel)(({ theme }) => ({
+  fontSize: "14px",
+  color: alpha(theme.palette.text.primary, 0.25),
 }));
 
 const Button = styled(BaseButton)(({ theme }) => ({
@@ -59,16 +64,23 @@ export interface FormProps {
   rentFee?: number;
   transactionFee?: number;
   totalFee?: number;
+  walletBalance?: number;
 
   /** hide form when transaction is successful */
   isShowing?: boolean;
 }
 
 export const Form: React.FC<FormProps> = (props: FormProps) => {
-  const { name: nameProp, isShowing = true, rentFee } = props;
+  const { name: nameProp, isShowing = true, rentFee, walletBalance } = props;
+
+  // Get the native currency balance
+  const { address = "0x" } = useAccount();
+  const { data: balance } = useBalance({
+    address,
+  });
+
   const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
     useDomainState();
-
   const { name, payment, year, status } = useDomain();
 
   const getYearLabel = () => {
@@ -123,14 +135,28 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
         />
         <FieldContainer>
           <SummaryContainer>
-            <Transaction>
-              <TransactionLabel>{`${year} ${getYearLabel()} Registration`}</TransactionLabel>
-              <Value>{`${rentFee?.toFixed(6)} ${payment?.label}`}</Value>
-            </Transaction>
-            <Transaction>
-              <TransactionLabel>Transaction fees paid in</TransactionLabel>
-              <Value>XRP</Value>
-            </Transaction>
+            <Grid py={1}>
+              <Transaction>
+                <TransactionLabel>{`${year} ${getYearLabel()} Registration`}</TransactionLabel>
+                <Value>{`${rentFee?.toFixed(6)} ${payment?.label}`}</Value>
+              </Transaction>
+              <Transaction pt={0.5}>
+                <Balance>Connected Wallet Balance</Balance>
+                <Balance>{walletBalance?.toFixed(6)}</Balance>
+              </Transaction>
+            </Grid>
+            <Grid py={1}>
+              <Transaction>
+                <TransactionLabel>Transaction fees</TransactionLabel>
+                <Value>XRP</Value>
+              </Transaction>
+              <Transaction pt={0.5}>
+                <Balance>EOA Wallet Balance</Balance>
+                <Balance>
+                  {Number(formatEther(balance?.value ?? 0)).toFixed(6)}
+                </Balance>
+              </Transaction>
+            </Grid>
           </SummaryContainer>
         </FieldContainer>
       </Collapse>
