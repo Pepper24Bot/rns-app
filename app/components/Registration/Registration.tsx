@@ -396,8 +396,8 @@ export const RegisterName: React.FC = () => {
                 <InformationTip title="" arrow>
                   <Grid>
                     <ActionButton
-                      disabled={areBtnsDisabled}
-                      // disabled
+                      // disabled={areBtnsDisabled}
+                      disabled
                       variant="contained"
                       onClick={() => {
                         if (!isApproved && isCommitSuccess) {
