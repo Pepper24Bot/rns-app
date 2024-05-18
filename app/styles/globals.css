@@ -15,7 +15,7 @@
 }
 
 .react-pdf__Page__textContent {
-  background-color: #000000;
+  background-color: rgb(4, 4, 4);
 }
 
 .textLayer :is(span, br) {

@@ -205,7 +205,7 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isTransferred) {
-      // Data Invalidation: Refresh Dashboard
+      // Data Invalidation: Refresh Dashboard list of names
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       // Refetch the ens name so that the toolbar will update the primary name
       refetchEnsName();
