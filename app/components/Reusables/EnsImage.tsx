@@ -1,7 +1,6 @@
 import React from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { SecondaryLabel } from "../Theme/StyledGlobal";
 import { namehash } from "viem";
 
 import Image from "next/image";
@@ -46,7 +45,7 @@ export interface EnsImage {
 
 export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
   const { name = "" } = props;
-  const { network } = useNetworkConfig();
+  const { name: networkName } = useNetworkConfig();
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
   });
@@ -56,8 +55,8 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
   return (
     <ImageContainer item>
       <StyledImage
-        src={`https://rns-metadata.fly.dev/${network}/${contractAddr}/${nameHash}/image`}
-        alt="ENS Image"
+        src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
+        alt="RNS Name"
         width={200}
         height={200}
       />
