@@ -17,7 +17,7 @@ import {
   FlexJustified,
   Heading,
 } from "../Theme/StyledGlobal";
-import { Search as MuiSearchIcon, Settings, Tune } from "@mui/icons-material";
+import { Search as MuiSearchIcon, Tune, ViewColumn } from "@mui/icons-material";
 import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/constants/components";
 import { FONT_SIZE } from "../Theme/Global";
 import {
@@ -349,7 +349,7 @@ export const Dashboard: React.FC = () => {
                     setFilterAnchor(event.currentTarget);
                   }}
                 >
-                  <Settings />
+                  <Tune />
                 </IconButton>
                 <FeatureToggle feature={FeatureList.ViewOptions}>
                   <IconButton
@@ -359,7 +359,7 @@ export const Dashboard: React.FC = () => {
                       setViewAnchor(event.currentTarget);
                     }}
                   >
-                    <Tune />
+                    <ViewColumn />
                   </IconButton>
                 </FeatureToggle>
               </Grid>
