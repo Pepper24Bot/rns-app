@@ -99,8 +99,8 @@ export const Names: React.FC = () => {
   const { data: root } = useRootNetwork();
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(4);
-  const [itemCountField, setItemCountField] = useState(4);
+  const [itemsPerPage, setItemsPerPage] = useState(40);
+  const [itemCountField, setItemCountField] = useState(40);
   const [pageCount, setPageCount] = useState(1);
 
   const handleDebounceOnChange = (value: number) => {
@@ -151,13 +151,13 @@ export const Names: React.FC = () => {
 
   // Set itemsPerPage based on the client width
   // TODO: Clean this
-  useEffect(() => {
-    const clientWidth = document?.documentElement?.clientWidth;
-    if (clientWidth >= 900 && clientWidth <= 1200) {
-      setItemsPerPage(3);
-      setItemCountField(3);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const clientWidth = document?.documentElement?.clientWidth;
+  //   if (clientWidth >= 900 && clientWidth <= 1200) {
+  //     setItemsPerPage(9);
+  //     setItemCountField(9);
+  //   }
+  // }, []);
 
   return (
     <>

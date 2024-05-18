@@ -4804,7 +4804,7 @@ export const GetNamesByUserAndLabelDocument = `
     `;
 export const GetNamesByIdDocument = `
     query GetNamesById($id: ID!) {
-  wrappedDomains(where: {owner_: {id: $id}}) {
+  wrappedDomains(first: 1000, where: {owner_: {id: $id}}) {
     id
     name
     owner {

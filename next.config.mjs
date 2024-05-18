@@ -7,7 +7,12 @@ export default {
   reactStrictMode: true,
   images: {
     dangerouslyAllowSVG: true,
-    domains: ["rns-metadata.fly.dev", "i.ibb.co"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "rns-metadata.fly.dev",
+      },
+    ],
   },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
