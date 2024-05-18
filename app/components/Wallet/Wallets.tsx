@@ -15,6 +15,7 @@ import {
 import { X } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import { FeatureList } from "@/hooks/useFeatureToggle";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import Image from "next/image";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
@@ -95,7 +96,10 @@ export const Wallets: React.FC = () => {
   const connectors = useConnectors();
   const { connect } = useConnect();
   const { connector: activeConnector } = useAccount();
+
   const { disconnect, isPending: isDisconnecting } = useDisconnect();
+  const { useRootNetwork, updateRootDetails } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
 
   const { closeModal, toggleModal } = useModalState();
   const { getIcon } = useWalletIcon();
@@ -106,6 +110,14 @@ export const Wallets: React.FC = () => {
       (connector.type === "injected" && connector.id === "metaMask")
     );
   });
+
+  const handleDisconnect = () => {
+    updateRootDetails({
+      ...root,
+      address: undefined,
+    });
+    disconnect();
+  };
 
   return (
     <Container>
@@ -177,8 +189,8 @@ export const Wallets: React.FC = () => {
               <DisconnectButton
                 variant="contained"
                 onClick={() => {
-                  disconnect();
                   closeModal();
+                  handleDisconnect();
                 }}
               >
                 Disconnect

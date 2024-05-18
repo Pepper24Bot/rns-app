@@ -269,7 +269,6 @@ export const RegisterName: React.FC = () => {
       setWalletBalance(Number(balance));
 
       setBalanceSufficient(data.isBalanceSufficient);
-      setAreBtnsDisabled(!data.isBalanceSufficient);
     };
 
     if (hash) {
@@ -393,10 +392,10 @@ export const RegisterName: React.FC = () => {
                 >
                   {isRegistered ? "Close" : "Cancel"}
                 </ActionButton>
-                <InformationTip title="" arrow>
+                <InformationTip title="Ooops! We are not live yet!" arrow>
                   <Grid>
                     <ActionButton
-                      // disabled={areBtnsDisabled}
+                      // disabled={areBtnsDisabled || !isBalanceSufficient}
                       disabled
                       variant="contained"
                       onClick={() => {
