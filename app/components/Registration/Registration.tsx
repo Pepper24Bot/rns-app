@@ -274,7 +274,7 @@ export const RegisterName: React.FC = () => {
     if (hash) {
       getBalanceOf();
     }
-  }, [rentFee, hash]);
+  }, [rentFee, hash, payment?.address]);
 
   useEffect(() => {
     if (isRegistered) {
