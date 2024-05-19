@@ -184,7 +184,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     };
 
     getBalanceOf();
-  }, [address, rentFee]);
+  }, [address, rentFee, payment?.address]);
 
   useEffect(() => {
     if (isExtended) {
