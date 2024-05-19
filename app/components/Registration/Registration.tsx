@@ -12,7 +12,6 @@ import {
   FlexLeft,
   ErrorTip,
   Flex,
-  InformationTip,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, alpha, styled } from "@mui/material";
 import {
@@ -392,29 +391,27 @@ export const RegisterName: React.FC = () => {
                 >
                   {isRegistered ? "Close" : "Cancel"}
                 </ActionButton>
-                <InformationTip title="Ooops! We are not live yet!" arrow>
-                  <Grid>
-                    <ActionButton
-                      disabled={areBtnsDisabled || !isBalanceSufficient}
-                      variant="contained"
-                      onClick={() => {
-                        if (!isApproved && isCommitSuccess) {
-                          setIsError(false);
-                          setAreBtnsDisabled(true);
-                          handleApproval();
-                        } else if (!isRegistered && isApproved) {
-                          setIsError(false);
-                          setAreBtnsDisabled(true);
-                          handleRegister();
-                        } else {
-                          handleCommit();
-                        }
-                      }}
-                    >
-                      Confirm
-                    </ActionButton>
-                  </Grid>
-                </InformationTip>
+                <Grid>
+                  <ActionButton
+                    disabled={areBtnsDisabled || !isBalanceSufficient}
+                    variant="contained"
+                    onClick={() => {
+                      if (!isApproved && isCommitSuccess) {
+                        setIsError(false);
+                        setAreBtnsDisabled(true);
+                        handleApproval();
+                      } else if (!isRegistered && isApproved) {
+                        setIsError(false);
+                        setAreBtnsDisabled(true);
+                        handleRegister();
+                      } else {
+                        handleCommit();
+                      }
+                    }}
+                  >
+                    Confirm
+                  </ActionButton>
+                </Grid>
               </FlexRight>
             </FlexJustified>
           ) : (
