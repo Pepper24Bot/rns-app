@@ -20,6 +20,7 @@
     "@graphql-codegen/typescript-resolvers": "^4.0.6",
     "@mui/icons-material": "^5.15.9",
     "@mui/material": "^5.15.9",
+    "@mui/styles": "^5.15.18",
     "@polkadot/api": "^10.13.1",
     "@reduxjs/toolkit": "1.9.5",
     "@rtk-query/graphql-request-base-query": "^2.3.1",
