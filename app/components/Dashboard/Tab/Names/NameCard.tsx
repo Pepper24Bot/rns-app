@@ -38,7 +38,6 @@ import { namehash, Address } from "viem";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
-import Image from "next/image";
 import EnsImage from "@/components/Reusables/EnsImage";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
@@ -281,8 +280,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               }}
             />
             <img
-              src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
+              src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image?w=260`}
               alt="RNS Name"
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
               width={200}
               height={200}
               onLoad={() => {
