@@ -21,7 +21,7 @@ const ImageContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const StyledImage = styled(Image)(({ theme }) => ({
+const StyledImage = styled("img")(({ theme }) => ({
   minWidth: "200px",
   height: "fit-content",
   width: "-webkit-fill-available",
