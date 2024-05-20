@@ -213,7 +213,7 @@ export const isAccountLoading = (status: string) => {
  * @returns 
  */
 export const isNameSupported = (name: string) => {
-    const pattern = new RegExp(/[a-z]\.[a-z]/g)
+    const pattern = new RegExp(/[a-z|0-9]\.[a-z|0-9]/g)
 
     const match = name.match(pattern)
     return isEmpty(match)

@@ -280,14 +280,12 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 transform: "scale(1)",
               }}
             />
-            <img
+            <Image
               src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
+              overrideSrc={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
               alt="RNS Name"
               width={200}
               height={200}
-              onLoadStart={() => {
-                console.log("loading start...");
-              }}
               onLoad={() => {
                 setImageLoading(false);
               }}
