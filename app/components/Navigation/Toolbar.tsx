@@ -15,7 +15,11 @@ import {
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { getMaskedAddress, isAccountLoading } from "@/utils/common";
+import {
+  getMaskedAddress,
+  isAccountLoading,
+  parseCookie,
+} from "@/utils/common";
 import { Address } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { DISCORD, DOCS, TWITTER } from "@/constants/url";
@@ -108,6 +112,7 @@ export const Toolbar: React.FC = () => {
   const [run, setRun] = useState<boolean>(true);
   const [steps, setSteps] = useState<Step[]>([]);
   const addressRef = useRef(null);
+  const isTutorialDisabled = parseCookie("showTutorial") === "false";
 
   useEffect(() => {
     if (addressRef.current) {
@@ -160,7 +165,7 @@ export const Toolbar: React.FC = () => {
 
   return (
     <ToolbarContainer>
-      {address && (
+      {address && !isTutorialDisabled && (
         <ReactJoyride
           steps={steps}
           disableCloseOnEsc

@@ -22,7 +22,7 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { green } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { getMaskedAddress } from "@/utils/common";
+import { getMaskedAddress, parseCookie } from "@/utils/common";
 import { useAccount, useDisconnect } from "wagmi";
 import { Check, ContentCopy } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -147,6 +147,7 @@ export const Account: React.FC<AccountProps> = (props) => {
 
   const [run, setRun] = useState<boolean>(false);
   const [steps, setSteps] = useState<Step[]>([]);
+  const isTutorialDisabled = parseCookie("showTutorial") === "false";
 
   const switchRef = useRef(null);
 
@@ -206,7 +207,13 @@ export const Account: React.FC<AccountProps> = (props) => {
               </ContentTooltip>
               <ActionTooltip>Try it now!</ActionTooltip>
               <FlexLeft pt={3}>
-                <ActionButton variant="contained">
+                <ActionButton
+                  variant="contained"
+                  onClick={() => {
+                    document.cookie = `showTutorial=${false}; path=/`;
+                    setRun(false);
+                  }}
+                >
                   Do not show again
                 </ActionButton>
               </FlexLeft>
@@ -228,7 +235,7 @@ export const Account: React.FC<AccountProps> = (props) => {
 
   return (
     <>
-      {root.futurePassAddress && (
+      {root.futurePassAddress && !isTutorialDisabled && (
         <ReactJoyride steps={steps as Step[]} disableCloseOnEsc run={run} />
       )}
       <Container>
