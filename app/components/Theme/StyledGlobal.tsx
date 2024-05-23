@@ -496,3 +496,19 @@ export const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
     },
   },
 }));
+
+export const TitleTooltip = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "18px",
+  padding: "8px 0",
+  fontWeight: FONT_WEIGHT.Bold,
+}));
+
+export const ContentTooltip = styled(TitleTooltip)(({ theme }) => ({
+  fontSize: "14px",
+  color: alpha(theme.palette.text.primary, 0.75),
+  fontWeight: FONT_WEIGHT.Regular,
+}));
+
+export const ActionTooltip = styled(ContentTooltip)(({ theme }) => ({
+  color: theme.palette.primary.main,
+}));

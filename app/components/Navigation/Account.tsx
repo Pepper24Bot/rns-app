@@ -9,11 +9,15 @@ import {
 } from "@mui/material";
 import {
   ActionButton,
+  ActionTooltip,
+  ContentTooltip,
   Flex,
+  FlexLeft,
   FlexRight,
   FlexTop,
   InformationTip,
   SecondaryLabel,
+  TitleTooltip,
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { green } from "@mui/material/colors";
@@ -183,15 +187,31 @@ export const Account: React.FC<AccountProps> = (props) => {
       setSteps([
         {
           target: switchRef.current,
-          title: "Switch to Futurepass",
           disableBeacon: true,
           hideCloseButton: true,
           hideFooter: true,
           spotlightClicks: true,
+          locale: {
+            close: "Do not show again",
+          },
           disableScrolling: true,
           placement: "left",
-          content:
-            "When switching to futurepass, all transactions will be paid by FP!",
+          content: (
+            <Grid>
+              <TitleTooltip>Switch Address</TitleTooltip>
+              <ContentTooltip>
+                {!isFpActive
+                  ? "When switching to futurepass, all transactions will be paid by FP (excluding the gas fee)"
+                  : "When switching to eoa address, all transactions will be paid by your eoa wallet address."}
+              </ContentTooltip>
+              <ActionTooltip>Try it now!</ActionTooltip>
+              <FlexLeft pt={3}>
+                <ActionButton variant="contained">
+                  Do not show again
+                </ActionButton>
+              </FlexLeft>
+            </Grid>
+          ),
           styles: {
             options: {
               zIndex: 10000,
@@ -352,6 +372,7 @@ export const Account: React.FC<AccountProps> = (props) => {
                     className="step-2-switch-account"
                     onClick={() => {
                       handleSwitchAddress();
+                      setRun(false);
                     }}
                   >
                     {isFpActive

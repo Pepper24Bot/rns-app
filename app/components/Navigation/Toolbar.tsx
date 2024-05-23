@@ -9,6 +9,9 @@ import {
   ToggleButtonGroup as StyledToggleButtonGroup,
   ToggleButton as StyledToggleButton,
   SecondaryLabel,
+  ActionTooltip,
+  ContentTooltip,
+  TitleTooltip,
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -19,7 +22,6 @@ import { DISCORD, DOCS, TWITTER } from "@/constants/url";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import ReactJoyride, { Step } from "react-joyride";
-
 import Image from "next/image";
 import MenuPopover from "../Reusables/MenuPopover";
 import Account from "./Account";
@@ -118,9 +120,12 @@ export const Toolbar: React.FC = () => {
           spotlightClicks: true,
           content: (
             <Grid>
-              You may click this address or name to see your EOA and Futurepass
-              address!
-              <SecondaryLabel>Click the toolbar above!</SecondaryLabel>
+              <TitleTooltip>Account Modal</TitleTooltip>
+              <ContentTooltip>
+                You may click this address or name to see your EOA and
+                Futurepass address.
+              </ContentTooltip>
+              <ActionTooltip>Click the toolbar above!</ActionTooltip>
             </Grid>
           ),
           styles: {

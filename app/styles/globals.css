@@ -44,3 +44,19 @@
 .custom_heading {
   color: white !important;
 }
+
+/* In-App tutorial customization */
+.react-joyride__tooltip {
+  background-color: rgb(4, 4, 4) !important;
+  border-radius: 8px !important;
+  padding: 20px !important;
+  border: solid 1px #540624;
+}
+
+.react-joyride__tooltip > div > div {
+  padding: 0 !important;
+}
+
+.__floater__arrow > span > svg > polygon {
+  fill: #540624;
+}
