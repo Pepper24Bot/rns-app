@@ -109,12 +109,6 @@ const FpButton = styled(ActionButton)(({ theme }) => ({
     padding: "4px 12px",
   },
   "&.MuiButton-contained": {
-    backgroundColor: alpha(theme.palette.primary.dark, 0.5),
-
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.primary.dark, 0.75),
-    },
-
     "&.Mui-disabled": {
       backgroundColor: alpha(theme.palette.background.dark, 0.25),
     },
@@ -376,6 +370,7 @@ export const Account: React.FC<AccountProps> = (props) => {
                 <Grid>
                   <FpButton
                     ref={switchRef}
+                    variant="contained"
                     className="step-2-switch-account"
                     onClick={() => {
                       handleSwitchAddress();
