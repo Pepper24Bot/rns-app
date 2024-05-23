@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Grid, Link, alpha, styled } from "@mui/material";
 import {
   Divider,
@@ -18,6 +18,8 @@ import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { DISCORD, DOCS, TWITTER } from "@/constants/url";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
+import ReactJoyride, { Step } from "react-joyride";
+
 import Image from "next/image";
 import MenuPopover from "../Reusables/MenuPopover";
 import Account from "./Account";
@@ -101,6 +103,40 @@ export const Toolbar: React.FC = () => {
 
   const isLabelLoading = isAccountLoading(status);
 
+  const [run, setRun] = useState<boolean>(true);
+  const [steps, setSteps] = useState<Step[]>([]);
+  const addressRef = useRef(null);
+
+  useEffect(() => {
+    if (addressRef.current) {
+      setSteps([
+        {
+          target: addressRef.current!,
+          disableBeacon: true,
+          hideCloseButton: true,
+          hideFooter: true,
+          spotlightClicks: true,
+          content: (
+            <Grid>
+              You may click this address or name to see your EOA and Futurepass
+              address!
+              <SecondaryLabel>Click the toolbar above!</SecondaryLabel>
+            </Grid>
+          ),
+          styles: {
+            options: {
+              zIndex: 10000,
+            },
+          },
+        },
+      ]);
+
+      setTimeout(() => {
+        setRun(true);
+      }, 500);
+    }
+  }, [addressRef.current]);
+
   useEffect(() => {
     const label = ensName
       ? ensName
@@ -119,6 +155,16 @@ export const Toolbar: React.FC = () => {
 
   return (
     <ToolbarContainer>
+      {address && (
+        <ReactJoyride
+          steps={steps}
+          disableCloseOnEsc
+          run={run}
+          callback={(data) => {
+            console.log("toolbar:: ", data);
+          }}
+        />
+      )}
       <Flex
         sx={{
           display: {
@@ -156,7 +202,7 @@ export const Toolbar: React.FC = () => {
       {/* TODO: Clean this */}
       <Grid width="100%" textAlign="center">
         <HorizontalDivider variant="fullWidth" />
-        <ToggleButtonGroup>
+        <ToggleButtonGroup ref={addressRef}>
           <ToggleButton
             value=""
             onClick={() => {
@@ -193,6 +239,7 @@ export const Toolbar: React.FC = () => {
               onClick={(event) => {
                 setIsOpen(!isOpen);
                 setAnchor(event.currentTarget);
+                setRun(false);
               }}
             >
               <Relative>
@@ -207,21 +254,23 @@ export const Toolbar: React.FC = () => {
             </ToggleButton>
           )}
         </ToggleButtonGroup>
-        <MenuPopover
-          isOpen={isOpen}
-          anchorEl={anchor}
-          toggleClose={() => {
-            setIsOpen(false);
-          }}
-        >
-          {address && (
-            <Account
-              toggleClose={() => {
-                setIsOpen(false);
-              }}
-            />
-          )}
-        </MenuPopover>
+        <Grid>
+          <MenuPopover
+            isOpen={isOpen}
+            anchorEl={anchor}
+            toggleClose={() => {
+              setIsOpen(false);
+            }}
+          >
+            {address && (
+              <Account
+                toggleClose={() => {
+                  setIsOpen(false);
+                }}
+              />
+            )}
+          </MenuPopover>
+        </Grid>
       </Grid>
     </ToolbarContainer>
   );

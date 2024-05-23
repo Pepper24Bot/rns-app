@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Avatar,
   Divider,
@@ -26,6 +26,7 @@ import { FUTURE_PASS } from "@/constants/url";
 import { Address } from "viem";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
+import ReactJoyride, { Step } from "react-joyride";
 import Image from "next/image";
 import useCreateAccount from "@/hooks/FuturePass/ProxyExtrinsic/useCreateAccount";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
@@ -120,7 +121,7 @@ export interface AccountProps {
   toggleClose?: () => void;
 }
 
-export const Account: React.FC<AccountProps> = (props: AccountProps) => {
+export const Account: React.FC<AccountProps> = (props) => {
   const { toggleClose } = props;
 
   const { connector, chainId } = useAccount();
@@ -139,6 +140,11 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
   const [isFpActive, setIsFpActive] = useState<boolean>(
     root.isFpActive || false
   );
+
+  const [run, setRun] = useState<boolean>(false);
+  const [steps, setSteps] = useState<Step[]>([]);
+
+  const switchRef = useRef(null);
 
   const handleSwitchAddress = () => {
     document.cookie = `isFpActive=${!isFpActive}; path=/`;
@@ -172,192 +178,227 @@ export const Account: React.FC<AccountProps> = (props: AccountProps) => {
     await createFpAccount();
   };
 
+  useEffect(() => {
+    if (switchRef.current) {
+      setSteps([
+        {
+          target: switchRef.current,
+          title: "Switch to Futurepass",
+          disableBeacon: true,
+          hideCloseButton: true,
+          hideFooter: true,
+          spotlightClicks: true,
+          disableScrolling: true,
+          placement: "left",
+          content:
+            "When switching to futurepass, all transactions will be paid by FP!",
+          styles: {
+            options: {
+              zIndex: 10000,
+            },
+          },
+        },
+      ]);
+
+      setTimeout(() => {
+        setRun(true);
+      }, 300);
+    }
+  }, [switchRef]);
+
   return (
-    <Container>
-      <AccountLabel>Account</AccountLabel>
-      <Grid py={2.5}>
-        <FlexTop>
-          <OnlineIcon />
-          <Grid>
-            <Flex>
-              <Highlight>The Root Network</Highlight>
-              <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-              <ChainLabel>{network}</ChainLabel>
-            </Flex>
-            <Flex pt={0.5}>
-              <ChainLabel>Chain Id:</ChainLabel>
-              <RegularText>{chainId}</RegularText>
-            </Flex>
-          </Grid>
-        </FlexTop>
-      </Grid>
-      <StyledDivider />
-      <Grid py={2.5} pl={2.5}>
-        <Flex
-          sx={{
-            transform: isFpActive ? "translate(0, 55px)" : "",
-            transition: "all 0.25s ease-out allow-discrete",
-          }}
-        >
-          <Logo>
-            <Image
-              src={path}
-              alt="Wallet Icon"
-              width={20}
-              height={20}
-              style={{
-                color: "text.primary",
-                marginRight: root.eoaAddress ? "" : "8px",
-                opacity: isFpActive ? "0.25" : "1",
-              }}
-            />
-          </Logo>
-          <Grid>
-            <Label
-              sx={{
-                opacity: isFpActive ? "0.25" : "1",
-              }}
-            >{`${connector?.name} Address`}</Label>
-            <Flex>
-              <Highlight
-                sx={{
-                  color: isFpActive ? "text.secondary" : "primary.main",
+    <>
+      {root.futurePassAddress && (
+        <ReactJoyride steps={steps as Step[]} disableCloseOnEsc run={run} />
+      )}
+      <Container>
+        <AccountLabel>Account</AccountLabel>
+        <Grid py={2.5}>
+          <FlexTop>
+            <OnlineIcon />
+            <Grid>
+              <Flex>
+                <Highlight>The Root Network</Highlight>
+                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                <ChainLabel>{network}</ChainLabel>
+              </Flex>
+              <Flex pt={0.5}>
+                <ChainLabel>Chain Id:</ChainLabel>
+                <RegularText>{chainId}</RegularText>
+              </Flex>
+            </Grid>
+          </FlexTop>
+        </Grid>
+        <StyledDivider />
+        <Grid py={2.5} pl={2.5}>
+          <Flex
+            sx={{
+              transform: isFpActive ? "translate(0, 55px)" : "",
+              transition: "all 0.25s ease-out allow-discrete",
+            }}
+          >
+            <Logo>
+              <Image
+                src={path}
+                alt="Wallet Icon"
+                width={20}
+                height={20}
+                style={{
+                  color: "text.primary",
+                  marginRight: root.eoaAddress ? "" : "8px",
                   opacity: isFpActive ? "0.25" : "1",
                 }}
-              >
-                {getMaskedAddress(root.eoaAddress || "")}
-              </Highlight>
-              <IconButton
-                sx={{ p: 0, ml: 3 }}
-                onClick={() => {
-                  setIsCopied("eoa");
-                  handleCopy(root.eoaAddress || "");
+              />
+            </Logo>
+            <Grid>
+              <Label
+                sx={{
+                  opacity: isFpActive ? "0.25" : "1",
                 }}
-              >
-                {isCopied === "eoa" ? <CheckIcon /> : <CopyIcon />}
-              </IconButton>
-            </Flex>
-          </Grid>
-        </Flex>
-        <Vertical />
-        <Flex
-          sx={{
-            transform: isFpActive ? "translate(0, -55px)" : "",
-            transition: "all 0.25s ease-out allow-discrete",
-          }}
-        >
-          <Logo sx={{ opacity: isFpActive ? "1" : "0.25" }}>
-            <Image
-              src="/icons/futurePass.svg"
-              alt="Wallet Icon"
-              width={20}
-              height={20}
-              style={{
-                color: "text.primary",
-                marginRight: root.eoaAddress ? "" : "8px",
-              }}
-            />
-          </Logo>
-          <Grid>
-            {root.futurePassAddress ? (
-              <Grid>
-                <Label sx={{ opacity: isFpActive ? "1" : "0.25" }}>
-                  FuturePass Address
-                </Label>
-                <Flex>
-                  <Highlight
-                    sx={{
-                      color: isFpActive ? "primary.main" : "text.secondary",
-                      opacity: isFpActive ? "1" : "0.25",
-                    }}
-                  >
-                    {getMaskedAddress(root.futurePassAddress || "")}
-                  </Highlight>
-                  <IconButton
-                    sx={{ p: 0, ml: 3 }}
-                    onClick={() => {
-                      setIsCopied("fp");
-                      handleCopy(root.futurePassAddress || "");
-                    }}
-                  >
-                    {isCopied === "fp" ? <CheckIcon /> : <CopyIcon />}
-                  </IconButton>
-                </Flex>
-              </Grid>
-            ) : (
+              >{`${connector?.name} Address`}</Label>
               <Flex>
-                <FpButton
-                  variant="contained"
-                  onClick={() => {
-                    if (chainId === 7668) {
-                      if (typeof window !== "undefined") {
-                        window.open(FUTURE_PASS, "_blank");
-                      }
-                    } else {
-                      // Create futurepass account via code - porcini only
-                      handleCreateFp();
-                    }
+                <Highlight
+                  sx={{
+                    color: isFpActive ? "text.secondary" : "primary.main",
+                    opacity: isFpActive ? "0.25" : "1",
                   }}
                 >
-                  Create a FuturePass
-                </FpButton>
+                  {getMaskedAddress(root.eoaAddress || "")}
+                </Highlight>
+                <IconButton
+                  sx={{ p: 0, ml: 3 }}
+                  onClick={() => {
+                    setIsCopied("eoa");
+                    handleCopy(root.eoaAddress || "");
+                  }}
+                >
+                  {isCopied === "eoa" ? <CheckIcon /> : <CopyIcon />}
+                </IconButton>
               </Flex>
-            )}
-          </Grid>
-        </Flex>
-        {root.futurePassAddress && (
-          <FlexRight pt={2.5}>
-            <InformationTip title="" arrow placement="top">
-              <Grid>
-                <FpButton
-                  onClick={() => {
-                    handleSwitchAddress();
-                  }}
-                >
-                  {isFpActive
-                    ? `Switch to ${connector?.name}`
-                    : "Switch to FuturePass"}
-                </FpButton>
-              </Grid>
-            </InformationTip>
-          </FlexRight>
-        )}
-      </Grid>
-      <StyledDivider />
-      <FlexRight pt={2.5}>
-        <Grid pr={1}>
-          <ActionButton
-            variant="contained"
-            onClick={() => {
-              if (toggleClose) {
-                toggleClose();
-              }
+            </Grid>
+          </Flex>
+          <Vertical />
+          <Flex
+            sx={{
+              transform: isFpActive ? "translate(0, -55px)" : "",
+              transition: "all 0.25s ease-out allow-discrete",
+            }}
+          >
+            <Logo sx={{ opacity: isFpActive ? "1" : "0.25" }}>
+              <Image
+                src="/icons/futurePass.svg"
+                alt="Wallet Icon"
+                width={20}
+                height={20}
+                style={{
+                  color: "text.primary",
+                  marginRight: root.eoaAddress ? "" : "8px",
+                }}
+              />
+            </Logo>
+            <Grid>
+              {root.futurePassAddress ? (
+                <Grid>
+                  <Label sx={{ opacity: isFpActive ? "1" : "0.25" }}>
+                    FuturePass Address
+                  </Label>
+                  <Flex>
+                    <Highlight
+                      sx={{
+                        color: isFpActive ? "primary.main" : "text.secondary",
+                        opacity: isFpActive ? "1" : "0.25",
+                      }}
+                    >
+                      {getMaskedAddress(root.futurePassAddress || "")}
+                    </Highlight>
+                    <IconButton
+                      sx={{ p: 0, ml: 3 }}
+                      onClick={() => {
+                        setIsCopied("fp");
+                        handleCopy(root.futurePassAddress || "");
+                      }}
+                    >
+                      {isCopied === "fp" ? <CheckIcon /> : <CopyIcon />}
+                    </IconButton>
+                  </Flex>
+                </Grid>
+              ) : (
+                <Flex>
+                  <FpButton
+                    variant="contained"
+                    onClick={() => {
+                      if (chainId === 7668) {
+                        if (typeof window !== "undefined") {
+                          window.open(FUTURE_PASS, "_blank");
+                        }
+                      } else {
+                        // Create futurepass account via code - porcini only
+                        handleCreateFp();
+                      }
+                    }}
+                  >
+                    Create a FuturePass
+                  </FpButton>
+                </Flex>
+              )}
+            </Grid>
+          </Flex>
+          {root.futurePassAddress && (
+            <FlexRight pt={2.5}>
+              <InformationTip title="" arrow placement="top">
+                <Grid>
+                  <FpButton
+                    ref={switchRef}
+                    className="step-2-switch-account"
+                    onClick={() => {
+                      handleSwitchAddress();
+                    }}
+                  >
+                    {isFpActive
+                      ? `Switch to ${connector?.name}`
+                      : "Switch to FuturePass"}
+                  </FpButton>
+                </Grid>
+              </InformationTip>
+            </FlexRight>
+          )}
+        </Grid>
+        <StyledDivider />
+        <FlexRight pt={2.5}>
+          <Grid pr={1}>
+            <ActionButton
+              variant="contained"
+              onClick={() => {
+                if (toggleClose) {
+                  toggleClose();
+                }
 
-              toggleModal({
-                id: "Wallets",
-                title: "Switch Wallet",
-                isXDisabled: true,
-              });
-            }}
-          >
-            Switch Wallet
-          </ActionButton>
-        </Grid>
-        <Grid>
-          <ActionButton
-            variant="contained"
-            onClick={() => {
-              if (toggleClose) {
-                toggleClose();
-              }
-              handleDisconnect();
-            }}
-          >
-            Disconnect
-          </ActionButton>
-        </Grid>
-      </FlexRight>
-    </Container>
+                toggleModal({
+                  id: "Wallets",
+                  title: "Switch Wallet",
+                  isXDisabled: true,
+                });
+              }}
+            >
+              Switch Wallet
+            </ActionButton>
+          </Grid>
+          <Grid>
+            <ActionButton
+              variant="contained"
+              onClick={() => {
+                if (toggleClose) {
+                  toggleClose();
+                }
+                handleDisconnect();
+              }}
+            >
+              Disconnect
+            </ActionButton>
+          </Grid>
+        </FlexRight>
+      </Container>
+    </>
   );
 };
 
