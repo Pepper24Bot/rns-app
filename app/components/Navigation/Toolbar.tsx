@@ -185,14 +185,18 @@ export const Toolbar: React.FC = () => {
           },
         }}
       >
-        <ToolbarLabel
-          onClick={() => {
-            scrollIntoElement("my-dashboard");
-          }}
-        >
-          My Dashboard
-        </ToolbarLabel>
-        <Divider orientation="vertical" flexItem />
+        {address && (
+          <>
+            <ToolbarLabel
+              onClick={() => {
+                scrollIntoElement("my-dashboard");
+              }}
+            >
+              My Dashboard
+            </ToolbarLabel>
+            <Divider orientation="vertical" flexItem />
+          </>
+        )}
         <Link href={DOCS} target="_blank">
           <ToolbarLabel>Docs</ToolbarLabel>
         </Link>
