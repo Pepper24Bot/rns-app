@@ -19,6 +19,7 @@ import {
   getMaskedAddress,
   isAccountLoading,
   parseCookie,
+  scrollIntoElement,
 } from "@/utils/common";
 import { Address } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
@@ -70,9 +71,10 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
   },
 }));
 
-const DocsLabel = styled(SecondaryLabel)(({ theme }) => ({
+const ToolbarLabel = styled(SecondaryLabel)(({ theme }) => ({
   padding: "11px 0",
   fontSize: "15px",
+  width: "max-content",
 
   "&:hover": {
     color: theme.palette.primary.main,
@@ -183,8 +185,16 @@ export const Toolbar: React.FC = () => {
           },
         }}
       >
+        <ToolbarLabel
+          onClick={() => {
+            scrollIntoElement("my-dashboard");
+          }}
+        >
+          My Dashboard
+        </ToolbarLabel>
+        <Divider orientation="vertical" flexItem />
         <Link href={DOCS} target="_blank">
-          <DocsLabel>Docs</DocsLabel>
+          <ToolbarLabel>Docs</ToolbarLabel>
         </Link>
         <Divider orientation="vertical" flexItem />
       </Flex>

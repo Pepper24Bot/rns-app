@@ -322,7 +322,7 @@ export const Dashboard: React.FC = () => {
         <DashboardContainer>
           <FlexJustified container>
             <Grid>
-              <Title>My Dashboard</Title>
+              <Title id="my-dashboard">My Dashboard</Title>
             </Grid>
             <Toolbar item md={6} lg={5} container>
               <Grid item xs>
