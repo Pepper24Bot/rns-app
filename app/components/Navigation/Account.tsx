@@ -12,10 +12,12 @@ import {
   ActionTooltip,
   ContentTooltip,
   Flex,
+  FlexJustified,
   FlexLeft,
   FlexRight,
   FlexTop,
   InformationTip,
+  ProgressTooltip,
   SecondaryLabel,
   TitleTooltip,
 } from "../Theme/StyledGlobal";
@@ -193,11 +195,16 @@ export const Account: React.FC<AccountProps> = (props) => {
           placement: "left",
           content: (
             <Grid>
-              <TitleTooltip>Switch Address</TitleTooltip>
+              <FlexJustified>
+                <TitleTooltip>Switch Address</TitleTooltip>
+                <TitleTooltip>
+                  <ProgressTooltip>2/2</ProgressTooltip>
+                </TitleTooltip>
+              </FlexJustified>
               <ContentTooltip>
                 {!isFpActive
-                  ? "When switching to futurepass, all transactions will be paid by FP (excluding the gas fee)"
-                  : "When switching to eoa address, all transactions will be paid by your eoa wallet address."}
+                  ? "When switching to your FuturePass, all transaction fees are paid by your FuturePass and gas fees are paid by your EOA."
+                  : "When switching to your EOA address, all transaction and gas fees are paid by your EOA."}
               </ContentTooltip>
               <ActionTooltip>Try it now!</ActionTooltip>
               <FlexLeft pt={3}>

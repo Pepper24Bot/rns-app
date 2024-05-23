@@ -512,3 +512,7 @@ export const ContentTooltip = styled(TitleTooltip)(({ theme }) => ({
 export const ActionTooltip = styled(ContentTooltip)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
+
+export const ProgressTooltip = styled("span")(({ theme }) => ({
+  color: theme.palette.primary.main,
+}));

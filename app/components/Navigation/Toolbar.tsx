@@ -12,6 +12,8 @@ import {
   ActionTooltip,
   ContentTooltip,
   TitleTooltip,
+  FlexJustified,
+  ProgressTooltip,
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -127,10 +129,15 @@ export const Toolbar: React.FC = () => {
           spotlightClicks: true,
           content: (
             <Grid>
-              <TitleTooltip>Account Modal</TitleTooltip>
+              <FlexJustified>
+                <TitleTooltip>Account Modal</TitleTooltip>
+                <TitleTooltip>
+                  <ProgressTooltip>1/2</ProgressTooltip>
+                </TitleTooltip>
+              </FlexJustified>
               <ContentTooltip>
-                You may click this address or name to see your EOA and
-                Futurepass address.
+                Click above to view and switch between your EOA and FuturePass
+                address.
               </ContentTooltip>
               <ActionTooltip>Click the toolbar above!</ActionTooltip>
             </Grid>
@@ -168,14 +175,7 @@ export const Toolbar: React.FC = () => {
   return (
     <ToolbarContainer>
       {address && !isTutorialDisabled && (
-        <ReactJoyride
-          steps={steps}
-          disableCloseOnEsc
-          run={run}
-          callback={(data) => {
-            console.log("toolbar:: ", data);
-          }}
-        />
+        <ReactJoyride steps={steps} disableCloseOnEsc run={run} />
       )}
       <Flex
         sx={{
