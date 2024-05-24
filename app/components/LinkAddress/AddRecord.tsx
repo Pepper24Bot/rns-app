@@ -19,10 +19,12 @@ import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
+import useFeatureToggle from "@/hooks/useFeatureToggle";
 
 export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain, activeAddress } = props;
   const { closeModal } = useModalState();
+  const { isFeatureEnabled } = useFeatureToggle();
 
   const dispatch = useDispatch();
 
@@ -143,7 +145,11 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
           <Collapse orientation="horizontal" in={!isSuccess}>
             <ActionButton
               disabled={
-                isEmpty(inputAddr) || isPending || isSuccess || isWaiting
+                isEmpty(inputAddr) ||
+                isPending ||
+                isSuccess ||
+                isWaiting ||
+                !isFeatureEnabled("Link")
               }
               variant="contained"
               onClick={() => {

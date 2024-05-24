@@ -9,8 +9,7 @@ import {
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/utils/common";
 import { Address } from "viem";
-import { useDispatch } from "react-redux";
-import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
+import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { LinkProps } from "@/interfaces/components/transaction";
@@ -21,11 +20,10 @@ import UpdateRecord from "./UpdateRecord";
 import RemoveAddress from "./RemoveRecord";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
+import useFeatureToggle from "@/hooks/useFeatureToggle";
 
 export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain: domainState, owner, ensName, activeAddress } = props;
-
-  const dispatch = useDispatch();
 
   const { data } = useGetNamesByNameQuery(
     { labelName: `${domainState?.labelName}` },
@@ -38,6 +36,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   const { refetch: refetchEnsName } = useEnsName({ address: activeAddress });
   const { closeModal } = useModalState();
+  const { isFeatureEnabled } = useFeatureToggle();
 
   const domain = data?.wrappedDomains[0]?.domain;
   const linkedAddr = domain?.resolver?.addr?.id || "";
@@ -191,7 +190,11 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
         >
           <ActionButton
             disabled={
-              inputValue === linkedAddr || isPending || isSuccess || isWaiting
+              inputValue === linkedAddr ||
+              isPending ||
+              isSuccess ||
+              isWaiting ||
+              !isFeatureEnabled("Link")
             }
             variant="contained"
             onClick={() => {

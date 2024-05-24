@@ -25,6 +25,7 @@ import ProgressBar from "../Reusables/ProgressBar";
 import usePrimary from "@/hooks/usePrimary";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
+import useFeatureToggle from "@/hooks/useFeatureToggle";
 
 const Container = styled(FlexTop)(({ theme }) => ({}));
 
@@ -62,6 +63,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const { refetch } = useEnsName({ address: activeAddress });
   const { data: ensAddr } = useEnsAddress({ name });
   const { closeModal } = useModalState();
+  const { isFeatureEnabled } = useFeatureToggle();
   const { setAddressRecord } = useRecords();
   const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
 
@@ -275,7 +277,12 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
           </ActionButton>
           <Collapse orientation="horizontal" in={!isSuccess}>
             <ActionButton
-              disabled={isSuccess || isPending || isTransactionLoading}
+              disabled={
+                isSuccess ||
+                isPending ||
+                isTransactionLoading ||
+                !isFeatureEnabled("Primary")
+              }
               variant="contained"
               onClick={() => {
                 handleSetPrimary();

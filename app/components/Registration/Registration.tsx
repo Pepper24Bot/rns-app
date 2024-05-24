@@ -40,6 +40,7 @@ import ProgressBar from "../Reusables/ProgressBar";
 import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
+import useFeatureToggle from "@/hooks/useFeatureToggle";
 
 const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
   padding: "8px 16px",
@@ -77,6 +78,7 @@ export const RegisterName: React.FC = () => {
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1, payment } = useDomain();
 
+  const { isFeatureEnabled } = useFeatureToggle();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
   const { data: xrpBalance } = useBalance({
@@ -321,9 +323,11 @@ export const RegisterName: React.FC = () => {
   }, [isModalOpen]);
 
   useEffect(() => {
-    const isSufficient =
-      Number(formatEther(xrpBalance?.value ?? BigInt(0))) > 5;
-    setXrpSufficient(isSufficient);
+    if (xrpBalance?.value !== undefined) {
+      const isSufficient =
+        Number(formatEther(xrpBalance?.value ?? BigInt(0))) > 5;
+      setXrpSufficient(isSufficient);
+    }
   }, [xrpBalance?.value]);
 
   return (
@@ -435,7 +439,8 @@ export const RegisterName: React.FC = () => {
                     disabled={
                       areBtnsDisabled ||
                       !isBalanceSufficient ||
-                      !isXrpSufficient
+                      !isXrpSufficient ||
+                      !isFeatureEnabled("Registration")
                     }
                     variant="contained"
                     onClick={() => {

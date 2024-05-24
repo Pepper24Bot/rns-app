@@ -35,6 +35,7 @@ import ViewTransaction from "../Reusables/ViewTransaction";
 import useTransfer from "@/hooks/useTransfer";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import useRecords from "@/hooks/useRecords";
+import useFeatureToggle from "@/hooks/useFeatureToggle";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "350px",
@@ -62,6 +63,7 @@ export const Transfer: React.FC<TransactionProps> = (
 
   const { domain, owner, activeAddress } = props;
   const { closeModal } = useModalState();
+  const { isFeatureEnabled } = useFeatureToggle();
 
   const { data: addressRecord, refetch } = useEnsAddress({
     name: domain?.name || "",
@@ -284,7 +286,8 @@ export const Transfer: React.FC<TransactionProps> = (
                   isEmpty(newOwner) ||
                   isPending ||
                   isSuccess ||
-                  isTransactionLoading
+                  isTransactionLoading ||
+                  !isFeatureEnabled("Transfer")
                 }
                 variant="contained"
                 onClick={() => {

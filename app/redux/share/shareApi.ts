@@ -1,6 +1,6 @@
-import axios, { AxiosError, HttpStatusCode } from "axios";
+import { HttpStatusCode } from "axios";
 import { api } from "../baseSlice"
-import { getHeader, refetchTwitterToken } from "@/services/customQuery";
+import { getHeader } from "@/services/customQuery";
 
 /**
  * TODO:

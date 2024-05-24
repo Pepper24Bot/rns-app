@@ -4,8 +4,8 @@ import {
   useDomainState,
 } from "@/redux/domain/domainSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useAccount } from "wagmi";
-import { Collapse, Grid, IconButton, alpha, styled } from "@mui/material";
+import { useAccount, useBalance } from "wagmi";
+import { Collapse, Grid, IconButton, Link, alpha, styled } from "@mui/material";
 import {
   FlexRight,
   ActionButton,
@@ -20,7 +20,10 @@ import { Domain } from "@/redux/graphql/hooks";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 import { PAYMENT_METHOD } from "@/constants/components";
-import { formatUnits } from "viem";
+import { formatEther, formatUnits } from "viem";
+import { FUTUREVERSE, QUESTIONS, VIDEO_TUTORIAL } from "@/constants/url";
+import { red } from "@mui/material/colors";
+import { FONT_WEIGHT } from "../Theme/Global";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -31,6 +34,7 @@ import ProgressBar from "../Reusables/ProgressBar";
 import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
+import useFeatureToggle from "@/hooks/useFeatureToggle";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -52,6 +56,12 @@ const DetailsContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
+const HightlightText = styled("span")(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Bold,
+  color: red[500],
+  textDecoration: "underline",
+}));
+
 export interface Expiry {
   domain?: Partial<Domain>;
   owner?: {
@@ -62,15 +72,18 @@ export interface Expiry {
 export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const { domain } = props;
 
-  const { address = "" } = useAccount();
+  const { address = "0x" } = useAccount();
+  const { data: xrpBalance } = useBalance({
+    address,
+  });
   const { useDomain, updateName } = useDomainState();
   const { year = 1, payment } = useDomain();
 
   const { closeModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
+  const { isFeatureEnabled } = useFeatureToggle();
 
   const dispatch = useDispatch();
-
   const labelName = domain?.labelName || "";
   const token = payment?.address || PAYMENT_METHOD[0].address;
 
@@ -87,6 +100,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isDetailsEnabled, setIsDetailsEnabled] = useState<boolean>(true);
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
+  const [isXrpSufficient, setXrpSufficient] = useState<boolean>(true);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [txHash, setTxHash] = useState<string>("");
 
@@ -209,6 +223,14 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     }
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (xrpBalance?.value !== undefined) {
+      const isSufficient =
+        Number(formatEther(xrpBalance?.value ?? BigInt(0))) > 5;
+      setXrpSufficient(isSufficient);
+    }
+  }, [xrpBalance?.value]);
+
   return (
     <Grid container mt={6} minWidth={250} sx={{ placeContent: "center" }}>
       <EnsImage name={domain?.name || ""} />
@@ -223,6 +245,26 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
             <Collapse in={!isBalanceSufficient}>
               <FlexCenter py={2}>
                 <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>
+              </FlexCenter>
+            </Collapse>
+            <Collapse in={!isXrpSufficient}>
+              <FlexCenter pb={3}>
+                <ErrorTip>
+                  Approximately 5 XRP for gas fees is required per RNS
+                  registration. Please top up your XRP balance in your EOA
+                  wallet via the{" "}
+                  <Link href={FUTUREVERSE} target="_blank">
+                    <HightlightText>FuturePass Dashboard</HightlightText>
+                  </Link>
+                  . If you need help, view our{" "}
+                  <Link href={VIDEO_TUTORIAL} target="_blank">
+                    <HightlightText>video tutorial</HightlightText>
+                  </Link>{" "}
+                  and{" "}
+                  <Link href={QUESTIONS} target="_blank">
+                    <HightlightText>FAQ's.</HightlightText>
+                  </Link>
+                </ErrorTip>
               </FlexCenter>
             </Collapse>
           </>
@@ -275,7 +317,12 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
             <Collapse orientation="horizontal" in={!isSuccess}>
               <ActionButton
                 disabled={
-                  isPending || isSuccess || isExtending || !isBalanceSufficient
+                  isPending ||
+                  isSuccess ||
+                  isExtending ||
+                  !isBalanceSufficient ||
+                  !isXrpSufficient ||
+                  !isFeatureEnabled("Expiry")
                 }
                 variant="contained"
                 onClick={() => {
