@@ -29,6 +29,7 @@ import {
   SkeletonRectangular,
 } from "@/components/Theme/StyledGlobal";
 import {
+  getDate,
   getExpiration,
   getMaskedAddress,
   isDateWithinRange,
@@ -40,6 +41,8 @@ import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { namehash, Address } from "viem";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { useShareState } from "@/redux/share/shareSlice";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -200,7 +203,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item, activeAddress } = props;
   const { toggleModal } = useModalState();
   const { name: networkName } = useNetworkConfig();
-
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+  const { useShareStatus } = useShareState();
+  const { isSuccess } = useShareStatus();
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
   });
@@ -222,7 +228,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   });
 
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
-  const isTweetVerified = parseCookie("isTweetVerified") === "true";
+  const isTweetVerified =
+    parseCookie("isTweetVerified") === "true" || isSuccess;
 
   const { expiration, distanceToExpiration } = getExpiration(
     item.domain.createdAt,
@@ -249,8 +256,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   useEffect(() => {
     const start = new Date("2024-05-24T06:00:00");
     const end = new Date("2024-06-24T06:00:00");
-    const isShareable = isDateWithinRange(item.domain.createdAt, start, end);
-    setShareEnabled(isShareable || isTweetVerified);
+    const createdDate = getDate(item.domain.createdAt);
+    const isShareable = isDateWithinRange(createdDate, start, end);
+
+    setShareEnabled(isShareable);
   }, [item.domain.createdAt, isTweetVerified]);
 
   useEffect(() => {
@@ -379,24 +388,47 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 )}
               </Flex>
               <Flex>
-                <SubContainer>
-                  <ShareButton
-                    variant="contained"
-                    disabled={!isShareEnabled}
-                    onClick={() => {
-                      toggleModal({
-                        id: "Share RNS",
-                        title: "",
-                        fullHeight: true,
-                        fullWidth: true,
-                      });
-                    }}
-                  >
-                    <TwitterIcon fontSize="small" />
-                    <Divider orientation="vertical" flexItem />
-                    <ShareLabel isDisabled={!isShareEnabled}>Share</ShareLabel>
-                  </ShareButton>
-                </SubContainer>
+                <InformationTip
+                  title={
+                    !isShareEnabled
+                      ? "The name was created outside the quest period."
+                      : !root.futurePassAddress
+                      ? "You do not have a futurepass address."
+                      : ""
+                  }
+                >
+                  <SubContainer>
+                    <ShareButton
+                      variant="contained"
+                      disabled={
+                        !isShareEnabled ||
+                        isTweetVerified ||
+                        !root.futurePassAddress
+                      }
+                      onClick={() => {
+                        toggleModal({
+                          id: "Share RNS",
+                          title: "",
+                          fullHeight: true,
+                          fullWidth: true,
+                          isCloseDisabled: true,
+                        });
+                      }}
+                    >
+                      <TwitterIcon fontSize="small" />
+                      <Divider orientation="vertical" flexItem />
+                      <ShareLabel
+                        isDisabled={
+                          !isShareEnabled ||
+                          isTweetVerified ||
+                          !root.futurePassAddress
+                        }
+                      >
+                        Share
+                      </ShareLabel>
+                    </ShareButton>
+                  </SubContainer>
+                </InformationTip>
                 <FeatureToggle feature={FeatureList.ShareStatus}>
                   <SubContainer>
                     {/* TODO: Enable this once Share per RNS name is supported */}

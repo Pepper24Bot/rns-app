@@ -27,8 +27,10 @@ import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
-import { parseCookie } from "@/utils/common";
+import { isDateWithinRange, parseCookie } from "@/utils/common";
 import { red } from "@mui/material/colors";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { isEmpty } from "lodash";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -79,6 +81,8 @@ export const RegisterName: React.FC = () => {
   const { name = "", year = 1, payment } = useDomain();
 
   const { isFeatureEnabled } = useFeatureToggle();
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
   const { data: xrpBalance } = useBalance({
@@ -99,6 +103,7 @@ export const RegisterName: React.FC = () => {
 
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [isXrpSufficient, setXrpSufficient] = useState<boolean>(true);
+  const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
 
   const [isSkipCommit, setSkipCommit] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
@@ -330,6 +335,15 @@ export const RegisterName: React.FC = () => {
     }
   }, [xrpBalance?.value]);
 
+  useEffect(() => {
+    const start = new Date("2024-05-24T06:00:00");
+    const end = new Date("2024-06-24T06:00:00");
+    const createdDate = new Date();
+    const isShareable = isDateWithinRange(createdDate, start, end);
+
+    setShareEnabled(isShareable);
+  }, [isRegistered, isTweetVerified]);
+
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
       <Form
@@ -487,9 +501,14 @@ export const RegisterName: React.FC = () => {
           )}
         </Grid>
       </Collapse>
-
-      {/* <Collapse in={!isTweetVerified && isRegisterSuccess}> */}
-      <Collapse in={false}>
+      <Collapse
+        in={
+          !isTweetVerified &&
+          isRegistered &&
+          isShareEnabled &&
+          !isEmpty(root.futurePassAddress)
+        }
+      >
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip isDisabled={true}>
@@ -498,7 +517,6 @@ export const RegisterName: React.FC = () => {
           </FlexCenter>
           <FlexCenter>
             <ShareButton
-              disabled
               variant="contained"
               onClick={() => {
                 toggleModal({
@@ -506,12 +524,13 @@ export const RegisterName: React.FC = () => {
                   title: "",
                   fullHeight: true,
                   fullWidth: true,
+                  isCloseDisabled: true,
                 });
               }}
             >
               <TwitterIcon fontSize="small" />
               <Divider orientation="vertical" flexItem />
-              <ShareLabel isDisabled={true}>Share</ShareLabel>
+              <ShareLabel>Share</ShareLabel>
             </ShareButton>
           </FlexCenter>
         </Grid>
