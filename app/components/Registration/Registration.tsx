@@ -13,20 +13,22 @@ import {
   ErrorTip,
   Flex,
 } from "@/components/Theme/StyledGlobal";
-import { Collapse, Divider, Grid, alpha, styled } from "@mui/material";
+import { Collapse, Divider, Grid, Link, alpha, styled } from "@mui/material";
 import {
   initialState as nameInitialState,
   useDomainState,
 } from "@/redux/domain/domainSlice";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { Address, formatUnits } from "viem";
+import { Address, formatEther, formatUnits } from "viem";
 import { COMMITMENT_AGE, PAYMENT_METHOD } from "@/constants/components";
+import { FUTUREVERSE, QUESTIONS, VIDEO_TUTORIAL } from "@/constants/url";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { parseCookie } from "@/utils/common";
+import { red } from "@mui/material/colors";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -57,6 +59,12 @@ const TwitterIcon = styled(X)(({ theme }) => ({
   margin: "8px 16px",
 }));
 
+const HightlightText = styled("span")(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Bold,
+  color: red[500],
+  textDecoration: "underline",
+}));
+
 const ViewProcessText = styled(SecondaryLabel, {
   shouldForwardProp: (prop) => prop !== "disabled",
 })<{ disabled?: boolean }>(({ theme, disabled }) => ({
@@ -65,12 +73,15 @@ const ViewProcessText = styled(SecondaryLabel, {
 }));
 
 export const RegisterName: React.FC = () => {
-  const { address = "" } = useAccount();
+  const { address = "0x" } = useAccount();
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1, payment } = useDomain();
 
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
+  const { data: xrpBalance } = useBalance({
+    address,
+  });
 
   const dispatch = useDispatch();
   const token = payment?.address || (PAYMENT_METHOD[0].address as Address);
@@ -85,6 +96,8 @@ export const RegisterName: React.FC = () => {
   const [areBtnsDisabled, setAreBtnsDisabled] = useState<boolean>(true);
 
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
+  const [isXrpSufficient, setXrpSufficient] = useState<boolean>(true);
+
   const [isSkipCommit, setSkipCommit] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
   const [walletBalance, setWalletBalance] = useState<number>(0);
@@ -169,7 +182,7 @@ export const RegisterName: React.FC = () => {
    * This will only be triggered when the approval is successful - see useEffect listener
    */
   const handleCommit = async () => {
-    if (isBalanceSufficient) {
+    if (isBalanceSufficient || isXrpSufficient) {
       initializeFlags();
 
       if (!isSkipCommit) {
@@ -307,6 +320,12 @@ export const RegisterName: React.FC = () => {
     }
   }, [isModalOpen]);
 
+  useEffect(() => {
+    const isSufficient =
+      Number(formatEther(xrpBalance?.value ?? BigInt(0))) > 5;
+    setXrpSufficient(isSufficient);
+  }, [xrpBalance?.value]);
+
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
       <Form
@@ -318,7 +337,27 @@ export const RegisterName: React.FC = () => {
         <Relative>
           <Collapse in={!isBalanceSufficient}>
             <FlexCenter pb={3}>
-              <ErrorTip>Registration fees exceed wallet balance</ErrorTip>
+              <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>
+            </FlexCenter>
+          </Collapse>
+          <Collapse in={!isXrpSufficient}>
+            <FlexCenter pb={3}>
+              <ErrorTip>
+                Approximately 5 XRP for gas fees is required per RNS
+                registration. Please top up your XRP balance in your EOA wallet
+                via the{" "}
+                <Link href={FUTUREVERSE} target="_blank">
+                  <HightlightText>FuturePass Dashboard</HightlightText>
+                </Link>
+                . If you need help, view our{" "}
+                <Link href={VIDEO_TUTORIAL} target="_blank">
+                  <HightlightText>video tutorial</HightlightText>
+                </Link>{" "}
+                and{" "}
+                <Link href={QUESTIONS} target="_blank">
+                  <HightlightText>FAQ's.</HightlightText>
+                </Link>
+              </ErrorTip>
             </FlexCenter>
           </Collapse>
           <Collapse in={isProgressVisible}>
@@ -393,7 +432,11 @@ export const RegisterName: React.FC = () => {
                 </ActionButton>
                 <Grid>
                   <ActionButton
-                    disabled={areBtnsDisabled || !isBalanceSufficient}
+                    disabled={
+                      areBtnsDisabled ||
+                      !isBalanceSufficient ||
+                      !isXrpSufficient
+                    }
                     variant="contained"
                     onClick={() => {
                       if (!isApproved && isCommitSuccess) {

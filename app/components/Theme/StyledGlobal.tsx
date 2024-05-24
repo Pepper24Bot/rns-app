@@ -452,7 +452,7 @@ export const Tip = styled(SecondaryLabel, {
 export const ErrorTip = styled(Tip, {
   shouldForwardProp: (prop) => prop !== "isVisible",
 })<{ isVisible?: boolean }>(({ isVisible, theme }) => ({
-  color: red[700],
+  color: red[800],
 }));
 
 export const ToggleButtonGroup = styled(MuiToggleGroup)(({ theme }) => ({
