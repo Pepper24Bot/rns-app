@@ -57,6 +57,9 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
       <StyledImage
         src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
         alt="RNS Name"
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
         width={200}
         height={200}
       />

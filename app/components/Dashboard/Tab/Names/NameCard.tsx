@@ -8,7 +8,7 @@ import {
   Chip,
 } from "@mui/material";
 import { Account, Domain, NameWrapped } from "@/redux/graphql/hooks";
-import { amber, green, grey, pink, red, yellow } from "@mui/material/colors";
+import { amber, green, grey, red, yellow } from "@mui/material/colors";
 import {
   CheckCircle,
   MoreVert,
@@ -28,7 +28,12 @@ import {
   ShareButton,
   SkeletonRectangular,
 } from "@/components/Theme/StyledGlobal";
-import { getExpiration, getMaskedAddress, parseCookie } from "@/utils/common";
+import {
+  getExpiration,
+  getMaskedAddress,
+  isDateWithinRange,
+  parseCookie,
+} from "@/utils/common";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/constants/components";
@@ -38,7 +43,6 @@ import { namehash, Address } from "viem";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
-import EnsImage from "@/components/Reusables/EnsImage";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
 
@@ -58,23 +62,8 @@ const ImageContainer = styled(Grid)(({ theme }) => ({
   padding: "20px",
 }));
 
-const RnsName = styled(Grid)(({ theme }) => ({
-  position: "relative",
-  bottom: "40px",
-  backgroundColor: alpha(theme.palette.primary.dark, 0.1),
-  padding: "8px",
-}));
-
-const RnsNameText = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "14px",
-  color: alpha(theme.palette.text.primary, 0.5),
-  textAlign: "center",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-}));
-
 const Summary = styled(Grid)(({ theme }) => ({
-  padding: "20px 15px 20px 25px",
+  padding: "20px 15px 25px 25px",
 }));
 
 const SubContainer = styled(Summary)(({ theme }) => ({
@@ -222,6 +211,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
   const [isImageLoading, setImageLoading] = useState<boolean>(true);
 
+  const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
+
   const { data: ensName } = useEnsName({
     address: activeAddress,
   });
@@ -254,6 +245,13 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       isXDisabled: true,
     });
   };
+
+  useEffect(() => {
+    const start = new Date("2024-05-28T06:00:00");
+    const end = new Date("2024-06-24T06:00:00");
+    const isShareable = isDateWithinRange(item.domain.createdAt, start, end);
+    setShareEnabled(isShareable || isTweetVerified);
+  }, [item.domain.createdAt, isTweetVerified]);
 
   useEffect(() => {
     const scrollWidth = nameRef?.current?.scrollWidth || 0;
@@ -380,30 +378,29 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                   </SubContainer>
                 )}
               </Flex>
-              {!isTweetVerified && (
-                <Flex>
+              <Flex>
+                <SubContainer>
+                  <ShareButton
+                    variant="contained"
+                    disabled={!isShareEnabled}
+                    onClick={() => {
+                      toggleModal({
+                        id: "Share RNS",
+                        title: "",
+                        fullHeight: true,
+                        fullWidth: true,
+                      });
+                    }}
+                  >
+                    <TwitterIcon fontSize="small" />
+                    <Divider orientation="vertical" flexItem />
+                    <ShareLabel isDisabled={!isShareEnabled}>Share</ShareLabel>
+                  </ShareButton>
+                </SubContainer>
+                <FeatureToggle feature={FeatureList.ShareStatus}>
                   <SubContainer>
-                    <ShareButton
-                      variant="contained"
-                      disabled
-                      onClick={() => {
-                        toggleModal({
-                          id: "Share RNS",
-                          title: "",
-                          fullHeight: true,
-                          fullWidth: true,
-                        });
-                      }}
-                    >
-                      <TwitterIcon fontSize="small" />
-                      <Divider orientation="vertical" flexItem />
-                      <ShareLabel isDisabled={true}>Share</ShareLabel>
-                    </ShareButton>
-                  </SubContainer>
-                  <FeatureToggle feature={FeatureList.ShareStatus}>
-                    <SubContainer>
-                      {/* TODO: Enable this once Share per RNS name is supported */}
-                      {/* <ShareButton disabled variant="contained">
+                    {/* TODO: Enable this once Share per RNS name is supported */}
+                    {/* <ShareButton disabled variant="contained">
                       {isLoading ? (
                         <Verifying>Verifying</Verifying>
                       ) : isSuccess ? (
@@ -417,10 +414,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         <CircularProgress size="16px" sx={{ ml: "8px" }} />
                       )}
                     </ShareButton> */}
-                    </SubContainer>
-                  </FeatureToggle>
-                </Flex>
-              )}
+                  </SubContainer>
+                </FeatureToggle>
+              </Flex>
             </FlexJustified>
           </Grid>
         </ItemContainer>
