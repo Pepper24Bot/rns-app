@@ -121,7 +121,6 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
  */
 export const isDateWithinRange = (createdDate: number, startDate: Date, endDate: Date) => {
     const dateCreated = getDate(createdDate)
-
     const isWithinRange = dateCreated >= startDate && dateCreated <= endDate
 
     return isWithinRange

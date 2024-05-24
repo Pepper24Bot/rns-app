@@ -23,7 +23,7 @@ import {
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
 import { TWITTER_AUTH } from "@/constants/url";
-import { TWEET_RNS } from "@/constants/content";
+import { TWEETS_RNS } from "@/constants/content";
 import { parseCookie } from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useShareState } from "@/redux/share/shareSlice";
@@ -163,7 +163,7 @@ export const ShareRegistration: React.FC = () => {
   };
 
   const handleTweet = () => {
-    const content = TWEET_RNS;
+    const content = TWEETS_RNS[Math.floor(Math.random() * TWEETS_RNS.length)];
 
     const url = `http://twitter.com/intent/tweet?text=${content}`;
 
