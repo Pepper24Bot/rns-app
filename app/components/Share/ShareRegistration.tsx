@@ -268,6 +268,7 @@ export const ShareRegistration: React.FC = () => {
               onChange={(event) => {
                 const { value } = event.target;
                 setLink(value);
+                setInvalidTweet("");
               }}
             />
           </Grid>

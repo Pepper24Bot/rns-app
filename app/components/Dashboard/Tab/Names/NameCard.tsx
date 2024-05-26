@@ -254,8 +254,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   useEffect(() => {
-    const start = new Date("2024-05-24T06:00:00");
-    const end = new Date("2024-06-24T06:00:00");
+    const start = new Date("2024-05-28T06:00:00");
+    const end = new Date("2024-06-28T06:00:00");
     const createdDate = getDate(item.domain.createdAt);
     const isShareable = isDateWithinRange(createdDate, start, end);
 
@@ -391,9 +391,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 <InformationTip
                   title={
                     !isShareEnabled
-                      ? "The name was created outside the quest period."
+                      ? "This identity was registered outside of the quest period."
                       : !root.futurePassAddress
-                      ? "You do not have a futurepass address."
+                      ? "You do not have a FuturePass address, please create one to complete the Quest."
+                      : isTweetVerified
+                      ? "Post sharing during Quest period successfully completed."
                       : ""
                   }
                 >
