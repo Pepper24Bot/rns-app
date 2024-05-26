@@ -40,6 +40,7 @@ import { useEnsAddress, useEnsName } from "wagmi";
 import { namehash, Address } from "viem";
 import { useGetNftImageQuery } from "@/redux/metadata/metadataApi";
 import { CardProps } from "@/interfaces/components/transaction";
+import { useSnackbar } from "notistack";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -53,9 +54,9 @@ export interface NameProps {
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item, activeAddress } = props;
+  const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { name: networkName } = useNetworkConfig();
-
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
   });
@@ -67,7 +68,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const [isImageLoading, setImageLoading] = useState<boolean>(true);
   const [isDownloadRequested, setDownloadRequested] = useState<boolean>(false);
 
-  const { data: image, isSuccess } = useGetNftImageQuery(
+  const {
+    data: image,
+    isSuccess,
+    isError,
+  } = useGetNftImageQuery(
     {
       network: networkName,
       contractAddr,
@@ -125,6 +130,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         .replace("image/png", "image/octet-stream");
 
       handleDownloadPng(imgURI);
+      enqueueSnackbar("Download completed!", { variant: "success" });
     };
   };
 
@@ -159,6 +165,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   }, []);
 
   useEffect(() => {
+    if (isDownloadRequested && !isSuccess) {
+      enqueueSnackbar("Download in progress.", { variant: "info" });
+    }
+
     if (isSuccess) {
       const imageStr = image as unknown as string;
       const blob = new Blob([imageStr], {
@@ -168,7 +178,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       const objectUrl = URL.createObjectURL(blob);
       handleSvgToPng(objectUrl);
     }
-  }, [isSuccess]);
+
+    if (isError) {
+      enqueueSnackbar("Ooops! Download failed.", { variant: "error" });
+    }
+  }, [isSuccess, isDownloadRequested, isError]);
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>

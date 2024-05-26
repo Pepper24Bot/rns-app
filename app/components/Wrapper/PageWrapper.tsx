@@ -3,10 +3,17 @@
 import React, { Suspense } from "react";
 import { Grid, styled } from "@mui/material";
 import { Provider } from "react-redux";
-
 import { Config, WagmiProvider } from "wagmi";
 import { config } from "@/chains/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SnackbarProvider } from "notistack";
+import {
+  CheckCircleIcon,
+  CustomSnackbar,
+  ErrorIcon,
+  InfoIcon,
+  WarningIcon,
+} from "../Theme/StyledGlobal";
 
 import store from "@/redux/store";
 import PageNavigation from "@/components/Navigation/NavigationBar";
@@ -46,15 +53,35 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
         <Provider store={store}>
           <GlobalTheme>
             <WrapperContainer>
-              <ContentContainer>
-                <PageNavigation />
-                <Suspense fallback={<></>}>
-                  <PageModal />
-                </Suspense>
-                {/* TODO: Mount PageSnackbars */}
-                {children}
-              </ContentContainer>
-              <PageFooter />
+              <SnackbarProvider
+                maxSnack={5}
+                autoHideDuration={3000}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                Components={{
+                  success: CustomSnackbar,
+                  error: CustomSnackbar,
+                  info: CustomSnackbar,
+                  warning: CustomSnackbar,
+                }}
+                iconVariant={{
+                  success: <CheckCircleIcon />,
+                  error: <ErrorIcon />,
+                  info: <InfoIcon />,
+                  warning: <WarningIcon />,
+                }}
+              >
+                <ContentContainer>
+                  <PageNavigation />
+                  <Suspense fallback={<></>}>
+                    <PageModal />
+                  </Suspense>
+                  {children}
+                </ContentContainer>
+                <PageFooter />
+              </SnackbarProvider>
             </WrapperContainer>
           </GlobalTheme>
         </Provider>

@@ -17,8 +17,10 @@ import {
   ToggleButtonGroup as MuiToggleGroup,
   darken,
 } from "@mui/material";
-import { grey, red } from "@mui/material/colors";
+import { green, grey, red, yellow } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
+import { Cancel, CheckCircle, Info, Warning } from "@mui/icons-material";
+import { MaterialDesignContent } from "notistack";
 
 export const Container = styled(Grid, {
   shouldForwardProp: (prop) => prop !== "isLoading",
@@ -515,4 +517,63 @@ export const ActionTooltip = styled(ContentTooltip)(({ theme }) => ({
 
 export const ProgressTooltip = styled("span")(({ theme }) => ({
   color: theme.palette.primary.main,
+}));
+
+export const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
+  "&.notistack-MuiContent-success": {
+    backgroundColor: darken(green[900], 0.9),
+    borderRadius: "8px 0 0 8px",
+    border: `solid 1px ${alpha(green[700], 0.6)}`,
+    fontFamily: "var(--secondary-font)",
+    fontSize: "14px",
+  },
+  "&.notistack-MuiContent-error": {
+    backgroundColor: darken(red[800], 0.9),
+    borderRadius: "8px 0 0 8px",
+    border: `solid 1px ${alpha(red[700], 0.6)}`,
+    fontFamily: "var(--secondary-font)",
+    fontSize: "14px",
+  },
+  "&.notistack-MuiContent-warning": {
+    backgroundColor: darken(yellow[900], 0.95),
+    borderRadius: "8px 0 0 8px",
+    border: `solid 1px ${alpha(yellow[800], 0.5)}`,
+    fontFamily: "var(--secondary-font)",
+    fontSize: "14px",
+  },
+  "&.notistack-MuiContent-info": {
+    backgroundColor: darken(theme.palette.primary.dark, 0.9),
+    borderRadius: "8px 0 0 8px",
+    border: `solid 1px ${theme.palette.primary.dark}`,
+    fontFamily: "var(--secondary-font)",
+    fontSize: "14px",
+  },
+}));
+
+export const CheckCircleIcon = styled(CheckCircle)(({ theme }) => ({
+  color: green[600],
+  height: "18px",
+  width: "18px",
+  marginRight: "12px",
+}));
+
+export const ErrorIcon = styled(Cancel)(({ theme }) => ({
+  color: red[600],
+  height: "18px",
+  width: "18px",
+  marginRight: "12px",
+}));
+
+export const InfoIcon = styled(Info)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  height: "18px",
+  width: "18px",
+  marginRight: "12px",
+}));
+
+export const WarningIcon = styled(Warning)(({ theme }) => ({
+  color: yellow[800],
+  height: "18px",
+  width: "18px",
+  marginRight: "12px",
 }));
