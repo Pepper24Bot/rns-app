@@ -57,10 +57,8 @@ export default function useRecords() {
 
         enqueueSnackbar(
           `${
-            isRemoving
-              ? "Removing the address record of this identity is in progress."
-              : "Setting an address record to this identity is in progress."
-          }`,
+            isRemoving ? "Removing" : "Updating"
+          } the address record of ${name} is in progress.`,
           { variant: "info" }
         );
         setIsAddressLoading(true);

@@ -55,7 +55,7 @@ export default function useTransfer() {
           });
         }
 
-        enqueueSnackbar("Transferring this identity is in progress.", {
+        enqueueSnackbar(`Transferring ${name} is in progress.`, {
           variant: "info",
         });
         setTransferLoading(true);

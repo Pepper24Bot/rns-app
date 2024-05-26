@@ -13,11 +13,10 @@ import {
 
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address, namehash } from "viem";
-import { useDispatch } from "react-redux";
-import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { PrimaryProps } from "@/interfaces/components/transaction";
+import { useSnackbar } from "notistack";
 
 import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";
@@ -46,8 +45,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const name = domain?.name || "";
   const resolverAddress = domain?.resolver?.address;
 
-  const dispatch = useDispatch();
-
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -60,8 +57,9 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   const [txHash, setTxHash] = useState<string>("");
 
+  const { enqueueSnackbar } = useSnackbar();
   const { refetch } = useEnsName({ address: activeAddress });
-  const { data: ensAddr } = useEnsAddress({ name });
+  const { data: ensAddr, refetch: refetchEnsAddr } = useEnsAddress({ name });
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { setAddressRecord } = useRecords();
@@ -155,7 +153,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     };
   };
 
-  // TODO: Clean this up
   const handleSetPrimary = async () => {
     const { transaction } = getStep();
 
@@ -185,8 +182,10 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   useEffect(() => {
     if (isSetAddrCompleted) {
-      // Refresh dashboard, in case the user cancels the transaction midway
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      enqueueSnackbar(`Updating the linked address of ${name} is completed!`, {
+        variant: "info",
+      });
+      refetchEnsAddr();
 
       const setPrimaryName = async () => {
         const { isSuccess: primarySuccess, data: primaryData } =
@@ -200,10 +199,14 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   useEffect(() => {
     if (isPrimaryCompleted) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      enqueueSnackbar(
+        `Well done! You have successfully set ${name} as your primary`,
+        { variant: "success" }
+      );
+
+      refetch();
       setIsSuccess(true);
       setIsPending(false);
-      refetch();
     }
   }, [isPrimaryCompleted]);
 

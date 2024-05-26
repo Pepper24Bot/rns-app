@@ -223,7 +223,6 @@ export const RegisterName: React.FC = () => {
      * https://docs.ens.domains/registry/eth#registering
      */
     const slippage = 0.1;
-
     const { isSuccess } = await approve({
       payment,
       fee: rentFee * (1 + slippage),
@@ -295,7 +294,7 @@ export const RegisterName: React.FC = () => {
   useEffect(() => {
     if (isRegistered) {
       enqueueSnackbar(
-        "Congratulations! You have successfully registered an identity!",
+        "Congratulations! You have successfully registered a new identity!",
         { variant: "success" }
       );
 

@@ -16,8 +16,6 @@ export const LinkAddress: React.FC<LinkProps> = (props: LinkProps) => {
   });
 
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
-  // const linkedAddr = domain?.resolver?.addr?.id;
-  // const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
 
   return (
     <Grid container mt={6} minWidth={250} maxWidth={700}>

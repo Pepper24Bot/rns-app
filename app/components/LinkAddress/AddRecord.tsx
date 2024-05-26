@@ -12,6 +12,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { isEmpty } from "lodash";
 import { LinkProps } from "@/interfaces/components/transaction";
 import { useEnsAddress, useEnsName } from "wagmi";
+import { useSnackbar } from "notistack";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -23,6 +24,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain, activeAddress } = props;
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
+  const { enqueueSnackbar } = useSnackbar();
 
   /** Status Flags */
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -81,6 +83,11 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
+      enqueueSnackbar(
+        `You have successfully added an address record to ${domain?.name}.`,
+        { variant: "success" }
+      );
+
       setIsSuccess(true);
       setIsPending(false);
     }

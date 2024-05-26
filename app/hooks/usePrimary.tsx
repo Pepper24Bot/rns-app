@@ -82,10 +82,9 @@ export default function usePrimary() {
           });
         }
 
-        enqueueSnackbar(
-          "Setting this identity as your primary is in progress.",
-          { variant: "info" }
-        );
+        enqueueSnackbar(`Setting ${name} as your primary is in progress.`, {
+          variant: "info",
+        });
         setIsPrimaryLoading(true);
         response = await waitForWriteTransaction(primaryHash);
       } catch (e) {

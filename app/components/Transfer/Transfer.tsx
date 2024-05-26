@@ -22,12 +22,13 @@ import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address, isAddress } from "viem";
 import { TransactionProps } from "@/interfaces/components/transaction";
 import { useEnsAddress, useEnsName } from "wagmi";
-import { isRootName } from "@/utils/common";
+import { getMaskedAddress, isRootName } from "@/utils/common";
 import { config } from "@/chains/config";
 import { normalize } from "viem/ens";
 import { getEnsAddress } from "@wagmi/core";
 import { debounce as _debounce } from "lodash";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
+import { useSnackbar } from "notistack";
 
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -64,6 +65,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const { domain, owner, activeAddress } = props;
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data: addressRecord, refetch } = useEnsAddress({
     name: domain?.name || "",
@@ -207,6 +209,13 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isTransferred) {
+      enqueueSnackbar(
+        `You have successfully transferred ${
+          domain?.name
+        } to ${getMaskedAddress(newOwner)}!`,
+        { variant: "success" }
+      );
+
       // Data Invalidation: Refresh Dashboard list of names
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       // Refetch the ens name so that the toolbar will update the primary name
@@ -218,6 +227,9 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isAddrUpdated) {
+      enqueueSnackbar(`Updating the address of ${domain?.name} is completed!`, {
+        variant: "info",
+      });
       handleTransfer();
     }
   }, [isAddrUpdated]);

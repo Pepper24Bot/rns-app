@@ -79,9 +79,10 @@ export default function useExtend(props: ExtendProps) {
           });
         }
 
-        enqueueSnackbar("Extending the expiry date is in progress.", {
-          variant: "info",
-        });
+        enqueueSnackbar(
+          `Extending the expiry date of ${name}.root is in progress.`,
+          { variant: "info" }
+        );
         setExtendLoading(true);
         response = await waitForWriteTransaction(renewHash);
       } catch (e) {
