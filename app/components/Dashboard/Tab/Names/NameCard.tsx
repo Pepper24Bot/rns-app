@@ -100,6 +100,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    setDownloadRequested(false);
   };
 
   const handleSvgToPng = (objectUrl: string) => {
