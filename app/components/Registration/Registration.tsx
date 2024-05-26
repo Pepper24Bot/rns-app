@@ -337,7 +337,7 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     const start = new Date("2024-05-28T06:00:00");
-    const end = new Date("2024-06-28T06:00:00");
+    const end = new Date("2024-06-24T06:00:00");
     const createdDate = new Date();
     const isShareable = isDateWithinRange(createdDate, start, end);
 
