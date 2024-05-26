@@ -47,7 +47,7 @@ export interface UpdateProps {
   toggleRemoveMode: () => void;
 
   isFuturePassValid?: boolean;
-  futurePassInput: string;
+  addressInput: string;
   updateAddressInput: (value: string) => void;
 }
 
@@ -56,7 +56,7 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
     ensName = "",
     name = "",
     owner = "",
-    futurePassInput = "",
+    addressInput = "",
     isUpdateEnabled = false,
     isFuturePassValid = false,
     toggleEditMode,
@@ -90,7 +90,7 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
         }
         focused
         label="Linked To / Resolver"
-        value={futurePassInput}
+        value={addressInput}
         onChange={(event) => {
           const { value } = event.target;
           if (isUpdateEnabled) {
