@@ -29,6 +29,7 @@ import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { parseCookie } from "@/utils/common";
 import { red } from "@mui/material/colors";
+import { useSnackbar } from "notistack";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -77,7 +78,7 @@ export const RegisterName: React.FC = () => {
   const { address = "0x" } = useAccount();
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1, payment } = useDomain();
-
+  const { enqueueSnackbar } = useSnackbar();
   const { isFeatureEnabled } = useFeatureToggle();
   const { closeModal, toggleModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
@@ -222,6 +223,7 @@ export const RegisterName: React.FC = () => {
      * https://docs.ens.domains/registry/eth#registering
      */
     const slippage = 0.1;
+
     const { isSuccess } = await approve({
       payment,
       fee: rentFee * (1 + slippage),
@@ -292,6 +294,11 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     if (isRegistered) {
+      enqueueSnackbar(
+        "Congratulations! You have successfully registered an identity!",
+        { variant: "success" }
+      );
+
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       updateName({ status: "Registered" });
@@ -300,6 +307,7 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     if (isCommitSuccess) {
+      enqueueSnackbar("Request to register is completed!", { variant: "info" });
       handleApproval();
     }
 
@@ -310,6 +318,7 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     if (isApproved) {
+      enqueueSnackbar("Token approval is completed!", { variant: "info" });
       handleRegister();
     }
   }, [isApproved]);

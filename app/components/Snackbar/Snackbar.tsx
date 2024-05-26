@@ -83,7 +83,7 @@ export const SnackbarWrapper: React.FC<SnackbarProps> = (
         enter: 300,
         exit: 200,
       }}
-      autoHideDuration={4000}
+      autoHideDuration={8000}
       anchorOrigin={{
         vertical: "bottom",
         horizontal: "right",

@@ -95,6 +95,9 @@ export default function useRegister() {
           });
         }
 
+        enqueueSnackbar("Request to register is in progress.", {
+          variant: "info",
+        });
         setCommitLoading(true);
         response = await waitForWriteTransaction(commitHash);
       } catch (e) {
@@ -162,6 +165,10 @@ export default function useRegister() {
           ],
         });
       }
+
+      enqueueSnackbar("Registration is in progress. Please, do not close.", {
+        variant: "info",
+      });
 
       setRegisterLoading(true);
       response = await waitForWriteTransaction(registerHash);

@@ -67,6 +67,7 @@ export default function useToken() {
         });
       }
 
+      enqueueSnackbar("Token approval is in progress.", { variant: "info" });
       setApprovalLoading(true);
       response = await waitForWriteTransaction(approveHash);
     } catch (e) {

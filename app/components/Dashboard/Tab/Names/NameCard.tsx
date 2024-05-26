@@ -130,7 +130,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         .replace("image/png", "image/octet-stream");
 
       handleDownloadPng(imgURI);
-      enqueueSnackbar("Download completed!", { variant: "success" });
+      enqueueSnackbar("Download completed!", {
+        variant: "success",
+        autoHideDuration: 2000,
+      });
     };
   };
 
@@ -166,7 +169,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   useEffect(() => {
     if (isDownloadRequested && !isSuccess) {
-      enqueueSnackbar("Download in progress.", { variant: "info" });
+      enqueueSnackbar("Download in progress.", {
+        variant: "info",
+        autoHideDuration: 3000,
+      });
     }
 
     if (isSuccess) {
@@ -180,7 +186,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     }
 
     if (isError) {
-      enqueueSnackbar("Ooops! Download failed.", { variant: "error" });
+      enqueueSnackbar("Ooops! Download failed.", {
+        variant: "error",
+        autoHideDuration: 2000,
+      });
     }
   }, [isSuccess, isDownloadRequested, isError]);
 

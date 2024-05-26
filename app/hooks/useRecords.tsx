@@ -6,6 +6,7 @@ import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { RecordProps } from "@/interfaces/record";
 import { initializeResponse } from "@/utils/common";
 import { useSnackbar } from "notistack";
+import { EMPTY_ADDRESS } from "@/constants/components";
 
 import useContractDetails from "./useContractDetails";
 import useProxyRecord from "./FuturePass/useProxyRecord";
@@ -32,6 +33,7 @@ export default function useRecords() {
     const { name, address } = props;
 
     let response = { ...initializeResponse() };
+    const isRemoving = address === EMPTY_ADDRESS;
 
     if (name && address) {
       try {
@@ -53,6 +55,14 @@ export default function useRecords() {
           });
         }
 
+        enqueueSnackbar(
+          `${
+            isRemoving
+              ? "Removing the address record of this identity is in progress."
+              : "Setting an address record to this identity is in progress."
+          }`,
+          { variant: "info" }
+        );
         setIsAddressLoading(true);
         response = await waitForWriteTransaction(txHash);
       } catch (e) {

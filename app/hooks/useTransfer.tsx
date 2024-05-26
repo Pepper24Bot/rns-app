@@ -55,6 +55,9 @@ export default function useTransfer() {
           });
         }
 
+        enqueueSnackbar("Transferring this identity is in progress.", {
+          variant: "info",
+        });
         setTransferLoading(true);
         response = await waitForWriteTransaction(transferHash);
       } catch (e) {
