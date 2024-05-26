@@ -105,8 +105,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const handleSvgToPng = (objectUrl: string) => {
     const image = new Image();
     // aligns with metadata-server - TODO: fix this
-    image.width = 270;
-    image.height = 270;
+    image.width = 540;
+    image.height = 540;
     image.src = objectUrl;
 
     image.onload = () => {

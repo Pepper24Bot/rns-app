@@ -12,6 +12,11 @@ export default {
         protocol: "https",
         hostname: "rns-metadata.fly.dev",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8080",
+      },
     ],
   },
   webpack: (config) => {
