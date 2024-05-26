@@ -1,210 +1,54 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Grid, alpha, darken, Divider } from "@mui/material";
+import { NameWrapped } from "@/redux/graphql/hooks";
+import { grey } from "@mui/material/colors";
 import {
-  Divider as MuiDivider,
-  Grid,
-  alpha,
-  darken,
-  styled,
-  Chip,
-} from "@mui/material";
-import { Account, Domain, NameWrapped } from "@/redux/graphql/hooks";
-import { amber, green, grey, pink, red, yellow } from "@mui/material/colors";
-import {
-  CheckCircle,
-  MoreVert,
-  AccessTime,
-  Link,
-  CropOriginal,
-  SwapHoriz,
-  X,
-  Key,
-} from "@mui/icons-material";
-import {
-  ButtonLabel,
   Flex,
   FlexJustified,
   InformationTip,
-  SecondaryLabel,
   ShareButton,
   SkeletonRectangular,
 } from "@/components/Theme/StyledGlobal";
+import {
+  Label,
+  CheckedIcon,
+  ClockIcon,
+  Container,
+  Detail,
+  DownloadIcon,
+  ImageContainer,
+  ItemContainer,
+  LinkIcon,
+  MoreIcon,
+  NameContainer,
+  NameDetails,
+  PrimaryChip,
+  PrimaryIcon,
+  ShareLabel,
+  SubContainer,
+  Summary,
+  TooltipText,
+  TransferIcon,
+  TwitterIcon,
+  Highlight,
+} from "./StyledName";
 import { getExpiration, getMaskedAddress, parseCookie } from "@/utils/common";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { namehash, Address } from "viem";
+import { useGetNftImageQuery } from "@/redux/metadata/metadataApi";
+import { CardProps } from "@/interfaces/components/transaction";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
-import EnsImage from "@/components/Reusables/EnsImage";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
-
-const Container = styled(Grid)(({ theme }) => ({
-  background: "linear-gradient(180deg, #0C0C0C 50%, rgba(194,24,91,0.75) 100%)",
-  borderRadius: "8px",
-  padding: "1px",
-}));
-
-const ItemContainer = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: "8px",
-  boxShadow: `0px 0px 25px 0px ${darken(grey[900], 1)}`,
-}));
-
-const ImageContainer = styled(Grid)(({ theme }) => ({
-  padding: "20px",
-}));
-
-const RnsName = styled(Grid)(({ theme }) => ({
-  position: "relative",
-  bottom: "40px",
-  backgroundColor: alpha(theme.palette.primary.dark, 0.1),
-  padding: "8px",
-}));
-
-const RnsNameText = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "14px",
-  color: alpha(theme.palette.text.primary, 0.5),
-  textAlign: "center",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-}));
-
-const Summary = styled(Grid)(({ theme }) => ({
-  padding: "20px 15px 20px 25px",
-}));
-
-const SubContainer = styled(Summary)(({ theme }) => ({
-  padding: "10px 20px 20px 20px",
-}));
-
-const Divider = styled(MuiDivider)(({ theme }) => ({
-  borderColor: alpha(theme.palette.primary.main, 0.2),
-}));
-
-const NameDetails = styled(Grid)(({ theme }) => ({
-  paddingTop: "12px",
-}));
-
-const NameContainer = styled(Grid)(({ theme }) => ({
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  fontSize: "18px",
-}));
-
-const Detail = styled(SecondaryLabel)(({ theme }) => ({
-  fontWeight: FONT_WEIGHT.Regular,
-  color: alpha(theme.palette.text.primary, 0.85),
-  fontSize: "14px",
-  paddingTop: "2px",
-}));
-
-const Label = styled("span")(({ theme }) => ({
-  color: alpha(theme.palette.text.primary, 0.25),
-  paddingRight: "8px",
-}));
-
-const TooltipText = styled("span")(({ theme }) => ({
-  color: alpha(theme.palette.text.primary, 0.5),
-}));
-
-const MoreIcon = styled(MoreVert)(({ theme }) => ({}));
-
-const CheckedIcon = styled(CheckCircle, {
-  shouldForwardProp: (prop) => prop !== "hidden",
-})<{ hidden?: boolean }>(({ hidden, theme }) => ({
-  color: green[500],
-  width: "16px",
-  height: "16px",
-  visibility: hidden ? "hidden" : "visible",
-  margin: "0 4px",
-}));
-
-const ClockIcon = styled(AccessTime)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  width: "18px",
-  height: "18px",
-  marginRight: "10px",
-}));
-
-const LinkIcon = styled(Link)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  width: "18px",
-  height: "18px",
-  marginRight: "10px",
-  transform: "rotate(-40deg)",
-}));
-
-const PrimaryIcon = styled(Key)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  width: "18px",
-  height: "18px",
-  marginRight: "10px",
-}));
-
-const PhotoIcon = styled(CropOriginal)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  width: "18px",
-  height: "18px",
-  marginRight: "10px",
-}));
-
-const TransferIcon = styled(SwapHoriz)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  width: "20px",
-  height: "20px",
-  marginRight: "6px",
-}));
-
-const ShareLabel = styled(SecondaryLabel)(({ theme }) => ({
-  padding: "6px 10px",
-  textTransform: "uppercase",
-  fontWeight: FONT_WEIGHT.Bold,
-}));
-
-const Verifying = styled(ButtonLabel)(({ theme }) => ({
-  padding: "8px 12px",
-  color: yellow[800],
-}));
-
-const Verified = styled(Verifying)(({ theme }) => ({
-  color: green[800],
-}));
-
-const Failed = styled(Verifying)(({ theme }) => ({
-  color: red[600],
-}));
-
-const TwitterIcon = styled(X)(({ theme }) => ({
-  margin: "6px 8px",
-  fontSize: "16px",
-}));
-
-const Highlight = styled("span")(({ theme }) => ({
-  color: theme.palette.text.primary,
-}));
-
-const PrimaryChip = styled(Chip)(({ theme }) => ({
-  backgroundColor: amber[500],
-  color: theme.palette.background.paper,
-}));
 
 export interface NameProps {
   item: NameWrapped;
   activeAddress: Address;
-}
-
-export interface CardProps {
-  domain: Partial<Domain>;
-  owner: Partial<Account>;
-  refetchEnsName?: () => void;
-  ensName?: string;
-  ensAddr?: string;
-  activeAddress?: Address;
 }
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
@@ -221,6 +65,16 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
   const [isImageLoading, setImageLoading] = useState<boolean>(true);
+  const [isDownloadRequested, setDownloadRequested] = useState<boolean>(false);
+
+  const { data: image, isSuccess } = useGetNftImageQuery(
+    {
+      network: networkName,
+      contractAddr,
+      hash: nameHash,
+    },
+    { skip: !isDownloadRequested }
+  );
 
   const { data: ensName } = useEnsName({
     address: activeAddress,
@@ -232,27 +86,65 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
+  const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
   const { expiration, distanceToExpiration } = getExpiration(
     item.domain.createdAt,
     item.domain.expiryDate
   );
 
-  const handleMenuSelect = (menuOption: Option) => {
-    const data: CardProps = {
-      domain: item.domain,
-      owner: item.owner,
-      ensName: ensName || "",
-      activeAddress,
-    };
+  const handleDownloadPng = (imgURI: string) => {
+    const link = document.createElement("a");
+    link.href = imgURI;
+    link.download = `${item?.domain?.labelName || "rns-name"}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-    toggleModal({
-      id: menuOption.label,
-      title: menuOption.title || menuOption.label,
-      data,
-      isCloseDisabled: true,
-      isXDisabled: true,
-    });
+  const handleSvgToPng = (objectUrl: string) => {
+    const image = new Image();
+    // aligns with metadata-server - TODO: fix this
+    image.width = 270;
+    image.height = 270;
+    image.src = objectUrl;
+
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(image, 0, 0);
+      URL.revokeObjectURL(objectUrl);
+
+      const imgURI = canvas
+        .toDataURL("image/png")
+        .replace("image/png", "image/octet-stream");
+
+      handleDownloadPng(imgURI);
+    };
+  };
+
+  const handleMenuSelect = (menuOption: Option) => {
+    if (menuOption.label === "Download Image") {
+      setDownloadRequested(true);
+    } else {
+      const data: CardProps = {
+        domain: item.domain,
+        owner: item.owner,
+        ensName: ensName || "",
+        activeAddress,
+      };
+
+      toggleModal({
+        id: menuOption.label,
+        title: menuOption.title || menuOption.label,
+        data,
+        isCloseDisabled: true,
+        isXDisabled: true,
+      });
+    }
   };
 
   useEffect(() => {
@@ -263,6 +155,18 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       setIsShowTooltip(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (isSuccess) {
+      const imageStr = image as unknown as string;
+      const blob = new Blob([imageStr], {
+        type: "image/svg+xml",
+      });
+
+      const objectUrl = URL.createObjectURL(blob);
+      handleSvgToPng(objectUrl);
+    }
+  }, [isSuccess]);
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
@@ -280,7 +184,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               }}
             />
             <img
-              src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image?w=260`}
+              src={imageUrl}
               alt="RNS Name"
               loading="lazy"
               decoding="async"
@@ -339,7 +243,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                           disabled: ensName === item.name,
                         },
                         { label: "Transfer", icon: <TransferIcon /> },
-                        // { label: "Update Image", icon: <PhotoIcon /> },
+                        {
+                          label: "Download Image",
+                          icon: <DownloadIcon />,
+                        },
                       ]}
                       hasButton
                       iconButton={<MoreIcon />}
