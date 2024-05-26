@@ -255,7 +255,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   useEffect(() => {
     const start = new Date("2024-05-28T08:00:00.000+10:00");
-    const end = new Date("2024-06-24T08:00:00.000+10:00");
+    const end = new Date("2024-06-25T08:00:00.000+10:00");
     const createdDate = getDate(item.domain.createdAt);
     const isShareable = isDateWithinRange(createdDate, start, end);
 
