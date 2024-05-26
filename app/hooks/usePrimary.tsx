@@ -7,6 +7,7 @@ import { useState } from "react";
 import { PrimaryNameProps } from "@/interfaces/primary";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { initializeResponse } from "@/utils/common";
+import { useSnackbar } from "notistack";
 
 import useContractDetails from "./useContractDetails";
 import useProxyPrimary from "./FuturePass/useProxyPrimary";
@@ -16,6 +17,7 @@ export default function usePrimary() {
   const reverse = useContractDetails({ action: "ReverseRegistrar" });
   const publicResolver = useContractDetails({ action: "PublicResolver" });
 
+  const { enqueueSnackbar } = useSnackbar();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
   const { waitForWriteTransaction } = useWaitTransaction();
@@ -49,6 +51,7 @@ export default function usePrimary() {
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
+      enqueueSnackbar(error.shortMessage, { variant: "error" });
     }
 
     setIsPrimaryLoading(false);
@@ -84,6 +87,7 @@ export default function usePrimary() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
+        enqueueSnackbar(error.shortMessage, { variant: "error" });
       }
     }
 

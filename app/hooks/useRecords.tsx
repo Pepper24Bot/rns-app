@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { RecordProps } from "@/interfaces/record";
 import { initializeResponse } from "@/utils/common";
+import { useSnackbar } from "notistack";
 
 import useContractDetails from "./useContractDetails";
 import useProxyRecord from "./FuturePass/useProxyRecord";
@@ -13,6 +14,7 @@ import useWaitTransaction from "./useWaitTransaction";
 export default function useRecords() {
   const publicResolver = useContractDetails({ action: "PublicResolver" });
 
+  const { enqueueSnackbar } = useSnackbar();
   const { writeContractAsync } = useWriteContract();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -56,6 +58,7 @@ export default function useRecords() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
+        enqueueSnackbar(error.shortMessage, { variant: "error" });
       }
     }
 

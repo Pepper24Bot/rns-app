@@ -9,6 +9,7 @@ import { ExtendProps, RenewProps } from "@/interfaces/expiry";
 import { Address } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { initializeResponse } from "@/utils/common";
+import { useSnackbar } from "notistack";
 
 import useContractDetails from "./useContractDetails";
 import useProxyExtend from "./FuturePass/useProxyExtend";
@@ -19,6 +20,7 @@ export default function useExtend(props: ExtendProps) {
   const { name, year, token, isEnabled } = props;
   const controller = useContractDetails({ action: "RegistrarController" });
 
+  const { enqueueSnackbar } = useSnackbar();
   const { abi, address } = controller;
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -82,6 +84,7 @@ export default function useExtend(props: ExtendProps) {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
+        enqueueSnackbar(error.shortMessage, { variant: "error" });
       }
     }
 

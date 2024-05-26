@@ -521,6 +521,7 @@ export const ProgressTooltip = styled("span")(({ theme }) => ({
 
 export const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
   "&.notistack-MuiContent-success": {
+    maxWidth: "400px",
     backgroundColor: darken(green[900], 0.9),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${alpha(green[700], 0.6)}`,
@@ -528,6 +529,7 @@ export const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     fontSize: "14px",
   },
   "&.notistack-MuiContent-error": {
+    maxWidth: "400px",
     backgroundColor: darken(red[800], 0.9),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${alpha(red[700], 0.6)}`,
@@ -535,6 +537,7 @@ export const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     fontSize: "14px",
   },
   "&.notistack-MuiContent-warning": {
+    maxWidth: "400px",
     backgroundColor: darken(yellow[900], 0.95),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${alpha(yellow[800], 0.5)}`,
@@ -542,6 +545,7 @@ export const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     fontSize: "14px",
   },
   "&.notistack-MuiContent-info": {
+    maxWidth: "400px",
     backgroundColor: darken(theme.palette.primary.dark, 0.9),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${theme.palette.primary.dark}`,

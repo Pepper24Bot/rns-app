@@ -6,20 +6,13 @@ import { Provider } from "react-redux";
 import { Config, WagmiProvider } from "wagmi";
 import { config } from "@/chains/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SnackbarProvider } from "notistack";
-import {
-  CheckCircleIcon,
-  CustomSnackbar,
-  ErrorIcon,
-  InfoIcon,
-  WarningIcon,
-} from "../Theme/StyledGlobal";
 
 import store from "@/redux/store";
 import PageNavigation from "@/components/Navigation/NavigationBar";
 import PageModal from "@/components/Modal/ModalContainer";
 import GlobalTheme from "../Theme/Global";
 import PageFooter from "../Footer/PageFooter";
+import SnackbarWrapper from "../Snackbar/Snackbar";
 
 import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/400.css";
@@ -53,26 +46,7 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
         <Provider store={store}>
           <GlobalTheme>
             <WrapperContainer>
-              <SnackbarProvider
-                maxSnack={5}
-                autoHideDuration={3000}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                Components={{
-                  success: CustomSnackbar,
-                  error: CustomSnackbar,
-                  info: CustomSnackbar,
-                  warning: CustomSnackbar,
-                }}
-                iconVariant={{
-                  success: <CheckCircleIcon />,
-                  error: <ErrorIcon />,
-                  info: <InfoIcon />,
-                  warning: <WarningIcon />,
-                }}
-              >
+              <SnackbarWrapper>
                 <ContentContainer>
                   <PageNavigation />
                   <Suspense fallback={<></>}>
@@ -81,7 +55,7 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
                   {children}
                 </ContentContainer>
                 <PageFooter />
-              </SnackbarProvider>
+              </SnackbarWrapper>
             </WrapperContainer>
           </GlobalTheme>
         </Provider>

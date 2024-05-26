@@ -5,6 +5,7 @@ import { Address, namehash } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { TransferProps } from "@/interfaces/transfer";
 import { initializeResponse } from "@/utils/common";
+import { useSnackbar } from "notistack";
 
 import useContractDetails from "./useContractDetails";
 import useProxyTransfer from "./FuturePass/useProxyTransfer";
@@ -14,6 +15,7 @@ import useWaitTransaction from "./useWaitTransaction";
 export default function useTransfer() {
   const nameWrapper = useContractDetails({ action: "NameWrapper" });
 
+  const { enqueueSnackbar } = useSnackbar();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
   const { waitForWriteTransaction } = useWaitTransaction();
@@ -58,6 +60,7 @@ export default function useTransfer() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
+        enqueueSnackbar(error.shortMessage, { variant: "error" });
       }
     }
     setTransferLoading(false);

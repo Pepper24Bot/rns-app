@@ -8,6 +8,7 @@ import { config } from "@/chains/config";
 import { useState } from "react";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { initializeResponse } from "@/utils/common";
+import { useSnackbar } from "notistack";
 
 import useContractDetails from "./useContractDetails";
 import useProxyToken from "./FuturePass/useProxyToken";
@@ -23,6 +24,7 @@ export interface TokenProps {
 export default function useToken() {
   const controller = useContractDetails({ action: "RegistrarController" });
 
+  const { enqueueSnackbar } = useSnackbar();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
   const { approveProxyCall } = useProxyToken();
@@ -70,6 +72,7 @@ export default function useToken() {
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
+      enqueueSnackbar(error.shortMessage, { variant: "error" });
     }
 
     console.log("Approval-Response:: ", response);
@@ -101,6 +104,7 @@ export default function useToken() {
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
+      enqueueSnackbar(error.shortMessage, { variant: "error" });
     }
 
     return response;
