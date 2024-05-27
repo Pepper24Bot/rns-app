@@ -73,9 +73,6 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
         fetchPriority="low"
         width={200}
         height={200}
-        loading="lazy"
-        decoding="async"
-        fetchPriority="low"
         onLoad={() => {
           setImageLoading(false);
         }}
