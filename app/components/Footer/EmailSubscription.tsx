@@ -17,7 +17,7 @@ import { Check } from "@mui/icons-material";
 const Container = styled(FlexCenter)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.dark, 0.1),
   textAlign: "center",
-  padding: "100px 0",
+  padding: "100px 16px",
 }));
 
 const Subscription = styled(Grid)(({ theme }) => ({

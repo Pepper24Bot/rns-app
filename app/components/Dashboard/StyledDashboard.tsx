@@ -20,7 +20,7 @@ export const DashboardContainer = styled(Grid)(({ theme }) => ({
   padding: "30px 80px",
 
   [theme.breakpoints.down("sm")]: {
-    padding: "30px 40px",
+    padding: "30px 20px",
   },
 }));
 

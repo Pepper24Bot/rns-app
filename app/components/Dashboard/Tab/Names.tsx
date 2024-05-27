@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Divider, Grid, IconButton, alpha, styled } from "@mui/material";
+import { Box, Divider, Grid, Pagination, alpha, styled } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
 import { NameCard } from "./Names/NameCard";
 import {
-  Flex,
   FlexCenter,
   InputField,
   SecondaryLabel,
 } from "@/components/Theme/StyledGlobal";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { isAccountLoading, scrollIntoElement } from "@/utils/common";
@@ -36,7 +34,8 @@ const Description = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 const PaginationContainer = styled(FlexCenter)(({ theme }) => ({
-  padding: "10px",
+  width: "fit-content",
+  padding: "8px",
   borderRadius: "8px",
   border: `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`,
   filter: `drop-shadow(0px 0px 10px ${alpha(
@@ -76,20 +75,6 @@ const PaginationText = styled(SecondaryLabel, {
     : alpha(theme.palette.text.primary, 0.35),
 }));
 
-const PageNumberText = styled(PaginationText, {
-  shouldForwardProp: (prop) => prop !== "isActive",
-})<{ isActive?: boolean }>(({ theme, isActive }) => ({
-  color: isActive ? theme.palette.primary.main : theme.palette.text.primary,
-  fontWeight: isActive ? FONT_WEIGHT.Bold : FONT_WEIGHT.Regular,
-  textDecoration: isActive ? "underline" : "",
-  fontSize: isActive ? "14px" : "14px",
-  padding: "4px",
-}));
-
-const PageButton = styled(IconButton)(({ theme }) => ({
-  padding: "4px",
-}));
-
 export const Names: React.FC = () => {
   const { status } = useAccount();
   const { useDashboard } = useDashboardState();
@@ -99,8 +84,8 @@ export const Names: React.FC = () => {
   const { data: root } = useRootNetwork();
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(40);
-  const [itemCountField, setItemCountField] = useState(40);
+  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [itemCountField, setItemCountField] = useState(1);
   const [pageCount, setPageCount] = useState(1);
 
   const handleDebounceOnChange = (value: number) => {
@@ -149,16 +134,6 @@ export const Names: React.FC = () => {
     setPageCount(count);
   }, [names, itemsPerPage]);
 
-  // Set itemsPerPage based on the client width
-  // TODO: Clean this
-  // useEffect(() => {
-  //   const clientWidth = document?.documentElement?.clientWidth;
-  //   if (clientWidth >= 900 && clientWidth <= 1200) {
-  //     setItemsPerPage(9);
-  //     setItemCountField(9);
-  //   }
-  // }, []);
-
   return (
     <>
       {(isNameListLoading || isAccountLoading(status)) && (
@@ -186,8 +161,15 @@ export const Names: React.FC = () => {
           </Box>
           {/* TODO: Make this a reusable component */}
           <FlexCenter pt="100px">
-            <PaginationContainer>
-              <Flex px={1}>
+            <PaginationContainer
+              sx={{
+                display: {
+                  xs: "block",
+                  sm: "flex",
+                },
+              }}
+            >
+              <FlexCenter px={1}>
                 <PageField
                   value={itemCountField}
                   onChange={(event) => {
@@ -200,57 +182,62 @@ export const Names: React.FC = () => {
                   }}
                 />
                 <PaginationText>Items per page</PaginationText>
-              </Flex>
-              <Divider flexItem orientation="vertical" />
-              <FlexCenter px={1}>
-                <Flex>
-                  <PageButton
-                    disabled={page === 1}
-                    onClick={() => {
-                      setPage(page - 1);
-                    }}
-                  >
-                    <KeyboardArrowLeft />
-                  </PageButton>
-                  <PaginationText isEnabled={page !== 1}>Prev</PaginationText>
-                </Flex>
-                <Flex px={1}>
-                  {[...Array(pageCount)].map((_, index) => {
-                    return (
-                      <PageButton
-                        key={`page-${index + 1}`}
-                        sx={{ py: 0 }}
-                        onClick={() => {
-                          setPage(index + 1);
-                        }}
-                      >
-                        <PageNumberText isActive={index + 1 === page}>
-                          {index + 1}
-                        </PageNumberText>
-                      </PageButton>
-                    );
-                  })}
-                </Flex>
-                <Flex>
-                  <PaginationText isEnabled={page !== pageCount}>
-                    Next
-                  </PaginationText>
-                  <PageButton
-                    disabled={page === pageCount}
-                    onClick={() => {
-                      setPage(page + 1);
-                    }}
-                  >
-                    <KeyboardArrowRight />
-                  </PageButton>
-                </Flex>
               </FlexCenter>
-              <Divider flexItem orientation="vertical" />
-              <Grid px={1}>
+              <Divider
+                flexItem
+                orientation="vertical"
+                sx={{
+                  display: {
+                    xs: "none",
+                    sm: "flex",
+                  },
+                }}
+              />
+              <Divider
+                flexItem
+                orientation="horizontal"
+                sx={{
+                  mt: "8px",
+                  display: {
+                    xs: "block",
+                    sm: "none",
+                  },
+                }}
+              />
+              <Pagination
+                siblingCount={0}
+                count={pageCount}
+                page={page}
+                onChange={(_, value) => {
+                  setPage(value);
+                }}
+              />
+              <Divider
+                flexItem
+                orientation="vertical"
+                sx={{
+                  display: {
+                    xs: "none",
+                    sm: "flex",
+                  },
+                }}
+              />
+              <Divider
+                flexItem
+                orientation="horizontal"
+                sx={{
+                  mb: "8px",
+                  display: {
+                    xs: "block",
+                    sm: "none",
+                  },
+                }}
+              />
+              <FlexCenter px={1}>
                 <PaginationText>{`${getTotalCountShowedItems()} out of ${
                   names?.length
                 }`}</PaginationText>
-              </Grid>
+              </FlexCenter>
             </PaginationContainer>
           </FlexCenter>
         </Container>
