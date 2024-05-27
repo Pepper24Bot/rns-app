@@ -37,6 +37,7 @@ const TransactionLabel = styled(SecondaryLabel)(({ theme }) => ({
 
 const Value = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "18px",
+  textAlign: "right",
 }));
 
 const Balance = styled(TransactionLabel)(({ theme }) => ({
@@ -137,21 +138,23 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
           <SummaryContainer>
             <Grid py={1}>
               <Transaction>
-                <TransactionLabel>{`${year} ${getYearLabel()} Registration`}</TransactionLabel>
+                <TransactionLabel pr={2}>
+                  {`${year} ${getYearLabel()} Registration`}
+                </TransactionLabel>
                 <Value>{`${rentFee?.toFixed(6)} ${payment?.label}`}</Value>
               </Transaction>
               <Transaction pt={0.5}>
-                <Balance>Connected Wallet Balance</Balance>
+                <Balance pr={2}>Connected Wallet Balance</Balance>
                 <Balance>{walletBalance?.toFixed(6)}</Balance>
               </Transaction>
             </Grid>
             <Grid py={1}>
               <Transaction>
-                <TransactionLabel>Transaction fees</TransactionLabel>
+                <TransactionLabel pr={2}>Transaction fees</TransactionLabel>
                 <Value>XRP</Value>
               </Transaction>
               <Transaction pt={0.5}>
-                <Balance>EOA Wallet Balance</Balance>
+                <Balance pr={2}>EOA Wallet Balance</Balance>
                 <Balance>
                   {Number(formatEther(balance?.value ?? 0)).toFixed(6)}
                 </Balance>

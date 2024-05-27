@@ -354,73 +354,77 @@ export const RegisterName: React.FC = () => {
 
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
-      <Form
-        isShowing={!isRegistered}
-        rentFee={rentFee}
-        walletBalance={walletBalance}
-      />
-      <FlexCenter py={2}>
-        <Relative>
-          <Collapse in={!isBalanceSufficient}>
-            <FlexCenter pb={3}>
-              <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>
-            </FlexCenter>
-          </Collapse>
-          <Collapse in={!isXrpSufficient}>
-            <FlexCenter pb={3}>
-              <ErrorTip>
-                Approximately 5 XRP for gas fees is required per RNS
-                registration. Please top up your XRP balance in your EOA wallet
-                via the{" "}
-                <Link href={FUTUREVERSE} target="_blank">
-                  <HightlightText>FuturePass Dashboard</HightlightText>
-                </Link>
-                . If you need help, view our{" "}
-                <Link href={VIDEO_TUTORIAL} target="_blank">
-                  <HightlightText>video tutorial</HightlightText>
-                </Link>{" "}
-                and{" "}
-                <Link href={QUESTIONS} target="_blank">
-                  <HightlightText>FAQ's.</HightlightText>
-                </Link>
-              </ErrorTip>
-            </FlexCenter>
-          </Collapse>
-          <Collapse in={isProgressVisible}>
-            <Flex>
-              <ProgressBar
-                isError={isError}
-                isPaused={!isTransactionLoading}
-                isVisible={isProgressVisible}
-                isSuccess={isRegistered}
-              />
-              <Collapse orientation="horizontal" in={isCooldown}>
-                <CircularProgress
-                  countdown
-                  isVisible={isCooldown}
-                  isSuccess={isCommitSuccess}
-                />
-              </Collapse>
-            </Flex>
-          </Collapse>
-          <Collapse in={isCooldown}>
-            <FlexLeft>
-              <Tip>
-                Please wait for 60 seconds before the transaction proceeds.
-              </Tip>
-            </FlexLeft>
-          </Collapse>
-          <ViewTransaction isVisible={isRegistered} hash={txHash} />
-          <Collapse in={!isProgressVisible}>
-            <FlexCenter>
-              <Tip>
-                Avoid paying yearly transaction fees by selecting a longer
-                registration period.
-              </Tip>
-            </FlexCenter>
-          </Collapse>
-        </Relative>
-      </FlexCenter>
+      <Grid maxHeight="70vh" overflow="overlay">
+        <Form
+          isShowing={!isRegistered}
+          rentFee={rentFee}
+          walletBalance={walletBalance}
+        />
+        <FlexCenter py={2}>
+          <Relative>
+            <Collapse in={!isBalanceSufficient}>
+              <FlexCenter pb={3}>
+                <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>
+              </FlexCenter>
+            </Collapse>
+            <Collapse in={!isXrpSufficient}>
+              <FlexCenter pb={3}>
+                <ErrorTip>
+                  Approximately 5 XRP for gas fees is required per RNS
+                  registration. Please top up your XRP balance in your EOA
+                  wallet via the{" "}
+                  <Link href={FUTUREVERSE} target="_blank">
+                    <HightlightText>FuturePass Dashboard</HightlightText>
+                  </Link>
+                  . If you need help, view our{" "}
+                  <Link href={VIDEO_TUTORIAL} target="_blank">
+                    <HightlightText>video tutorial</HightlightText>
+                  </Link>{" "}
+                  and{" "}
+                  <Link href={QUESTIONS} target="_blank">
+                    <HightlightText>FAQ's.</HightlightText>
+                  </Link>
+                </ErrorTip>
+              </FlexCenter>
+            </Collapse>
+            <Collapse in={isProgressVisible}>
+              <Flex container>
+                <Grid item xs>
+                  <ProgressBar
+                    isError={isError}
+                    isPaused={!isTransactionLoading}
+                    isVisible={isProgressVisible}
+                    isSuccess={isRegistered}
+                  />
+                </Grid>
+                <Collapse orientation="horizontal" in={isCooldown}>
+                  <CircularProgress
+                    countdown
+                    isVisible={isCooldown}
+                    isSuccess={isCommitSuccess}
+                  />
+                </Collapse>
+              </Flex>
+            </Collapse>
+            <Collapse in={isCooldown}>
+              <FlexLeft>
+                <Tip>
+                  Please wait for 60 seconds before the transaction proceeds.
+                </Tip>
+              </FlexLeft>
+            </Collapse>
+            <ViewTransaction isVisible={isRegistered} hash={txHash} />
+            <Collapse in={!isProgressVisible}>
+              <FlexCenter>
+                <Tip>
+                  Avoid paying yearly transaction fees by selecting a longer
+                  registration period.
+                </Tip>
+              </FlexCenter>
+            </Collapse>
+          </Relative>
+        </FlexCenter>
+      </Grid>
 
       {/* Hide these action buttons after the registration */}
       <Collapse in={!isRegistered}>

@@ -69,7 +69,7 @@ export const MenuField: React.FC<Menu> = (props: Menu) => {
     <Flex>
       <FlexCenter container>
         {label && (
-          <Grid item xs={4.75}>
+          <Grid item xs={5.5} sm={4.75}>
             <PaymentLabel>{label}</PaymentLabel>
           </Grid>
         )}

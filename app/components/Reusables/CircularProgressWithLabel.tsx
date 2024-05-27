@@ -46,7 +46,7 @@ export const CircularProgressWithLabel: React.FC<ProgressProps> = (
   }, [isSuccess]);
 
   return (
-    <Box sx={{ position: "relative", display: "inline-flex", mx: 1 }}>
+    <Box sx={{ position: "relative", display: "inline-flex", ml: 1 }}>
       <CircularProgress
         variant="determinate"
         value={progress}

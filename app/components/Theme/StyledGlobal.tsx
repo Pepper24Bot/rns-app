@@ -455,6 +455,7 @@ export const ErrorTip = styled(Tip, {
   shouldForwardProp: (prop) => prop !== "isVisible",
 })<{ isVisible?: boolean }>(({ isVisible, theme }) => ({
   color: red[800],
+  width: "calc(100% - 16px)",
 }));
 
 export const ToggleButtonGroup = styled(MuiToggleGroup)(({ theme }) => ({
