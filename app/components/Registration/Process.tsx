@@ -21,6 +21,9 @@ const StepContainer = styled(Flex)(({ theme }) => ({
   alignItems: "start",
   [theme.breakpoints.down("md")]: {
     display: "block",
+    maxHeight: "75vh",
+    overflow: "overlay",
+    padding: "8px",
   },
 }));
 
