@@ -46,6 +46,7 @@ const Answer = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "14px",
   color: darken(theme.palette.text.primary, 0.35),
   whiteSpace: "pre-line",
+  wordBreak: "break-word",
 }));
 
 const ArrowContainer = styled(FlexCenter)(({ theme }) => ({
