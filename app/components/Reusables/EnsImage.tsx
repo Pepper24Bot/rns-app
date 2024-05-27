@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { namehash } from "viem";
+import { SkeletonRectangular } from "../Theme/StyledGlobal";
 
-import Image from "next/image";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
 
@@ -50,15 +50,37 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
     action: "NameWrapper",
   });
 
+  const [isImageLoading, setImageLoading] = useState<boolean>(true);
   const nameHash = namehash(name);
 
   return (
-    <ImageContainer item>
+    <ImageContainer item sx={{ position: "relative" }}>
+      <SkeletonRectangular
+        isloading={isImageLoading}
+        style={{
+          width: "calc(100% - 30px)",
+          height: "calc(100% - 20px)",
+          position: "absolute",
+          WebkitTransformOrigin: "top",
+          transform: "scale(1)",
+        }}
+      />
       <StyledImage
         src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
         alt="RNS Name"
         width={200}
         height={200}
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
+        onLoad={() => {
+          setImageLoading(false);
+        }}
+        style={{
+          maxWidth: "300px",
+          height: "-webkit-fill-available",
+          boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
+        }}
       />
     </ImageContainer>
   );
