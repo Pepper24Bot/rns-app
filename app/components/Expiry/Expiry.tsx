@@ -24,6 +24,7 @@ import { formatEther, formatUnits } from "viem";
 import { FUTUREVERSE, QUESTIONS, VIDEO_TUTORIAL } from "@/constants/url";
 import { red } from "@mui/material/colors";
 import { FONT_WEIGHT } from "../Theme/Global";
+import { useSnackbar } from "notistack";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -78,7 +79,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   });
   const { useDomain, updateName } = useDomainState();
   const { year = 1, payment } = useDomain();
-
+  const { enqueueSnackbar } = useSnackbar();
   const { closeModal, useModal } = useModalState();
   const { isModalOpen } = useModal();
   const { isFeatureEnabled } = useFeatureToggle();
@@ -202,6 +203,11 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   useEffect(() => {
     if (isExtended) {
+      enqueueSnackbar(
+        `Congratulations! You have successfully extended the expiry of ${domain?.name}!`,
+        { variant: "success" }
+      );
+
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
@@ -211,6 +217,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   useEffect(() => {
     if (isApproved) {
+      enqueueSnackbar("Token approval is completed!", { variant: "info" });
       handleExtend();
     }
   }, [isApproved]);

@@ -1,25 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Collapse,
-  Grid,
-  Tab,
-  alpha,
-  styled,
-  InputAdornment,
-  Tabs as MuiTabs,
-} from "@mui/material";
+import { Collapse, Grid, InputAdornment, IconButton } from "@mui/material";
 import { useAccount } from "wagmi";
 import { debounce as _debounce, isEmpty } from "lodash";
-import {
-  BaseIconButton,
-  BaseInputField,
-  FlexCenter,
-  FlexJustified,
-  Heading,
-} from "../Theme/StyledGlobal";
-import { Search as MuiSearchIcon, Tune, ViewColumn } from "@mui/icons-material";
+import { FlexJustified } from "../Theme/StyledGlobal";
+import { Tune, ViewColumn } from "@mui/icons-material";
 import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/constants/components";
-import { FONT_SIZE } from "../Theme/Global";
 import {
   useGetNamesByIdQuery,
   useGetNamesByUserAndLabelQuery,
@@ -28,6 +13,17 @@ import { Name, useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { Address, formatEther } from "viem";
 import { getExpiration } from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import {
+  Container,
+  Content,
+  DashboardContainer,
+  SearchField,
+  SearchIcon,
+  TabItem,
+  Toolbar,
+  Title,
+  Tabs,
+} from "./StyledDashboard";
 
 import Names from "./Tab/Names";
 import Favorites from "./Tab/Favorites";
@@ -37,99 +33,6 @@ import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import FeatureToggle from "../Reusables/FeatureToggle";
 import FilterOption from "../Reusables/FilterOption";
 import FrequentlyAsked from "./Tab/Faq/Faq";
-
-const Container = styled(FlexCenter)(({ theme }) => ({
-  position: "relative",
-  backgroundColor: alpha(theme.palette.background.darker, 0.35),
-  marginBottom: "10px",
-}));
-
-const DashboardContainer = styled(Grid)(({ theme }) => ({
-  maxWidth: "1400px",
-  width: "100%",
-  padding: "30px 80px",
-
-  [theme.breakpoints.down("sm")]: {
-    padding: "30px 40px",
-  },
-}));
-
-const Content = styled(Grid)(({ theme }) => ({
-  marginTop: "30px",
-}));
-
-const Toolbar = styled(Grid)(({ theme }) => ({
-  paddingTop: "10px",
-}));
-
-const SearchField = styled(BaseInputField)(({ theme }) => ({
-  ".MuiInputBase-input": {
-    padding: "10px 16px 10px 25px",
-  },
-
-  ".MuiInputBase-root": {
-    backgroundColor: theme.palette.background.darker,
-  },
-
-  "&.MuiFormControl-root": {
-    width: "100%",
-  },
-}));
-
-const SearchIcon = styled(MuiSearchIcon)(({ theme }) => ({
-  height: "24px",
-  width: "24px",
-}));
-
-const IconButton = styled(BaseIconButton)(({ theme }) => ({
-  marginLeft: "8px",
-}));
-
-const Title = styled(Heading)(({ theme }) => ({
-  fontSize: "36px",
-
-  [theme.breakpoints.down("lg")]: {
-    fontSize: FONT_SIZE.Xlarge,
-  },
-}));
-
-const Tabs = styled(MuiTabs)(({ theme }) => ({
-  borderBottom: `solid 1px ${alpha(theme.palette.text.primary, 0.25)}`,
-
-  "&.MuiTabs-root": {
-    minHeight: 0,
-  },
-}));
-
-const TabItem = styled(Tab)(({ theme }) => ({
-  textTransform: "capitalize",
-  color: theme.palette.text.primary,
-
-  "&.MuiTab-root": {
-    padding: "8px 30px",
-    backgroundColor: alpha(theme.palette.primary.dark, 0.05),
-    fontSize: "16px",
-    fontFamily: "var(--secondary-font)",
-    minHeight: 0,
-
-    "&:not(:first-of-type)": {
-      borderLeft: `solid 2px ${theme.palette.background.paper}`,
-    },
-
-    "&:first-of-type": {
-      borderRadius: "8px 0 0 0",
-    },
-
-    "&:last-child": {
-      borderRadius: "0 8px 0 0",
-    },
-
-    "&.Mui-selected": {
-      color: theme.palette.text.primary,
-      backgroundColor: alpha(theme.palette.primary.dark, 0.5),
-    },
-  },
-}));
 
 export const Dashboard: React.FC = () => {
   const { status } = useAccount();

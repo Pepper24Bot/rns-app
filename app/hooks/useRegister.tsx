@@ -8,6 +8,7 @@ import { initializeResponse, isCommitmentValid } from "@/utils/common";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { CommitProps, RegisterProps } from "@/interfaces/registration";
+import { useSnackbar } from "notistack";
 
 import useContractDetails from "./useContractDetails";
 import useProxyRegister from "./FuturePass/useProxyRegister";
@@ -16,6 +17,7 @@ import useWaitTransaction from "./useWaitTransaction";
 export default function useRegister() {
   const controller = useContractDetails({ action: "RegistrarController" });
 
+  const { enqueueSnackbar } = useSnackbar();
   const { abi, address } = controller;
   const { writeContractAsync } = useWriteContract();
   const { waitForWriteTransaction } = useWaitTransaction();
@@ -59,6 +61,7 @@ export default function useRegister() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
+        enqueueSnackbar(error.shortMessage, { variant: "error" });
       }
     }
 
@@ -92,11 +95,15 @@ export default function useRegister() {
           });
         }
 
+        enqueueSnackbar("Request to register is in progress.", {
+          variant: "info",
+        });
         setCommitLoading(true);
         response = await waitForWriteTransaction(commitHash);
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
+        enqueueSnackbar(error.shortMessage, { variant: "error" });
       }
     }
 
@@ -159,11 +166,16 @@ export default function useRegister() {
         });
       }
 
+      enqueueSnackbar("Registration is in progress. Please, do not close.", {
+        variant: "info",
+      });
+
       setRegisterLoading(true);
       response = await waitForWriteTransaction(registerHash);
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
+      enqueueSnackbar(error.shortMessage, { variant: "error" });
     }
 
     console.log("registration-response:: ", response);

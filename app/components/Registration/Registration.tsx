@@ -31,6 +31,7 @@ import { isDateWithinRange, parseCookie } from "@/utils/common";
 import { red } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { isEmpty } from "lodash";
+import { useSnackbar } from "notistack";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -79,7 +80,7 @@ export const RegisterName: React.FC = () => {
   const { address = "0x" } = useAccount();
   const { useDomain, updateName } = useDomainState();
   const { name = "", year = 1, payment } = useDomain();
-
+  const { enqueueSnackbar } = useSnackbar();
   const { isFeatureEnabled } = useFeatureToggle();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -297,6 +298,11 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     if (isRegistered) {
+      enqueueSnackbar(
+        "Congratulations! You have successfully registered a new identity!",
+        { variant: "success" }
+      );
+
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       updateName({ status: "Registered" });
@@ -305,6 +311,7 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     if (isCommitSuccess) {
+      enqueueSnackbar("Request to register is completed!", { variant: "info" });
       handleApproval();
     }
 
@@ -315,6 +322,7 @@ export const RegisterName: React.FC = () => {
 
   useEffect(() => {
     if (isApproved) {
+      enqueueSnackbar("Token approval is completed!", { variant: "info" });
       handleRegister();
     }
   }, [isApproved]);

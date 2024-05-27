@@ -9,11 +9,10 @@ import {
 } from "../Theme/StyledGlobal";
 import { Address } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { graphqlApi } from "@/redux/graphql/graphqlApi";
-import { useDispatch } from "react-redux";
 import { isEmpty } from "lodash";
 import { LinkProps } from "@/interfaces/components/transaction";
-import { useEnsName } from "wagmi";
+import { useEnsAddress, useEnsName } from "wagmi";
+import { useSnackbar } from "notistack";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -25,8 +24,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain, activeAddress } = props;
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
-
-  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   /** Status Flags */
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -41,6 +39,9 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const [txHash, setTxHash] = useState<string>("");
 
   const { refetch } = useEnsName({ address: activeAddress });
+  const { refetch: refetchEnsAddr } = useEnsAddress({
+    name: domain?.name || "",
+  });
 
   /** Use the isLoading Flag here for the progress bar */
   const { setAddressRecord, isLoading } = useRecords();
@@ -82,10 +83,13 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+      enqueueSnackbar(
+        `You have successfully added an address record to ${domain?.name}.`,
+        { variant: "success" }
+      );
+
       setIsSuccess(true);
       setIsPending(false);
-      refetch();
     }
   }, [isCompleted]);
 
@@ -137,6 +141,8 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
             sx={{ marginRight: 1 }}
             variant="text"
             onClick={() => {
+              refetch();
+              refetchEnsAddr();
               closeModal();
             }}
           >

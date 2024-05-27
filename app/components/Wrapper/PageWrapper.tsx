@@ -3,7 +3,6 @@
 import React, { Suspense } from "react";
 import { Grid, styled } from "@mui/material";
 import { Provider } from "react-redux";
-
 import { Config, WagmiProvider } from "wagmi";
 import { config } from "@/chains/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,6 +12,7 @@ import PageNavigation from "@/components/Navigation/NavigationBar";
 import PageModal from "@/components/Modal/ModalContainer";
 import GlobalTheme from "../Theme/Global";
 import PageFooter from "../Footer/PageFooter";
+import SnackbarWrapper from "../Snackbar/Snackbar";
 
 import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/400.css";
@@ -46,15 +46,16 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
         <Provider store={store}>
           <GlobalTheme>
             <WrapperContainer>
-              <ContentContainer>
-                <PageNavigation />
-                <Suspense fallback={<></>}>
-                  <PageModal />
-                </Suspense>
-                {/* TODO: Mount PageSnackbars */}
-                {children}
-              </ContentContainer>
-              <PageFooter />
+              <SnackbarWrapper>
+                <ContentContainer>
+                  <PageNavigation />
+                  <Suspense fallback={<></>}>
+                    <PageModal />
+                  </Suspense>
+                  {children}
+                </ContentContainer>
+                <PageFooter />
+              </SnackbarWrapper>
             </WrapperContainer>
           </GlobalTheme>
         </Provider>

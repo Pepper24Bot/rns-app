@@ -6,12 +6,16 @@ import { LinkProps } from "@/interfaces/components/transaction";
 import AddRecord from "./AddRecord";
 import AddressRecord from "./AddressRecord";
 import EnsImage from "../Reusables/EnsImage";
+import { useEnsAddress } from "wagmi";
 
 export const LinkAddress: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain } = props;
 
-  const linkedAddr = domain?.resolver?.addr?.id;
-  const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
+  const { data: ensAddr } = useEnsAddress({
+    name: domain?.name || "",
+  });
+
+  const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
 
   return (
     <Grid container mt={6} minWidth={250} maxWidth={700}>
