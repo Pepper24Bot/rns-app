@@ -11,6 +11,7 @@ import {
   ActionButton,
   ButtonLabel,
   FlexCenter,
+  InformationTip,
   ModalInputField,
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
@@ -121,6 +122,7 @@ export const ShareRegistration: React.FC = () => {
   const [invalidTweet, setInvalidTweet] = useState<string>("");
 
   const isAccessRequested = parseCookie("isAccessRequested") === "true";
+  const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const { updateShareStatus } = useShareState();
   const { useRootNetwork } = useRootNetworkState();
@@ -275,32 +277,36 @@ export const ShareRegistration: React.FC = () => {
               }}
             />
           </Grid>
-          <ButtonContainer item xs={12}>
-            <ShareButton
-              disabled={!isGranted || isEmpty(link)}
-              variant="contained"
-              onClick={() => {
-                handleVerify();
-              }}
-            >
-              {isVerifying ? (
-                <Verifying>Verifying</Verifying>
-              ) : isVerified ? (
-                <Verified>Verified</Verified>
-              ) : isVerifyFailed ? (
-                <Failed>Verfication Failed</Failed>
-              ) : (
-                <ButtonLabel
-                  status={!isGranted || isEmpty(link) ? "disabled" : ""}
-                >
-                  Verify
-                </ButtonLabel>
-              )}
-              {isVerifying && (
-                <CircularProgress size="16px" sx={{ ml: "8px" }} />
-              )}
-            </ShareButton>
-          </ButtonContainer>
+          <InformationTip
+            title={isTweetVerified ? "You have already shared a name!" : ""}
+          >
+            <ButtonContainer item xs={12}>
+              <ShareButton
+                disabled={!isGranted || isEmpty(link) || isTweetVerified}
+                variant="contained"
+                onClick={() => {
+                  handleVerify();
+                }}
+              >
+                {isVerifying ? (
+                  <Verifying>Verifying</Verifying>
+                ) : isVerified ? (
+                  <Verified>Verified</Verified>
+                ) : isVerifyFailed ? (
+                  <Failed>Verfication Failed</Failed>
+                ) : (
+                  <ButtonLabel
+                    status={!isGranted || isEmpty(link) ? "disabled" : ""}
+                  >
+                    Verify
+                  </ButtonLabel>
+                )}
+                {isVerifying && (
+                  <CircularProgress size="16px" sx={{ ml: "8px" }} />
+                )}
+              </ShareButton>
+            </ButtonContainer>
+          </InformationTip>
         </Content>
       </Container>
     </FlexCenter>
