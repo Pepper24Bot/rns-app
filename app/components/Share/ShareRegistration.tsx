@@ -265,6 +265,9 @@ export const ShareRegistration: React.FC = () => {
               value={link}
               error={invalidTweet !== ""}
               helperText={invalidTweet}
+              label="URL"
+              placeholder="Insert post URL"
+              focused
               onChange={(event) => {
                 const { value } = event.target;
                 setLink(value);
