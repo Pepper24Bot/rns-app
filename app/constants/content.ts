@@ -4,9 +4,34 @@
  * Implement intl
  */
 
-export const TWEET_RNS = `I just registered my new @RootNameService (RNS) Cross Platform, Social and Data Identity on @therootnetwork.
-    %0D%0DSecure your RNS Idenity today and be eligible for @Futureverse Quest Rewards.
-    %0D%0DMore info  https://futureverse.com/futurepass/quests/`
+export const TWEETS_RNS = [
+    `I’ve registered my @RootNameService Identity on @therootnetwork. Secure yours to unlock exclusive @Futureverse Quest Rewards and strengthen your digital presence. 💫
+    %0D%0DHow will you 𝗕𝗲 𝗞𝗻𝗼𝘄𝗻? ✨
+    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+
+    `Excited to have my @RootNameService Identity on @TheRootNetwork! 💫
+    %0D%0D@Ethereum and Web3 users, enhance your digital identity today and get exclusive @Futureverse Quest Rewards! 🪙
+    %0D%0DHow will you 𝗕𝗲 𝗞𝗻𝗼𝘄𝗻? ✨
+    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+
+    `I just got my new @RootNameService Identity on @TheRootNetwork! 💫✨
+    %0D%0D@Ethereum and Web3 users, now’s the time to upgrade your digital identity and earn exclusive @Futureverse Quest Rewards. 🪙
+    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+
+    `Just secured my @RootNameService Identity on @TheRootNetwork! 💫✨
+    %0D%0D@Ethereum and Web3 users, elevate your digital identity and access exclusive @Futureverse Quest Rewards! 🪙
+    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+
+    `Proud to have my @RootNameService Identity on @TheRootNetwork! 💫✨
+    %0D%0D@Ethereum and Web3 users, enhance your digital identity and get exclusive @Futureverse Quest Rewards! 🪙
+    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+
+    `Registered my @RootNameService Identity on @TheRootNetwork! 💫✨
+    %0D%0D@Ethereum and Web3 users, now’s the time to elevate your digital identity and be eligible for exclusive @Futureverse Quest Rewards. 🪙
+    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+]
+
+
 
 export const REGISTRATION_PROCESS = [
     {

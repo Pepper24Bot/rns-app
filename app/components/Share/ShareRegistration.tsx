@@ -23,7 +23,7 @@ import {
 import { isEmpty } from "lodash";
 import { green, red, yellow } from "@mui/material/colors";
 import { TWITTER_AUTH } from "@/constants/url";
-import { TWEET_RNS } from "@/constants/content";
+import { TWEETS_RNS } from "@/constants/content";
 import { parseCookie } from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useShareState } from "@/redux/share/shareSlice";
@@ -118,6 +118,7 @@ export const ShareRegistration: React.FC = () => {
 
   const [link, setLink] = useState<string>("");
   const [tweetId, setTweetId] = useState<string>("");
+  const [invalidTweet, setInvalidTweet] = useState<string>("");
 
   const isAccessRequested = parseCookie("isAccessRequested") === "true";
 
@@ -163,7 +164,7 @@ export const ShareRegistration: React.FC = () => {
   };
 
   const handleTweet = () => {
-    const content = TWEET_RNS;
+    const content = TWEETS_RNS[Math.floor(Math.random() * TWEETS_RNS.length)];
 
     const url = `http://twitter.com/intent/tweet?text=${content}`;
 
@@ -176,7 +177,11 @@ export const ShareRegistration: React.FC = () => {
     const pattern = new RegExp(/status\//g);
     const tweetId = link.toLowerCase().split(pattern)[1];
 
-    setTweetId(tweetId);
+    if (tweetId) {
+      setTweetId(tweetId);
+    } else {
+      setInvalidTweet("Invalid tweet url");
+    }
   };
 
   useEffect(() => {
@@ -190,7 +195,7 @@ export const ShareRegistration: React.FC = () => {
     if (twitterId && futurePassAddress) {
       triggerWebhook({ futurePass: futurePassAddress });
     }
-  }, [isVerifying]);
+  }, [isVerifying, futurePassAddress]);
 
   useEffect(() => {
     if (result.isSuccess) {
@@ -258,9 +263,12 @@ export const ShareRegistration: React.FC = () => {
             <StepLabel>Verify your shared post</StepLabel>
             <ModalInputField
               value={link}
+              error={invalidTweet !== ""}
+              helperText={invalidTweet}
               onChange={(event) => {
                 const { value } = event.target;
                 setLink(value);
+                setInvalidTweet("");
               }}
             />
           </Grid>

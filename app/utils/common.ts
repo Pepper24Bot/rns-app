@@ -115,6 +115,17 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
 
 /**
  * 
+ * @param createdDate 
+ * @param startDate 
+ * @param endDate 
+ */
+export const isDateWithinRange = (createdDate: Date, startDate: Date, endDate: Date) => {
+    const isWithinRange = createdDate >= startDate && createdDate <= endDate
+    return isWithinRange
+}
+
+/**
+ * 
  * @param email 
  * @returns 
  */

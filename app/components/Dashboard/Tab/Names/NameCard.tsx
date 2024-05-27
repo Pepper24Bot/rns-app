@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Grid, alpha, darken, Divider } from "@mui/material";
+import { Grid, alpha, darken } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
 import { grey } from "@mui/material/colors";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import {
   Label,
+  Divider,
   CheckedIcon,
   ClockIcon,
   Container,
@@ -32,7 +33,13 @@ import {
   TwitterIcon,
   Highlight,
 } from "./StyledName";
-import { getExpiration, getMaskedAddress, parseCookie } from "@/utils/common";
+import {
+  getDate,
+  getExpiration,
+  getMaskedAddress,
+  isDateWithinRange,
+  parseCookie,
+} from "@/utils/common";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
@@ -41,6 +48,8 @@ import { namehash, Address } from "viem";
 import { useGetNftImageQuery } from "@/redux/metadata/metadataApi";
 import { CardProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { useShareState } from "@/redux/share/shareSlice";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -57,6 +66,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { name: networkName } = useNetworkConfig();
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+  const { useShareStatus } = useShareState();
+  const { isSuccess } = useShareStatus();
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
   });
@@ -70,7 +83,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   const {
     data: image,
-    isSuccess,
+    isSuccess: isMetadataSuccess,
     isError,
   } = useGetNftImageQuery(
     {
@@ -81,6 +94,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     { skip: !isDownloadRequested }
   );
 
+  const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
+
   const { data: ensName } = useEnsName({
     address: activeAddress,
   });
@@ -90,7 +105,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   });
 
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
-  const isTweetVerified = parseCookie("isTweetVerified") === "true";
+  const isTweetVerified =
+    parseCookie("isTweetVerified") === "true" || isSuccess;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
   const { expiration, distanceToExpiration } = getExpiration(
@@ -159,6 +175,15 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   useEffect(() => {
+    const start = new Date("2024-05-28T08:00:00.000+10:00");
+    const end = new Date("2024-06-25T08:00:00.000+10:00");
+    const createdDate = getDate(item.domain.createdAt);
+    const isShareable = isDateWithinRange(createdDate, start, end);
+
+    setShareEnabled(isShareable);
+  }, [item.domain.createdAt, isTweetVerified]);
+
+  useEffect(() => {
     const scrollWidth = nameRef?.current?.scrollWidth || 0;
     const clientWidth = nameRef?.current?.clientWidth || 0;
 
@@ -168,14 +193,14 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   }, []);
 
   useEffect(() => {
-    if (isDownloadRequested && !isSuccess) {
+    if (isDownloadRequested && !isMetadataSuccess) {
       enqueueSnackbar("Download in progress.", {
         variant: "info",
         autoHideDuration: 3000,
       });
     }
 
-    if (isSuccess) {
+    if (isMetadataSuccess) {
       const imageStr = image as unknown as string;
       const blob = new Blob([imageStr], {
         type: "image/svg+xml",
@@ -191,7 +216,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         autoHideDuration: 2000,
       });
     }
-  }, [isSuccess, isDownloadRequested, isError]);
+  }, [isMetadataSuccess, isDownloadRequested, isError]);
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
@@ -312,30 +337,54 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                   </SubContainer>
                 )}
               </Flex>
-              {!isTweetVerified && (
-                <Flex>
+              <Flex>
+                <InformationTip
+                  title={
+                    !isShareEnabled
+                      ? "This identity was registered outside of the quest period."
+                      : !root.futurePassAddress
+                      ? "You do not have a FuturePass address, please create one to complete the Quest."
+                      : isTweetVerified
+                      ? "Post sharing during Quest period successfully completed."
+                      : ""
+                  }
+                >
                   <SubContainer>
                     <ShareButton
                       variant="contained"
-                      disabled
+                      disabled={
+                        !isShareEnabled ||
+                        isTweetVerified ||
+                        !root.futurePassAddress
+                      }
                       onClick={() => {
                         toggleModal({
                           id: "Share RNS",
                           title: "",
                           fullHeight: true,
                           fullWidth: true,
+                          isCloseDisabled: true,
                         });
                       }}
                     >
                       <TwitterIcon fontSize="small" />
                       <Divider orientation="vertical" flexItem />
-                      <ShareLabel isDisabled={true}>Share</ShareLabel>
+                      <ShareLabel
+                        isDisabled={
+                          !isShareEnabled ||
+                          isTweetVerified ||
+                          !root.futurePassAddress
+                        }
+                      >
+                        Share
+                      </ShareLabel>
                     </ShareButton>
                   </SubContainer>
-                  <FeatureToggle feature={FeatureList.ShareStatus}>
-                    <SubContainer>
-                      {/* TODO: Enable this once Share per RNS name is supported */}
-                      {/* <ShareButton disabled variant="contained">
+                </InformationTip>
+                <FeatureToggle feature={FeatureList.ShareStatus}>
+                  <SubContainer>
+                    {/* TODO: Enable this once Share per RNS name is supported */}
+                    {/* <ShareButton disabled variant="contained">
                       {isLoading ? (
                         <Verifying>Verifying</Verifying>
                       ) : isSuccess ? (
@@ -349,10 +398,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         <CircularProgress size="16px" sx={{ ml: "8px" }} />
                       )}
                     </ShareButton> */}
-                    </SubContainer>
-                  </FeatureToggle>
-                </Flex>
-              )}
+                  </SubContainer>
+                </FeatureToggle>
+              </Flex>
             </FlexJustified>
           </Grid>
         </ItemContainer>
