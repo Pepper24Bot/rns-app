@@ -73,7 +73,8 @@ export default function useToken() {
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
-      enqueueSnackbar(error.shortMessage, { variant: "error" });
+      const message = error.shortMessage || error.message;
+      enqueueSnackbar(message, { variant: "error" });
     }
 
     console.log("Approval-Response:: ", response);
@@ -105,7 +106,8 @@ export default function useToken() {
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
-      enqueueSnackbar(error.shortMessage, { variant: "error" });
+      const message = error.shortMessage || error.message;
+      enqueueSnackbar(message, { variant: "error" });
     }
 
     return response;

@@ -36,8 +36,8 @@ export default function useProxyToken() {
       console.log("Approval-Transaction:: ", transaction);
       return transaction;
     } catch (error) {
-      console.log("error:: ", error);
-      throw new Error("Error has been encountered during approval");
+      console.log("Approval-Error:: ", error);
+      throw new Error((error as any).message);
     }
   };
 

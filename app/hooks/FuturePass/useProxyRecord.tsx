@@ -35,8 +35,8 @@ export default function useProxyRecord(props: ProxyProps) {
         console.log("SetAddress-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
-        console.log("error:: ", error);
-        throw new Error("Error has been encountered during setting a record");
+        console.log("SetAddress-Error:: ", error);
+        throw new Error((error as any).message);
       }
     }
   };

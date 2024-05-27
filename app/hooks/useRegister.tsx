@@ -103,7 +103,8 @@ export default function useRegister() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
-        enqueueSnackbar(error.shortMessage, { variant: "error" });
+        const message = error.shortMessage || error.message;
+        enqueueSnackbar(message, { variant: "error" });
       }
     }
 
@@ -175,7 +176,8 @@ export default function useRegister() {
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
-      enqueueSnackbar(error.shortMessage, { variant: "error" });
+      const message = error.shortMessage || error.message;
+      enqueueSnackbar(message, { variant: "error" });
     }
 
     console.log("registration-response:: ", response);

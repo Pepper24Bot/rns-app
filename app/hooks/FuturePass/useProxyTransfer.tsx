@@ -35,8 +35,8 @@ export default function useProxyTransfer(props: ProxyProps) {
         console.log("Transfer-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
-        console.log("error:: ", error);
-        throw new Error("Error has been encountered during transfer");
+        console.log("Transfer-Error:: ", error);
+        throw new Error((error as any).message);
       }
     }
   };

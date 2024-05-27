@@ -63,7 +63,8 @@ export default function useTransfer() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
-        enqueueSnackbar(error.shortMessage, { variant: "error" });
+        const message = error.shortMessage || error.message;
+        enqueueSnackbar(message, { variant: "error" });
       }
     }
     setTransferLoading(false);

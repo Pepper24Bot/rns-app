@@ -35,8 +35,8 @@ export default function useProxyRegister(props: ProxyProps) {
         console.log("Commit-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
-        console.log("error:: ", error);
-        throw new Error("Error has been encountered during commit");
+        console.log("Commit-Error:: ", error);
+        throw new Error((error as any).message);
       }
     }
   };
@@ -71,8 +71,8 @@ export default function useProxyRegister(props: ProxyProps) {
       console.log("Register-Transaction:: ", transaction);
       return transaction;
     } catch (error) {
-      console.log("error:: ", error);
-      throw new Error("Error has been encountered during registration");
+      console.log("Register-Error:: ", error);
+      throw new Error((error as any).message);
     }
   };
 

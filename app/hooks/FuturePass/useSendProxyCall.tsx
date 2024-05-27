@@ -64,8 +64,8 @@ export default function useSendProxyCall() {
 
         return ethTx;
       } catch (error) {
-        console.log("error:: ", error);
-        throw new Error("Error has been encountered during extend");
+        console.log("proxycall-error:: ", error);
+        throw new Error((error as any).message);
       }
     }
   };
@@ -104,8 +104,8 @@ export default function useSendProxyCall() {
 
         return ethTx;
       } catch (error) {
-        console.log("error:: ", error);
-        throw new Error("Error has been encountered during extend");
+        console.log("proxycall-error:: ", error);
+        throw new Error((error as any).message);
       }
     }
   };

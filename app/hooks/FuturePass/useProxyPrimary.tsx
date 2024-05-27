@@ -32,11 +32,11 @@ export default function useProxyPrimary(props: ProxyProps) {
           },
         });
 
-        console.log("SetPrimary-Transaction:: ", transaction);
+        console.log("Primary-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
-        console.log("error:: ", error);
-        throw new Error("Error has been encountered during setting a primary");
+        console.log("Primary-Error:: ", error);
+        throw new Error((error as any).message);
       }
     }
   };

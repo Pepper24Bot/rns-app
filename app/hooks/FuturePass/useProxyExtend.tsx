@@ -32,11 +32,11 @@ export default function useProxyExtend(props: ProxyProps) {
           },
         });
 
-        console.log("ExtendExpiry-Transaction:: ", transaction);
+        console.log("Extend-Transaction:: ", transaction);
         return transaction;
       } catch (error) {
-        console.log("error:: ", error);
-        throw new Error("Error has been encountered during extend");
+        console.log("Extend-Error:: ", error);
+        throw new Error((error as any).message);
       }
     }
   };
