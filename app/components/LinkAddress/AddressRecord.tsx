@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Collapse, Grid } from "@mui/material";
+import { Collapse, Grid, styled } from "@mui/material";
 import {
   FlexRight,
   ActionButton,
   FlexCenter,
   Relative,
+  FlexTop,
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/utils/common";
@@ -22,6 +23,18 @@ import RemoveAddress from "./RemoveRecord";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
+import EnsImage from "../Reusables/EnsImage";
+
+const RecordContainer = styled(FlexTop)(({ theme }) => ({
+  marginTop: "48px",
+  minWidth: "250px",
+  maxHeight: "60vh",
+  overflow: "overlay",
+
+  [theme.breakpoints.down("sm")]: {
+    margin: "20px 0",
+  },
+}));
 
 export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain: domainState, owner, ensName, activeAddress } = props;
@@ -131,63 +144,66 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   }, [linkedAddr, isEditMode]);
 
   return (
-    <Grid item xs>
-      {!isRemoveMode ? (
-        <UpdateRecord
-          ensName={ensName}
-          name={domainState?.name || ""}
-          owner={ownerId}
-          isFuturePassValid={isFuturePassValid}
-          addressInput={inputValue}
-          updateAddressInput={(value) => {
-            setInputValue(value);
-          }}
-          isUpdateEnabled={isEditMode}
-          toggleEditMode={() => {
-            setIsEditMode(!isEditMode);
-            setIsProgressVisible(false);
+    <Grid>
+      <RecordContainer container>
+        <EnsImage name={domainState?.name || ""} />
+        <Grid maxWidth={350}>
+          {!isRemoveMode ? (
+            <UpdateRecord
+              ensName={ensName}
+              name={domainState?.name || ""}
+              owner={ownerId}
+              isFuturePassValid={isFuturePassValid}
+              addressInput={inputValue}
+              updateAddressInput={(value) => {
+                setInputValue(value);
+              }}
+              isUpdateEnabled={isEditMode}
+              toggleEditMode={() => {
+                setIsEditMode(!isEditMode);
+                setIsProgressVisible(false);
 
-            /**
-             * If inputted address is invalid, and an onchange has been triggered,
-             * reset the invalid field flag
-             */
-            if (!isFuturePassValid) {
-              setIsFuturePassValid(true);
-            }
-          }}
-          toggleRemoveMode={() => {
-            setIsRemoveMode(!isRemoveMode);
-          }}
-        />
-      ) : (
-        <RemoveAddress
-          futurePassInput={linkedAddr}
-          disableBack={isTransactionLoading || isPending || isSuccess}
-          toggleRemoveMode={() => {
-            setIsProgressVisible(false);
-            setIsRemoveMode(!isRemoveMode);
-          }}
-        />
-      )}
-      <Collapse in={isProgressVisible}>
-        <FlexCenter pt={3}>
-          <Relative width="100%">
-            <ProgressBar
-              isError={isError}
-              isPaused={!isTransactionLoading}
-              isVisible={isProgressVisible}
-              isSuccess={isSuccess}
-              resetProgress={resetProgress}
+                /**
+                 * If inputted address is invalid, and an onchange has been triggered,
+                 * reset the invalid field flag
+                 */
+                if (!isFuturePassValid) {
+                  setIsFuturePassValid(true);
+                }
+              }}
+              toggleRemoveMode={() => {
+                setIsRemoveMode(!isRemoveMode);
+              }}
             />
-            <ViewTransaction isVisible={isSuccess} hash={txHash} />
-          </Relative>
-        </FlexCenter>
-      </Collapse>
-
-      <FlexRight pt={3}>
+          ) : (
+            <RemoveAddress
+              futurePassInput={linkedAddr}
+              disableBack={isTransactionLoading || isPending || isSuccess}
+              toggleRemoveMode={() => {
+                setIsProgressVisible(false);
+                setIsRemoveMode(!isRemoveMode);
+              }}
+            />
+          )}
+          <Collapse in={isProgressVisible}>
+            <FlexCenter pt={3}>
+              <Relative width="100%">
+                <ProgressBar
+                  isError={isError}
+                  isPaused={!isTransactionLoading}
+                  isVisible={isProgressVisible}
+                  isSuccess={isSuccess}
+                  resetProgress={resetProgress}
+                />
+                <ViewTransaction isVisible={isSuccess} hash={txHash} />
+              </Relative>
+            </FlexCenter>
+          </Collapse>
+        </Grid>
+      </RecordContainer>
+      <FlexRight>
         <ActionButton
           disabled={isPending || isWaiting}
-          sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
             refetchEnsAddr();
@@ -208,6 +224,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
               isWaiting ||
               !isFeatureEnabled("Link")
             }
+            sx={{ ml: 1 }}
             variant="contained"
             onClick={() => {
               if (isRemoveMode) {

@@ -26,7 +26,16 @@ import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
 
-const Container = styled(FlexTop)(({ theme }) => ({}));
+const PrimaryContainer = styled(FlexTop)(({ theme }) => ({
+  marginTop: "48px",
+  minWidth: "250px",
+  maxHeight: "80vh",
+  overflow: "overlay",
+
+  [theme.breakpoints.down("sm")]: {
+    margin: "20px 0",
+  },
+}));
 
 const ConfirmationText = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "20px",
@@ -215,88 +224,90 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   }, [ownerId]);
 
   return (
-    <Container pt={2}>
-      <EnsImage name={name} />
-      <Grid maxWidth={350}>
-        {getStep().transaction === "setName" && (
-          <>
-            <ConfirmationText pb={3}>
-              Are you sure you want to use this name as your primary?
-            </ConfirmationText>
+    <Grid>
+      <PrimaryContainer container>
+        <EnsImage name={name} />
+        <Grid maxWidth={350}>
+          {getStep().transaction === "setName" && (
+            <>
+              <ConfirmationText pb={3}>
+                Are you sure you want to use this name as your primary?
+              </ConfirmationText>
 
-            <Note pb={3}>
-              Please note that you can only have one primary name per address.
-            </Note>
-          </>
-        )}
-        {getStep().transaction === "setAddr" && (
-          <>
-            <ConfirmationText pb={3}>
-              Are you sure you want to use this name as your primary?
-            </ConfirmationText>
+              <Note pb={3}>
+                Please note that you can only have one primary name per address.
+              </Note>
+            </>
+          )}
+          {getStep().transaction === "setAddr" && (
+            <>
+              <ConfirmationText pb={3}>
+                Are you sure you want to use this name as your primary?
+              </ConfirmationText>
 
-            <Note pb={3}>
-              Please note that setting this RNS Identity as your Primary
-              Identity will also change the Linked/Resolver address back to the
-              address in which this RNS Identity is held.
-            </Note>
-          </>
-        )}
-        {getStep().transaction === "2steps" && (
-          <>
-            <ConfirmationText pb={3}>
-              The address for this identity does not match this wallet.
-            </ConfirmationText>
-            <Note pb={3}>
-              To use this as your primary name, you will need to update the
-              address for this identity first.
-            </Note>
-          </>
-        )}
-        <InputField disabled focused value={name} />
-        <Collapse in={isProgressVisible}>
-          <FlexCenter pt={2}>
-            <Relative width="100%">
-              <ProgressBar
-                isError={isError}
-                isPaused={!isTransactionLoading}
-                isVisible={isProgressVisible}
-                isSuccess={isSuccess}
-              />
-              <ViewTransaction isVisible={isSuccess} hash={txHash} />
-            </Relative>
-          </FlexCenter>
-        </Collapse>
-        <FlexRight pt={3}>
+              <Note pb={3}>
+                Please note that setting this RNS Identity as your Primary
+                Identity will also change the Linked/Resolver address back to
+                the address in which this RNS Identity is held.
+              </Note>
+            </>
+          )}
+          {getStep().transaction === "2steps" && (
+            <>
+              <ConfirmationText pb={3}>
+                The address for this identity does not match this wallet.
+              </ConfirmationText>
+              <Note pb={3}>
+                To use this as your primary name, you will need to update the
+                address for this identity first.
+              </Note>
+            </>
+          )}
+          <InputField disabled focused value={name} />
+          <Collapse in={isProgressVisible}>
+            <FlexCenter pt={2}>
+              <Relative width="100%">
+                <ProgressBar
+                  isError={isError}
+                  isPaused={!isTransactionLoading}
+                  isVisible={isProgressVisible}
+                  isSuccess={isSuccess}
+                />
+                <ViewTransaction isVisible={isSuccess} hash={txHash} />
+              </Relative>
+            </FlexCenter>
+          </Collapse>
+        </Grid>
+      </PrimaryContainer>
+      <FlexRight>
+        <ActionButton
+          disabled={isPending || isTransactionLoading}
+          sx={{ marginRight: 1 }}
+          variant="text"
+          onClick={() => {
+            closeModal();
+          }}
+        >
+          {isSuccess ? "Close" : "Cancel"}
+        </ActionButton>
+        <Collapse orientation="horizontal" in={!isSuccess}>
           <ActionButton
-            disabled={isPending || isTransactionLoading}
-            sx={{ marginRight: 1 }}
-            variant="text"
+            disabled={
+              isSuccess ||
+              isPending ||
+              isTransactionLoading ||
+              !isFeatureEnabled("Primary")
+            }
+            variant="contained"
             onClick={() => {
-              closeModal();
+              handleSetPrimary();
             }}
           >
-            {isSuccess ? "Close" : "Cancel"}
+            Confirm
           </ActionButton>
-          <Collapse orientation="horizontal" in={!isSuccess}>
-            <ActionButton
-              disabled={
-                isSuccess ||
-                isPending ||
-                isTransactionLoading ||
-                !isFeatureEnabled("Primary")
-              }
-              variant="contained"
-              onClick={() => {
-                handleSetPrimary();
-              }}
-            >
-              Confirm
-            </ActionButton>
-          </Collapse>
-        </FlexRight>
-      </Grid>
-    </Container>
+        </Collapse>
+      </FlexRight>
+    </Grid>
   );
 };
 

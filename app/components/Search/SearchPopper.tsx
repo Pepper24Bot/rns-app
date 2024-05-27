@@ -56,7 +56,7 @@ const PopperContainer = styled(Grid)(({ theme }) => ({
   borderRadius: "0 0 8px 8px",
 
   [theme.breakpoints.down("md")]: {
-    padding: "10px 25px 15px 25px",
+    padding: "10px 15px 15px",
   },
 }));
 
@@ -96,18 +96,6 @@ const SearchLabel = styled(SecondaryLabel)(({ theme }) => ({
 
   [theme.breakpoints.down("md")]: {
     fontSize: FONT_SIZE.Small,
-  },
-}));
-
-const TooltipText = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "12px",
-  color: alpha(theme.palette.text.primary, 0.65),
-}));
-
-const Highlight = styled(HighlightText)(({ theme }) => ({
-  fontSize: "12px",
-  "&:hover": {
-    color: theme.palette.primary.main,
   },
 }));
 

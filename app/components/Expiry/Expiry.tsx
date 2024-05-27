@@ -44,10 +44,14 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 const FormContainer = styled(Grid)(({ theme }) => ({
-  marginTop: "48px",
+  margin: "48px 0 20px 0",
   minWidth: "250px",
   maxHeight: "70vh",
   overflow: "overlay",
+
+  [theme.breakpoints.down("sm")]: {
+    margin: "20px 0",
+  },
 }));
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
@@ -319,7 +323,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
           )}
         </DetailsContainer>
       </FormContainer>
-      <FlexRight mt={2} width="100%">
+      <FlexRight width="100%">
         <FlexRight>
           <ActionButton
             disabled={isPending || isExtending}

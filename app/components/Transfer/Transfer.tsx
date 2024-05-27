@@ -38,17 +38,14 @@ import useBlockLatency from "@/hooks/useBlockLatency";
 import useRecords from "@/hooks/useRecords";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
 
-const Container = styled(Grid)(({ theme }) => ({
-  width: "350px",
-  display: "grid",
-  alignContent: "space-between",
+const TransferContainer = styled(Grid)(({ theme }) => ({
+  marginTop: "48px",
+  minWidth: "250px",
+  maxHeight: "75vh",
+  overflow: "overlay",
 
-  [theme.breakpoints.between("miniTablet", "tablet")]: {
-    width: "max-content",
-  },
-
-  [theme.breakpoints.down("miniTablet")]: {
-    width: "100%",
+  [theme.breakpoints.down("sm")]: {
+    margin: "20px 0",
   },
 }));
 
@@ -235,10 +232,10 @@ export const Transfer: React.FC<TransactionProps> = (
   }, [isAddrUpdated]);
 
   return (
-    <Grid container mt={6} minWidth={250}>
-      <EnsImage name={domain?.name || ""} />
-      <Container>
-        <Grid>
+    <Grid>
+      <TransferContainer container>
+        <EnsImage name={domain?.name || ""} />
+        <Grid maxWidth={350}>
           <InputField disabled value={domain?.name} />
           <InputField
             error={isFieldError}
@@ -280,43 +277,41 @@ export const Transfer: React.FC<TransactionProps> = (
             </FlexCenter>
           </Collapse>
         </Grid>
-        <Grid pt={3}>
-          <FlexRight>
-            <ActionButton
-              disabled={isPending || isTransactionLoading}
-              sx={{ marginRight: 1 }}
-              variant="text"
-              onClick={() => {
-                closeModal();
-              }}
-            >
-              {isSuccess ? "Close" : "Cancel"}
-            </ActionButton>
-            <Collapse orientation="horizontal" in={!isSuccess}>
-              <ActionButton
-                disabled={
-                  isEmpty(newOwner) ||
-                  isPending ||
-                  isSuccess ||
-                  isTransactionLoading ||
-                  !isFeatureEnabled("Transfer")
-                }
-                variant="contained"
-                onClick={() => {
-                  if (addressRecord === newOwner) {
-                    initializeFlags();
-                    handleTransfer();
-                  } else {
-                    handleUpdateAddress();
-                  }
-                }}
-              >
-                Confirm
-              </ActionButton>
-            </Collapse>
-          </FlexRight>
-        </Grid>
-      </Container>
+      </TransferContainer>
+      <FlexRight width="100%">
+        <ActionButton
+          disabled={isPending || isTransactionLoading}
+          sx={{ marginRight: 1 }}
+          variant="text"
+          onClick={() => {
+            closeModal();
+          }}
+        >
+          {isSuccess ? "Close" : "Cancel"}
+        </ActionButton>
+        <Collapse orientation="horizontal" in={!isSuccess}>
+          <ActionButton
+            disabled={
+              isEmpty(newOwner) ||
+              isPending ||
+              isSuccess ||
+              isTransactionLoading ||
+              !isFeatureEnabled("Transfer")
+            }
+            variant="contained"
+            onClick={() => {
+              if (addressRecord === newOwner) {
+                initializeFlags();
+                handleTransfer();
+              } else {
+                handleUpdateAddress();
+              }
+            }}
+          >
+            Confirm
+          </ActionButton>
+        </Collapse>
+      </FlexRight>
     </Grid>
   );
 };

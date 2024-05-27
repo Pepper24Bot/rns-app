@@ -23,16 +23,6 @@ const ResolverButton = styled(ActionButton)(({ theme }) => ({
   },
 }));
 
-const CheckedIcon = styled(CheckCircle)(({ theme }) => ({
-  color: green[500],
-  width: "24px",
-  height: "24px",
-  position: "absolute",
-  top: "-8px",
-  right: "-8px",
-  zIndex: 2,
-}));
-
 const PrimaryChip = styled(Chip)(({ theme }) => ({
   backgroundColor: amber[500],
   color: theme.palette.background.paper,
@@ -74,15 +64,7 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
             ensName === name ? <PrimaryChip label="Primary" /> : <></>,
         }}
       />
-      <InputField
-        label="Owner"
-        disabled
-        // focused
-        value={owner}
-        InputProps={{
-          endAdornment: <CheckedIcon />,
-        }}
-      />
+      <InputField label="Owner" disabled value={owner} />
       <InputField
         error={!isFuturePassValid}
         helperText={
