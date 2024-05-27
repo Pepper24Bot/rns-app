@@ -33,7 +33,7 @@ const Container = styled(Grid)(({ theme }) => ({
   padding: "60px 10px 130px 10px",
 
   [theme.breakpoints.down("sm")]: {
-    padding: "80px 10px 130px 10px",
+    padding: "80px 10px 75px 10px",
   },
 }));
 

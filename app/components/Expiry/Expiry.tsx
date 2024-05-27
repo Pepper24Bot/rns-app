@@ -43,6 +43,13 @@ const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   paddingLeft: "15px",
 }));
 
+const FormContainer = styled(Grid)(({ theme }) => ({
+  marginTop: "48px",
+  minWidth: "250px",
+  maxHeight: "70vh",
+  overflow: "overlay",
+}));
+
 const DetailsContainer = styled(Grid)(({ theme }) => ({
   width: "360px",
   display: "grid",
@@ -239,120 +246,122 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   }, [xrpBalance?.value]);
 
   return (
-    <Grid container mt={6} minWidth={250} sx={{ placeContent: "center" }}>
-      <EnsImage name={domain?.name || ""} />
-      <DetailsContainer item>
-        {extendPage === 1 ? (
-          <>
-            <Form
-              name={domain?.name || ""}
-              rentFee={rentFee}
-              walletBalance={walletBalance}
-            />
-            <Collapse in={!isBalanceSufficient}>
-              <FlexCenter py={2}>
-                <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>
-              </FlexCenter>
-            </Collapse>
-            <Collapse in={!isXrpSufficient}>
-              <FlexCenter pb={3}>
-                <ErrorTip>
-                  Approximately 5 XRP for gas fees is required per RNS
-                  registration. Please top up your XRP balance in your EOA
-                  wallet via the{" "}
-                  <Link href={FUTUREVERSE} target="_blank">
-                    <HightlightText>FuturePass Dashboard</HightlightText>
-                  </Link>
-                  . If you need help, view our{" "}
-                  <Link href={VIDEO_TUTORIAL} target="_blank">
-                    <HightlightText>video tutorial</HightlightText>
-                  </Link>{" "}
-                  and{" "}
-                  <Link href={QUESTIONS} target="_blank">
-                    <HightlightText>FAQ's.</HightlightText>
-                  </Link>
-                </ErrorTip>
-              </FlexCenter>
-            </Collapse>
-          </>
-        ) : (
-          <>
-            <Summary
-              title={
-                <FlexLeft>
-                  <IconButton
-                    disabled={isPending || isSuccess}
-                    onClick={() => {
-                      // Go back to the previous page
-                      setExtendPage(extendPage - 1);
-                      setIsProgressVisible(false);
-                    }}
-                  >
-                    <KeyboardBackspace />
-                  </IconButton>
-                  <SummaryLabel>Summary</SummaryLabel>
-                </FlexLeft>
-              }
-            />
-            <Collapse in={isProgressVisible}>
-              <FlexCenter pt={2}>
-                <Relative width="100%">
-                  <ProgressBar
-                    isError={isError}
-                    isPaused={!isTransactionLoading}
-                    isVisible={isProgressVisible}
-                    isSuccess={isSuccess}
-                  />
-                  <ViewTransaction isVisible={isSuccess} hash={txHash} />
-                </Relative>
-              </FlexCenter>
-            </Collapse>
-          </>
-        )}
-        <Grid mt={2}>
-          <FlexRight>
+    <Grid>
+      <FormContainer container>
+        <EnsImage name={domain?.name || ""} />
+        <DetailsContainer item>
+          {extendPage === 1 ? (
+            <Grid>
+              <Form
+                name={domain?.name || ""}
+                rentFee={rentFee}
+                walletBalance={walletBalance}
+              />
+              <Collapse in={!isBalanceSufficient}>
+                <FlexCenter py={2}>
+                  <ErrorTip>Registration fees exceed wallet balance.</ErrorTip>
+                </FlexCenter>
+              </Collapse>
+              <Collapse in={!isXrpSufficient}>
+                <FlexCenter py={2}>
+                  <ErrorTip>
+                    Approximately 5 XRP for gas fees is required per RNS
+                    registration. Please top up your XRP balance in your EOA
+                    wallet via the{" "}
+                    <Link href={FUTUREVERSE} target="_blank">
+                      <HightlightText>FuturePass Dashboard</HightlightText>
+                    </Link>
+                    . If you need help, view our{" "}
+                    <Link href={VIDEO_TUTORIAL} target="_blank">
+                      <HightlightText>video tutorial</HightlightText>
+                    </Link>{" "}
+                    and{" "}
+                    <Link href={QUESTIONS} target="_blank">
+                      <HightlightText>FAQ's.</HightlightText>
+                    </Link>
+                  </ErrorTip>
+                </FlexCenter>
+              </Collapse>
+            </Grid>
+          ) : (
+            <>
+              <Summary
+                title={
+                  <FlexLeft>
+                    <IconButton
+                      disabled={isPending || isSuccess}
+                      onClick={() => {
+                        // Go back to the previous page
+                        setExtendPage(extendPage - 1);
+                        setIsProgressVisible(false);
+                      }}
+                    >
+                      <KeyboardBackspace />
+                    </IconButton>
+                    <SummaryLabel>Summary</SummaryLabel>
+                  </FlexLeft>
+                }
+              />
+              <Collapse in={isProgressVisible}>
+                <FlexCenter pt={2}>
+                  <Relative width="100%">
+                    <ProgressBar
+                      isError={isError}
+                      isPaused={!isTransactionLoading}
+                      isVisible={isProgressVisible}
+                      isSuccess={isSuccess}
+                    />
+                    <ViewTransaction isVisible={isSuccess} hash={txHash} />
+                  </Relative>
+                </FlexCenter>
+              </Collapse>
+            </>
+          )}
+        </DetailsContainer>
+      </FormContainer>
+      <FlexRight mt={2} width="100%">
+        <FlexRight>
+          <ActionButton
+            disabled={isPending || isExtending}
+            sx={{ marginRight: 1 }}
+            variant="text"
+            onClick={() => {
+              closeModal();
+            }}
+          >
+            {isSuccess ? "Close" : "Cancel"}
+          </ActionButton>
+          <Collapse orientation="horizontal" in={!isSuccess}>
             <ActionButton
-              disabled={isPending || isExtending}
-              sx={{ marginRight: 1 }}
-              variant="text"
+              disabled={
+                isPending ||
+                isSuccess ||
+                isExtending ||
+                !isBalanceSufficient ||
+                !isXrpSufficient ||
+                !isFeatureEnabled("Expiry")
+              }
+              variant="contained"
               onClick={() => {
-                closeModal();
+                if (extendPage === 1) {
+                  // Move to the next page
+                  setExtendPage(extendPage + 1);
+                  updateName({ fee: { total: rentFee } });
+                } else {
+                  if (isApproved) {
+                    initializeFlags();
+                    handleExtend();
+                  } else {
+                    handleApproval();
+                  }
+                }
               }}
             >
-              {isSuccess ? "Close" : "Cancel"}
+              {extendPage === 1 ? "Next" : "Confirm"}
             </ActionButton>
-            <Collapse orientation="horizontal" in={!isSuccess}>
-              <ActionButton
-                disabled={
-                  isPending ||
-                  isSuccess ||
-                  isExtending ||
-                  !isBalanceSufficient ||
-                  !isXrpSufficient ||
-                  !isFeatureEnabled("Expiry")
-                }
-                variant="contained"
-                onClick={() => {
-                  if (extendPage === 1) {
-                    // Move to the next page
-                    setExtendPage(extendPage + 1);
-                    updateName({ fee: { total: rentFee } });
-                  } else {
-                    if (isApproved) {
-                      initializeFlags();
-                      handleExtend();
-                    } else {
-                      handleApproval();
-                    }
-                  }
-                }}
-              >
-                {extendPage === 1 ? "Next" : "Confirm"}
-              </ActionButton>
-            </Collapse>
-          </FlexRight>
-        </Grid>
-      </DetailsContainer>
+          </Collapse>
+        </FlexRight>
+      </FlexRight>
     </Grid>
   );
 };
