@@ -244,7 +244,6 @@ export const ShareRegistration: React.FC = () => {
           </ButtonContainer>
         </Content>
       </Container>
-      {/* <Divider orientation="vertical" flexItem /> */}
       <Divider
         flexItem
         orientation="vertical"
@@ -255,17 +254,17 @@ export const ShareRegistration: React.FC = () => {
           },
         }}
       />
-      <Grid item xs={12}>
-        <Divider
-          flexItem
-          orientation="horizontal"
-          sx={{
-            display: {
-              xs: "flex",
-              sm: "none",
-            },
-          }}
-        />
+      <Grid
+        item
+        xs={12}
+        sx={{
+          display: {
+            xs: "block",
+            sm: "none",
+          },
+        }}
+      >
+        <Divider flexItem orientation="horizontal" />
       </Grid>
       <TweetContainer item xs={12} sm={3.95}>
         <Content container>
@@ -288,7 +287,6 @@ export const ShareRegistration: React.FC = () => {
           </ButtonContainer>
         </Content>
       </TweetContainer>
-      {/* <Divider orientation="vertical" flexItem /> */}
       <Divider
         flexItem
         orientation="vertical"
@@ -299,17 +297,17 @@ export const ShareRegistration: React.FC = () => {
           },
         }}
       />
-      <Grid item xs={12}>
-        <Divider
-          flexItem
-          orientation="horizontal"
-          sx={{
-            display: {
-              xs: "flex",
-              sm: "none",
-            },
-          }}
-        />
+      <Grid
+        item
+        xs={12}
+        sx={{
+          display: {
+            xs: "block",
+            sm: "none",
+          },
+        }}
+      >
+        <Divider flexItem orientation="horizontal" />
       </Grid>
       <Container item xs={12} sm={3.95}>
         <Content container>
