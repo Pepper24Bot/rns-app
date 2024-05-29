@@ -62,6 +62,7 @@ export const getFormattedDate = (date: number) => {
  * @returns 
  */
 export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
+    console.log("entering getExpiryDate....")
     // Get the year of expiration
     const expiryDate = new Date(dateExpiration * 1000)
     const yearExpiry = expiryDate.getFullYear()
@@ -84,6 +85,7 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
  * @param dateExpiration 
  */
 export const getExpiration = (dateCreated: string, dateExpiration: string) => {
+    console.log("entering getExpiration....")
     const created = parseInt(dateCreated)
     const expiration = parseInt(dateExpiration)
 
@@ -120,6 +122,7 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
  * @param endDate 
  */
 export const isDateWithinRange = (createdDate: Date, startDate: Date, endDate: Date) => {
+    console.log("entering isDateWithinRange....")
     const isWithinRange = createdDate >= startDate && createdDate <= endDate
     return isWithinRange
 }

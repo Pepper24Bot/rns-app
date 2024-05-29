@@ -182,6 +182,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
     console.log("createdDate:: ", createdDate);
     console.log("isShareable:: ", isShareable);
+    console.log("-----------------------------");
 
     setShareEnabled(isShareable);
   }, [item.domain.createdAt, isTweetVerified]);
