@@ -181,10 +181,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     const createdDate = getDate(item.domain.createdAt);
     const isShareable = isDateWithinRange(createdDate, start, end);
 
-    console.log("createdDate:: ", createdDate);
-    console.log("isShareable:: ", isShareable);
-    console.log("-----------------------------");
-
     setShareEnabled(isShareable);
   }, [item.domain.createdAt, isTweetVerified]);
 
