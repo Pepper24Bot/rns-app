@@ -99,18 +99,23 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
 
     if (!isNaN(created) && !isNaN(expiration)) {
         const currentDate = new Date().toLocaleDateString("en-US")
+        console.log("currentDate:: ", currentDate)
 
         const formattedExpiry = getExpiryDate(created, expiration)
         dates.expiration = formattedExpiry
 
-        const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
-        dates.distanceToExpiration = distanceToExpiration
+        try {
+            const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
+            dates.distanceToExpiration = distanceToExpiration
 
-        const gracePeriod = getFormattedDate(expiration)
-        dates.gracePeriod = gracePeriod
+            const gracePeriod = getFormattedDate(expiration)
+            dates.gracePeriod = gracePeriod
 
-        const distanceToGracePeriod = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
-        dates.distanceToGracePeriod = distanceToGracePeriod
+            const distanceToGracePeriod = formatDistanceStrict(currentDate, gracePeriod, { unit: "day" })
+            dates.distanceToGracePeriod = distanceToGracePeriod
+        } catch (error) {
+            console.log("Error getting the distance:: ", error)
+        }
     }
 
     console.log("dates:: ", dates)
