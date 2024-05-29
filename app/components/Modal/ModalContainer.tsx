@@ -5,15 +5,20 @@ import {
   Grid,
   styled,
   alpha,
-  IconButton,
   Link as MuiLink,
   darken,
 } from "@mui/material";
-import { FlexCenter, FlexJustified, Title } from "../Theme/StyledGlobal";
-import { Close } from "@mui/icons-material";
+import {
+  CloseButton,
+  CloseIcon,
+  FlexCenter,
+  FlexJustified,
+  Title,
+} from "../Theme/StyledGlobal";
 import { PolicyAndTerms } from "../Reusables/PolicyAndTerms";
 import { useSearchParams } from "next/navigation";
 import { getModalFromPath } from "@/utils/common";
+import { useRouter } from "next/navigation";
 
 import Paragraph from "../Reusables/Paragraph";
 import ModalHeader from "./ModalHeader";
@@ -95,27 +100,6 @@ const DownloadButton = styled(MuiLink)(({ theme }) => ({
   },
 }));
 
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: "absolute",
-  right: 25,
-  top: 25,
-  zIndex: 2,
-
-  [theme.breakpoints.down("sm")]: {
-    right: 10,
-    top: 10,
-  },
-}));
-
-const CloseIcon = styled(Close)(({ theme }) => ({
-  color: alpha(theme.palette.text.primary, 0.5),
-
-  "&:hover": {
-    color: alpha(theme.palette.text.primary, 0.75),
-    cursor: "pointer",
-  },
-}));
-
 const Footer = styled(FlexJustified)(({ theme }) => ({
   borderTop: `solid 1px ${alpha(theme.palette.primary.dark, 0.75)}`,
   padding: "24px 50px",
@@ -125,6 +109,7 @@ export const ModalContainer: React.FC = () => {
   const { useModal, closeModal } = useModalState();
   const { isModalOpen, props } = useModal();
 
+  const router = useRouter();
   const params = useSearchParams();
   const state = params.get("state") || "";
   const modal: ModalState = getModalFromPath(state, props?.id);
@@ -187,6 +172,7 @@ export const ModalContainer: React.FC = () => {
           } else {
             closeModal();
             setIsPathModalOpen(false);
+            router.push("/");
           }
         }}
         disableEscapeKeyDown={isCloseDisabled}
@@ -207,7 +193,7 @@ export const ModalContainer: React.FC = () => {
                   onClick={() => {
                     closeModal();
                     setIsPathModalOpen(false);
-                    console.log("closing...");
+                    router.push("/");
                   }}
                 >
                   <CloseIcon />

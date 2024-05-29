@@ -17,10 +17,9 @@ import {
   ToggleButtonGroup as MuiToggleGroup,
   darken,
 } from "@mui/material";
-import { green, grey, red, yellow } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
-import { Cancel, CheckCircle, Info, Warning } from "@mui/icons-material";
-import { MaterialDesignContent } from "notistack";
+import { Close } from "@mui/icons-material";
 
 export const Container = styled(Grid, {
   shouldForwardProp: (prop) => prop !== "isLoading",
@@ -518,4 +517,25 @@ export const ActionTooltip = styled(ContentTooltip)(({ theme }) => ({
 
 export const ProgressTooltip = styled("span")(({ theme }) => ({
   color: theme.palette.primary.main,
+}));
+
+export const CloseButton = styled(IconButton)(({ theme }) => ({
+  position: "absolute",
+  right: 25,
+  top: 25,
+  zIndex: 2,
+
+  [theme.breakpoints.down("sm")]: {
+    right: 10,
+    top: 10,
+  },
+}));
+
+export const CloseIcon = styled(Close)(({ theme }) => ({
+  color: alpha(theme.palette.text.primary, 0.5),
+
+  "&:hover": {
+    color: alpha(theme.palette.text.primary, 0.75),
+    cursor: "pointer",
+  },
 }));
