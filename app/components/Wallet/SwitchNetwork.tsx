@@ -6,9 +6,10 @@ import {
   Flex,
   FlexRight,
 } from "../Theme/StyledGlobal";
-import { useModalState } from "@/redux/modal/modalSlice";
-import { useSwitchChain } from "wagmi";
 import { FONT_WEIGHT } from "../Theme/Global";
+import { switchChain } from "@wagmi/core";
+import { config } from "@/chains/config";
+import { useSnackbar } from "notistack";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -60,28 +61,17 @@ const ConfirmButton = styled(CancelButton)(({ theme }) => ({
 }));
 
 export const SwitchNetwork: React.FC = () => {
-  const { walletConfig } = useNetworkConfig();
+  const { chainId } = useNetworkConfig();
+  const { enqueueSnackbar } = useSnackbar();
 
-  /**
-   * TODO:
-   * 1. Check for the existence of porcini/root network in the wallet
-   * - if root/porcini is not setup, call window.ethereum.request({method: 'wallet_addEthereumChain'})
-   * - else call wagmi switchChain()
-   *
-   * 2. Get environment variable and check for the network
-   */
   const switchNetwork = async () => {
-    const config = walletConfig;
-
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [config],
-        });
-      } catch (error) {
-        console.log("Error Switching Network:: ", error);
-      }
+    try {
+      await switchChain(config, {
+        chainId: chainId as any,
+      });
+    } catch (error) {
+      console.log("Error Switching Network:: ", error);
+      enqueueSnackbar((error as any).message, { variant: "error" });
     }
   };
 

@@ -11,6 +11,7 @@ export const getNetworkConfig = (chainId: string) => {
         name: "porcini",
         config: porcini,
         walletConfig: porciniWalletConfig,
+        chainId: 7672,
       };
     // Mainnet - Root
     case "7668":
@@ -20,6 +21,7 @@ export const getNetworkConfig = (chainId: string) => {
         name: "mainnet",
         config: root,
         walletConfig: rootWalletConfig,
+        chainId: 7668,
       };
   }
 };
