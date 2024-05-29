@@ -33,9 +33,11 @@ const Container = styled(Grid)(({ theme }) => ({
 }));
 
 const Content = styled(Grid)(({ theme }) => ({
-  minHeight: "250px", // fixed width
-  maxWidth: "225px",
-  alignContent: "space-between",
+  [theme.breakpoints.up("sm")]: {
+    alignContent: "space-between",
+    minHeight: "250px", // fixed width
+    maxWidth: "225px",
+  },
 }));
 
 const TweetContainer = styled(Container)(({ theme }) => ({
@@ -65,6 +67,10 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 
 const ButtonContainer = styled(FlexCenter)(({ theme }) => ({
   height: "fit-content",
+
+  [theme.breakpoints.down("sm")]: {
+    paddingTop: "16px",
+  },
 }));
 
 const ShareButton = styled(ActionButton)(({ theme }) => ({
@@ -209,9 +215,14 @@ export const ShareRegistration: React.FC = () => {
   }, [result.isLoading]);
 
   return (
-    <FlexCenter container position="relative">
-      <Container item xs={3.95}>
-        <Content container>
+    <FlexCenter
+      container
+      position="relative"
+      maxHeight="85vh"
+      overflow="overlay"
+    >
+      <Container item xs={12} sm={3.95}>
+        <Content item container>
           <Grid item xs={12} height="fit-content">
             <Bullet index={1} />
             <StepLabel>Link your Twitter Account</StepLabel>
@@ -233,8 +244,30 @@ export const ShareRegistration: React.FC = () => {
           </ButtonContainer>
         </Content>
       </Container>
-      <Divider orientation="vertical" flexItem />
-      <TweetContainer item xs={3.95}>
+      {/* <Divider orientation="vertical" flexItem /> */}
+      <Divider
+        flexItem
+        orientation="vertical"
+        sx={{
+          display: {
+            xs: "none",
+            sm: "flex",
+          },
+        }}
+      />
+      <Grid item xs={12}>
+        <Divider
+          flexItem
+          orientation="horizontal"
+          sx={{
+            display: {
+              xs: "flex",
+              sm: "none",
+            },
+          }}
+        />
+      </Grid>
+      <TweetContainer item xs={12} sm={3.95}>
         <Content container>
           <Grid item xs={12} height="fit-content">
             <Bullet index={2} />
@@ -255,8 +288,30 @@ export const ShareRegistration: React.FC = () => {
           </ButtonContainer>
         </Content>
       </TweetContainer>
-      <Divider orientation="vertical" flexItem />
-      <Container item xs={3.95}>
+      {/* <Divider orientation="vertical" flexItem /> */}
+      <Divider
+        flexItem
+        orientation="vertical"
+        sx={{
+          display: {
+            xs: "none",
+            sm: "flex",
+          },
+        }}
+      />
+      <Grid item xs={12}>
+        <Divider
+          flexItem
+          orientation="horizontal"
+          sx={{
+            display: {
+              xs: "flex",
+              sm: "none",
+            },
+          }}
+        />
+      </Grid>
+      <Container item xs={12} sm={3.95}>
         <Content container>
           <Grid item xs={12} height="fit-content">
             <Bullet index={3} />
