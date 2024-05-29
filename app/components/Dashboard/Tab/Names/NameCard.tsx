@@ -109,6 +109,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     parseCookie("isTweetVerified") === "true" || isSuccess;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
+  console.log("name:: ", item.domain.name);
   const { expiration, distanceToExpiration } = getExpiration(
     item.domain.createdAt,
     item.domain.expiryDate

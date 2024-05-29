@@ -72,6 +72,7 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
     const monthCreated = (createdDate.getMonth() + 1).toString().padStart(2, "0")
     const dayCreated = createdDate.getDate().toString().padStart(2, "0")
 
+    console.log("expiry:: ", `${monthCreated}-${dayCreated}-${yearExpiry}`)
     return `${monthCreated}-${dayCreated}-${yearExpiry}`
 }
 
@@ -112,6 +113,8 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
         dates.distanceToGracePeriod = distanceToGracePeriod
     }
 
+    console.log("dates:: ", dates)
+    console.log("===================")
     return dates
 }
 
