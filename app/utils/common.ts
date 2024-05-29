@@ -53,7 +53,10 @@ export const getFormattedDate = (date: number) => {
     const month = (newDate.getMonth() + 1).toString().padStart(2, "0")
     const day = newDate.getDate().toString().padStart(2, "0")
 
-    return `${month}-${day}-${year}`
+    return {
+        formatted: `${month}-${day}-${year}`,
+        date: `${month}/${day}/${year}`
+    }
 }
 
 /**
@@ -99,40 +102,29 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
 
     if (!isNaN(created) && !isNaN(expiration)) {
         const currentDate = new Date().toLocaleDateString("en-US")
-        console.log("currentDate:: ", currentDate)
 
         const { formatted, expiry } = getExpiryDate(created, expiration)
-        dates.expiration = formatted
+
+        // Expiration here is actually the expiration with grace period
+        const { formatted: formattedDate, date } = getFormattedDate(expiration)
 
         const formattedExpiry = new Date(expiry).toLocaleDateString("en-US")
-        console.log("expiry:: ", expiry)
+        const formattedGracePeriod = new Date(date).toLocaleDateString("en-US")
+
+        dates.expiration = formatted
+        dates.gracePeriod = formattedDate
 
         try {
             const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
             dates.distanceToExpiration = distanceToExpiration
-        } catch (error) {
-            console.log("Error distanceToExpiration:: ", error)
-        }
 
-        try {
-            const gracePeriod = getFormattedDate(expiration)
-            dates.gracePeriod = gracePeriod
-        } catch (error) {
-            console.log("Error gracePeriod:: ", error)
-        }
-
-        try {
-            const grace = new Date(dates.gracePeriod).toLocaleDateString("en-US")
-            console.log("grace:: ", grace)
-            const distanceToGracePeriod = formatDistanceStrict(currentDate, grace, { unit: "day" })
+            const distanceToGracePeriod = formatDistanceStrict(currentDate, formattedGracePeriod, { unit: "day" })
             dates.distanceToGracePeriod = distanceToGracePeriod
         } catch (error) {
-            console.log("Error distanceToGracePeriod:: ", error)
+            console.log("Error formatDistanceStrict:: ", error)
         }
     }
 
-    console.log("dates:: ", dates)
-    console.log("===================")
     return dates
 }
 
