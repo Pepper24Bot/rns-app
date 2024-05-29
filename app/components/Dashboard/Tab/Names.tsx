@@ -84,8 +84,8 @@ export const Names: React.FC = () => {
   const { data: root } = useRootNetwork();
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(40);
-  const [itemCountField, setItemCountField] = useState(40);
+  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [itemCountField, setItemCountField] = useState(1);
   const [pageCount, setPageCount] = useState(1);
 
   const handleDebounceOnChange = (value: number) => {

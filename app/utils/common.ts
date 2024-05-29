@@ -62,7 +62,6 @@ export const getFormattedDate = (date: number) => {
  * @returns 
  */
 export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
-    console.log("entering getExpiryDate....")
     // Get the year of expiration
     const expiryDate = new Date(dateExpiration * 1000)
     const yearExpiry = expiryDate.getFullYear()
@@ -72,7 +71,6 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
     const monthCreated = (createdDate.getMonth() + 1).toString().padStart(2, "0")
     const dayCreated = createdDate.getDate().toString().padStart(2, "0")
 
-    console.log("expiry-display:: ", `${monthCreated}-${dayCreated}-${yearExpiry}`)
     return `${monthCreated}-${dayCreated}-${yearExpiry}`
 }
 
@@ -86,7 +84,6 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
  * @param dateExpiration 
  */
 export const getExpiration = (dateCreated: string, dateExpiration: string) => {
-    console.log("entering getExpiration....")
     const created = parseInt(dateCreated)
     const expiration = parseInt(dateExpiration)
 
@@ -104,7 +101,7 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
         const formattedExpiry = getExpiryDate(created, expiration)
         dates.expiration = formattedExpiry
 
-        const expiry = new Date(expiration * 1000).toLocaleDateString("en-US")
+        const expiry = new Date(formattedExpiry).toLocaleDateString("en-US")
         console.log("expiry:: ", expiry)
 
         try {
@@ -122,7 +119,9 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
         }
 
         try {
-            const distanceToGracePeriod = formatDistanceStrict(currentDate, dates.gracePeriod, { unit: "day" })
+            const grace = new Date(dates.gracePeriod).toLocaleDateString("en-US")
+            console.log("grace:: ", grace)
+            const distanceToGracePeriod = formatDistanceStrict(currentDate, grace, { unit: "day" })
             dates.distanceToGracePeriod = distanceToGracePeriod
         } catch (error) {
             console.log("Error distanceToGracePeriod:: ", error)
@@ -141,7 +140,6 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
  * @param endDate 
  */
 export const isDateWithinRange = (createdDate: Date, startDate: Date, endDate: Date) => {
-    console.log("entering isDateWithinRange....")
     const isWithinRange = createdDate >= startDate && createdDate <= endDate
     return isWithinRange
 }
