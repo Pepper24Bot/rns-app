@@ -17,6 +17,7 @@ export const config = createConfig({
         walletConnect({ projectId }),
         coinbaseWallet({
             appName: 'Root Name Services',
+            darkMode: true,
         }),
     ],
     transports: {
