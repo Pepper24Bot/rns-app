@@ -104,8 +104,10 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
         const formattedExpiry = getExpiryDate(created, expiration)
         dates.expiration = formattedExpiry
 
+        const expiry = new Date(formattedExpiry).toLocaleDateString("en-US")
+
         try {
-            const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
+            const distanceToExpiration = formatDistanceStrict(currentDate, expiry, { unit: "day" })
             dates.distanceToExpiration = distanceToExpiration
 
             const gracePeriod = getFormattedDate(expiration)
