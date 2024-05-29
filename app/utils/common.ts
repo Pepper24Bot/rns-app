@@ -104,7 +104,7 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
         const formattedExpiry = getExpiryDate(created, expiration)
         dates.expiration = formattedExpiry
 
-        const expiry = new Date(formattedExpiry).toLocaleDateString("en-US")
+        const expiry = new Date(expiration * 1000).toLocaleDateString("en-US")
         console.log("expiry:: ", expiry)
 
         try {
