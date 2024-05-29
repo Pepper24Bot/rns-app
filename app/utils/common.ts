@@ -71,7 +71,10 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
     const monthCreated = (createdDate.getMonth() + 1).toString().padStart(2, "0")
     const dayCreated = createdDate.getDate().toString().padStart(2, "0")
 
-    return `${monthCreated}-${dayCreated}-${yearExpiry}`
+    return {
+        formatted: `${monthCreated}-${dayCreated}-${yearExpiry}`,
+        expiry: `${monthCreated}/${dayCreated}/${yearExpiry}`
+    }
 }
 
 /**
@@ -98,14 +101,14 @@ export const getExpiration = (dateCreated: string, dateExpiration: string) => {
         const currentDate = new Date().toLocaleDateString("en-US")
         console.log("currentDate:: ", currentDate)
 
-        const formattedExpiry = getExpiryDate(created, expiration)
-        dates.expiration = formattedExpiry
+        const { formatted, expiry } = getExpiryDate(created, expiration)
+        dates.expiration = formatted
 
-        const expiry = new Date(formattedExpiry).toLocaleDateString("en-US")
+        const formattedExpiry = new Date(expiry).toLocaleDateString("en-US")
         console.log("expiry:: ", expiry)
 
         try {
-            const distanceToExpiration = formatDistanceStrict(currentDate, expiry, { unit: "day" })
+            const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
             dates.distanceToExpiration = distanceToExpiration
         } catch (error) {
             console.log("Error distanceToExpiration:: ", error)
