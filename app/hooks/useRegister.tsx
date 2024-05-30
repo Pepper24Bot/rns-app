@@ -85,7 +85,7 @@ export default function useRegister() {
         let commitHash = "0x" as Address;
 
         if (root.isFpActive) {
-          commitHash = await commitProxyCall({ hash });
+          commitHash = (await commitProxyCall({ hash })) as Address;
         } else {
           commitHash = await writeContractAsync({
             abi,

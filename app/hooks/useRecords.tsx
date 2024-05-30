@@ -42,10 +42,10 @@ export default function useRecords() {
         const addr = address as Address;
 
         if (root.isFpActive) {
-          txHash = await setAddressProxyCall({
+          txHash = (await setAddressProxyCall({
             nameHash,
             address: addr,
-          });
+          })) as Address;
         } else {
           txHash = await writeContractAsync({
             abi: publicResolver.abi,

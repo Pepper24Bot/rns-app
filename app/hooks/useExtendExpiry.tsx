@@ -64,11 +64,11 @@ export default function useExtend(props: ExtendProps) {
         let renewHash = "0x" as Address;
 
         if (root.isFpActive) {
-          renewHash = await extendProxyCall({
+          renewHash = (await extendProxyCall({
             name,
             duration,
             token,
-          });
+          })) as Address;
         } else {
           renewHash = await writeContractAsync({
             abi,

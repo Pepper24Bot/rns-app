@@ -72,7 +72,7 @@ export default function usePrimary() {
         let primaryHash = "0x" as Address;
 
         if (root.isFpActive) {
-          primaryHash = await setPrimaryProxyCall({ name });
+          primaryHash = (await setPrimaryProxyCall({ name })) as Address;
         } else {
           primaryHash = await writeContractAsync({
             abi: reverse.abi,

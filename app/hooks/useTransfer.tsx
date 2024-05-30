@@ -39,12 +39,12 @@ export default function useTransfer() {
         let transferHash = "0x" as Address;
 
         if (root.isFpActive) {
-          transferHash = await transferProxyCall({
+          transferHash = (await transferProxyCall({
             fromOwner: root.address,
             newOwner,
             tokenId,
             amount,
-          });
+          })) as Address;
         } else {
           transferHash = await writeContractAsync({
             abi: nameWrapper.abi,
