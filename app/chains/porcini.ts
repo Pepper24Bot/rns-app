@@ -67,7 +67,7 @@ export const porcini = {
     contracts: {
         ...addresses[7672],
     },
-    testnet: true,
+    // testnet: true,
 } as const satisfies Chain
 
 /**

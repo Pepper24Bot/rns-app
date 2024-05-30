@@ -10,6 +10,7 @@ import { FONT_WEIGHT } from "../Theme/Global";
 import { switchChain } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useSnackbar } from "notistack";
+import { useAccount, useConnect } from "wagmi";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -62,13 +63,23 @@ const ConfirmButton = styled(CancelButton)(({ theme }) => ({
 
 export const SwitchNetwork: React.FC = () => {
   const { chainId } = useNetworkConfig();
+  const { connect } = useConnect();
+  const { connector: activeConnector } = useAccount();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const switchNetwork = async () => {
     try {
-      await switchChain(config, {
+      const newChain = await switchChain(config, {
         chainId: chainId as any,
       });
+
+      console.log("newChain:: ", newChain);
+      console.log("activeConnector:: ", activeConnector);
+
+      if (activeConnector?.id === "walletConnect") {
+        connect({ connector: activeConnector, chainId });
+      }
     } catch (error) {
       console.log("Error Switching Network:: ", error);
       enqueueSnackbar((error as any).message, { variant: "error" });

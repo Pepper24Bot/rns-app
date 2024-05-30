@@ -14,7 +14,10 @@ export const config = createConfig({
             shimDisconnect: true,
             target: "metaMask"
         }),
-        walletConnect({ projectId }),
+        walletConnect({
+            projectId,
+            // isNewChainsStale: false
+        }),
         coinbaseWallet({
             appName: 'Root Name Services',
             darkMode: true,
