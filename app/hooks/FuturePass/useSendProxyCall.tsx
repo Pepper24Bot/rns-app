@@ -1,7 +1,9 @@
-import { Address, toHex } from "viem";
+import { Address } from "viem";
 import { CALL_TYPE } from "@/interfaces/futurepass/types";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useAccount } from "wagmi";
+import { sendTransaction } from "@wagmi/core";
+import { config } from "@/chains/config";
 
 import useEstimateFees from "../useEstimateFees";
 import useFuturePass from "./useFuturePass";
@@ -48,18 +50,13 @@ export default function useSendProxyCall() {
 
       try {
         // Send the proxy transaction
-        const ethTx = await window.ethereum.request({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              to: futurePass,
-              from: wallet,
-              gas: toHex(gasLimit),
-              value: 0,
-              data: proxyData,
-              gasPrice: toHex(maxFeePerGas),
-            },
-          ],
+        const ethTx = await sendTransaction(config, {
+          to: futurePass as Address,
+          account: wallet,
+          value: BigInt(0),
+          data: proxyData,
+          gas: BigInt(gasLimit),
+          gasPrice: BigInt(maxFeePerGas),
         });
 
         return ethTx;
@@ -89,17 +86,12 @@ export default function useSendProxyCall() {
 
       try {
         // Send the proxy transaction
-        const ethTx = await window.ethereum.request({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              to: futurePass,
-              from: wallet,
-              value: 0,
-              data: proxyData,
-              gasPrice: toHex(maxFeePerGas),
-            },
-          ],
+        const ethTx = await sendTransaction(config, {
+          to: futurePass as Address,
+          account: wallet,
+          value: BigInt(0),
+          data: proxyData,
+          gasPrice: BigInt(maxFeePerGas),
         });
 
         return ethTx;

@@ -4,6 +4,8 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import { GenericSignerPayload } from "@polkadot/types";
 import { Address } from "viem";
 import { blake2AsHex } from '@polkadot/util-crypto';
+import { signMessage } from "@wagmi/core";
+import { config } from "@/chains/config";
 
 export interface SubmittableResponse {
     blockHash: string;
@@ -117,11 +119,12 @@ export const signExtrinsicPayload = async (props: ExtrinsicPayload) => {
     const hashed = data.length > (256 + 1) * 2 ? blake2AsHex(data) : data;
     const ethPayload = blake2AsHex(hashed);
 
-    // Get the user to sign the message
-    const signature = await window.ethereum.request({
-        method: "personal_sign",
-        params: [ethPayload, address],
-    });
+    const signature = await signMessage(config, {
+        account: address as Address,
+        message: {
+            raw: ethPayload
+        }
+    })
 
     // Add the signature to the extrinsic
     const signedExtrinsic = extrinsic.addSignature(
