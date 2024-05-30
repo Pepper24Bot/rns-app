@@ -12,6 +12,8 @@ import {
   FlexLeft,
   ErrorTip,
   Flex,
+  CloseButton,
+  CloseIcon,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, Link, alpha, styled } from "@mui/material";
 import {
@@ -354,6 +356,15 @@ export const RegisterName: React.FC = () => {
 
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
+      {isRegistered && (
+        <CloseButton
+          onClick={() => {
+            closeModal();
+          }}
+        >
+          <CloseIcon />
+        </CloseButton>
+      )}
       <Grid maxHeight="70vh" overflow="overlay">
         <Form
           isShowing={!isRegistered}

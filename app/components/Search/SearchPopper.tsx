@@ -223,6 +223,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                                 id: "Register Name",
                                 title: "Register",
                                 isCloseDisabled: true,
+                                isXDisabled: true,
                               });
                             } else {
                               toggleModal({
@@ -245,7 +246,6 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         onClick={() => {
                           // Store in global state so the other componenst will be able to access the value
                           updateName({ name: searchValue || "", status });
-
                           toggleModal({
                             id: "Registration Details",
                             title: "Registration Details",
