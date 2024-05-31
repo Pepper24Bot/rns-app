@@ -12,7 +12,6 @@ import {
   FlexJustified,
   Relative,
   SkeletonTypography,
-  Flex,
   SkeletonRectangular,
   BaseButton,
   BaseIconButton,
@@ -23,7 +22,6 @@ import {
   NotAvailableText,
   RegisteredText,
   FlexRight,
-  HighlightText,
 } from "../Theme/StyledGlobal";
 import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -44,6 +42,7 @@ const SearchText = styled(SubTitle)(({ theme }) => ({
   marginBottom: 0,
   textAlign: "start",
   wordBreak: "break-word",
+  fontFamily: "Segoe UI emoji, Roboto",
 
   [theme.breakpoints.down("md")]: {
     fontSize: FONT_SIZE.Medium,

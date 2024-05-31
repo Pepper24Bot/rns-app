@@ -312,6 +312,7 @@ export const ModalInputField = styled(InputField)(({ theme }) => ({
     },
 
     "&.MuiOutlinedInput-root": {
+      fontFamily: "Segoe UI emoji, Roboto",
       [theme.breakpoints.down("md")]: {
         fontSize: "14px",
       },

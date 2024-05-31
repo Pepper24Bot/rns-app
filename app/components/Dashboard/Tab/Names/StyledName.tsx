@@ -72,7 +72,8 @@ export const NameContainer = styled(Grid)(({ theme }) => ({
   whiteSpace: "nowrap",
   textOverflow: "ellipsis",
   overflow: "hidden",
-  fontSize: "18px",
+  fontSize: "20px",
+  fontFamily: "Segoe UI emoji, Roboto",
 }));
 
 export const Detail = styled(SecondaryLabel)(({ theme }) => ({
