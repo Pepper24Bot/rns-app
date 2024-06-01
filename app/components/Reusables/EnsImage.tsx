@@ -36,6 +36,11 @@ const StyledImage = styled("img")(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     width: "35vw",
   },
+
+  "@supports (-moz-appearance:none)": {
+    width: "-moz-available",
+    height: "-moz-available",
+  },
 }));
 
 export interface EnsImage {

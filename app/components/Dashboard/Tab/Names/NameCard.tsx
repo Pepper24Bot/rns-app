@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Grid, alpha, darken } from "@mui/material";
+import { Grid } from "@mui/material";
 import { NameWrapped } from "@/redux/graphql/hooks";
-import { grey } from "@mui/material/colors";
 import {
   Flex,
   FlexJustified,
@@ -32,6 +31,7 @@ import {
   TransferIcon,
   TwitterIcon,
   Highlight,
+  EnsImageCard,
 } from "./StyledName";
 import {
   getDate,
@@ -125,32 +125,65 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     setDownloadRequested(false);
   };
 
-  const handleSvgToPng = (objectUrl: string) => {
-    const image = new Image();
-    // aligns with metadata-server - TODO: fix this
-    image.width = 540;
-    image.height = 540;
-    image.src = objectUrl;
+  const initiateDownload = () => {
+    if (isDownloadRequested && !isMetadataSuccess) {
+      enqueueSnackbar("Download in progress.", {
+        variant: "info",
+        autoHideDuration: 3000,
+      });
+    }
 
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = image.width;
-      canvas.height = image.height;
+    if (isMetadataSuccess) {
+      const imageStr = image as unknown as string;
+      const dataUrl =
+        "data:image/svg+xml; charset=utf8, " + encodeURIComponent(imageStr);
 
-      const ctx = canvas.getContext("2d");
-      ctx?.drawImage(image, 0, 0);
-      URL.revokeObjectURL(objectUrl);
+      handleSvgToPng(dataUrl);
+    }
 
-      const imgURI = canvas
-        .toDataURL("image/png")
-        .replace("image/png", "image/octet-stream");
-
-      handleDownloadPng(imgURI);
-      enqueueSnackbar("Download completed!", {
-        variant: "success",
+    if (isError) {
+      enqueueSnackbar("Ooops! Download failed.", {
+        variant: "error",
         autoHideDuration: 2000,
       });
+    }
+  };
+
+  const handleSvgToPng = (dataUrl: string) => {
+    const img = new Image();
+    // aligns with metadata-server - TODO: fix this
+    img.width = 540;
+    img.height = 540;
+    img.crossOrigin = "Anonymous";
+
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0);
+
+        const imgURI = canvas
+          .toDataURL("image/png")
+          .replace("image/png", "image/octet-stream");
+
+        handleDownloadPng(imgURI);
+        enqueueSnackbar("Download completed!", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
+      } catch (error) {
+        console.log("download-error:: ", error);
+        enqueueSnackbar("Ooops! Download failed!", {
+          variant: "error",
+          autoHideDuration: 2000,
+        });
+      }
     };
+
+    img.src = dataUrl;
   };
 
   const handleMenuSelect = (menuOption: Option) => {
@@ -193,29 +226,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   }, []);
 
   useEffect(() => {
-    if (isDownloadRequested && !isMetadataSuccess) {
-      enqueueSnackbar("Download in progress.", {
-        variant: "info",
-        autoHideDuration: 3000,
-      });
-    }
-
-    if (isMetadataSuccess) {
-      const imageStr = image as unknown as string;
-      const blob = new Blob([imageStr], {
-        type: "image/svg+xml",
-      });
-
-      const objectUrl = URL.createObjectURL(blob);
-      handleSvgToPng(objectUrl);
-    }
-
-    if (isError) {
-      enqueueSnackbar("Ooops! Download failed.", {
-        variant: "error",
-        autoHideDuration: 2000,
-      });
-    }
+    initiateDownload();
   }, [isMetadataSuccess, isDownloadRequested, isError]);
 
   return (
@@ -233,7 +244,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 transform: "scale(1)",
               }}
             />
-            <img
+            <EnsImageCard
               src={imageUrl}
               alt="RNS Name"
               loading="lazy"
@@ -243,13 +254,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               height={200}
               onLoad={() => {
                 setImageLoading(false);
-              }}
-              style={{
-                width: "-webkit-fill-available",
-                height: "-webkit-fill-available",
-                border: `solid 1px ${alpha(grey[800], 0.25)}`,
-                borderRadius: "4px",
-                boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
               }}
             />
           </ImageContainer>

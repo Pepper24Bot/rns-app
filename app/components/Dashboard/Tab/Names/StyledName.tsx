@@ -179,3 +179,17 @@ export const PrimaryChip = styled(Chip)(({ theme }) => ({
   backgroundColor: amber[500],
   color: theme.palette.background.paper,
 }));
+
+export const EnsImageCard = styled("img")(({ theme }) => ({
+  width: "-webkit-fill-available",
+  height: "-webkit-fill-available",
+
+  border: `solid 1px ${alpha(grey[800], 0.25)}`,
+  borderRadius: "4px",
+  boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
+
+  "@supports (-moz-appearance:none)": {
+    width: "-moz-available",
+    height: "-moz-available",
+  },
+}));
