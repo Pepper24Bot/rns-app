@@ -78,7 +78,7 @@ export const GlobalTheme: React.FC<GlobalTheme> = (props) => {
         MuiCssBaseline: {
           styleOverrides: {
             "@font-face": {
-              fontFamily: "Segoe UI emoji, var(--secondary-font)",
+              fontFamily: "var(--secondary-font)",
             },
             "*::-webkit-scrollbar": {
               width: 8,
