@@ -1,31 +1,37 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useModalState } from "@/redux/modal/modalSlice";
+import { useAccount } from "wagmi";
 
 import MainPage from "@/components/Main/MainPage";
 
 export const RegistrationDetails: React.FC = () => {
   const pathname = usePathname();
 
+  const { address } = useAccount();
   const { toggleModal } = useModalState();
 
+  const [hasMounted, setHasMounted] = useState<boolean>(false);
+
   const name = pathname.split("/details/")[1];
-  const label = name.split(".root")[0];
 
   useEffect(() => {
-    if (label) {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (name && address && hasMounted) {
       toggleModal({
         id: "Registration Details",
         title: "Registration Details",
         data: {
-          name: label,
-          status: "Registered",
+          name,
         },
       });
     }
-  }, [label]);
+  }, [name, address, hasMounted]);
 
   return <MainPage />;
 };

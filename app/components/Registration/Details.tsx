@@ -4,36 +4,48 @@ import { getExpiration, getMaskedAddress } from "@/utils/common";
 import {
   FieldContainer,
   FlexCenter,
-  FlexJustified,
   InformationTip,
-  ModalInputField as InputField,
+  ModalInputField,
+  Relative,
   SecondaryLabel,
+  SkeletonTypography,
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
-import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
+import { NameStatus } from "@/redux/domain/domainSlice";
+import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { isEmpty } from "lodash";
 
 import Image from "next/image";
 import EnsImage from "../Reusables/EnsImage";
 
 const DetailsContainer = styled(FlexCenter)(({ theme }) => ({
   alignItems: "start",
-  [theme.breakpoints.between("sm", "tablet")]: {
-    width: "35vw",
+
+  [theme.breakpoints.up(710)]: {
+    maxWidth: "350px",
   },
 
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down(600)]: {
     width: "100%",
   },
 }));
 
-const NameContainer = styled(FieldContainer)(({ theme }) => ({
+const InputField = styled(ModalInputField)(({ theme }) => ({}));
+
+const Field = styled(FieldContainer)(({ theme }) => ({
   marginTop: 0,
+  marginBottom: "12px",
 }));
 
 const Label = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
   fontWeight: FONT_WEIGHT.Light,
+  width: "max-content",
+}));
+
+const Value = styled(Label)(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Regular,
 }));
 
 const RegisteredLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -47,12 +59,14 @@ interface DetailsProps {
 }
 
 export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
-  console.log("Entering details modal...", props.name);
   const { name } = props;
 
-  const { data } = useGetNamesByNameQuery(
-    { labelName: `${name}` },
-    { skip: name === null }
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
+
+  const { data, isSuccess } = useGetNamesByIdAndNameQuery(
+    { name: `${name}`, id: root?.address?.toLowerCase() || "0x" },
+    { skip: name === null || isEmpty(root?.address) }
   );
 
   const details = data?.wrappedDomains[0];
@@ -64,12 +78,12 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
 
   return (
     <Grid container mt={6} minWidth={250}>
-      <EnsImage name={details?.domain.name || ""} />
+      <EnsImage name={name} />
       <DetailsContainer item>
         <Grid>
-          <NameContainer>
+          <Field>
             <Grid>
-              <Label>{details?.domain.name}</Label>
+              <Value>{name}</Value>
               <RegisteredLabel>Registered</RegisteredLabel>
             </Grid>
             <Grid>
@@ -83,28 +97,47 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                 />
               </InformationTip>
             </Grid>
-          </NameContainer>
+          </Field>
           <InputField
             label="Owner"
             disabled
             focused
-            value={getMaskedAddress(String(details?.owner.id || ""))}
+            value=""
+            // Dirty - utilize start adornment - feeling lazy to do forwardRef
+            InputProps={{
+              startAdornment: (
+                <Relative minWidth={150}>
+                  <SkeletonTypography isloading={!root.address} />
+                  <Value isloading={!root.address}>
+                    {getMaskedAddress(String(root.address || ""))}
+                  </Value>
+                </Relative>
+              ),
+            }}
           />
           <InputField
             label="Expiry"
             disabled
             focused
-            value={expiration}
+            value=""
+            // Dirty - utilize start adornment - feeling lazy to do forwardRef
             InputProps={{
-              inputComponent: () => {
-                // TODO: Fix warning here: React.forwardRef
-                return (
-                  <FlexJustified width="100%">
-                    <Label>{expiration}</Label>
-                    <Label>{`In ${distanceToExpiration}`}</Label>
-                  </FlexJustified>
-                );
-              },
+              startAdornment: (
+                <Relative minWidth={150}>
+                  <SkeletonTypography isloading={!isSuccess} />
+                  <Value isloading={!isSuccess}>
+                    {expiration || "00-00-0000"}
+                  </Value>
+                </Relative>
+              ),
+              endAdornment: (
+                <Relative minWidth={75}>
+                  <SkeletonTypography isloading={!isSuccess} />
+                  <Label
+                    isloading={!isSuccess}
+                  >{`In ${distanceToExpiration}`}</Label>
+                </Relative>
+              ),
             }}
           />
         </Grid>
