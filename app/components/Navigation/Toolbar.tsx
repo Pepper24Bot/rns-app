@@ -111,10 +111,11 @@ export const Toolbar: React.FC = () => {
   const [walletLabel, setWalletLabel] = useState<string>("Connect Wallet");
   const [iconPath, setIconPath] = useState<string>("/icons/wallet.svg");
 
-  const isLabelLoading = isAccountLoading(status);
-
+  const [hasMounted, setHasMounted] = useState<boolean>(false);
   const [run, setRun] = useState<boolean>(true);
   const [steps, setSteps] = useState<Step[]>([]);
+
+  const isLabelLoading = isAccountLoading(status);
   const addressRef = useRef(null);
   const isTutorialDisabled = parseCookie("showTutorial") === "false";
 
@@ -157,20 +158,32 @@ export const Toolbar: React.FC = () => {
   }, [addressRef.current]);
 
   useEffect(() => {
-    const label = ensName
-      ? ensName
-      : address
-      ? getMaskedAddress(address)
-      : "Connect Wallet";
-    setWalletLabel(label);
+    if (hasMounted) {
+      const label = ensName
+        ? ensName
+        : address
+        ? getMaskedAddress(address)
+        : "Connect Wallet";
 
-    const walletIcon = address ? path : "/icons/wallet.svg";
-    setIconPath(walletIcon);
-  }, [walletAddress, address, ensName]);
+      setWalletLabel(label);
+
+      const walletIcon = address ? path : "/icons/wallet.svg";
+      setIconPath(walletIcon);
+    }
+  }, [walletAddress, address, ensName, hasMounted]);
 
   useEffect(() => {
     refetch();
   }, [walletAddress, address, chainId]);
+
+  /**
+   * This is to fix NextJS hydration.
+   * Make sure that the component loaded first,
+   * before doing other stuff
+   */
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   return (
     <ToolbarContainer>
@@ -230,11 +243,13 @@ export const Toolbar: React.FC = () => {
           <ToggleButton
             value=""
             onClick={() => {
-              toggleModal({
-                id: "Wallets",
-                title: address ? "Switch Wallet" : "Choose your Wallet",
-                isXDisabled: true,
-              });
+              if (address) {
+                toggleModal({
+                  id: "Wallets",
+                  title: address ? "Switch Wallet" : "Choose your Wallet",
+                  isXDisabled: true,
+                });
+              }
             }}
           >
             <Image
@@ -242,41 +257,36 @@ export const Toolbar: React.FC = () => {
               alt="Wallet Icon"
               width={24}
               height={24}
-              style={{ color: "white", marginRight: address ? "" : "8px" }}
+              style={{ color: "white" }}
             />
-            {!address && (
-              <Relative>
-                <SkeletonTypography
-                  isloading={isLabelLoading}
-                  sx={{ bgcolor: "primary.light" }}
-                />
-                <ActionLabel isLoading={isLabelLoading}>
-                  {walletLabel}
-                </ActionLabel>
-              </Relative>
-            )}
           </ToggleButton>
-          {address && (
-            <ToggleButton
-              sx={{ minWidth: "160px" }}
-              value=""
-              onClick={(event) => {
+          <ToggleButton
+            value=""
+            onClick={(event) => {
+              if (!address && hasMounted) {
+                toggleModal({
+                  id: "Wallets",
+                  title: address ? "Switch Wallet" : "Choose your Wallet",
+                  isXDisabled: true,
+                });
+              }
+              if (address && hasMounted) {
                 setIsOpen(!isOpen);
                 setAnchor(event.currentTarget);
-                setRun(false);
-              }}
-            >
-              <Relative>
-                <SkeletonTypography
-                  isloading={isLabelLoading}
-                  sx={{ bgcolor: "primary.light" }}
-                />
-                <ActionLabel isLoading={isLabelLoading}>
-                  {walletLabel}
-                </ActionLabel>
-              </Relative>
-            </ToggleButton>
-          )}
+              }
+              setRun(false);
+            }}
+          >
+            <Relative>
+              <SkeletonTypography
+                isloading={isLabelLoading || !hasMounted}
+                sx={{ bgcolor: "primary.light" }}
+              />
+              <ActionLabel isLoading={isLabelLoading || !hasMounted}>
+                {walletLabel}
+              </ActionLabel>
+            </Relative>
+          </ToggleButton>
         </ToggleButtonGroup>
         <Grid>
           <MenuPopover
