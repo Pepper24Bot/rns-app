@@ -138,6 +138,52 @@ query GetNamesById($id: ID!) {
   }
 }
 
+query GetNamesByIdAndName($id: ID!, $name: String!) {
+  wrappedDomains(where: { owner_: { id: $id }, name: $name }) {
+    id
+    name
+    owner {
+      id
+      domains {
+        id
+        labelName
+        labelhash
+        name
+        resolver {
+          id
+          address
+        }
+      }
+    }
+    domain {
+      id
+      name
+      labelName
+      labelhash
+      isMigrated
+      expiryDate
+      createdAt
+      registration {
+        cost
+      }
+      resolvedAddress {
+        id
+      }
+      resolver {
+        id
+        address
+        texts
+        coinTypes
+        addr {
+          id
+        }
+      }
+    }
+    fuses
+    expiryDate
+  }
+}
+
 query GetPrimaryNameResolver($id: ID!) {
   wrappedDomains(where: { owner_: { id: $id } }, first: 1) {
     owner {

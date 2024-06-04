@@ -4698,6 +4698,14 @@ export type GetNamesByIdQueryVariables = Exact<{
 
 export type GetNamesByIdQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
 
+export type GetNamesByIdAndNameQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type GetNamesByIdAndNameQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
+
 export type GetPrimaryNameResolverQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -4849,6 +4857,53 @@ export const GetNamesByIdDocument = `
   }
 }
     `;
+export const GetNamesByIdAndNameDocument = `
+    query GetNamesByIdAndName($id: ID!, $name: String!) {
+  wrappedDomains(where: {owner_: {id: $id}, name: $name}) {
+    id
+    name
+    owner {
+      id
+      domains {
+        id
+        labelName
+        labelhash
+        name
+        resolver {
+          id
+          address
+        }
+      }
+    }
+    domain {
+      id
+      name
+      labelName
+      labelhash
+      isMigrated
+      expiryDate
+      createdAt
+      registration {
+        cost
+      }
+      resolvedAddress {
+        id
+      }
+      resolver {
+        id
+        address
+        texts
+        coinTypes
+        addr {
+          id
+        }
+      }
+    }
+    fuses
+    expiryDate
+  }
+}
+    `;
 export const GetPrimaryNameResolverDocument = `
     query GetPrimaryNameResolver($id: ID!) {
   wrappedDomains(where: {owner_: {id: $id}}, first: 1) {
@@ -4878,6 +4933,9 @@ const injectedRtkApi = api.injectEndpoints({
     GetNamesById: build.query<GetNamesByIdQuery, GetNamesByIdQueryVariables>({
       query: (variables) => ({ document: GetNamesByIdDocument, variables })
     }),
+    GetNamesByIdAndName: build.query<GetNamesByIdAndNameQuery, GetNamesByIdAndNameQueryVariables>({
+      query: (variables) => ({ document: GetNamesByIdAndNameDocument, variables })
+    }),
     GetPrimaryNameResolver: build.query<GetPrimaryNameResolverQuery, GetPrimaryNameResolverQueryVariables>({
       query: (variables) => ({ document: GetPrimaryNameResolverDocument, variables })
     }),
@@ -4885,5 +4943,5 @@ const injectedRtkApi = api.injectEndpoints({
 });
 
 export { injectedRtkApi as api };
-export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByUserAndLabelQuery, useLazyGetNamesByUserAndLabelQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery, useGetPrimaryNameResolverQuery, useLazyGetPrimaryNameResolverQuery } = injectedRtkApi;
+export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByUserAndLabelQuery, useLazyGetNamesByUserAndLabelQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery, useGetNamesByIdAndNameQuery, useLazyGetNamesByIdAndNameQuery, useGetPrimaryNameResolverQuery, useLazyGetPrimaryNameResolverQuery } = injectedRtkApi;
 
