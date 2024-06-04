@@ -1,19 +1,8 @@
 "use client";
 
 import React from "react";
-import { Grid, styled } from "@mui/material";
-import SearchForm from "@/components/Search/SearchForm";
-import Dashboard from "@/components/Dashboard/Dashboard";
-
-const Container = styled(Grid)(({ theme }) => ({
-  paddingTop: "80px",
-}));
+import MainPage from "@/components/Main/MainPage";
 
 export default function Home() {
-  return (
-    <Container>
-      <SearchForm />
-      <Dashboard />
-    </Container>
-  );
+  return <MainPage />;
 }

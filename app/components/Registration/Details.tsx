@@ -11,7 +11,7 @@ import {
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
-import { useDomainState } from "@/redux/domain/domainSlice";
+import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
 
 import Image from "next/image";
 import EnsImage from "../Reusables/EnsImage";
@@ -41,11 +41,16 @@ const RegisteredLabel = styled(SecondaryLabel)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
-export const Details: React.FC = () => {
-  const { useDomain } = useDomainState();
-  const { name } = useDomain();
+interface DetailsProps {
+  name: string;
+  status?: NameStatus;
+}
 
-  const { data, isLoading } = useGetNamesByNameQuery(
+export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
+  console.log("Entering details modal...", props.name);
+  const { name } = props;
+
+  const { data } = useGetNamesByNameQuery(
     { labelName: `${name}` },
     { skip: name === null }
   );

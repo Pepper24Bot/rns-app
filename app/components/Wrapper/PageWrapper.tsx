@@ -44,20 +44,20 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
       <QueryClientProvider client={queryClient}>
         {/* RTK Query Provider - Client side State Management */}
         <Provider store={store}>
-          <GlobalTheme>
-            <WrapperContainer>
-              <SnackbarWrapper>
-                <ContentContainer>
-                  <PageNavigation />
-                  <Suspense fallback={<></>}>
+          <Suspense fallback={<Grid></Grid>}>
+            <GlobalTheme>
+              <WrapperContainer>
+                <SnackbarWrapper>
+                  <ContentContainer>
+                    <PageNavigation />
                     <PageModal />
-                  </Suspense>
-                  {children}
-                </ContentContainer>
-                <PageFooter />
-              </SnackbarWrapper>
-            </WrapperContainer>
-          </GlobalTheme>
+                    {children}
+                  </ContentContainer>
+                  <PageFooter />
+                </SnackbarWrapper>
+              </WrapperContainer>
+            </GlobalTheme>
+          </Suspense>
         </Provider>
       </QueryClientProvider>
     </WagmiProvider>

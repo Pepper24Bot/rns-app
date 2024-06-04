@@ -56,6 +56,7 @@ export const Dashboard: React.FC = () => {
     null
   );
 
+  const [hasMounted, setHasMounted] = useState<boolean>(false);
   const [isViewOpen, setIsViewOpen] = useState<boolean>(false);
   const [viewAnchor, setViewAnchor] = useState<HTMLButtonElement | null>(null);
 
@@ -66,7 +67,7 @@ export const Dashboard: React.FC = () => {
         id: address?.toLowerCase() as Address,
       },
       {
-        skip: isEmpty(searchValue) || isEmpty(address),
+        skip: isEmpty(searchValue) || isEmpty(address) || !hasMounted,
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,
       }
@@ -74,7 +75,7 @@ export const Dashboard: React.FC = () => {
 
   const { data: namesList, isLoading: namesListLoading } = useGetNamesByIdQuery(
     { id: address?.toLowerCase() || "" },
-    { skip: address === null || activeTab !== 0 }
+    { skip: address === null || activeTab !== 0 || !hasMounted }
   );
 
   const handleDebounceOnChange = (value: string) => {
@@ -201,15 +202,19 @@ export const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    setIsDashboardVisible(!isEmpty(address));
-  }, [address, status]);
+    if (hasMounted) {
+      setIsDashboardVisible(!isEmpty(address));
+    }
+  }, [address, status, hasMounted]);
 
   useEffect(() => {
     toggleNamesLoading(namesListLoading || searchedNameLoading);
   }, [namesListLoading, searchedNameLoading]);
 
   useEffect(() => {
-    getList();
+    if (hasMounted) {
+      getList();
+    }
   }, [
     namesListLoading,
     namesList,
@@ -217,7 +222,12 @@ export const Dashboard: React.FC = () => {
     searchValue,
     searchedName,
     options,
+    hasMounted,
   ]);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   return (
     <Collapse in={isDashboardVisible}>
