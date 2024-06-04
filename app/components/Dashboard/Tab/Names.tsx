@@ -75,8 +75,14 @@ const PaginationText = styled(SecondaryLabel, {
     : alpha(theme.palette.text.primary, 0.35),
 }));
 
-export const Names: React.FC = () => {
-  const { status } = useAccount();
+interface NamesProps {
+  hasMounted?: boolean;
+}
+
+export const Names: React.FC<NamesProps> = (props: NamesProps) => {
+  const { hasMounted } = props;
+
+  const { address, status } = useAccount();
   const { useDashboard } = useDashboardState();
   const { names, isNameListLoading } = useDashboard();
 
@@ -134,11 +140,16 @@ export const Names: React.FC = () => {
     setPageCount(count);
   }, [names, itemsPerPage]);
 
+  // console.log("root:: ", root);
+  // console.log("address:: ", address);
+  // console.log("status:: ", status);
+
   return (
     <>
-      {(isNameListLoading || isAccountLoading(status)) && (
-        <SkeletonNames count={itemsPerPage} />
+      {(isNameListLoading || isAccountLoading(status) || !hasMounted) && (
+        <SkeletonNames count={4} />
       )}
+
       {!isEmpty(names) && !isAccountLoading(status) && (
         <Container id="Names-Container">
           <Box sx={{ flexGrow: 1 }}>
@@ -243,14 +254,17 @@ export const Names: React.FC = () => {
         </Container>
       )}
 
-      {isEmpty(names) && !isAccountLoading(status) && !isNameListLoading && (
-        <Container>
-          <Label>No Names found</Label>
-          <Description>
-            There is no registered name under your account.
-          </Description>
-        </Container>
-      )}
+      {isEmpty(names) &&
+        !isAccountLoading(status) &&
+        !isNameListLoading &&
+        hasMounted && (
+          <Container>
+            <Label>No Names found</Label>
+            <Description>
+              There is no registered name under your account.
+            </Description>
+          </Container>
+        )}
     </>
   );
 };

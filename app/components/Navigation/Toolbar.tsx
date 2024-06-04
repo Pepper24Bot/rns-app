@@ -277,7 +277,7 @@ export const Toolbar: React.FC = () => {
               setRun(false);
             }}
           >
-            <Relative>
+            <Relative minWidth={140}>
               <SkeletonTypography
                 isloading={isLabelLoading || !hasMounted}
                 sx={{ bgcolor: "primary.light" }}

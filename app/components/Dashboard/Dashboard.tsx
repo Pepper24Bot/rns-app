@@ -202,8 +202,10 @@ export const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    if (hasMounted) {
-      setIsDashboardVisible(!isEmpty(address));
+    if (hasMounted && status === "connected" && address) {
+      setIsDashboardVisible(true);
+    } else if (hasMounted && status === "disconnected" && !address) {
+      setIsDashboardVisible(false);
     }
   }, [address, status, hasMounted]);
 
@@ -225,6 +227,9 @@ export const Dashboard: React.FC = () => {
     hasMounted,
   ]);
 
+  /**
+   * This will fix the hydration issue in NextJS.
+   */
   useEffect(() => {
     setHasMounted(true);
   }, []);
@@ -307,7 +312,7 @@ export const Dashboard: React.FC = () => {
             <Grid>
               {/* TODO: Add page routing */}
               <FeatureToggle feature={FeatureList.Identities}>
-                {activeTab === 0 && <Names />}
+                {activeTab === 0 && <Names hasMounted={hasMounted} />}
               </FeatureToggle>
 
               <FeatureToggle feature={FeatureList.FAQ}>
