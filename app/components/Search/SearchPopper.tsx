@@ -124,7 +124,6 @@ export interface SearchPopper {
   status?: NameStatus;
   isNameInvalid?: boolean;
   isNameNotSupported?: boolean;
-  // TODO: Fix any type
   data?: any;
 }
 

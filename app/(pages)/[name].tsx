@@ -8,6 +8,7 @@ import { useAccount } from "wagmi";
 import MainPage from "@/components/Main/MainPage";
 
 export default function RegistrationDetails() {
+  console.log("name===========");
   const pathname = usePathname();
 
   const { address } = useAccount();
@@ -22,7 +23,12 @@ export default function RegistrationDetails() {
   }, []);
 
   useEffect(() => {
+    console.log("name:: ", name);
+    console.log("address:: ", address);
+    console.log("hasMounted:: ", hasMounted);
+
     if (name && address && hasMounted) {
+      console.log("toggle...");
       toggleModal({
         id: "Registration Details",
         title: "Registration Details",

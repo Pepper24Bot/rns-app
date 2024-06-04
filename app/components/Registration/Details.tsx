@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, styled } from "@mui/material";
 import { getExpiration, getMaskedAddress } from "@/utils/common";
 import {
@@ -15,6 +15,8 @@ import { NameStatus } from "@/redux/domain/domainSlice";
 import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { isEmpty } from "lodash";
+import { useRouter } from "next/navigation";
+import { useModalState } from "@/redux/modal/modalSlice";
 
 import Image from "next/image";
 import EnsImage from "../Reusables/EnsImage";
@@ -61,6 +63,9 @@ interface DetailsProps {
 export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
   const { name } = props;
 
+  const router = useRouter();
+
+  const { closeModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
@@ -75,6 +80,13 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
     details?.domain.createdAt,
     details?.domain.expiryDate
   );
+
+  useEffect(() => {
+    if (isSuccess && isEmpty(data?.wrappedDomains)) {
+      closeModal();
+      router.push("/");
+    }
+  }, [data, isSuccess]);
 
   return (
     <Grid container mt={6} minWidth={250}>
