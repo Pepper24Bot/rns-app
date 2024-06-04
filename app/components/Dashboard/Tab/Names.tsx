@@ -77,14 +77,15 @@ const PaginationText = styled(SecondaryLabel, {
 
 interface NamesProps {
   hasMounted?: boolean;
+  areNamesLoading?: boolean;
 }
 
 export const Names: React.FC<NamesProps> = (props: NamesProps) => {
-  const { hasMounted } = props;
+  const { hasMounted, areNamesLoading } = props;
 
   const { address, status } = useAccount();
   const { useDashboard } = useDashboardState();
-  const { names, isNameListLoading } = useDashboard();
+  const { names } = useDashboard();
 
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -140,13 +141,9 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     setPageCount(count);
   }, [names, itemsPerPage]);
 
-  // console.log("root:: ", root);
-  // console.log("address:: ", address);
-  // console.log("status:: ", status);
-
   return (
     <>
-      {(isNameListLoading || isAccountLoading(status) || !hasMounted) && (
+      {(areNamesLoading || isAccountLoading(status) || !hasMounted) && (
         <SkeletonNames count={4} />
       )}
 
@@ -255,8 +252,8 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
       )}
 
       {isEmpty(names) &&
-        !isAccountLoading(status) &&
-        !isNameListLoading &&
+        status === "connected" &&
+        !areNamesLoading &&
         hasMounted && (
           <Container>
             <Label>No Names found</Label>

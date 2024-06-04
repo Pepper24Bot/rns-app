@@ -37,8 +37,7 @@ import FrequentlyAsked from "./Tab/Faq/Faq";
 export const Dashboard: React.FC = () => {
   const { status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
-  const { updateNameList, toggleNamesLoading, useFilters } =
-    useDashboardState();
+  const { updateNameList, useFilters } = useDashboardState();
 
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -77,6 +76,9 @@ export const Dashboard: React.FC = () => {
     { id: address?.toLowerCase() || "" },
     { skip: address === null || activeTab !== 0 || !hasMounted }
   );
+
+  const areNamesLoading =
+    namesListLoading || searchedNameLoading || !hasMounted;
 
   const handleDebounceOnChange = (value: string) => {
     setSearchValue(value);
@@ -210,10 +212,6 @@ export const Dashboard: React.FC = () => {
   }, [address, status, hasMounted]);
 
   useEffect(() => {
-    toggleNamesLoading(namesListLoading || searchedNameLoading);
-  }, [namesListLoading, searchedNameLoading]);
-
-  useEffect(() => {
     if (hasMounted) {
       getList();
     }
@@ -312,7 +310,12 @@ export const Dashboard: React.FC = () => {
             <Grid>
               {/* TODO: Add page routing */}
               <FeatureToggle feature={FeatureList.Identities}>
-                {activeTab === 0 && <Names hasMounted={hasMounted} />}
+                {activeTab === 0 && (
+                  <Names
+                    hasMounted={hasMounted}
+                    areNamesLoading={areNamesLoading}
+                  />
+                )}
               </FeatureToggle>
 
               <FeatureToggle feature={FeatureList.FAQ}>
