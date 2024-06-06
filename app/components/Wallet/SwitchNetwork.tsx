@@ -11,6 +11,7 @@ import { switchChain } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useSnackbar } from "notistack";
 import { useAccount, useConnect } from "wagmi";
+import { VIDEO_SWITCH_NETWORK } from "@/constants/url";
 
 import Paragraph from "../Reusables/Paragraph";
 import Image from "next/image";
@@ -108,7 +109,7 @@ export const SwitchNetwork: React.FC = () => {
           highlights: ["manually"],
         }}
       />
-      <VideoLink href="https://vimeo.com/909628422/f677c793af" target="_blank">
+      <VideoLink href={VIDEO_SWITCH_NETWORK} target="_blank">
         <VideoLabel>Watch here</VideoLabel>
       </VideoLink>
 

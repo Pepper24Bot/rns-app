@@ -3,9 +3,14 @@ import { Grid, IconButton, Link, alpha, darken, styled } from "@mui/material";
 import { FAQ } from "@/constants/content";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { scrollIntoElement } from "@/utils/common";
+import {
+  getHighlight,
+  getHighlightedTexts,
+  scrollIntoElement,
+} from "@/utils/common";
 import { isEmpty } from "lodash";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
+import { FAQ_DOCS } from "@/constants/url";
 
 const Container = styled(Grid)(({ theme }) => ({
   margin: "35px 0",
@@ -79,34 +84,6 @@ const Highlight = styled("span")(({ theme }) => ({
 export const FrequentlyAsked: React.FC = () => {
   const [moreIndex, setMoreIndex] = useState<number>(0);
 
-  // TODO: Optimize this
-  const getHighlightedTexts = (
-    content: string,
-    highlights: { text: string; isUrl: boolean }[] = [],
-    index: number = 0
-  ) => {
-    const highlightedTexts = highlights.map((option) => {
-      return `(${option.text})`;
-    });
-
-    const pattern = RegExp(highlightedTexts.join("|"));
-    const texts = content.split(pattern);
-
-    return texts;
-  };
-
-  // TODO: Optimize this
-  const getHighlight = (
-    text: string,
-    highlights: { text: string; isUrl: boolean }[] = []
-  ) => {
-    const option = highlights.find((highlight) => {
-      return highlight.text.match(text);
-    });
-
-    return option;
-  };
-
   return (
     <Container>
       {moreIndex >= 1 && (
@@ -140,7 +117,7 @@ export const FrequentlyAsked: React.FC = () => {
                       return highlight && highlight.isUrl ? (
                         <Link
                           key={`link-${text}-${index}`}
-                          href="https://www.docs.rootnameservice.com"
+                          href={FAQ_DOCS}
                           target="_blank"
                         >
                           <Highlight>{text}</Highlight>

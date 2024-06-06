@@ -10,6 +10,7 @@ import {
   Download,
   Link,
   X,
+  Warning,
 } from "@mui/icons-material";
 import {
   Grid,
@@ -68,12 +69,15 @@ export const NameDetails = styled(Grid)(({ theme }) => ({
   paddingTop: "12px",
 }));
 
-export const NameContainer = styled(Grid)(({ theme }) => ({
+export const NameContainer = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "isShowTooltip",
+})<{ isShowTooltip?: boolean }>(({ isShowTooltip, theme }) => ({
   whiteSpace: "nowrap",
   textOverflow: "ellipsis",
   overflow: "hidden",
   fontSize: "20px",
   fontFamily: "Segoe UI emoji, Roboto",
+  cursor: isShowTooltip ? "pointer" : "",
 }));
 
 export const Detail = styled(SecondaryLabel)(({ theme }) => ({
@@ -88,8 +92,11 @@ export const Label = styled("span")(({ theme }) => ({
   paddingRight: "8px",
 }));
 
-export const TooltipText = styled("span")(({ theme }) => ({
+export const TooltipText = styled(Detail)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.5),
+  paddingTop: 0,
+  fontSize: "12px",
+  whiteSpace: "pre-line",
 }));
 
 export const MoreIcon = styled(MoreVert)(({ theme }) => ({}));
@@ -102,6 +109,18 @@ export const CheckedIcon = styled(CheckCircle, {
   height: "16px",
   visibility: hidden ? "hidden" : "visible",
   margin: "0 4px",
+  cursor: "pointer",
+}));
+
+export const WarningIcon = styled(Warning, {
+  shouldForwardProp: (prop) => prop !== "hidden",
+})<{ hidden?: boolean }>(({ hidden, theme }) => ({
+  color: yellow[500],
+  width: "16px",
+  height: "16px",
+  visibility: hidden ? "hidden" : "visible",
+  margin: "0 4px",
+  cursor: "pointer",
 }));
 
 export const ClockIcon = styled(AccessTime)(({ theme }) => ({

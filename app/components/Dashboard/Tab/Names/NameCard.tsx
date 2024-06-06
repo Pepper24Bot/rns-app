@@ -4,6 +4,7 @@ import { WrappedDomain } from "@/redux/graphql/hooks";
 import {
   Flex,
   FlexJustified,
+  FlexRight,
   InformationTip,
   ShareButton,
   SkeletonRectangular,
@@ -27,13 +28,14 @@ import {
   ShareLabel,
   SubContainer,
   Summary,
-  TooltipText,
   TransferIcon,
   TwitterIcon,
   Highlight,
   EnsImageCard,
+  WarningIcon,
 } from "./StyledName";
 import {
+  findCharacterSet,
   getDate,
   getExpiration,
   getMaskedAddress,
@@ -43,18 +45,20 @@ import {
 import { useModalState } from "@/redux/modal/modalSlice";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
-import { useEnsAddress, useEnsName } from "wagmi";
+import { useEnsName } from "wagmi";
 import { namehash, Address } from "viem";
 import { useGetNftImageQuery } from "@/redux/metadata/metadataApi";
 import { CardProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useShareState } from "@/redux/share/shareSlice";
+import { WARNING_ASCII } from "@/constants/content";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
+import TooltipContent from "@/components/Reusables/TooltipContent";
 
 export interface NameProps {
   item: WrappedDomain;
@@ -80,6 +84,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
   const [isImageLoading, setImageLoading] = useState<boolean>(true);
   const [isDownloadRequested, setDownloadRequested] = useState<boolean>(false);
+  const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
 
   const {
     data: image,
@@ -94,12 +99,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     { skip: !isDownloadRequested }
   );
 
-  const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
-
   const { data: ensName } = useEnsName({
     address: activeAddress,
   });
 
+  const characterSet = findCharacterSet(item.domain.labelName || "");
   const ensAddr = item.domain.resolver?.addr?.id;
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const isTweetVerified =
@@ -266,17 +270,44 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                     arrow
                     placement="top"
                   >
-                    <NameContainer item xs={9} ref={nameRef}>
+                    <NameContainer
+                      item
+                      xs={8}
+                      ref={nameRef}
+                      isShowTooltip={isShowTooltip}
+                    >
                       {item.name}
                     </NameContainer>
                   </InformationTip>
-                  <Flex>
+                  <FlexRight>
+                    <InformationTip
+                      arrow
+                      placement="top"
+                      title={
+                        <TooltipContent
+                          content={WARNING_ASCII.content}
+                          highlights={WARNING_ASCII.highlights}
+                          isEnabled={
+                            characterSet === "emoji" || characterSet === "mixed"
+                          }
+                        />
+                      }
+                    >
+                      <WarningIcon
+                        hidden={
+                          characterSet !== "emoji" && characterSet !== "mixed"
+                        }
+                      />
+                    </InformationTip>
                     <InformationTip
                       title={
-                        <Grid>
-                          <TooltipText>{`${item.name} is linked to `}</TooltipText>
-                          <Highlight>{ensAddr}</Highlight>
-                        </Grid>
+                        <TooltipContent
+                          content={`${item.name} is linked to ${ensAddr}`}
+                          highlights={[
+                            { text: item.name || "" },
+                            { text: ensAddr || "" },
+                          ]}
+                        />
                       }
                       arrow
                       placement="top"
@@ -303,7 +334,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       iconButton={<MoreIcon />}
                       type="Menu"
                     />
-                  </Flex>
+                  </FlexRight>
                 </FlexJustified>
                 <NameDetails>
                   {hasLinkedAddr ? (

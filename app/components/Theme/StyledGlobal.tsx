@@ -379,7 +379,7 @@ export const PrimaryLabel = styled(SubTitle, {
 export const SecondaryLabel = styled(PrimaryLabel, {
   shouldForwardProp: (prop) => prop !== "isDisabled",
 })<{ isDisabled?: boolean }>(({ theme, isDisabled }) => ({
-  fontFamily: "var(--secondary-font)",
+  fontFamily: "Segoe UI emoji, Roboto",
   color: isDisabled
     ? alpha(theme.palette.text.primary, 0.25)
     : theme.palette.text.primary,
@@ -408,6 +408,7 @@ export const InformationTip = styled(
     backgroundColor: darken(theme.palette.background.darker, 0.5),
     padding: "12px",
     filter: `drop-shadow(0px 1px 1px rgb(0, 0, 0, 0.5))`,
+    fontFamily: "Segoe UI emoji, Roboto",
   },
   [`& .${tooltipClasses.arrow}`]: {
     color: darken(theme.palette.background.darker, 0.5),

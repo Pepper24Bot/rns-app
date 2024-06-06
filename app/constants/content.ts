@@ -263,3 +263,31 @@ export const FAQ = [
         content: `The easiest and quickest method is via opening a Support Ticket in our discord.`
     },
 ]
+
+export const WARNING_ASCII = {
+    content: `⚠️ ATTENTION:
+    
+    This name contains non-ASCII characters as shown above. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek.
+    
+    Also, traditional Chinese characters can look identical or very similar to simplified variants.
+    
+    For more information: https://en.wikipedia.org/wiki/IDN_homograph_attack`,
+    highlights: [
+        {
+            text: "⚠️ ATTENTION:",
+            isUrl: false
+        },
+        {
+            text: "contains non-ASCII characters",
+            isUrl: false
+        },
+        {
+            text: "For more information",
+            isUrl: false
+        },
+        {
+            text: "https://en.wikipedia.org/wiki/IDN_homograph_attack",
+            isUrl: true
+        },
+    ],
+}

@@ -3,6 +3,15 @@ import { formatDistanceStrict } from "date-fns";
 import { isEmpty } from "lodash";
 import { Response } from "@/services/interfaces";
 
+export type CharacterSet = 'alphanumeric' | 'digit' | 'emoji' | 'letter' | 'mixed';
+export const characterSet: { [key: string]: CharacterSet } = Object.freeze({
+    ALPHANUMERIC: 'alphanumeric',
+    DIGIT: 'digit',
+    EMOJI: 'emoji',
+    LETTER: 'letter',
+    MIXED: 'mixed',
+});
+
 /**
  * This will get the value of the provided key
  * from the document.cookie
@@ -300,3 +309,62 @@ export const isAddressFuturePass = (address: string = "") => {
     const match = address.toLowerCase().match(pattern)
     return !isEmpty(match)
 }
+
+/**
+ * 
+ * @param label 
+ * @returns 
+ */
+export function findCharacterSet(label: string): CharacterSet {
+    // regex digit only
+    if (/^[0-9]+$/.test(label)) return characterSet.DIGIT;
+    // regex latin letters only
+    if (/^[a-zA-Z]+$/.test(label)) return characterSet.LETTER;
+    // regex unicode mode, alphanumeric
+    // \p{L} or \p{Letter}: any kind of letter from any language.
+    // \p{N} or \p{Number}: any kind of numeric character in any script.
+    if (/^[\p{L}\p{N}]*$/u.test(label)) return characterSet.ALPHANUMERIC;
+    // regex emoji only
+    if (/^[\p{Extended_Pictographic}|\p{Emoji_Component}]+$/gu.test(label)) return characterSet.EMOJI;
+
+    return characterSet.MIXED;
+}
+
+/**
+ * TODO: Optimize this
+ * @param content 
+ * @param highlights 
+ * @param index 
+ * @returns 
+ */
+export const getHighlightedTexts = (
+    content: string,
+    highlights: { text: string; isUrl?: boolean }[] = [],
+    index: number = 0
+) => {
+    const highlightedTexts = highlights.map((option) => {
+        return `(${option.text})`;
+    });
+
+    const pattern = RegExp(highlightedTexts.join("|"));
+    const texts = content.split(pattern);
+
+    return texts;
+};
+
+/**
+ * TODO: Optimize this
+ * @param text 
+ * @param highlights 
+ * @returns 
+ */
+export const getHighlight = (
+    text: string,
+    highlights: { text: string; isUrl?: boolean }[] = []
+) => {
+    const option = highlights.find((highlight) => {
+        return highlight.text.match(text);
+    });
+
+    return option;
+};
