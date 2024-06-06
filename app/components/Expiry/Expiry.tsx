@@ -49,10 +49,6 @@ const FormContainer = styled(Grid)(({ theme }) => ({
   minWidth: "250px",
   maxHeight: "70vh",
   overflow: "overlay",
-
-  [theme.breakpoints.down("sm")]: {
-    margin: "20px 0",
-  },
 }));
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
@@ -60,7 +56,7 @@ const DetailsContainer = styled(Grid)(({ theme }) => ({
   display: "grid",
   alignContent: "space-between",
 
-  [theme.breakpoints.down(800)]: {
+  [theme.breakpoints.down(735)]: {
     width: "100%",
   },
 }));
@@ -321,49 +317,47 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
           )}
         </DetailsContainer>
       </FormContainer>
-      <FlexRight width="100%">
-        <FlexRight>
+      <FlexRight>
+        <ActionButton
+          disabled={isPending || isExtending}
+          sx={{ marginRight: 1 }}
+          variant="text"
+          onClick={() => {
+            closeModal();
+            router.push("/", { scroll: false });
+          }}
+        >
+          {isSuccess ? "Close" : "Cancel"}
+        </ActionButton>
+        <Collapse orientation="horizontal" in={!isSuccess}>
           <ActionButton
-            disabled={isPending || isExtending}
-            sx={{ marginRight: 1 }}
-            variant="text"
+            disabled={
+              isPending ||
+              isSuccess ||
+              isExtending ||
+              !isBalanceSufficient ||
+              !isXrpSufficient ||
+              !isFeatureEnabled("Expiry")
+            }
+            variant="contained"
             onClick={() => {
-              closeModal();
-              router.push("/");
+              if (extendPage === 1) {
+                // Move to the next page
+                setExtendPage(extendPage + 1);
+                updateName({ fee: { total: rentFee } });
+              } else {
+                if (isApproved) {
+                  initializeFlags();
+                  handleExtend();
+                } else {
+                  handleApproval();
+                }
+              }
             }}
           >
-            {isSuccess ? "Close" : "Cancel"}
+            {extendPage === 1 ? "Next" : "Confirm"}
           </ActionButton>
-          <Collapse orientation="horizontal" in={!isSuccess}>
-            <ActionButton
-              disabled={
-                isPending ||
-                isSuccess ||
-                isExtending ||
-                !isBalanceSufficient ||
-                !isXrpSufficient ||
-                !isFeatureEnabled("Expiry")
-              }
-              variant="contained"
-              onClick={() => {
-                if (extendPage === 1) {
-                  // Move to the next page
-                  setExtendPage(extendPage + 1);
-                  updateName({ fee: { total: rentFee } });
-                } else {
-                  if (isApproved) {
-                    initializeFlags();
-                    handleExtend();
-                  } else {
-                    handleApproval();
-                  }
-                }
-              }}
-            >
-              {extendPage === 1 ? "Next" : "Confirm"}
-            </ActionButton>
-          </Collapse>
-        </FlexRight>
+        </Collapse>
       </FlexRight>
     </Grid>
   );

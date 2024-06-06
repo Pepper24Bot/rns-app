@@ -43,9 +43,15 @@ const TransferContainer = styled(Grid)(({ theme }) => ({
   minWidth: "250px",
   maxHeight: "75vh",
   overflow: "overlay",
+}));
 
-  [theme.breakpoints.down("sm")]: {
-    margin: "20px 0",
+const FormContainer = styled(Grid)(({ theme }) => ({
+  maxWidth: "350px",
+  paddingBottom: "16px",
+
+  [theme.breakpoints.down(710)]: {
+    maxWidth: "100%",
+    width: "100%",
   },
 }));
 
@@ -235,7 +241,7 @@ export const Transfer: React.FC<TransactionProps> = (
     <Grid>
       <TransferContainer container>
         <EnsImage name={domain?.name || ""} />
-        <Grid maxWidth={350}>
+        <FormContainer>
           <InputField disabled value={domain?.name} />
           <InputField
             error={isFieldError}
@@ -276,7 +282,7 @@ export const Transfer: React.FC<TransactionProps> = (
               </Relative>
             </FlexCenter>
           </Collapse>
-        </Grid>
+        </FormContainer>
       </TransferContainer>
       <FlexRight width="100%">
         <ActionButton

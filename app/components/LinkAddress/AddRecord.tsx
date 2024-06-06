@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Collapse, Grid } from "@mui/material";
+import { Collapse, Grid, styled } from "@mui/material";
 import {
   ModalInputField as InputField,
   FlexRight,
   ActionButton,
   FlexCenter,
   Relative,
+  FlexTop,
 } from "../Theme/StyledGlobal";
 import { Address } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -19,6 +20,24 @@ import ProgressBar from "../Reusables/ProgressBar";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
+import EnsImage from "../Reusables/EnsImage";
+
+const RecordContainer = styled(FlexTop)(({ theme }) => ({
+  marginTop: "48px",
+  minWidth: "250px",
+  maxHeight: "60vh",
+  overflow: "overlay",
+}));
+
+const FormContainer = styled(Grid)(({ theme }) => ({
+  maxWidth: "350px",
+  paddingBottom: "16px",
+
+  [theme.breakpoints.down(710)]: {
+    maxWidth: "100%",
+    width: "100%",
+  },
+}));
 
 export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain, activeAddress } = props;
@@ -95,78 +114,83 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   return (
     <Grid item xs>
-      <Grid>
-        <InputField disabled value={domain?.name} />
-        <InputField
-          error={!isFuturePassValid}
-          helperText={
-            !isFuturePassValid ? "Please insert a FuturePass Address only" : ""
-          }
-          label="Address"
-          placeholder="Enter Address"
-          focused
-          value={inputAddr}
-          onChange={(event) => {
-            const { value } = event.target;
-            setInputAddr(value);
+      <RecordContainer container>
+        <EnsImage name={domain?.name || ""} />
+        <FormContainer>
+          <Grid>
+            <InputField disabled value={domain?.name} />
+            <InputField
+              error={!isFuturePassValid}
+              helperText={
+                !isFuturePassValid
+                  ? "Please insert a FuturePass Address only"
+                  : ""
+              }
+              label="Address"
+              placeholder="Enter Address"
+              focused
+              value={inputAddr}
+              onChange={(event) => {
+                const { value } = event.target;
+                setInputAddr(value);
 
-            /**
-             * If inputted address is invalid, and an onchange has been triggered,
-             * reset the invalid field flag
-             */
-            if (!isFuturePassValid) {
-              setIsFuturePassValid(true);
-            }
+                /**
+                 * If inputted address is invalid, and an onchange has been triggered,
+                 * reset the invalid field flag
+                 */
+                if (!isFuturePassValid) {
+                  setIsFuturePassValid(true);
+                }
+              }}
+            />
+          </Grid>
+          <Collapse in={isProgressVisible}>
+            <FlexCenter pt={3}>
+              <Relative width="100%">
+                <ProgressBar
+                  isError={isError}
+                  isPaused={!isTransactionLoading}
+                  isVisible={isProgressVisible}
+                  isSuccess={isSuccess}
+                  resetProgress={resetProgress}
+                />
+                <ViewTransaction isVisible={isSuccess} hash={txHash} />
+              </Relative>
+            </FlexCenter>
+          </Collapse>
+        </FormContainer>
+      </RecordContainer>
+      <FlexRight>
+        <ActionButton
+          disabled={isPending || isWaiting}
+          sx={{ marginRight: 1 }}
+          variant="text"
+          onClick={() => {
+            refetch();
+            refetchEnsAddr();
+            closeModal();
           }}
-        />
-        <Collapse in={isProgressVisible}>
-          <FlexCenter pt={2}>
-            <Relative width="100%">
-              <ProgressBar
-                isError={isError}
-                isPaused={!isTransactionLoading}
-                isVisible={isProgressVisible}
-                isSuccess={isSuccess}
-                resetProgress={resetProgress}
-              />
-              <ViewTransaction isVisible={isSuccess} hash={txHash} />
-            </Relative>
-          </FlexCenter>
-        </Collapse>
-      </Grid>
-      <Grid pt={3}>
-        <FlexRight>
+        >
+          {isSuccess ? "Close" : "Cancel"}
+        </ActionButton>
+        <Collapse orientation="horizontal" in={!isSuccess}>
           <ActionButton
-            disabled={isPending || isWaiting}
-            sx={{ marginRight: 1 }}
-            variant="text"
+            disabled={
+              isEmpty(inputAddr) ||
+              isPending ||
+              isSuccess ||
+              isWaiting ||
+              !isFeatureEnabled("Link")
+            }
+            variant="contained"
             onClick={() => {
-              refetch();
-              refetchEnsAddr();
-              closeModal();
+              handleSetAddress();
             }}
           >
-            {isSuccess ? "Close" : "Cancel"}
+            Confirm
           </ActionButton>
-          <Collapse orientation="horizontal" in={!isSuccess}>
-            <ActionButton
-              disabled={
-                isEmpty(inputAddr) ||
-                isPending ||
-                isSuccess ||
-                isWaiting ||
-                !isFeatureEnabled("Link")
-              }
-              variant="contained"
-              onClick={() => {
-                handleSetAddress();
-              }}
-            >
-              Confirm
-            </ActionButton>
-          </Collapse>
-        </FlexRight>
-      </Grid>
+        </Collapse>
+      </FlexRight>
     </Grid>
   );
 };

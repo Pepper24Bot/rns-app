@@ -31,9 +31,15 @@ const PrimaryContainer = styled(FlexTop)(({ theme }) => ({
   minWidth: "250px",
   maxHeight: "80vh",
   overflow: "overlay",
+}));
 
-  [theme.breakpoints.down("sm")]: {
-    margin: "20px 0",
+const FormContainer = styled(Grid)(({ theme }) => ({
+  maxWidth: "350px",
+  paddingBottom: "16px",
+
+  [theme.breakpoints.down(710)]: {
+    maxWidth: "100%",
+    width: "100%",
   },
 }));
 
@@ -227,7 +233,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     <Grid>
       <PrimaryContainer container>
         <EnsImage name={name} />
-        <Grid maxWidth={350}>
+        <FormContainer>
           {getStep().transaction === "setName" && (
             <>
               <ConfirmationText pb={3}>
@@ -277,7 +283,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
               </Relative>
             </FlexCenter>
           </Collapse>
-        </Grid>
+        </FormContainer>
       </PrimaryContainer>
       <FlexRight>
         <ActionButton

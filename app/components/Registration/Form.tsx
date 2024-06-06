@@ -25,6 +25,11 @@ const SummaryContainer = styled(Grid)(({ theme }) => ({
 
 const NameField = styled(ModalInputField)(({ theme }) => ({
   maxWidth: "500px",
+
+  [theme.breakpoints.down(800)]: {
+    maxWidth: "100%",
+    width: "100%",
+  },
 }));
 
 const Transaction = styled(FlexJustified)(({ theme }) => ({}));

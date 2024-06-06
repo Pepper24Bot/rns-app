@@ -30,9 +30,15 @@ const RecordContainer = styled(FlexTop)(({ theme }) => ({
   minWidth: "250px",
   maxHeight: "60vh",
   overflow: "overlay",
+}));
 
-  [theme.breakpoints.down("sm")]: {
-    margin: "20px 0",
+const FormContainer = styled(Grid)(({ theme }) => ({
+  maxWidth: "350px",
+  paddingBottom: "16px",
+
+  [theme.breakpoints.down(710)]: {
+    maxWidth: "100%",
+    width: "100%",
   },
 }));
 
@@ -147,7 +153,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
     <Grid>
       <RecordContainer container>
         <EnsImage name={domainState?.name || ""} />
-        <Grid maxWidth={350}>
+        <FormContainer>
           {!isRemoveMode ? (
             <UpdateRecord
               ensName={ensName}
@@ -199,7 +205,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
               </Relative>
             </FlexCenter>
           </Collapse>
-        </Grid>
+        </FormContainer>
       </RecordContainer>
       <FlexRight>
         <ActionButton

@@ -6,7 +6,7 @@ import { useDomainState } from "@/redux/domain/domainSlice";
 const Container = styled(Grid)(({ theme }) => ({
   width: "360px",
 
-  [theme.breakpoints.down("miniTablet")]: {
+  [theme.breakpoints.down(735)]: {
     width: "100%",
   },
 }));
