@@ -135,6 +135,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
     status,
     isNameInvalid,
     isNameNotSupported,
+    data,
   } = props;
 
   const { toggleModal } = useModalState();
@@ -247,6 +248,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                             title: "Registration Details",
                             data: {
                               name: `${searchValue}.root` || "",
+                              domain: data,
                             },
                           });
                         }}

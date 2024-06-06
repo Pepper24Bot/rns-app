@@ -242,7 +242,7 @@ export const SearchForm: React.FC = () => {
                   status={getNameStatus()}
                   isNameInvalid={isNameInvalid}
                   isNameNotSupported={isNameNotSupported}
-                  data={data?.wrappedDomains}
+                  data={data?.wrappedDomains[0]}
                 />
               </FlexCenter>
             </ClickAwayListener>

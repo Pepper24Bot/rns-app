@@ -141,7 +141,7 @@ export const ModalContainer: React.FC = () => {
       case "Switch Network":
         return <SwitchNetwork />;
       case "Register Name":
-        return <Registration />;
+        return <Registration {...props?.data} />;
       case "Registration Details":
         return <RegistrationDetails {...props?.data} />;
       case "Registration Info":
