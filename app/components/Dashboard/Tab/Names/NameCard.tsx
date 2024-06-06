@@ -100,10 +100,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: activeAddress,
   });
 
-  const { data: ensAddr } = useEnsAddress({
-    name: item.domain.name || "",
-  });
-
+  const ensAddr = item.domain.resolver?.addr?.id;
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const isTweetVerified =
     parseCookie("isTweetVerified") === "true" || isSuccess;

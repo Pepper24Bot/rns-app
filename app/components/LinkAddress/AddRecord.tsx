@@ -15,6 +15,8 @@ import { LinkProps } from "@/interfaces/components/transaction";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
+import { useDispatch } from "react-redux";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -42,11 +44,13 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 
 export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain, activeAddress } = props;
+
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
-
-  const router = useRouter();
 
   /** Status Flags */
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -61,9 +65,6 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const [txHash, setTxHash] = useState<string>("");
 
   const { refetch } = useEnsName({ address: activeAddress });
-  const { refetch: refetchEnsAddr } = useEnsAddress({
-    name: domain?.name || "",
-  });
 
   /** Use the isLoading Flag here for the progress bar */
   const { setAddressRecord, isLoading } = useRecords();
@@ -105,6 +106,9 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
+      // Data Invalidation: Refresh Dashboard list of names
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+
       enqueueSnackbar(
         `You have successfully added an address record to ${domain?.name}.`,
         { variant: "success" }
@@ -170,7 +174,6 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
           variant="text"
           onClick={() => {
             refetch();
-            refetchEnsAddr();
             closeModal();
             router.replace("/", { scroll: false });
           }}

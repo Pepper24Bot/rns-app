@@ -10,12 +10,13 @@ import {
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/utils/common";
 import { Address } from "viem";
-import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
+import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
-import { useEnsAddress, useEnsName } from "wagmi";
+import { useEnsName } from "wagmi";
 import { LinkProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -46,6 +47,7 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain: domainState, owner, ensName, activeAddress } = props;
 
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const { data } = useGetNamesByNameQuery(
@@ -53,17 +55,11 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
     { skip: domainState?.name === null }
   );
 
-  const { refetch: refetchEnsAddr, data: ensAddr } = useEnsAddress({
-    name: domainState?.name || "",
-  });
-
   const { refetch: refetchEnsName } = useEnsName({ address: activeAddress });
+
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
-
-  const domain = data?.wrappedDomains[0]?.domain;
-  const linkedAddr = ensAddr || domain?.resolver?.addr?.id || "";
 
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isRemoveMode, setIsRemoveMode] = useState<boolean>(false);
@@ -83,7 +79,8 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   });
 
   const isTransactionLoading = isLoading || isWaiting;
-
+  const domain = data?.wrappedDomains[0]?.domain;
+  const linkedAddr = domain?.resolver?.addr?.id || "";
   const ownerId = getMaskedAddress(owner?.id || "");
   const linkedAddress = isEditMode ? linkedAddr : getMaskedAddress(linkedAddr);
 
@@ -122,6 +119,9 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
+      // Data Invalidation: Refresh Dashboard list of names
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+
       enqueueSnackbar(
         `You have successfully ${
           isRemoveMode ? "removed" : "updated"
@@ -131,13 +131,6 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
       setIsSuccess(true);
       setIsPending(false);
-
-      // dirty trick, refetch right away when updating address record
-      // but when removing an address, refetch when closing the modal
-      if (!isRemoveMode) {
-        // Refetch the address so that the Dashboard will have an updated value
-        refetchEnsAddr();
-      }
 
       /**
        * Trigger the refetch when setting the address
@@ -217,7 +210,6 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
           disabled={isPending || isWaiting}
           variant="text"
           onClick={() => {
-            refetchEnsAddr();
             closeModal();
             router.replace("/", { scroll: false });
           }}

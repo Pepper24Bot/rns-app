@@ -5,12 +5,13 @@ import {
   FieldContainer,
   FlexCenter,
   InformationTip,
+  Label,
   ModalInputField,
   Relative,
   SecondaryLabel,
   SkeletonTypography,
+  Value,
 } from "../Theme/StyledGlobal";
-import { FONT_WEIGHT } from "../Theme/Global";
 import { WrappedDomain } from "@/redux/graphql/hooks";
 
 import Image from "next/image";
@@ -33,16 +34,6 @@ const InputField = styled(ModalInputField)(({ theme }) => ({}));
 const Field = styled(FieldContainer)(({ theme }) => ({
   marginTop: 0,
   marginBottom: "12px",
-}));
-
-const Label = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "16px",
-  fontWeight: FONT_WEIGHT.Light,
-  width: "max-content",
-}));
-
-const Value = styled(Label)(({ theme }) => ({
-  fontWeight: FONT_WEIGHT.Regular,
 }));
 
 const RegisteredLabel = styled(SecondaryLabel)(({ theme }) => ({

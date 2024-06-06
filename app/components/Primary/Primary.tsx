@@ -18,6 +18,8 @@ import { useEnsAddress, useEnsName } from "wagmi";
 import { PrimaryProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
 
 import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";
@@ -60,6 +62,8 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   const name = domain?.name || "";
   const resolverAddress = domain?.resolver?.address;
+
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -75,7 +79,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const [txHash, setTxHash] = useState<string>("");
   const { enqueueSnackbar } = useSnackbar();
   const { refetch } = useEnsName({ address: activeAddress });
-  const { data: ensAddr, refetch: refetchEnsAddr } = useEnsAddress({ name });
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { setAddressRecord } = useRecords();
@@ -92,7 +95,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     });
 
   const ownerId = activeAddress?.toLowerCase() as Address;
-  const ensAddress = ensAddr?.toLowerCase();
+  const ensAddress = domain?.resolver?.addr?.id.toLowerCase(); // ensAddr?.toLowerCase();
   const isTransactionLoading = isLoading || isSettingPrimary || isSettingAddr;
 
   const setEnsRecord = async () => {
@@ -198,10 +201,12 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   useEffect(() => {
     if (isSetAddrCompleted) {
+      // Data Invalidation: Refresh Dashboard list of names
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+
       enqueueSnackbar(`Updating the linked address of ${name} is completed!`, {
         variant: "info",
       });
-      refetchEnsAddr();
 
       const setPrimaryName = async () => {
         const { isSuccess: primarySuccess, data: primaryData } =

@@ -540,3 +540,13 @@ export const CloseIcon = styled(Close)(({ theme }) => ({
     cursor: "pointer",
   },
 }));
+
+export const Label = styled(SecondaryLabel)(({ theme }) => ({
+  fontSize: "16px",
+  fontWeight: FONT_WEIGHT.Light,
+  width: "max-content",
+}));
+
+export const Value = styled(Label)(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Regular,
+}));

@@ -72,13 +72,11 @@ export const Transfer: React.FC<TransactionProps> = (
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { data: addressRecord, refetch } = useEnsAddress({
-    name: domain?.name || "",
-  });
-
   const { refetch: refetchEnsName } = useEnsName({
     address: activeAddress as Address,
   });
+
+  const ensAddr = domain?.resolver?.addr?.id;
 
   // Transaction status
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -187,9 +185,6 @@ export const Transfer: React.FC<TransactionProps> = (
 
     if (isSuccess) {
       setWatchAddrUpdate(true);
-      // Refresh the address record, in case the user cancels the transaction midway.
-      // so the Dashboard will have an updated value
-      refetch();
     } else {
       setIsError(true);
       setIsPending(false);
@@ -232,9 +227,13 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isAddrUpdated) {
+      // Data Invalidation: Refresh Dashboard list of names
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
+
       enqueueSnackbar(`Updating the address of ${domain?.name} is completed!`, {
         variant: "info",
       });
+
       handleTransfer();
     }
   }, [isAddrUpdated]);
@@ -309,7 +308,7 @@ export const Transfer: React.FC<TransactionProps> = (
             }
             variant="contained"
             onClick={() => {
-              if (addressRecord === newOwner) {
+              if (ensAddr === newOwner) {
                 initializeFlags();
                 handleTransfer();
               } else {
