@@ -21,6 +21,7 @@ import {
   TooltipContainer,
   WarningIcon,
   FlexJustified,
+  TooltipText,
 } from "../Theme/StyledGlobal";
 import { WrappedDomain } from "@/redux/graphql/hooks";
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils";
@@ -41,13 +42,6 @@ const DetailsContainer = styled(FlexCenter)(({ theme }) => ({
     maxWidth: "350px",
   },
 
-  // [theme.breakpoints.between(710, 425)]: {
-  //   width: "80vw",
-  // },
-
-  // [theme.breakpoints.down(425)]: {
-  //   width: "80vw",
-  // },
   [theme.breakpoints.down(600)]: {
     width: "100%",
   },
@@ -64,7 +58,7 @@ const Label = styled(FieldLabel)(({ theme }) => ({
   top: -10,
   left: 15,
   backgroundColor: darken(theme.palette.background.darker, 0.6),
-  paddingRight: "32px",
+  paddingRight: "8px",
   borderRadius: "2px",
 }));
 
@@ -72,12 +66,8 @@ const TooltipGrid = styled(TooltipContainer)(({ theme }) => ({
   fontSize: "16px",
 
   [theme.breakpoints.up(715)]: {
-    maxWidth: "300px",
+    maxWidth: "280px",
   },
-
-  // [theme.breakpoints.down(425)]: {
-  //   maxWidth: "70vw",
-  // },
 }));
 
 const Field = styled(FieldContainer)(({ theme }) => ({
@@ -100,19 +90,24 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
 
   const details = domain;
   const nameRef = useRef<HTMLDivElement | null>(null);
-
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const ownerRef = useRef<HTMLDivElement | null>(null);
+  const linkedRef = useRef<HTMLDivElement | null>(null);
 
   const linkedAddr = details?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
 
-  const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
+  const [isShowNameTooltip, setIsShowNameTooltip] = useState<boolean>(false);
+  const [isShowOwnerTooltip, setIsShowOwnerTooltip] = useState<boolean>(false);
+  const [isShowLinkedTooltip, setIsShowLinkedTooltip] =
+    useState<boolean>(false);
 
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
+  const ownerAddr = domain?.owner?.id;
+
   const { data: ensName, isLoading: isEnsLoading } = useEnsName({
-    address: root.address || "0x",
+    address: (ownerAddr as Address) || "0x",
   });
 
   const { data: linkedTo, isLoading: isLinkedAddrLoading } = useEnsName({
@@ -130,26 +125,32 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
   );
 
   useEffect(() => {
-    const isShowing = isTooltipShowing(nameRef);
-    console.log("isShowing:: ", isShowing);
-    setIsShowTooltip(isShowing);
+    const isNameShowing = isTooltipShowing(nameRef);
+    setIsShowNameTooltip(isNameShowing);
+
+    const isOwnerShowing = isTooltipShowing(ownerRef);
+    setIsShowOwnerTooltip(isOwnerShowing);
+
+    const isLinkedShowing = isTooltipShowing(linkedRef);
+    setIsShowLinkedTooltip(isLinkedShowing);
   }, []);
 
   return (
     <Grid container mt={6} minWidth={250}>
       <EnsImage name={name} />
-      <DetailsContainer item ref={containerRef}>
+      <DetailsContainer item>
         <Grid>
+          {/* NAME.ROOT */}
           <Field sx={{ mt: 0 }}>
             <Grid>
               <InformationTip
                 arrow
                 placement="top"
                 title={
-                  isShowTooltip ? <HighlightText>{name}</HighlightText> : ""
+                  isShowNameTooltip ? <HighlightText>{name}</HighlightText> : ""
                 }
               >
-                <TooltipGrid ref={nameRef} isShowTooltip={isShowTooltip}>
+                <TooltipGrid ref={nameRef} isShowTooltip={isShowNameTooltip}>
                   {name}
                 </TooltipGrid>
               </InformationTip>
@@ -194,6 +195,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
             </Grid>
           </Field>
 
+          {/* OWNER */}
           <Field>
             <Label>Owner</Label>
             <Relative minWidth={150}>
@@ -202,16 +204,23 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                 arrow
                 placement="bottom"
                 title={
-                  isShowTooltip ? <HighlightText>{owner}</HighlightText> : ""
+                  isShowOwnerTooltip ? (
+                    <TooltipText>
+                      <HighlightText>{owner} </HighlightText>- {ownerAddr}
+                    </TooltipText>
+                  ) : (
+                    ""
+                  )
                 }
               >
-                <TooltipGrid ref={nameRef} isShowTooltip={isShowTooltip}>
+                <TooltipGrid ref={ownerRef} isShowTooltip={isShowOwnerTooltip}>
                   <FieldValue isloading={isEnsLoading}>{owner}</FieldValue>
                 </TooltipGrid>
               </InformationTip>
             </Relative>
           </Field>
 
+          {/* LINKED TO ADDRESS */}
           {hasLinkedAddr && (
             <Field>
               <Label>Linked To / Resolver</Label>
@@ -221,14 +230,20 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                   arrow
                   placement="bottom"
                   title={
-                    isShowTooltip ? (
-                      <HighlightText>{resolverId}</HighlightText>
+                    isShowLinkedTooltip ? (
+                      <TooltipText>
+                        <HighlightText>{resolverId}</HighlightText>{" "}
+                        {`- ${linkedAddr}`}
+                      </TooltipText>
                     ) : (
                       ""
                     )
                   }
                 >
-                  <TooltipGrid ref={nameRef} isShowTooltip={isShowTooltip}>
+                  <TooltipGrid
+                    ref={linkedRef}
+                    isShowTooltip={isShowLinkedTooltip}
+                  >
                     <FieldValue isloading={isLinkedAddrLoading}>
                       {resolverId}
                     </FieldValue>
@@ -237,6 +252,8 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
               </Relative>
             </Field>
           )}
+
+          {/* EXPIRY DATE */}
           <Field>
             <Label>Expiry</Label>
             <FlexJustified width="100%">
