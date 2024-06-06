@@ -11,7 +11,6 @@ import store from "@/redux/store";
 import PageNavigation from "@/components/Navigation/NavigationBar";
 import PageModal from "@/components/Modal/ModalContainer";
 import GlobalTheme from "../Theme/Global";
-import PageFooter from "../Footer/PageFooter";
 import SnackbarWrapper from "../Snackbar/Snackbar";
 
 import "@fontsource/roboto/100.css";
@@ -29,7 +28,7 @@ const WrapperContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const ContentContainer = styled(Grid)(({ theme }) => ({
-  // minHeight: "calc(100vh - 198px)",
+  minHeight: "calc(100vh)",
 }));
 
 export interface WrapperProps {
@@ -53,7 +52,6 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
                     <PageModal />
                     {children}
                   </ContentContainer>
-                  <PageFooter />
                 </SnackbarWrapper>
               </WrapperContainer>
             </GlobalTheme>
