@@ -8,6 +8,7 @@ import {
   InformationTip,
   ShareButton,
   SkeletonRectangular,
+  WarningIcon,
 } from "@/components/Theme/StyledGlobal";
 import {
   Label,
@@ -32,7 +33,6 @@ import {
   TwitterIcon,
   Highlight,
   EnsImageCard,
-  WarningIcon,
 } from "./StyledName";
 import {
   findCharacterSet,
@@ -40,6 +40,7 @@ import {
   getExpiration,
   getMaskedAddress,
   isDateWithinRange,
+  isTooltipShowing,
   parseCookie,
 } from "@/utils/common";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -218,12 +219,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   }, [item.domain.createdAt, isTweetVerified]);
 
   useEffect(() => {
-    const scrollWidth = nameRef?.current?.scrollWidth || 0;
-    const clientWidth = nameRef?.current?.clientWidth || 0;
-
-    if (scrollWidth > clientWidth) {
-      setIsShowTooltip(true);
-    }
+    const isShowing = isTooltipShowing(nameRef);
+    setIsShowTooltip(isShowing);
   }, []);
 
   useEffect(() => {
@@ -264,11 +261,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               <Grid item xs={12}>
                 <FlexJustified container>
                   <InformationTip
+                    arrow
+                    placement="top"
                     title={
                       isShowTooltip ? <Highlight>{item.name}</Highlight> : ""
                     }
-                    arrow
-                    placement="top"
                   >
                     <NameContainer
                       item
@@ -365,7 +362,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               <Flex>
                 {ensName === item.name && (
                   <SubContainer>
-                    <PrimaryChip label="Primary" />
+                    <PrimaryChip label="Primary" size="small" />
                   </SubContainer>
                 )}
               </Flex>

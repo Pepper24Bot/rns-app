@@ -1,5 +1,9 @@
 import { FONT_WEIGHT } from "@/components/Theme/Global";
-import { SecondaryLabel, ButtonLabel } from "@/components/Theme/StyledGlobal";
+import {
+  SecondaryLabel,
+  ButtonLabel,
+  TooltipContainer,
+} from "@/components/Theme/StyledGlobal";
 import {
   MoreVert,
   CheckCircle,
@@ -10,7 +14,6 @@ import {
   Download,
   Link,
   X,
-  Warning,
 } from "@mui/icons-material";
 import {
   Grid,
@@ -69,15 +72,8 @@ export const NameDetails = styled(Grid)(({ theme }) => ({
   paddingTop: "12px",
 }));
 
-export const NameContainer = styled(Grid, {
-  shouldForwardProp: (prop) => prop !== "isShowTooltip",
-})<{ isShowTooltip?: boolean }>(({ isShowTooltip, theme }) => ({
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
+export const NameContainer = styled(TooltipContainer)(({ theme }) => ({
   fontSize: "20px",
-  fontFamily: "var(--secondary-font)",
-  cursor: isShowTooltip ? "pointer" : "",
 }));
 
 export const Detail = styled(SecondaryLabel)(({ theme }) => ({
@@ -105,17 +101,6 @@ export const CheckedIcon = styled(CheckCircle, {
   shouldForwardProp: (prop) => prop !== "hidden",
 })<{ hidden?: boolean }>(({ hidden, theme }) => ({
   color: green[500],
-  width: "16px",
-  height: "16px",
-  visibility: hidden ? "hidden" : "visible",
-  margin: "0 4px",
-  cursor: "pointer",
-}));
-
-export const WarningIcon = styled(Warning, {
-  shouldForwardProp: (prop) => prop !== "hidden",
-})<{ hidden?: boolean }>(({ hidden, theme }) => ({
-  color: yellow[500],
   width: "16px",
   height: "16px",
   visibility: hidden ? "hidden" : "visible",

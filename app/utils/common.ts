@@ -368,3 +368,15 @@ export const getHighlight = (
 
     return option;
 };
+
+/**
+ * 
+ * @param ref 
+ * @returns 
+ */
+export const isTooltipShowing = (ref: React.MutableRefObject<HTMLDivElement | null>) => {
+    const scrollWidth = ref?.current?.scrollWidth || 0;
+    const clientWidth = ref?.current?.clientWidth || 0;
+
+    return scrollWidth > clientWidth
+}

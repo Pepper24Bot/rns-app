@@ -16,10 +16,11 @@ import {
   ToggleButton as MuiToggleButton,
   ToggleButtonGroup as MuiToggleGroup,
   darken,
+  Chip,
 } from "@mui/material";
-import { grey, red } from "@mui/material/colors";
+import { amber, grey, red, yellow } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
-import { Close } from "@mui/icons-material";
+import { Close, Warning } from "@mui/icons-material";
 
 export const Container = styled(Grid, {
   shouldForwardProp: (prop) => prop !== "isLoading",
@@ -239,10 +240,9 @@ export const BaseInputField = styled(TextField)(({ theme }) => ({
 
     "&.MuiOutlinedInput-root": {
       fontStyle: "italic",
-      fontFamily: "var(--default-font)",
+      fontFamily: "var(--secondary-font)",
       fontSize: "18px",
       padding: "16px 25px",
-      // filter: `drop-shadow(0px 0px 5px ${theme.palette.background.paper})`,
       boxShadow: `0 0 10px 2px ${theme.palette.background.paper}`,
       [theme.breakpoints.down("md")]: {
         fontSize: "14px",
@@ -542,12 +542,52 @@ export const CloseIcon = styled(Close)(({ theme }) => ({
   },
 }));
 
-export const Label = styled(SecondaryLabel)(({ theme }) => ({
+export const WarningIcon = styled(Warning, {
+  shouldForwardProp: (prop) => prop !== "hidden",
+})<{ hidden?: boolean }>(({ hidden, theme }) => ({
+  color: yellow[500],
+  width: "16px",
+  height: "16px",
+  visibility: hidden ? "hidden" : "visible",
+  margin: "0 4px",
+  cursor: "pointer",
+}));
+
+export const TooltipText = styled(SecondaryLabel)(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Regular,
+  color: alpha(theme.palette.text.primary, 0.5),
+  paddingTop: 0,
+  fontSize: "12px",
+  whiteSpace: "pre-line",
+}));
+
+export const FieldLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
   fontWeight: FONT_WEIGHT.Light,
   width: "max-content",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
 }));
 
-export const Value = styled(Label)(({ theme }) => ({
+export const FieldValue = styled(FieldLabel, {
+  shouldForwardProp: (prop) => prop !== "isShowTooltip",
+})<{ isShowTooltip?: boolean }>(({ isShowTooltip, theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
+  cursor: isShowTooltip ? "pointer" : "",
+  maxWidth: "300px",
+}));
+
+export const PrimaryChip = styled(Chip)(({ theme }) => ({
+  backgroundColor: amber[500],
+  color: theme.palette.background.paper,
+}));
+
+export const TooltipContainer = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "isShowTooltip",
+})<{ isShowTooltip?: boolean }>(({ isShowTooltip, theme }) => ({
+  whiteSpace: "nowrap",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
+  fontFamily: "var(--secondary-font)",
+  cursor: isShowTooltip ? "pointer" : "",
 }));

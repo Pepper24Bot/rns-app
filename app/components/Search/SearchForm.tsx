@@ -26,6 +26,7 @@ import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { isAccountLoading, isNameSupported } from "@/utils/common";
 import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { normalize } from "viem/ens";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import Image from "next/image";
 
@@ -129,7 +130,7 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
 }));
 
 export const SearchForm: React.FC = () => {
-  const { address, status } = useAccount();
+  const { status } = useAccount();
   const { toggleModal } = useModalState();
 
   const [searchValue, setSearchValue] = useState<string | null>(null);
@@ -137,6 +138,9 @@ export const SearchForm: React.FC = () => {
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
   const [isNameNotSupported, setIsNameNotSupported] = useState<boolean>(false);
+
+  const { useRootNetwork } = useRootNetworkState();
+  const { data: root } = useRootNetwork();
 
   const { data, isLoading } = useGetNamesByNameQuery(
     { labelName: `${searchValue}` },
@@ -146,6 +150,7 @@ export const SearchForm: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const searchFieldRef = React.useRef(null);
   const isWalletLoading = isAccountLoading(status);
+  const address = root.address || "0x";
 
   const getNameStatus = () => {
     const isAvailable = isEmpty(data?.wrappedDomains);

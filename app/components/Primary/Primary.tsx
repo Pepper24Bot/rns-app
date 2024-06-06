@@ -14,7 +14,7 @@ import {
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address, namehash } from "viem";
 import { isEmpty } from "lodash";
-import { useEnsAddress, useEnsName } from "wagmi";
+import { useEnsName } from "wagmi";
 import { PrimaryProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";

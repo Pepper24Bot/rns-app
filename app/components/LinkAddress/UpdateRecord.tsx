@@ -5,10 +5,9 @@ import {
   ActionButton,
   Flex,
   Tip,
+  PrimaryChip,
 } from "../Theme/StyledGlobal";
-import { CheckCircle, Close, Edit } from "@mui/icons-material";
-import { amber, green } from "@mui/material/colors";
-import { Chip } from "@mui/material";
+import { Close, Edit } from "@mui/icons-material";
 
 const ResolverButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButton-contained": {
@@ -21,11 +20,6 @@ const ResolverButton = styled(ActionButton)(({ theme }) => ({
       backgroundColor: alpha(theme.palette.primary.dark, 0.5),
     },
   },
-}));
-
-const PrimaryChip = styled(Chip)(({ theme }) => ({
-  backgroundColor: amber[500],
-  color: theme.palette.background.paper,
 }));
 
 export interface UpdateProps {
@@ -61,7 +55,11 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
         value={name}
         InputProps={{
           endAdornment:
-            ensName === name ? <PrimaryChip label="Primary" /> : <></>,
+            ensName === name ? (
+              <PrimaryChip size="small" label="Primary" />
+            ) : (
+              <></>
+            ),
         }}
       />
       <InputField label="Owner" disabled value={owner} />

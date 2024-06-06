@@ -221,9 +221,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                             updateName({ name: searchValue || "", status });
 
                             if (isInformationHidden) {
-                              router.replace(`/${searchValue}`, {
-                                scroll: false,
-                              });
+                              // router.replace(`/${searchValue}`, {
+                              //   scroll: false,
+                              // });
                               toggleModal({
                                 id: "Register Name",
                                 title: "Register",
