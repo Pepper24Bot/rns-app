@@ -25,6 +25,7 @@ import { FUTUREVERSE, QUESTIONS, VIDEO_TUTORIAL } from "@/constants/url";
 import { red } from "@mui/material/colors";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -36,7 +37,6 @@ import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
-import { useRouter } from "next/navigation";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -324,7 +324,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
           variant="text"
           onClick={() => {
             closeModal();
-            router.push("/", { scroll: false });
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

@@ -14,6 +14,7 @@ import { isEmpty } from "lodash";
 import { LinkProps } from "@/interfaces/components/transaction";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -44,6 +45,8 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
+
+  const router = useRouter();
 
   /** Status Flags */
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -169,6 +172,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
             refetch();
             refetchEnsAddr();
             closeModal();
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

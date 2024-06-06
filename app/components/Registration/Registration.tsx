@@ -160,7 +160,7 @@ export const RegisterName: React.FC = () => {
 
   const handleCloseModal = () => {
     closeModal();
-    router.push("/");
+    router.replace("/", { scroll: false });
   };
 
   const initializeFlags = () => {

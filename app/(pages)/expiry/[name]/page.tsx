@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { Domain, useGetNamesByNameQuery } from "@/redux/graphql/hooks";
+import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
 import { useRouter } from "next/navigation";
+import { Domain } from "@/redux/graphql/hooks";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = params.name;
@@ -29,6 +30,8 @@ export default function Page({ params }: { params: { name: string } }) {
     toggleModal({
       id: "Extend Expiry",
       title: "Extend Expiry",
+      isCloseDisabled: true,
+      isXDisabled: true,
       data: {
         domain: domain as Partial<Domain>,
       },
@@ -44,7 +47,7 @@ export default function Page({ params }: { params: { name: string } }) {
       if (!isEmpty(data.wrappedDomains)) {
         toggleExpiryModal();
       } else {
-        router.push("/");
+        router.replace("/", { scroll: false });
       }
     }
   }, [name, root.address, hasMounted, isSuccess]);

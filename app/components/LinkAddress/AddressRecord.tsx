@@ -15,6 +15,7 @@ import { EMPTY_ADDRESS } from "@/constants/components";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { LinkProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -45,13 +46,17 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { domain: domainState, owner, ensName, activeAddress } = props;
 
+  const router = useRouter();
+
   const { data } = useGetNamesByNameQuery(
     { labelName: `${domainState?.labelName}` },
     { skip: domainState?.name === null }
   );
+
   const { refetch: refetchEnsAddr, data: ensAddr } = useEnsAddress({
     name: domainState?.name || "",
   });
+
   const { refetch: refetchEnsName } = useEnsName({ address: activeAddress });
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
@@ -214,6 +219,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
           onClick={() => {
             refetchEnsAddr();
             closeModal();
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

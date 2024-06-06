@@ -2,47 +2,46 @@
 
 import React, { useEffect, useState } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
-import { isEmpty } from "lodash";
-import { useDomainState } from "@/redux/domain/domainSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { Domain } from "@/redux/graphql/hooks";
+import { isEmpty } from "lodash";
+import { useRouter } from "next/navigation";
+import { useEnsName } from "wagmi";
+import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = params.name;
   const label = name.split(".root")[0];
 
+  const router = useRouter();
+
   const { toggleModal } = useModalState();
-  const { updateName } = useDomainState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
-  const { data, isSuccess } = useGetNamesByNameQuery(
-    { labelName: label },
-    { skip: name === null }
+  const { data, isSuccess } = useGetNamesByIdAndNameQuery(
+    { id: root.address?.toLowerCase() || "0x", name: `${label}.root` },
+    { skip: name === null || !root.address }
   );
+
+  const { data: ensName } = useEnsName({
+    address: root.address || "0x",
+  });
 
   const [hasMounted, setHasMounted] = useState<boolean>(false);
 
-  const toggleDetails = () => {
-    toggleModal({
-      id: "Registration Details",
-      title: "Registration Details",
-      data: {
-        // use label then append .root, in case the user search for a label only
-        name: `${label}.root`,
-        domain: data?.wrappedDomains[0],
-        isSuccess,
-      },
-    });
-  };
+  const toggleLinkModal = () => {
+    const domain = data?.wrappedDomains[0].domain;
 
-  const toggleRegistration = () => {
-    updateName({ name: label || "" });
     toggleModal({
-      id: "Register Name",
-      title: "Register",
+      id: "Link Identity",
+      title: "Link Identity",
       isCloseDisabled: true,
       isXDisabled: true,
+      data: {
+        domain: domain as Partial<Domain>,
+        ensName,
+      },
     });
   };
 
@@ -51,11 +50,12 @@ export default function Page({ params }: { params: { name: string } }) {
   }, []);
 
   useEffect(() => {
+    console.log("data:: ", data);
     if (name && root.address && hasMounted && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
-        toggleDetails();
+        toggleLinkModal();
       } else {
-        toggleRegistration();
+        router.replace("/", { scroll: false });
       }
     }
   }, [name, root.address, hasMounted, isSuccess]);
