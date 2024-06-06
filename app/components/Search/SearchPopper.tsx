@@ -28,6 +28,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
 import { parseCookie } from "@/utils/common";
+import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 
@@ -138,6 +139,8 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
     data,
   } = props;
 
+  const router = useRouter();
+
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
 
@@ -218,6 +221,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                             updateName({ name: searchValue || "", status });
 
                             if (isInformationHidden) {
+                              router.replace(`/${searchValue}`, {
+                                scroll: false,
+                              });
                               toggleModal({
                                 id: "Register Name",
                                 title: "Register",
