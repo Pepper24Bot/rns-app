@@ -170,7 +170,8 @@ export const ModalContainer: React.FC = () => {
           if (isCloseDisabled) {
             // do not allow modal to be closed
           } else {
-            router.push("/");
+            // TODO: change this to router.push
+            router.replace("/");
             closeModal();
             setIsPathModalOpen(false);
           }
@@ -191,7 +192,7 @@ export const ModalContainer: React.FC = () => {
               {!props?.isXDisabled && (
                 <CloseButton
                   onClick={() => {
-                    router.push("/");
+                    router.replace("/");
                     closeModal();
                     setIsPathModalOpen(false);
                   }}

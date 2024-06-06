@@ -5,11 +5,13 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Domain, useGetNamesByNameQuery } from "@/redux/graphql/hooks";
 import { isEmpty } from "lodash";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = params.name;
   const label = name.split(".root")[0];
 
+  const router = useRouter();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -42,6 +44,7 @@ export default function Page({ params }: { params: { name: string } }) {
       if (!isEmpty(data.wrappedDomains)) {
         toggleExpiryModal();
       } else {
+        router.push("/");
       }
     }
   }, [name, root.address, hasMounted, isSuccess]);

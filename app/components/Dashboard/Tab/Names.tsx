@@ -83,7 +83,7 @@ interface NamesProps {
 export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const { hasMounted, areNamesLoading } = props;
 
-  const { address, status } = useAccount();
+  const { status } = useAccount();
   const { useDashboard } = useDashboardState();
   const { names } = useDashboard();
 
