@@ -34,6 +34,7 @@ import { red } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { isEmpty } from "lodash";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -92,6 +93,7 @@ export const RegisterName: React.FC = () => {
     address,
   });
 
+  const router = useRouter();
   const dispatch = useDispatch();
   const token = payment?.address || (PAYMENT_METHOD[0].address as Address);
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
@@ -155,6 +157,11 @@ export const RegisterName: React.FC = () => {
     isLoading || isApprovalLoading || isRegistering || isApproving;
 
   const hashStr = hash as unknown as string;
+
+  const handleCloseModal = () => {
+    closeModal();
+    router.push("/");
+  };
 
   const initializeFlags = () => {
     // display progress bar
@@ -359,7 +366,7 @@ export const RegisterName: React.FC = () => {
       {isRegistered && (
         <CloseButton
           onClick={() => {
-            closeModal();
+            handleCloseModal();
           }}
         >
           <CloseIcon />
@@ -466,7 +473,7 @@ export const RegisterName: React.FC = () => {
                   sx={{ marginRight: 1 }}
                   variant="text"
                   onClick={() => {
-                    closeModal();
+                    handleCloseModal();
                   }}
                 >
                   {isRegistered ? "Close" : "Cancel"}

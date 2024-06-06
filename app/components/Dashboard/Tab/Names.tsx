@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Divider, Grid, Pagination, alpha, styled } from "@mui/material";
-import { NameWrapped } from "@/redux/graphql/hooks";
+import { NameWrapped, WrappedDomain } from "@/redux/graphql/hooks";
 import { NameCard } from "./Names/NameCard";
 import {
   FlexCenter,
@@ -156,7 +156,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
                   <React.Fragment key={name.name}>
                     {shouldItemShow(index) ? (
                       <NameCard
-                        item={name as NameWrapped}
+                        item={name as WrappedDomain}
                         activeAddress={root.address as Address}
                       />
                     ) : (

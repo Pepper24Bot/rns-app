@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Grid } from "@mui/material";
-import { NameWrapped } from "@/redux/graphql/hooks";
+import { WrappedDomain } from "@/redux/graphql/hooks";
 import {
   Flex,
   FlexJustified,
@@ -57,7 +57,7 @@ import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
 
 export interface NameProps {
-  item: NameWrapped;
+  item: WrappedDomain;
   activeAddress: Address;
 }
 

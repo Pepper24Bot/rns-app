@@ -36,6 +36,7 @@ import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
+import { useRouter } from "next/navigation";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -55,15 +56,11 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const DetailsContainer = styled(Grid)(({ theme }) => ({
-  width: "360px",
+  width: "380px",
   display: "grid",
   alignContent: "space-between",
 
-  [theme.breakpoints.between("miniTablet", "tablet")]: {
-    width: "max-content",
-  },
-
-  [theme.breakpoints.down("miniTablet")]: {
+  [theme.breakpoints.down(800)]: {
     width: "100%",
   },
 }));
@@ -95,6 +92,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   const { isModalOpen } = useModal();
   const { isFeatureEnabled } = useFeatureToggle();
 
+  const router = useRouter();
   const dispatch = useDispatch();
   const labelName = domain?.labelName || "";
   const token = payment?.address || PAYMENT_METHOD[0].address;
@@ -331,6 +329,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
             variant="text"
             onClick={() => {
               closeModal();
+              router.push("/");
             }}
           >
             {isSuccess ? "Close" : "Cancel"}

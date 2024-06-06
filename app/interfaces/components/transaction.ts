@@ -19,7 +19,7 @@ export interface LinkProps extends TransactionProps {
     ensName?: string;
 }
 export interface CardProps extends Omit<PrimaryProps, "owner"> {
-    owner: Partial<Account>; // TODO: Clean this
+    owner?: Partial<Account>; // TODO: Clean this
 }
 
 export interface NameProps {

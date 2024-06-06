@@ -2,17 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useGetNamesByNameQuery } from "@/redux/graphql/hooks";
-import { isEmpty } from "lodash";
-import { useDomainState } from "@/redux/domain/domainSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { Domain, useGetNamesByNameQuery } from "@/redux/graphql/hooks";
+import { isEmpty } from "lodash";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = params.name;
   const label = name.split(".root")[0];
 
   const { toggleModal } = useModalState();
-  const { updateName } = useDomainState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
@@ -23,26 +21,15 @@ export default function Page({ params }: { params: { name: string } }) {
 
   const [hasMounted, setHasMounted] = useState<boolean>(false);
 
-  const toggleDetails = () => {
-    toggleModal({
-      id: "Registration Details",
-      title: "Registration Details",
-      data: {
-        // use label then append .root, in case the user search for a label only
-        name: `${label}.root`,
-        domain: data?.wrappedDomains[0],
-        isSuccess,
-      },
-    });
-  };
+  const toggleExpiryModal = () => {
+    const domain = data?.wrappedDomains[0].domain;
 
-  const toggleRegistration = () => {
-    updateName({ name: label || "" });
     toggleModal({
-      id: "Register Name",
-      title: "Register",
-      isCloseDisabled: true,
-      isXDisabled: true,
+      id: "Extend Expiry",
+      title: "Extend Expiry",
+      data: {
+        domain: domain as Partial<Domain>,
+      },
     });
   };
 
@@ -53,9 +40,8 @@ export default function Page({ params }: { params: { name: string } }) {
   useEffect(() => {
     if (name && root.address && hasMounted && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
-        toggleDetails();
+        toggleExpiryModal();
       } else {
-        toggleRegistration();
       }
     }
   }, [name, root.address, hasMounted, isSuccess]);
