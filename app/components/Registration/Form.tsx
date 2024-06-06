@@ -8,6 +8,8 @@ import {
   AvailableText,
   NotAvailableText,
   RegisteredText,
+  Relative,
+  SkeletonTypography,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
@@ -81,7 +83,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
 
   // Get the native currency balance
   const { address = "0x" } = useAccount();
-  const { data: balance } = useBalance({
+  const { data: balance, isLoading: isXrpLoading } = useBalance({
     address,
   });
 
@@ -146,11 +148,21 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
                 <TransactionLabel pr={2}>
                   {`${year} ${getYearLabel()} Registration`}
                 </TransactionLabel>
-                <Value>{`${rentFee?.toFixed(6)} ${payment?.label}`}</Value>
+                <Relative>
+                  <SkeletonTypography isloading={!rentFee} />
+                  <Value isloading={!rentFee}>{`${rentFee?.toFixed(6)} ${
+                    payment?.label
+                  }`}</Value>
+                </Relative>
               </Transaction>
               <Transaction pt={0.5}>
                 <Balance pr={2}>Connected Wallet Balance</Balance>
-                <Balance>{walletBalance?.toFixed(6)}</Balance>
+                <Relative>
+                  <SkeletonTypography isloading={!walletBalance} />
+                  <Balance isloading={!walletBalance}>
+                    {walletBalance?.toFixed(6)}
+                  </Balance>
+                </Relative>
               </Transaction>
             </Grid>
             <Grid py={1}>
@@ -160,9 +172,12 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
               </Transaction>
               <Transaction pt={0.5}>
                 <Balance pr={2}>EOA Wallet Balance</Balance>
-                <Balance>
-                  {Number(formatEther(balance?.value ?? 0)).toFixed(6)}
-                </Balance>
+                <Relative>
+                  <SkeletonTypography isloading={isXrpLoading} />
+                  <Balance isloading={isXrpLoading}>
+                    {Number(formatEther(balance?.value ?? 0)).toFixed(6)}
+                  </Balance>
+                </Relative>
               </Transaction>
             </Grid>
           </SummaryContainer>
