@@ -53,7 +53,7 @@ const ActionLabel = styled(SecondaryLabel)(({ theme }) => ({
   textTransform: "none",
   fontSize: "15px",
   textAlign: "center",
-  fontFamily: "Segoe UI emoji, Roboto",
+  fontFamily: "var(--secondary-font)",
 }));
 
 const ToggleButtonGroup = styled(StyledToggleButtonGroup)(({ theme }) => ({

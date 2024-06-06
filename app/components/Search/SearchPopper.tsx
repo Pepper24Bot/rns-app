@@ -42,7 +42,7 @@ const SearchText = styled(SubTitle)(({ theme }) => ({
   marginBottom: 0,
   textAlign: "start",
   wordBreak: "break-word",
-  fontFamily: "Segoe UI emoji, Roboto",
+  fontFamily: "var(--secondary-font)",
 
   [theme.breakpoints.down("md")]: {
     fontSize: FONT_SIZE.Medium,

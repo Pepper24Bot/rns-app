@@ -76,7 +76,7 @@ export const NameContainer = styled(Grid, {
   textOverflow: "ellipsis",
   overflow: "hidden",
   fontSize: "20px",
-  fontFamily: "Segoe UI emoji, Roboto",
+  fontFamily: "var(--secondary-font)",
   cursor: isShowTooltip ? "pointer" : "",
 }));
 

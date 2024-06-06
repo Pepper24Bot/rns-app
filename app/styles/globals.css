@@ -1,6 +1,6 @@
 :root {
   --default-font: Roboto Mono;
-  --secondary-font: Roboto;
+  --secondary-font: Roboto, Segoe UI emoji;
 }
 
 /* Modal PDF Reader starts here */
