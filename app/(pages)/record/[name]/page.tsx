@@ -8,6 +8,7 @@ import { isEmpty } from "lodash";
 import { useRouter } from "next/navigation";
 import { useEnsName } from "wagmi";
 import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
+import { useSnackbar } from "notistack";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = params.name;
@@ -15,6 +16,7 @@ export default function Page({ params }: { params: { name: string } }) {
 
   const router = useRouter();
 
+  const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -55,6 +57,10 @@ export default function Page({ params }: { params: { name: string } }) {
         toggleLinkModal();
       } else {
         router.replace("/", { scroll: false });
+        enqueueSnackbar(
+          `No ${name} has been found. Redirecting to the main page.`,
+          { variant: "info" }
+        );
       }
     }
   }, [name, root.address, hasMounted, isSuccess]);

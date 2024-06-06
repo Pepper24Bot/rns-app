@@ -7,12 +7,15 @@ import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
 import { useRouter } from "next/navigation";
 import { Domain } from "@/redux/graphql/hooks";
+import { useSnackbar } from "notistack";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = params.name;
   const label = name.split(".root")[0];
 
   const router = useRouter();
+
+  const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -48,6 +51,10 @@ export default function Page({ params }: { params: { name: string } }) {
         toggleExpiryModal();
       } else {
         router.replace("/", { scroll: false });
+        enqueueSnackbar(
+          `No ${name} has been found. Redirecting to the main page.`,
+          { variant: "info" }
+        );
       }
     }
   }, [name, root.address, hasMounted, isSuccess]);
