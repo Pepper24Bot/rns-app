@@ -90,16 +90,11 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
 
   const details = domain;
   const nameRef = useRef<HTMLDivElement | null>(null);
-  const ownerRef = useRef<HTMLDivElement | null>(null);
-  const linkedRef = useRef<HTMLDivElement | null>(null);
 
   const linkedAddr = details?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
 
   const [isShowNameTooltip, setIsShowNameTooltip] = useState<boolean>(false);
-  const [isShowOwnerTooltip, setIsShowOwnerTooltip] = useState<boolean>(false);
-  const [isShowLinkedTooltip, setIsShowLinkedTooltip] =
-    useState<boolean>(false);
 
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
@@ -127,12 +122,6 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
   useEffect(() => {
     const isNameShowing = isTooltipShowing(nameRef);
     setIsShowNameTooltip(isNameShowing);
-
-    const isOwnerShowing = isTooltipShowing(ownerRef);
-    setIsShowOwnerTooltip(isOwnerShowing);
-
-    const isLinkedShowing = isTooltipShowing(linkedRef);
-    setIsShowLinkedTooltip(isLinkedShowing);
   }, []);
 
   return (
@@ -204,16 +193,12 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                 arrow
                 placement="bottom"
                 title={
-                  isShowOwnerTooltip ? (
-                    <TooltipText>
-                      <HighlightText>{owner} </HighlightText>- {ownerAddr}
-                    </TooltipText>
-                  ) : (
-                    ""
-                  )
+                  <TooltipText>
+                    <HighlightText>{owner} </HighlightText>- {ownerAddr}
+                  </TooltipText>
                 }
               >
-                <TooltipGrid ref={ownerRef} isShowTooltip={isShowOwnerTooltip}>
+                <TooltipGrid>
                   <FieldValue isloading={isEnsLoading}>{owner}</FieldValue>
                 </TooltipGrid>
               </InformationTip>
@@ -230,20 +215,13 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                   arrow
                   placement="bottom"
                   title={
-                    isShowLinkedTooltip ? (
-                      <TooltipText>
-                        <HighlightText>{resolverId}</HighlightText>{" "}
-                        {`- ${linkedAddr}`}
-                      </TooltipText>
-                    ) : (
-                      ""
-                    )
+                    <TooltipText>
+                      <HighlightText>{resolverId}</HighlightText>{" "}
+                      {`- ${linkedAddr}`}
+                    </TooltipText>
                   }
                 >
-                  <TooltipGrid
-                    ref={linkedRef}
-                    isShowTooltip={isShowLinkedTooltip}
-                  >
+                  <TooltipGrid>
                     <FieldValue isloading={isLinkedAddrLoading}>
                       {resolverId}
                     </FieldValue>
