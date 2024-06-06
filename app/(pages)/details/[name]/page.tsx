@@ -5,9 +5,7 @@ import { usePathname } from "next/navigation";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useAccount } from "wagmi";
 
-import MainPage from "@/components/Main/MainPage";
-
-export default function RegistrationDetails() {
+export default function Page({ params }: { params: { slug: string } }) {
   const pathname = usePathname();
 
   const { address } = useAccount();
@@ -15,7 +13,7 @@ export default function RegistrationDetails() {
 
   const [hasMounted, setHasMounted] = useState<boolean>(false);
 
-  const name = pathname.split("/details/")[1];
+  const name = pathname.split("/")[1];
 
   useEffect(() => {
     setHasMounted(true);
@@ -33,5 +31,5 @@ export default function RegistrationDetails() {
     }
   }, [name, address, hasMounted]);
 
-  return <MainPage />;
+  return <></>;
 }

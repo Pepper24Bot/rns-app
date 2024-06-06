@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import SearchForm from "@/components/Search/SearchForm";
 import Dashboard from "@/components/Dashboard/Dashboard";

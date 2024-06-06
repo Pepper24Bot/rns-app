@@ -7,9 +7,10 @@ import { useAccount } from "wagmi";
 
 import MainPage from "@/components/Main/MainPage";
 
-export default function RegistrationDetails() {
-  console.log("name===========");
+export default function Page({ params }: { params: { slug: string } }) {
   const pathname = usePathname();
+  console.log("slug:: ", params.slug);
+  console.log("pathname:: ", pathname);
 
   const { address } = useAccount();
   const { toggleModal } = useModalState();
