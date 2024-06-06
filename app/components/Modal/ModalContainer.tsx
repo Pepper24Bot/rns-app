@@ -171,9 +171,9 @@ export const ModalContainer: React.FC = () => {
             // do not allow modal to be closed
           } else {
             // TODO: change this to router.push
-            router.replace("/");
             closeModal();
             setIsPathModalOpen(false);
+            router.replace("/", { scroll: false });
           }
         }}
         disableEscapeKeyDown={isCloseDisabled}
@@ -192,9 +192,9 @@ export const ModalContainer: React.FC = () => {
               {!props?.isXDisabled && (
                 <CloseButton
                   onClick={() => {
-                    router.replace("/");
                     closeModal();
                     setIsPathModalOpen(false);
+                    router.replace("/", { scroll: false });
                   }}
                 >
                   <CloseIcon />

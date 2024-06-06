@@ -17,6 +17,7 @@ import { isEmpty } from "lodash";
 import { useEnsAddress, useEnsName } from "wagmi";
 import { PrimaryProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 
 import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";
@@ -59,6 +60,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   const name = domain?.name || "";
   const resolverAddress = domain?.resolver?.address;
+  const router = useRouter();
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -71,7 +73,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const [isWatchingSetAddr, setWatchSetAddr] = useState<boolean>(false);
 
   const [txHash, setTxHash] = useState<string>("");
-
   const { enqueueSnackbar } = useSnackbar();
   const { refetch } = useEnsName({ address: activeAddress });
   const { data: ensAddr, refetch: refetchEnsAddr } = useEnsAddress({ name });
@@ -292,6 +293,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
           variant="text"
           onClick={() => {
             closeModal();
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

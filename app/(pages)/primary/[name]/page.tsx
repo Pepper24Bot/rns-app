@@ -6,8 +6,8 @@ import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Domain } from "@/redux/graphql/hooks";
 import { isEmpty } from "lodash";
 import { useRouter } from "next/navigation";
-import { useEnsName } from "wagmi";
 import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
+import { useEnsName } from "wagmi";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = params.name;
@@ -30,17 +30,18 @@ export default function Page({ params }: { params: { name: string } }) {
 
   const [hasMounted, setHasMounted] = useState<boolean>(false);
 
-  const toggleLinkModal = () => {
+  const togglePrimaryModal = () => {
     const domain = data?.wrappedDomains[0].domain;
 
     toggleModal({
-      id: "Link Identity",
-      title: "Link Identity",
+      id: "Set as Primary",
+      title: "Set as Primary",
       isCloseDisabled: true,
       isXDisabled: true,
       data: {
         domain: domain as Partial<Domain>,
         ensName,
+        activeAddress: root.address,
       },
     });
   };
@@ -52,7 +53,7 @@ export default function Page({ params }: { params: { name: string } }) {
   useEffect(() => {
     if (name && root.address && hasMounted && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
-        toggleLinkModal();
+        togglePrimaryModal();
       } else {
         router.replace("/", { scroll: false });
       }
