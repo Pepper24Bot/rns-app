@@ -574,7 +574,7 @@ export const FieldValue = styled(FieldLabel, {
 })<{ isShowTooltip?: boolean }>(({ isShowTooltip, theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
   cursor: isShowTooltip ? "pointer" : "",
-  maxWidth: "300px",
+  maxWidth: "280px",
 }));
 
 export const PrimaryChip = styled(Chip)(({ theme }) => ({
