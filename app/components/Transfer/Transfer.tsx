@@ -29,6 +29,7 @@ import { getEnsAddress } from "@wagmi/core";
 import { debounce as _debounce } from "lodash";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -64,6 +65,7 @@ export const Transfer: React.FC<TransactionProps> = (
   props: TransactionProps
 ) => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const { domain, owner, activeAddress } = props;
   const { closeModal } = useModalState();
@@ -291,6 +293,7 @@ export const Transfer: React.FC<TransactionProps> = (
           variant="text"
           onClick={() => {
             closeModal();
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}
