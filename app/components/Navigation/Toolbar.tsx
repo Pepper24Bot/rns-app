@@ -49,11 +49,11 @@ const HorizontalDivider = styled(Divider)(({ theme }) => ({
   },
 }));
 
-const ActionLabel = styled("span", {
-  shouldForwardProp: (prop) => prop !== "isLoading",
-})<{ isLoading?: boolean }>(({ theme, isLoading }) => ({
-  visibility: isLoading ? "hidden" : "visible",
+const ActionLabel = styled(SecondaryLabel)(({ theme }) => ({
   textTransform: "none",
+  fontSize: "15px",
+  textAlign: "center",
+  fontFamily: "Segoe UI emoji, Roboto",
 }));
 
 const ToggleButtonGroup = styled(StyledToggleButtonGroup)(({ theme }) => ({
@@ -282,7 +282,7 @@ export const Toolbar: React.FC = () => {
                 isloading={isLabelLoading || !hasMounted}
                 sx={{ bgcolor: "primary.light" }}
               />
-              <ActionLabel isLoading={isLabelLoading || !hasMounted}>
+              <ActionLabel isloading={isLabelLoading || !hasMounted}>
                 {walletLabel}
               </ActionLabel>
             </Relative>

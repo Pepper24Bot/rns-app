@@ -9,7 +9,7 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     backgroundColor: darken(green[900], 0.9),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${alpha(green[700], 0.6)}`,
-    fontFamily: "var(--secondary-font)",
+    fontFamily: "Segoe UI emoji, Roboto",
     fontSize: "14px",
     [theme.breakpoints.up("sm")]: {
       maxWidth: "400px",
@@ -19,7 +19,7 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     backgroundColor: darken(red[800], 0.9),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${alpha(red[700], 0.6)}`,
-    fontFamily: "var(--secondary-font)",
+    fontFamily: "Segoe UI emoji, Roboto",
     fontSize: "14px",
     [theme.breakpoints.up("sm")]: {
       maxWidth: "400px",
@@ -29,7 +29,7 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     backgroundColor: darken(yellow[900], 0.95),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${alpha(yellow[800], 0.5)}`,
-    fontFamily: "var(--secondary-font)",
+    fontFamily: "Segoe UI emoji, Roboto",
     fontSize: "14px",
     [theme.breakpoints.up("sm")]: {
       maxWidth: "400px",
@@ -39,7 +39,7 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     backgroundColor: darken(theme.palette.primary.dark, 0.9),
     borderRadius: "8px 0 0 8px",
     border: `solid 1px ${theme.palette.primary.dark}`,
-    fontFamily: "var(--secondary-font)",
+    fontFamily: "Segoe UI emoji, Roboto",
     fontSize: "14px",
     [theme.breakpoints.up("sm")]: {
       maxWidth: "400px",
