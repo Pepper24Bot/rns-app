@@ -2,6 +2,7 @@ import { ModalState } from "@/redux/modal/modalSlice";
 import { formatDistanceStrict } from "date-fns";
 import { isEmpty } from "lodash";
 import { Response } from "@/services/interfaces";
+import emojiRegex from "emoji-regex";
 
 export type CharacterSet = 'alphanumeric' | 'digit' | 'emoji' | 'letter' | 'mixed';
 export const characterSet: { [key: string]: CharacterSet } = Object.freeze({
@@ -243,18 +244,6 @@ export const isAccountLoading = (status: string) => {
 }
 
 /**
- * TODO: Fix this
- * @param name 
- * @returns 
- */
-export const isNameSupported = (name: string) => {
-    const pattern = new RegExp(/[a-z|0-9]\.[a-z|0-9]/g)
-
-    const match = name.match(pattern)
-    return isEmpty(match)
-}
-
-/**
  * The commitment's age is in minute format
  * 
  * if commitment's age is less than 1 minute, commitmentToNew = makeCommitment
@@ -328,6 +317,35 @@ export function findCharacterSet(label: string): CharacterSet {
     if (/^[\p{Extended_Pictographic}|\p{Emoji_Component}]+$/gu.test(label)) return characterSet.EMOJI;
 
     return characterSet.MIXED;
+}
+
+/**
+ * 
+ * @param label 
+ * @returns 
+ */
+export function isASCII(label: string) {
+    // function excludes all known emojis from ascii check
+    const emojiRxp = emojiRegex();
+    // check both ascii and emoji character set
+    const newEmojiRxp = new RegExp(
+        `^([\x00-\x7F]|${emojiRxp.source})+$`,
+        emojiRxp.flags
+    );
+    return newEmojiRxp.test(label);
+}
+
+/**
+ * TODO: Fix this
+ * @param name 
+ * @returns 
+ */
+export const isNameSupported = (name: string) => {
+    const value = encodeURI(name)
+    const pattern = new RegExp(/[a-z|0-9|^\x00-\x7F]\.[a-z|0-9|^\x00-\x7F]/g)
+    const match = value.match(pattern)
+
+    return isEmpty(match)
 }
 
 /**

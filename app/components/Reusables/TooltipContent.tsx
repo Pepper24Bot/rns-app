@@ -46,9 +46,9 @@ export const TooltipContent: React.FC<TooltipProps> = (props: TooltipProps) => {
               <HighlightText>{text}</HighlightText>
             </Link>
           ) : highlight && !highlight.isUrl ? (
-            <HighlightText>{text}</HighlightText>
+            <HighlightText key={`link-${text}-${index}`}>{text}</HighlightText>
           ) : (
-            <>{text}</>
+            text && <span key={`span-${index}`}>{text}</span>
           );
         })}
       </InfoTip>

@@ -58,7 +58,7 @@ export default function Page({ params }: { params: { name: string } }) {
       } else {
         router.replace("/", { scroll: false });
         enqueueSnackbar(
-          `No ${name} has been found. Redirecting to the main page.`,
+          `No ${name} has been found. Redirecting to main page.`,
           { variant: "info" }
         );
       }
