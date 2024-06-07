@@ -66,7 +66,11 @@ const TooltipGrid = styled(TooltipContainer)(({ theme }) => ({
   fontSize: "16px",
 
   [theme.breakpoints.up(715)]: {
-    maxWidth: "280px",
+    width: "300px",
+  },
+
+  [theme.breakpoints.down(635)]: {
+    width: "70vw",
   },
 }));
 
@@ -187,7 +191,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
           {/* OWNER */}
           <Field>
             <Label>Owner</Label>
-            <Relative minWidth={150}>
+            <Relative minWidth={150} maxWidth={300} width="100%">
               <SkeletonTypography isloading={isEnsLoading} />
               <InformationTip
                 arrow
