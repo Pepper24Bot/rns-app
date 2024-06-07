@@ -95,15 +95,11 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
   const details = domain;
   const nameRef = useRef<HTMLDivElement | null>(null);
 
+  const ownerAddr = domain?.owner?.id;
   const linkedAddr = details?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
 
   const [isShowNameTooltip, setIsShowNameTooltip] = useState<boolean>(false);
-
-  const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
-
-  const ownerAddr = domain?.owner?.id;
 
   const { data: ensName, isLoading: isEnsLoading } = useEnsName({
     address: (ownerAddr as Address) || "0x",
@@ -113,7 +109,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
     address: (linkedAddr as Address) || "0x",
   });
 
-  const owner = ensName || root.address;
+  const owner = ensName || ownerAddr;
   const resolverId = linkedTo || linkedAddr;
   const characterSet = findCharacterSet(details?.domain?.labelName || "");
   const hasWarning = characterSet === "emoji" || characterSet === "mixed";
