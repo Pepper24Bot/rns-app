@@ -194,7 +194,8 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                 placement="bottom"
                 title={
                   <TooltipText>
-                    <HighlightText>{owner} </HighlightText>- {ownerAddr}
+                    <HighlightText>{ensName} - </HighlightText>
+                    {ownerAddr}
                   </TooltipText>
                 }
               >
