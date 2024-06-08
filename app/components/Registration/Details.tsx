@@ -11,7 +11,6 @@ import {
   FlexCenter,
   InformationTip,
   FieldLabel,
-  ModalInputField,
   PrimaryChip,
   Relative,
   SecondaryLabel,
@@ -19,14 +18,13 @@ import {
   FieldValue,
   HighlightText,
   TooltipContainer,
-  WarningIcon,
+  WarningIcon as StyledWarningIcon,
   FlexJustified,
   TooltipText,
 } from "../Theme/StyledGlobal";
 import { WrappedDomain } from "@/redux/graphql/hooks";
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils";
 import { useEnsName } from "wagmi";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { WARNING_ASCII } from "@/constants/content";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { Address } from "viem";
@@ -47,9 +45,6 @@ const DetailsContainer = styled(FlexCenter)(({ theme }) => ({
   },
 }));
 
-const InputField = styled(ModalInputField)(({ theme }) => ({}));
-
-// TODO: Fix this
 const Label = styled(FieldLabel)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
   fontSize: "14px",
@@ -81,6 +76,12 @@ const Field = styled(FieldContainer)(({ theme }) => ({
 const RegisteredLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "14px",
   color: theme.palette.primary.main,
+}));
+
+const WarningIcon = styled(StyledWarningIcon)(({ theme }) => ({
+  width: "24px",
+  height: "24px",
+  marginRight: "8px",
 }));
 
 interface DetailsProps {
@@ -159,17 +160,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                     />
                   }
                 >
-                  {hasWarning ? (
-                    <WarningIcon
-                      sx={{
-                        width: "24px",
-                        height: "24px",
-                        marginRight: "8px",
-                      }}
-                    />
-                  ) : (
-                    <></>
-                  )}
+                  {hasWarning ? <WarningIcon /> : <></>}
                 </InformationTip>
                 <InformationTip title="View on secondary marketplace." arrow>
                   <Image
@@ -187,7 +178,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
           {/* OWNER */}
           <Field>
             <Label>Owner</Label>
-            <Relative minWidth={150} maxWidth={300} width="100%">
+            <Relative>
               <SkeletonTypography isloading={isEnsLoading} />
               <InformationTip
                 arrow
@@ -210,7 +201,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
           {hasLinkedAddr && (
             <Field>
               <Label>Linked To / Resolver</Label>
-              <Relative minWidth={150}>
+              <Relative>
                 <SkeletonTypography isloading={isLinkedAddrLoading} />
                 <InformationTip
                   arrow
@@ -236,7 +227,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
           <Field>
             <Label>Expiry</Label>
             <FlexJustified width="100%">
-              <Relative minWidth={150}>
+              <Relative>
                 <SkeletonTypography isloading={!isSuccess} />
                 <FieldValue isloading={!isSuccess}>
                   {expiration || "00-00-0000"}

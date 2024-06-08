@@ -80,8 +80,8 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   const isTransactionLoading = isLoading || isWaiting;
   const domain = data?.wrappedDomains[0]?.domain;
-  const linkedAddr = domain?.resolver?.addr?.id || "";
   const ownerId = getMaskedAddress(owner?.id || "");
+  const linkedAddr = domain?.resolver?.addr?.id || "";
   const linkedAddress = isEditMode ? linkedAddr : getMaskedAddress(linkedAddr);
 
   // Updating of Linked Address
@@ -168,6 +168,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
                 setIsProgressVisible(false);
 
                 /**
+                 * TODO: Change validation to isAddress
                  * If inputted address is invalid, and an onchange has been triggered,
                  * reset the invalid field flag
                  */
@@ -181,7 +182,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
             />
           ) : (
             <RemoveAddress
-              futurePassInput={linkedAddr}
+              addressInput={linkedAddr}
               disableBack={isTransactionLoading || isPending || isSuccess}
               toggleRemoveMode={() => {
                 setIsProgressVisible(false);

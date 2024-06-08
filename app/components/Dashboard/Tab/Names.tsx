@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Divider, Grid, Pagination, alpha, styled } from "@mui/material";
-import { NameWrapped, WrappedDomain } from "@/redux/graphql/hooks";
+import { WrappedDomain } from "@/redux/graphql/hooks";
 import { NameCard } from "./Names/NameCard";
 import {
   FlexCenter,
@@ -167,6 +167,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
               })}
             </Grid>
           </Box>
+
           {/* TODO: Make this a reusable component */}
           <FlexCenter pt="100px">
             <PaginationContainer

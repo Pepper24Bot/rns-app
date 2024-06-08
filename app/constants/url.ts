@@ -24,3 +24,5 @@ export const WIKI_ASCII = "https://en.wikipedia.org/wiki/IDN_homograph_attack"
 export const FAQ_DOCS = "https://www.docs.rootnameservice.com"
 
 export const VIDEO_SWITCH_NETWORK = "https://vimeo.com/909628422/f677c793af"
+
+export const LANDING_PAGE = "https://www.rootnameservice.com/"

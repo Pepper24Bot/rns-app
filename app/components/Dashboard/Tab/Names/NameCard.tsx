@@ -7,7 +7,6 @@ import {
   FlexRight,
   InformationTip,
   ShareButton,
-  SkeletonRectangular,
   WarningIcon,
 } from "@/components/Theme/StyledGlobal";
 import {
@@ -33,6 +32,7 @@ import {
   TwitterIcon,
   Highlight,
   EnsImageCard,
+  ImageSkeleton,
 } from "./StyledName";
 import {
   findCharacterSet,
@@ -231,17 +231,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
       <Container>
         <ItemContainer>
-          <ImageContainer sx={{ position: "relative" }}>
-            <SkeletonRectangular
-              isloading={isImageLoading}
-              style={{
-                width: "calc(100% - 40px)",
-                height: "calc(100% - 45px)",
-                position: "absolute",
-                WebkitTransformOrigin: "top",
-                transform: "scale(1)",
-              }}
-            />
+          <ImageContainer>
+            <ImageSkeleton isloading={isImageLoading} />
             <EnsImageCard
               src={imageUrl}
               alt="RNS Name"
@@ -396,7 +387,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         });
                       }}
                     >
-                      <TwitterIcon fontSize="small" />
+                      <TwitterIcon />
                       <Divider orientation="vertical" flexItem />
                       <ShareLabel
                         isDisabled={

@@ -23,22 +23,20 @@ const ConfirmationText = styled(SecondaryLabel)(({ theme }) => ({
 
 export interface RemoveProps {
   toggleRemoveMode: () => void;
-  futurePassInput: string;
+  addressInput: string;
   disableBack?: boolean;
 }
 
 export const RemoveAddress: React.FC<RemoveProps> = (props: RemoveProps) => {
-  const { futurePassInput, toggleRemoveMode, disableBack } = props;
+  const { addressInput, toggleRemoveMode, disableBack } = props;
 
   const [value, setValue] = useState<string>("");
 
   useEffect(() => {
     const value =
-      futurePassInput === EMPTY_ADDRESS
-        ? "None"
-        : getMaskedAddress(futurePassInput);
+      addressInput === EMPTY_ADDRESS ? "None" : getMaskedAddress(addressInput);
     setValue(value);
-  }, [futurePassInput]);
+  }, [addressInput]);
 
   return (
     <Grid>

@@ -69,14 +69,13 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
 
   const [ensNameData, setEnsPublicName] = useState<string>(String(ensName));
   const [isWatchingSetPrimary, setWatchPrimary] = useState<boolean>(false);
   const [isWatchingSetAddr, setWatchSetAddr] = useState<boolean>(false);
-
   const [txHash, setTxHash] = useState<string>("");
+
   const { enqueueSnackbar } = useSnackbar();
   const { refetch } = useEnsName({ address: activeAddress });
   const { closeModal } = useModalState();
@@ -95,7 +94,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     });
 
   const ownerId = activeAddress?.toLowerCase() as Address;
-  const ensAddress = domain?.resolver?.addr?.id.toLowerCase(); // ensAddr?.toLowerCase();
+  const ensAddress = domain?.resolver?.addr?.id.toLowerCase();
   const isTransactionLoading = isLoading || isSettingPrimary || isSettingAddr;
 
   const setEnsRecord = async () => {

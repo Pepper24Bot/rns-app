@@ -117,6 +117,11 @@ const StarIcon = styled(StarBorder)(({ theme }) => ({
   width: "20px",
 }));
 
+const NextImage = styled(Image)(({ theme }) => ({
+  marginLeft: "20px",
+  cursor: "pointer",
+}));
+
 export interface SearchPopper {
   isLoading: boolean;
   anchorEl: HTMLElement | null;
@@ -266,12 +271,11 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         title="View on secondary marketplace."
                         arrow
                       >
-                        <Image
+                        <NextImage
                           src="/icons/marketplace.svg"
                           alt="MarketPlace Icon"
                           width={36}
                           height={36}
-                          style={{ marginLeft: "20px", cursor: "pointer" }}
                         />
                       </InformationTip>
                     )}

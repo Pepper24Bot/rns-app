@@ -12,6 +12,7 @@ const TransactionTip = styled(Tip)(({ theme }) => ({
 
 const Link = styled(MuiLink)(({ theme }) => ({
   textDecoration: "none",
+  width: "calc(100% - 64px)",
 }));
 
 interface Transaction {
@@ -30,11 +31,7 @@ export const ViewTransaction: React.FC<Transaction> = (props: Transaction) => {
   return (
     <Collapse in={isVisible}>
       <FlexCenter>
-        <Link
-          href={getUrl()}
-          target="_blank"
-          sx={{ width: "calc(100% - 64px)" }}
-        >
+        <Link href={getUrl()} target="_blank">
           <TransactionTip isVisible={isVisible}>
             View Transaction
           </TransactionTip>

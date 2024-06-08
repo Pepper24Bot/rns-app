@@ -9,6 +9,7 @@ import {
 import { FlexCenter, FlexJustified } from "../Theme/StyledGlobal";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
+import { LANDING_PAGE } from "@/constants/url";
 
 import Image from "next/image";
 import Toolbar from "./Toolbar";
@@ -52,6 +53,13 @@ const Contents = styled(FlexJustified)(({ theme }) => ({
     padding: "0 20px",
     justifyContent: "center",
   },
+}));
+
+const NextImage = styled(Image)(({ theme }) => ({
+  height: "-webkit-fill-available",
+  width: "-webkit-fill-available",
+  maxWidth: "260px",
+  padding: "10px 0",
 }));
 
 export type ScrollProps = {
@@ -102,20 +110,14 @@ export const NavigationBar: React.FC = () => {
       <Navigation>
         <NavigationContainer>
           <Contents container>
-            <Image
+            <NextImage
               src="/images/rns-logo.svg"
               alt="RNS Icon"
               width={260}
               height={30}
-              style={{
-                height: "-webkit-fill-available",
-                width: "-webkit-fill-available",
-                maxWidth: "260px",
-                padding: "10px 0",
-              }}
               onClick={() => {
                 if (typeof window !== "undefined") {
-                  window.open("https://www.rootnameservice.com/", "_blank");
+                  window.open(LANDING_PAGE, "_blank");
                 }
               }}
             />

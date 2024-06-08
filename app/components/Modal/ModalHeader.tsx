@@ -21,6 +21,11 @@ const CloseIcon = styled(Close)(({ theme }) => ({
   },
 }));
 
+const NextImage = styled(Image)(({ theme }) => ({
+  opacity: 0.5,
+  margin: "4px 10px 0 0",
+}));
+
 export const ModalHeader: React.FC = () => {
   const { closeModal, useModal } = useModalState();
   const { props } = useModal();
@@ -28,12 +33,11 @@ export const ModalHeader: React.FC = () => {
   return (
     <Header>
       <Flex>
-        <Image
+        <NextImage
           src="/images/rns-2.svg"
           alt="RNS Icon"
           width={46}
           height={20}
-          style={{ opacity: 0.5, margin: "4px 10px 0 0" }}
         />
         <Typography>{props?.title}</Typography>
       </Flex>

@@ -84,11 +84,9 @@ export const RegistrationProcess: React.FC = () => {
 
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
-
   const label = isInformationHidden ? "Always show" : "Do not show again";
 
   const [isInfoDisabled, setInfoDisabled] = useState<boolean>(false);
-  const [infoActionLabel, setInfoActionLabel] = useState<string>(label);
 
   const handleDoNotShow = () => {
     setInfoDisabled(true);
@@ -133,7 +131,7 @@ export const RegistrationProcess: React.FC = () => {
               }
             }}
           >
-            {infoActionLabel}
+            {label}
           </ActionButton>
         </Grid>
         <Grid>

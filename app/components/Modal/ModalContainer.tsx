@@ -105,6 +105,11 @@ const Footer = styled(FlexJustified)(({ theme }) => ({
   padding: "24px 50px",
 }));
 
+const PdfIcon = styled("i")(({ theme }) => ({
+  color: theme.palette.primary.main,
+  marginRight: "8px",
+}));
+
 export const ModalContainer: React.FC = () => {
   const { useModal, closeModal } = useModalState();
   const { isModalOpen, props } = useModal();
@@ -210,10 +215,7 @@ export const ModalContainer: React.FC = () => {
               <Footer>
                 {props?.downloadFile && (
                   <DownloadButton href={props?.downloadFile} download>
-                    <i
-                      className="fa-solid fa-file-pdf"
-                      style={{ color: "#c2185b", marginRight: "8px" }}
-                    />
+                    <PdfIcon className="fa-solid fa-file-pdf" />
                     Download
                   </DownloadButton>
                 )}

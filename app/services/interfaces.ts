@@ -25,6 +25,7 @@ export interface Response {
     error: ErrorResponse | null
 }
 
+// TODO: Move this in /interfaces/rent
 export interface RentPrice {
     base: bigint;
     premium: bigint;

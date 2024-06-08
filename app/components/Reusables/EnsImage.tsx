@@ -22,12 +22,14 @@ const ImageContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const StyledImage = styled("img")(({ theme }) => ({
+  maxWidth: "300px",
+  height: "-webkit-fill-available",
+  boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
+
   minWidth: "200px",
-  height: "fit-content",
   width: "-webkit-fill-available",
   border: `solid 1px ${alpha(grey[700], 0.2)}`,
   borderRadius: "4px",
-  boxShadow: `0px 0px 15px 0px ${darken(grey[900], 1)}`,
 
   [theme.breakpoints.between("sm", "md")]: {
     width: "25vw",
@@ -41,6 +43,14 @@ const StyledImage = styled("img")(({ theme }) => ({
     width: "-moz-available",
     height: "-moz-available",
   },
+}));
+
+const ImageSkeleton = styled(SkeletonRectangular)(({ theme }) => ({
+  width: "calc(100% - 30px)",
+  height: "calc(100% - 20px)",
+  position: "absolute",
+  WebkitTransformOrigin: "top",
+  transform: "scale(1)",
 }));
 
 export interface EnsImage {
@@ -59,17 +69,8 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
   const nameHash = namehash(name);
 
   return (
-    <ImageContainer item sx={{ position: "relative" }}>
-      <SkeletonRectangular
-        isloading={isImageLoading}
-        style={{
-          width: "calc(100% - 30px)",
-          height: "calc(100% - 20px)",
-          position: "absolute",
-          WebkitTransformOrigin: "top",
-          transform: "scale(1)",
-        }}
-      />
+    <ImageContainer item>
+      <ImageSkeleton isloading={isImageLoading} />
       <StyledImage
         src={`https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`}
         alt="RNS Name"
@@ -80,11 +81,6 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
         height={200}
         onLoad={() => {
           setImageLoading(false);
-        }}
-        style={{
-          maxWidth: "300px",
-          height: "-webkit-fill-available",
-          boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
         }}
       />
     </ImageContainer>

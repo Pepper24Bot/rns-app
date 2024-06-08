@@ -2,12 +2,6 @@ import { HttpStatusCode } from "axios";
 import { api } from "../baseSlice"
 import { getHeader } from "@/services/customQuery";
 
-/**
- * TODO:
- * Move these interfaces in a service folder
- * ../services/interfaces/twitter.ts
- */
-
 export interface Request {
     token?: string,
 }

@@ -1,25 +1,20 @@
 import React from "react";
-import { Divider, Grid, alpha, styled } from "@mui/material";
+import { Grid, alpha, styled } from "@mui/material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 import {
   ActionButton,
   Description as StyledDescription,
   Flex,
-  FlexLeft,
   FlexRight,
   HighlightText,
   PrimaryLabel,
   SecondaryLabel,
 } from "../Theme/StyledGlobal";
-import { X } from "@mui/icons-material";
-import { grey } from "@mui/material/colors";
-import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
-import Image from "next/image";
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
-import FeatureToggle from "../Reusables/FeatureToggle";
+import Image from "next/image";
 
 const Container = styled(Grid)(({ theme }) => ({
   maxWidth: "320px",
@@ -198,29 +193,6 @@ export const Wallets: React.FC = () => {
             </FlexRight>
           )}
         </Grid>
-        <FeatureToggle feature={FeatureList.SocialAccounts}>
-          {activeConnector?.name && (
-            <>
-              <Divider
-                sx={{
-                  mt: 8,
-                  mb: 4,
-                  borderColor: alpha(grey[900], 0.35),
-                }}
-              />
-              <Grid>
-                <HeaderLabel>Social Accounts</HeaderLabel>
-                <FlexLeft>
-                  <X />
-                  <Grid>
-                    <Label>X (Twitter)</Label>
-                    <AccountLabel>@placeholder</AccountLabel>
-                  </Grid>
-                </FlexLeft>
-              </Grid>
-            </>
-          )}
-        </FeatureToggle>
       </WalletsContainer>
     </Container>
   );

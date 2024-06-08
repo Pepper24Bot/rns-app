@@ -131,6 +131,11 @@ const Divider = styled(MuiDivider)(({ theme }) => ({
   filter: `drop-shadow(0px 0px 5px ${alpha(theme.palette.primary.main, 0.15)})`,
 }));
 
+const NextImage = styled(Image)(({ theme }) => ({
+  marginRight: "8px",
+  color: "white",
+}));
+
 export const SearchForm: React.FC = () => {
   const { status } = useAccount();
   const { toggleModal } = useModalState();
@@ -271,12 +276,11 @@ export const SearchForm: React.FC = () => {
                 });
               }}
             >
-              <Image
+              <NextImage
                 src="/icons/wallet.svg"
                 alt="Wallet Icon"
                 width={24}
                 height={24}
-                style={{ marginRight: "8px", color: "white" }}
               />
               Connect Your Wallet
             </ConnectButton>

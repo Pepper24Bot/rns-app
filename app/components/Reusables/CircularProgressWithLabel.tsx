@@ -1,5 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography, styled } from "@mui/material";
+
+const BoxContainer = styled(Box)(({ theme }) => ({
+  position: "relative",
+  display: "inline-flex",
+  marginLeft: "8px",
+}));
+
+const Countdown = styled(Box)(({ theme }) => ({
+  top: 0,
+  left: 0,
+  bottom: 0,
+  right: 0,
+  position: "absolute",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const Progress = styled(CircularProgress)(({ theme }) => ({
+  borderRadius: "50%",
+  boxShadow: `inset 0 0 0 ${(1 / 44) * 150}px rgba(84,6,36, 0.25)`,
+}));
 
 export interface ProgressProps {
   isVisible?: boolean;
@@ -46,33 +68,14 @@ export const CircularProgressWithLabel: React.FC<ProgressProps> = (
   }, [isSuccess]);
 
   return (
-    <Box sx={{ position: "relative", display: "inline-flex", ml: 1 }}>
-      <CircularProgress
-        variant="determinate"
-        value={progress}
-        size={50}
-        sx={{
-          borderRadius: "50%",
-          boxShadow: `inset 0 0 0 ${(1 / 44) * 150}px rgba(84,6,36, 0.25)`,
-        }}
-      />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: "absolute",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+    <BoxContainer>
+      <Progress variant="determinate" value={progress} size={50} />
+      <Countdown>
         <Typography variant="caption" component="div" color="text.secondary">
           {Math.trunc((progress * 600) / 1000)}s
         </Typography>
-      </Box>
-    </Box>
+      </Countdown>
+    </BoxContainer>
   );
 };
 

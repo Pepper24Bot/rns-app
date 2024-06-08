@@ -114,7 +114,7 @@ export const EmailSubscription: React.FC = () => {
           Join our mailing list to stay in the loop with our newest feature
           releases, Partnership Announcements and special offers.{" "}
         </SubTitle>
-        <FlexCenter sx={{ alignItems: "start" }}>
+        <FlexCenter alignItems="start">
           <SubscribeField
             error={!isValid}
             helperText={!isValid ? "Email is not valid!" : ""}

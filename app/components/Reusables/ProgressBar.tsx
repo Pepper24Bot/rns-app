@@ -10,6 +10,19 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { green, lightGreen, red } from "@mui/material/colors";
 
+const LoadingText = styled(Typography)(({ theme }) => ({
+  fontSize: "12px",
+  fontWeight: FONT_WEIGHT.Regular,
+  textAlign: "center",
+  color: alpha(theme.palette.text.primary, 0.5),
+}));
+
+const BoxContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  width: "100%",
+}));
+
 export interface ProgressBar extends LinearProgressProps {
   // value: number;
   isError?: boolean;
@@ -18,13 +31,6 @@ export interface ProgressBar extends LinearProgressProps {
   isSuccess?: boolean;
   resetProgress?: boolean;
 }
-
-const LoadingText = styled(Typography)(({ theme }) => ({
-  fontSize: "12px",
-  fontWeight: FONT_WEIGHT.Regular,
-  textAlign: "center",
-  color: alpha(theme.palette.text.primary, 0.5),
-}));
 
 export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
   const {
@@ -67,7 +73,7 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
   }, [isSuccess]);
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+    <BoxContainer>
       <Box sx={{ width: "100%" }}>
         {isError ? (
           <LoadingText>Transaction failed, please try again.</LoadingText>
@@ -99,7 +105,7 @@ export const ProgressBar: React.FC<ProgressBar> = (props: ProgressBar) => {
           }}
         />
       </Box>
-    </Box>
+    </BoxContainer>
   );
 };
 

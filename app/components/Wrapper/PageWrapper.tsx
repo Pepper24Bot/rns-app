@@ -28,10 +28,6 @@ const WrapperContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const ContentContainer = styled(Grid)(({ theme }) => ({
-  // minHeight: "calc(100vh - 198px)",
-}));
-
 export interface WrapperProps {
   children?: React.ReactNode;
 }
@@ -48,11 +44,11 @@ export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
             <GlobalTheme>
               <WrapperContainer>
                 <SnackbarWrapper>
-                  <ContentContainer>
+                  <Grid>
                     <PageNavigation />
                     <PageModal />
                     {children}
-                  </ContentContainer>
+                  </Grid>
                   <PageFooter />
                 </SnackbarWrapper>
               </WrapperContainer>

@@ -1,5 +1,4 @@
 import { ContractDetails } from "@/hooks/useContractDetails";
-import { Payment } from "@/redux/domain/domainSlice";
 import { Address } from "viem";
 
 export interface RegisterProps {

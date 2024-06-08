@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   BaseButton,
   ModalInputField,
@@ -115,7 +115,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
         }}
       />
       <Collapse in={isShowing}>
-        <FieldContainer sx={{ padding: "10px 25px" }}>
+        <FieldContainer py={1.25} px={3.125}>
           <Button
             disabled={year === 1}
             onClick={() => {

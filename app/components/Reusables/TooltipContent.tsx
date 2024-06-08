@@ -11,10 +11,6 @@ const InfoTip = styled(SecondaryLabel)(({ theme }) => ({
   whiteSpace: "pre-line",
 }));
 
-const Highlight = styled("span")(({ theme }) => ({
-  color: theme.palette.text.primary,
-}));
-
 interface TooltipProps {
   content: string;
   highlights: { text: string; isUrl?: boolean }[];

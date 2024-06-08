@@ -3,6 +3,7 @@ import {
   SecondaryLabel,
   ButtonLabel,
   TooltipContainer,
+  SkeletonRectangular,
 } from "@/components/Theme/StyledGlobal";
 import {
   MoreVert,
@@ -39,6 +40,15 @@ export const ItemContainer = styled(Grid)(({ theme }) => ({
 
 export const ImageContainer = styled(Grid)(({ theme }) => ({
   padding: "20px",
+  position: "relative",
+}));
+
+export const ImageSkeleton = styled(SkeletonRectangular)(({ theme }) => ({
+  width: "calc(100% - 40px)",
+  height: "calc(100% - 45px)",
+  position: "absolute",
+  WebkitTransformOrigin: "top",
+  transform: "scale(1)",
 }));
 
 export const RnsName = styled(Grid)(({ theme }) => ({

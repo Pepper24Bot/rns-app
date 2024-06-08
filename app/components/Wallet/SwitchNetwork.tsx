@@ -71,12 +71,9 @@ export const SwitchNetwork: React.FC = () => {
 
   const switchNetwork = async () => {
     try {
-      const newChain = await switchChain(config, {
+      await switchChain(config, {
         chainId: chainId as any,
       });
-
-      console.log("newChain:: ", newChain);
-      console.log("activeConnector:: ", activeConnector);
 
       if (activeConnector?.id === "walletConnect") {
         connect({ connector: activeConnector, chainId });

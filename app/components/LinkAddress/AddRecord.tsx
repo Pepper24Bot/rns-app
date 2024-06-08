@@ -12,7 +12,7 @@ import { Address } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { isEmpty } from "lodash";
 import { LinkProps } from "@/interfaces/components/transaction";
-import { useEnsAddress, useEnsName } from "wagmi";
+import { useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
@@ -142,6 +142,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
                 setInputAddr(value);
 
                 /**
+                 * TODO: Change validation to isAddress
                  * If inputted address is invalid, and an onchange has been triggered,
                  * reset the invalid field flag
                  */
