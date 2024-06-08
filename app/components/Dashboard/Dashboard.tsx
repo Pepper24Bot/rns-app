@@ -25,16 +25,18 @@ import {
   Tabs,
 } from "./StyledDashboard";
 
-import Names from "./Tab/Names";
-import Favorites from "./Tab/Favorites";
-import LoyaltyPoints from "./Tab/Loyalty";
-import Notifications from "./Tab/Notifications";
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import FeatureToggle from "../Reusables/FeatureToggle";
 import FilterOption from "../Reusables/FilterOption";
-import FrequentlyAsked from "./Tab/Faq/Faq";
 
-export const Dashboard: React.FC = () => {
+export interface DashboardProps {
+  children?: React.ReactNode;
+  hasMounted?: boolean;
+}
+
+export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
+  const { children, hasMounted } = props;
+
   const { status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
   const { updateNameList, useFilters } = useDashboardState();
@@ -55,7 +57,6 @@ export const Dashboard: React.FC = () => {
     null
   );
 
-  const [hasMounted, setHasMounted] = useState<boolean>(false);
   const [isViewOpen, setIsViewOpen] = useState<boolean>(false);
   const [viewAnchor, setViewAnchor] = useState<HTMLButtonElement | null>(null);
 
@@ -225,13 +226,6 @@ export const Dashboard: React.FC = () => {
     hasMounted,
   ]);
 
-  /**
-   * This will fix the hydration issue in NextJS.
-   */
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
   return (
     <Collapse in={isDashboardVisible}>
       <Container id="Dashboard-Container">
@@ -307,33 +301,7 @@ export const Dashboard: React.FC = () => {
                 })}
               </Tabs>
             </Grid>
-            <Grid>
-              {/* TODO: Add page routing */}
-              <FeatureToggle feature={FeatureList.Identities}>
-                {activeTab === 0 && (
-                  <Names
-                    hasMounted={hasMounted}
-                    areNamesLoading={areNamesLoading}
-                  />
-                )}
-              </FeatureToggle>
-
-              <FeatureToggle feature={FeatureList.FAQ}>
-                {activeTab === 1 && <FrequentlyAsked />}
-              </FeatureToggle>
-
-              <FeatureToggle feature={FeatureList.Identities}>
-                {activeTab === 2 && <Favorites />}
-              </FeatureToggle>
-
-              <FeatureToggle feature={FeatureList.Identities}>
-                {activeTab === 3 && <LoyaltyPoints />}
-              </FeatureToggle>
-
-              <FeatureToggle feature={FeatureList.Identities}>
-                {activeTab === 4 && <Notifications />}
-              </FeatureToggle>
-            </Grid>
+            <Grid id="Tab-Content">{children}</Grid>
           </Content>
         </DashboardContainer>
       </Container>
