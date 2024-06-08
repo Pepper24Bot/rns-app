@@ -3,7 +3,7 @@ import { Collapse, Grid, InputAdornment, IconButton } from "@mui/material";
 import { useAccount } from "wagmi";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { FlexJustified } from "../Theme/StyledGlobal";
-import { Tune, ViewColumn } from "@mui/icons-material";
+import { Notifications, Tune, ViewColumn } from "@mui/icons-material";
 import { DASHBOARD_TAB_ITEMS, DEFAULT_DEBOUNCE } from "@/constants/components";
 import {
   useGetNamesByIdQuery,
@@ -30,6 +30,10 @@ import { useRouter } from "next/navigation";
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import FeatureToggle from "../Reusables/FeatureToggle";
 import FilterOption from "../Reusables/FilterOption";
+import FrequentlyAsked from "./Tab/Faq/Faq";
+import Favorites from "./Tab/Favorites";
+import LoyaltyPoints from "./Tab/Loyalty";
+import Names from "./Tab/Names";
 
 export interface DashboardProps {
   children?: React.ReactNode;
@@ -223,11 +227,11 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
   const setPathNameFromTab = (tab: number) => {
     switch (tab) {
       case 0:
-        return router.replace("/identities");
+        return router.replace("/identities", { scroll: false });
       case 1:
-        return router.replace("/faq");
+        return router.replace("/faq", { scroll: false });
       default:
-        return router.replace("/");
+        return router.replace("/", { scroll: false });
     }
   };
 
@@ -329,7 +333,32 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
                 })}
               </Tabs>
             </Grid>
-            <Grid id="Tab-Content">{children}</Grid>
+            <Grid id="Tab-Content">
+              <FeatureToggle feature={FeatureList.Identities}>
+                {activeTab === 0 && (
+                  <Names
+                    hasMounted={hasMounted}
+                    areNamesLoading={areNamesLoading}
+                  />
+                )}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.FAQ}>
+                {activeTab === 1 && <FrequentlyAsked />}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.Identities}>
+                {activeTab === 2 && <Favorites />}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.Identities}>
+                {activeTab === 3 && <LoyaltyPoints />}
+              </FeatureToggle>
+
+              <FeatureToggle feature={FeatureList.Identities}>
+                {activeTab === 4 && <Notifications />}
+              </FeatureToggle>
+            </Grid>
           </Content>
         </DashboardContainer>
       </Container>

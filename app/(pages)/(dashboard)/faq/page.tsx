@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Dashboard from "@/components/Dashboard/Dashboard";
 import { scrollIntoElement } from "@/utils/common";
+import Dashboard from "@/components/Dashboard/Dashboard";
 import FrequentlyAsked from "@/components/Dashboard/Tab/Faq/Faq";
 
 export default function Page() {
@@ -20,8 +20,6 @@ export default function Page() {
   }, [hasMounted]);
 
   return (
-    <Dashboard hasMounted={hasMounted}>
-      <FrequentlyAsked />
-    </Dashboard>
+    <Dashboard hasMounted={hasMounted}>{/* <FrequentlyAsked /> */}</Dashboard>
   );
 }
