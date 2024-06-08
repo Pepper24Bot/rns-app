@@ -223,11 +223,11 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
   const setPathNameFromTab = (tab: number) => {
     switch (tab) {
       case 0:
-        return router.push("/identities");
+        return router.replace("/identities");
       case 1:
-        return router.push("/faq");
+        return router.replace("/faq");
       default:
-        return router.push("/");
+        return router.replace("/");
     }
   };
 
