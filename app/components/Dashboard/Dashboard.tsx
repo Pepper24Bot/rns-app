@@ -24,6 +24,8 @@ import {
   Title,
   Tabs,
 } from "./StyledDashboard";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import FeatureToggle from "../Reusables/FeatureToggle";
@@ -37,6 +39,8 @@ export interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
   const { children, hasMounted } = props;
 
+  const router = useRouter();
+
   const { status } = useAccount();
   const { isFeatureEnabled } = useFeatureToggle();
   const { updateNameList, useFilters } = useDashboardState();
@@ -44,10 +48,22 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
+  const pathName = usePathname();
   const options = useFilters();
   const address = root.address;
 
-  const [activeTab, setActiveTab] = useState<number>(0); // tab-index
+  const getSelectedTab = () => {
+    switch (pathName) {
+      case "/identities":
+        return 0;
+      case "/faq":
+        return 1;
+      default:
+        return 0;
+    }
+  };
+
+  const [activeTab, setActiveTab] = useState<number>(getSelectedTab()); // tab-index
   const [searchValue, setSearchValue] = useState<string>("");
   const [inputValue, setInputValue] = useState<string>("");
   const [isDashboardVisible, setIsDashboardVisible] = useState<boolean>(true); // show by default
@@ -204,6 +220,17 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
     }
   };
 
+  const setPathNameFromTab = (tab: number) => {
+    switch (tab) {
+      case 0:
+        return router.push("/identities");
+      case 1:
+        return router.push("/faq");
+      default:
+        return router.push("/");
+    }
+  };
+
   useEffect(() => {
     if (hasMounted && status === "connected" && address) {
       setIsDashboardVisible(true);
@@ -290,6 +317,7 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
                 value={activeTab}
                 onChange={(_, value) => {
                   setActiveTab(value);
+                  setPathNameFromTab(value);
                 }}
               >
                 {DASHBOARD_TAB_ITEMS.map((item, index) => {
