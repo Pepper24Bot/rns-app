@@ -54,6 +54,7 @@ import { useSnackbar } from "notistack";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useShareState } from "@/redux/share/shareSlice";
 import { WARNING_ASCII } from "@/constants/content";
+import { useRouter } from "next/navigation";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -79,6 +80,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     action: "NameWrapper",
   });
 
+  const router = useRouter();
   const nameHash = namehash(item.name ?? "");
   const nameRef = useRef<HTMLDivElement | null>(null);
 
@@ -104,7 +106,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: activeAddress,
   });
 
-  const characterSet = findCharacterSet(item.domain.labelName || "");
+  const label = item.domain.labelName || "";
+  const characterSet = findCharacterSet(label);
   const ensAddr = item.domain.resolver?.addr?.id;
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const isTweetVerified =
@@ -189,23 +192,20 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   const handleMenuSelect = (menuOption: Option) => {
-    if (menuOption.label === "Download Image") {
-      setDownloadRequested(true);
-    } else {
-      const data: CardProps = {
-        domain: item.domain,
-        owner: item.owner,
-        ensName: ensName || "",
-        activeAddress,
-      };
-
-      toggleModal({
-        id: menuOption.label,
-        title: menuOption.title || menuOption.label,
-        data,
-        isCloseDisabled: true,
-        isXDisabled: true,
-      });
+    switch (menuOption.label) {
+      case "Extend Expiry":
+        return router.replace(`/expiry/${label}`, { scroll: false });
+      case "Link Identity":
+        return router.replace(`/record/${label}`, { scroll: false });
+      case "Set as Primary":
+        return router.replace(`/primary/${label}`, { scroll: false });
+      case "Transfer":
+        return router.replace(`/transfer/${label}`, { scroll: false });
+      case "Download Image":
+        setDownloadRequested(true);
+        return;
+      default:
+        return;
     }
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Domain } from "@/redux/graphql/hooks";
@@ -9,9 +9,10 @@ import { useRouter } from "next/navigation";
 import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
 import { useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
+import useValidateName from "@/hooks/useValidateName";
 
 export default function Page({ params }: { params: { name: string } }) {
-  const name = params.name;
+  const name = decodeURI(params.name);
   const label = name.split(".root")[0];
 
   const router = useRouter();
@@ -21,16 +22,21 @@ export default function Page({ params }: { params: { name: string } }) {
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
+  const { label: normalizedLabel } = useValidateName({
+    label,
+  });
+
   const { data, isSuccess } = useGetNamesByIdAndNameQuery(
-    { id: root.address?.toLowerCase() || "0x", name: `${label}.root` },
-    { skip: name === null || !root.address }
+    {
+      id: root.address?.toLowerCase() || "0x",
+      name: `${normalizedLabel}.root`,
+    },
+    { skip: isEmpty(normalizedLabel) || !root.address }
   );
 
   const { data: ensName } = useEnsName({
     address: root.address || "0x",
   });
-
-  const [hasMounted, setHasMounted] = useState<boolean>(false);
 
   const togglePrimaryModal = () => {
     const domain = data?.wrappedDomains[0].domain;
@@ -49,11 +55,7 @@ export default function Page({ params }: { params: { name: string } }) {
   };
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (name && root.address && hasMounted && isSuccess) {
+    if (normalizedLabel && root.address && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
         togglePrimaryModal();
       } else {
@@ -64,7 +66,7 @@ export default function Page({ params }: { params: { name: string } }) {
         );
       }
     }
-  }, [name, root.address, hasMounted, isSuccess]);
+  }, [normalizedLabel, root.address, isSuccess]);
 
   return <></>;
 }

@@ -12,14 +12,14 @@ export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
   const label = name.split(".root")[0];
 
-  const { label: normalizedLabel } = useValidateName({
-    label,
-  });
-
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
+
+  const { label: normalizedLabel } = useValidateName({
+    label,
+  });
 
   const { data, isSuccess } = useGetNamesByNameQuery(
     { labelName: normalizedLabel },
@@ -50,7 +50,6 @@ export default function Page({ params }: { params: { name: string } }) {
   };
 
   useEffect(() => {
-    console.log("normalizedLabel:: ", normalizedLabel);
     if (normalizedLabel && root.address && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
         toggleDetails();

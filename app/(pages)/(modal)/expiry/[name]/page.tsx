@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
@@ -8,9 +8,10 @@ import { isEmpty } from "lodash";
 import { useRouter } from "next/navigation";
 import { Domain } from "@/redux/graphql/hooks";
 import { useSnackbar } from "notistack";
+import useValidateName from "@/hooks/useValidateName";
 
 export default function Page({ params }: { params: { name: string } }) {
-  const name = params.name;
+  const name = decodeURI(params.name);
   const label = name.split(".root")[0];
 
   const router = useRouter();
@@ -20,12 +21,14 @@ export default function Page({ params }: { params: { name: string } }) {
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
-  const { data, isSuccess } = useGetNamesByNameQuery(
-    { labelName: label },
-    { skip: name === null }
-  );
+  const { label: normalizedLabel } = useValidateName({
+    label,
+  });
 
-  const [hasMounted, setHasMounted] = useState<boolean>(false);
+  const { data, isSuccess } = useGetNamesByNameQuery(
+    { labelName: normalizedLabel },
+    { skip: isEmpty(normalizedLabel) }
+  );
 
   const toggleExpiryModal = () => {
     const domain = data?.wrappedDomains[0].domain;
@@ -41,23 +44,20 @@ export default function Page({ params }: { params: { name: string } }) {
     });
   };
 
+  // TODO: Fix this - should allow lookup without connected wallet
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (name && root.address && hasMounted && isSuccess) {
+    if (normalizedLabel && root.address && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
         toggleExpiryModal();
       } else {
         router.replace("/", { scroll: false });
         enqueueSnackbar(
-          `No ${name} has been found. Redirecting to main page.`,
+          `No ${normalizedLabel}.root has been found. Redirecting to main page.`,
           { variant: "info" }
         );
       }
     }
-  }, [name, root.address, hasMounted, isSuccess]);
+  }, [normalizedLabel, root.address, isSuccess]);
 
   return <></>;
 }

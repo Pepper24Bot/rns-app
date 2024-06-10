@@ -9,9 +9,10 @@ import { useRouter } from "next/navigation";
 import { useEnsName } from "wagmi";
 import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
 import { useSnackbar } from "notistack";
+import useValidateName from "@/hooks/useValidateName";
 
 export default function Page({ params }: { params: { name: string } }) {
-  const name = params.name;
+  const name = decodeURI(params.name);
   const label = name.split(".root")[0];
 
   const router = useRouter();
@@ -21,19 +22,25 @@ export default function Page({ params }: { params: { name: string } }) {
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
+  const { label: normalizedLabel } = useValidateName({
+    label,
+  });
+
   const { data, isSuccess } = useGetNamesByIdAndNameQuery(
-    { id: root.address?.toLowerCase() || "0x", name: `${label}.root` },
-    { skip: name === null || !root.address }
+    {
+      id: root.address?.toLowerCase() || "0x",
+      name: `${normalizedLabel}.root`,
+    },
+    { skip: isEmpty(normalizedLabel) || !root.address }
   );
 
   const { data: ensName } = useEnsName({
     address: root.address || "0x",
   });
 
-  const [hasMounted, setHasMounted] = useState<boolean>(false);
-
   const toggleLinkModal = () => {
     const domain = data?.wrappedDomains[0].domain;
+    const id = data?.wrappedDomains[0].owner.id;
 
     toggleModal({
       id: "Link Identity",
@@ -43,27 +50,27 @@ export default function Page({ params }: { params: { name: string } }) {
       data: {
         domain: domain as Partial<Domain>,
         ensName,
+        activeAddress: root.address,
+        owner: {
+          id,
+        },
       },
     });
   };
 
   useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (name && root.address && hasMounted && isSuccess) {
+    if (normalizedLabel && root.address && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
         toggleLinkModal();
       } else {
         router.replace("/", { scroll: false });
         enqueueSnackbar(
-          `No ${name} has been found. Redirecting to main page.`,
+          `No ${normalizedLabel}.root has been found. Redirecting to main page.`,
           { variant: "info" }
         );
       }
     }
-  }, [name, root.address, hasMounted, isSuccess]);
+  }, [normalizedLabel, root.address, isSuccess]);
 
   return <></>;
 }
