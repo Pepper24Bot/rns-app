@@ -137,15 +137,14 @@ const NextImage = styled(Image)(({ theme }) => ({
 }));
 
 export const SearchForm: React.FC = () => {
-  const { status } = useAccount();
-  const { toggleModal } = useModalState();
-
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
   const [isNameNotSupported, setIsNameNotSupported] = useState<boolean>(false);
 
+  const { status } = useAccount();
+  const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
 
@@ -203,8 +202,8 @@ export const SearchForm: React.FC = () => {
   );
 
   useEffect(() => {
-    setIsViewRnsVisible(isEmpty(address) && !isWalletLoading);
-  }, [address, isWalletLoading]);
+    setIsViewRnsVisible(status === "disconnected");
+  }, [status]);
 
   return (
     <Container>

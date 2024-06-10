@@ -47,6 +47,7 @@ export const ImageSkeleton = styled(SkeletonRectangular)(({ theme }) => ({
   width: "calc(100% - 40px)",
   height: "calc(100% - 45px)",
   position: "absolute",
+  zIndex: 1,
   WebkitTransformOrigin: "top",
   transform: "scale(1)",
 }));
@@ -201,6 +202,8 @@ export const EnsImageCard = styled("img")(({ theme }) => ({
   border: `solid 1px ${alpha(grey[800], 0.25)}`,
   borderRadius: "4px",
   boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
+  position: "relative",
+  zIndex: 2,
 
   "@supports (-moz-appearance:none)": {
     width: "-moz-available",

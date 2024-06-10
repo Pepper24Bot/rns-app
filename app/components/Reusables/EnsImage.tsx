@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { namehash } from "viem";
-import { SkeletonRectangular } from "../Theme/StyledGlobal";
+import { ImageSkeleton } from "../Dashboard/Tab/Names/StyledName";
 
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
@@ -45,14 +45,6 @@ const StyledImage = styled("img")(({ theme }) => ({
   },
 }));
 
-const ImageSkeleton = styled(SkeletonRectangular)(({ theme }) => ({
-  width: "calc(100% - 30px)",
-  height: "calc(100% - 20px)",
-  position: "absolute",
-  WebkitTransformOrigin: "top",
-  transform: "scale(1)",
-}));
-
 export interface EnsImage {
   path?: string;
   name?: string;
@@ -65,7 +57,7 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
     action: "NameWrapper",
   });
 
-  const [isImageLoading, setImageLoading] = useState<boolean>(false);
+  const [isImageLoading, setImageLoading] = useState<boolean>(true);
   const nameHash = namehash(name);
 
   return (
@@ -79,9 +71,6 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
         fetchPriority="low"
         width={200}
         height={200}
-        onLoadStart={() => {
-          setImageLoading(true);
-        }}
         onLoad={() => {
           setImageLoading(false);
         }}

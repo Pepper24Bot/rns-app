@@ -90,7 +90,12 @@ export const Toolbar: React.FC = () => {
     data: { address },
   } = useRootNetwork();
 
-  const { data: ensName, refetch } = useEnsName({
+  const {
+    data: ensName,
+    refetch,
+    isSuccess: isEnsFetched,
+    isLoading: isEnsFetching,
+  } = useEnsName({
     address: address as Address,
   });
 
@@ -108,14 +113,16 @@ export const Toolbar: React.FC = () => {
    * html on the server does not match the rendered html
    * on the client-side
    */
-  const [walletLabel, setWalletLabel] = useState<string>("Connect Wallet");
+  const [walletLabel, setWalletLabel] = useState<string>("");
   const [iconPath, setIconPath] = useState<string>("/icons/wallet.svg");
 
   const [hasMounted, setHasMounted] = useState<boolean>(false);
   const [run, setRun] = useState<boolean>(true);
   const [steps, setSteps] = useState<Step[]>([]);
 
-  const isLabelLoading = isAccountLoading(status);
+  const isLabelLoading =
+    isAccountLoading(status) || (isEnsFetching && !isEnsFetched);
+
   const addressRef = useRef(null);
   const isTutorialDisabled = parseCookie("showTutorial") === "false";
 
@@ -159,18 +166,21 @@ export const Toolbar: React.FC = () => {
 
   useEffect(() => {
     if (hasMounted) {
-      const label = ensName
-        ? ensName
-        : address
-        ? getMaskedAddress(address)
-        : "Connect Wallet";
-
-      setWalletLabel(label);
-
+      let label = "";
+      if (status === "connected") {
+        // should not be loading and should be successful
+        if (!isEnsFetching && isEnsFetched && address) {
+          label = ensName || getMaskedAddress(address);
+          setWalletLabel(label);
+        }
+      } else if (status === "disconnected") {
+        label = "Connect Wallet";
+        setWalletLabel(label);
+      }
       const walletIcon = address ? path : "/icons/wallet.svg";
       setIconPath(walletIcon);
     }
-  }, [walletAddress, address, ensName, hasMounted]);
+  }, [address, ensName, isEnsFetched, isEnsFetching, hasMounted]);
 
   useEffect(() => {
     refetch();
@@ -283,7 +293,7 @@ export const Toolbar: React.FC = () => {
                 sx={{ bgcolor: "primary.light" }}
               />
               <ActionLabel isloading={isLabelLoading || !hasMounted}>
-                {walletLabel}
+                {walletLabel || "Connect Wallet"}
               </ActionLabel>
             </Relative>
           </ToggleButton>
