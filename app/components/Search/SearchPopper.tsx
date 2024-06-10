@@ -221,6 +221,15 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                           variant="contained"
                           onClick={() => {
                             if (isInformationHidden) {
+                              toggleModal({
+                                id: "Register Name",
+                                title: "Register",
+                                isCloseDisabled: true,
+                                isXDisabled: true,
+                                data: {
+                                  name: searchValue,
+                                },
+                              });
                               router.replace(`/${searchValue}`, {
                                 scroll: false,
                               });
@@ -252,6 +261,14 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         <SearchButton
                           variant="contained"
                           onClick={() => {
+                            toggleModal({
+                              id: "Registration Details",
+                              title: "Registration Details",
+                              data: {
+                                name: `${searchValue}.root` || "",
+                                domain: data,
+                              },
+                            });
                             router.replace(`/${searchValue}`, {
                               scroll: false,
                             });
@@ -284,6 +301,9 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                                 name: `${searchValue}.root` || "",
                                 domain: data,
                               },
+                            });
+                            router.replace(`/${searchValue}`, {
+                              scroll: false,
                             });
                           }}
                         >
