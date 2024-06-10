@@ -409,12 +409,27 @@ export const InformationTip = styled(
     padding: "12px",
     filter: `drop-shadow(0px 1px 1px rgb(0, 0, 0, 0.5))`,
     fontFamily: "var(--secondary-font)",
+    minWidth: "fit-content",
+
+    [theme.breakpoints.down(600)]: {
+      minWidth: "100px",
+    },
   },
   [`& .${tooltipClasses.arrow}`]: {
     color: darken(theme.palette.background.darker, 0.5),
     fontSize: (theme as Theme).typography.pxToRem(16),
     filter: `drop-shadow(-1px 0px 0px rgb(0, 0, 0, 0.25))`,
   },
+}));
+
+export const TooltipContainer = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "isShowTooltip",
+})<{ isShowTooltip?: boolean }>(({ isShowTooltip, theme }) => ({
+  whiteSpace: "nowrap",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
+  fontFamily: "var(--secondary-font)",
+  cursor: isShowTooltip ? "pointer" : "",
 }));
 
 export const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
@@ -580,14 +595,4 @@ export const FieldValue = styled(FieldLabel, {
 export const PrimaryChip = styled(Chip)(({ theme }) => ({
   backgroundColor: amber[500],
   color: theme.palette.background.paper,
-}));
-
-export const TooltipContainer = styled(Grid, {
-  shouldForwardProp: (prop) => prop !== "isShowTooltip",
-})<{ isShowTooltip?: boolean }>(({ isShowTooltip, theme }) => ({
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  fontFamily: "var(--secondary-font)",
-  cursor: isShowTooltip ? "pointer" : "",
 }));

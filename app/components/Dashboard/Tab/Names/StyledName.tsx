@@ -15,6 +15,7 @@ import {
   Download,
   Link,
   X,
+  Cancel,
 } from "@mui/icons-material";
 import {
   Grid,
@@ -24,7 +25,7 @@ import {
   styled,
   Divider as MuiDivider,
 } from "@mui/material";
-import { grey, green, yellow, red, amber } from "@mui/material/colors";
+import { grey, green, yellow, red, amber, orange } from "@mui/material/colors";
 
 export const Container = styled(Grid)(({ theme }) => ({
   background: "linear-gradient(180deg, #0C0C0C 50%, rgba(194,24,91,0.75) 100%)",
@@ -115,7 +116,17 @@ export const CheckedIcon = styled(CheckCircle, {
   width: "16px",
   height: "16px",
   visibility: hidden ? "hidden" : "visible",
-  margin: "0 4px",
+  cursor: "pointer",
+}));
+
+export const ExternalAddressIcon = styled(CheckedIcon)(({ theme }) => ({
+  color: orange[700],
+}));
+
+export const NoAddressIcon = styled(Cancel)(({ theme }) => ({
+  color: red[600],
+  width: "16px",
+  height: "16px",
   cursor: "pointer",
 }));
 

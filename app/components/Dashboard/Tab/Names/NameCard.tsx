@@ -33,6 +33,8 @@ import {
   Highlight,
   EnsImageCard,
   ImageSkeleton,
+  ExternalAddressIcon,
+  NoAddressIcon,
 } from "./StyledName";
 import {
   findCharacterSet,
@@ -231,6 +233,32 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     }
   };
 
+  const getTooltipProps = () => {
+    if (ensAddr === root.address?.toLowerCase()) {
+      return {
+        heading: "Linked to connected wallet address",
+        icons: {
+          heading: <CheckedIcon />,
+        },
+        content: `${item.name} is linked to connected wallet address ${ensAddr}`,
+      };
+    } else if (hasLinkedAddr && ensAddr !== root.address?.toLowerCase()) {
+      return {
+        heading: "Beware: Linked to an external wallet address!",
+        icons: {
+          heading: <ExternalAddressIcon />,
+        },
+        content: `${item.name} is linked to external wallet address ${ensAddr}`,
+      };
+    } else if (!hasLinkedAddr) {
+      return {
+        icons: {
+          heading: <NoAddressIcon />,
+        },
+      };
+    }
+  };
+
   useEffect(() => {
     const start = new Date("2024-05-28T08:00:00.000+10:00");
     const end = new Date("2024-06-25T08:00:00.000+10:00");
@@ -309,21 +337,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         }
                       />
                     </InformationTip>
-                    <InformationTip
-                      title={
-                        <TooltipContent
-                          content={`${item.name} is linked to ${ensAddr}`}
-                          highlights={[
-                            { text: item.name || "" },
-                            { text: ensAddr || "" },
-                          ]}
-                        />
-                      }
-                      arrow
-                      placement="top"
-                    >
-                      <CheckedIcon hidden={!hasLinkedAddr} />
-                    </InformationTip>
+
                     <DropDownMenu
                       handleSelect={handleMenuSelect}
                       options={[
@@ -347,20 +361,38 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                   </FlexRight>
                 </FlexJustified>
                 <NameDetails>
-                  {hasLinkedAddr ? (
+                  <FlexJustified>
                     <Detail>
-                      <Label>Linked to</Label>
-                      {getMaskedAddress(String(ensAddr), 6)}
+                      <Label>Linked to:</Label>
+                      {hasLinkedAddr
+                        ? getMaskedAddress(String(ensAddr), 6)
+                        : "No Address"}
                     </Detail>
-                  ) : (
-                    <Detail>
-                      <Label>Owner</Label>
-                      {getMaskedAddress(String(item.owner.id), 6)}
-                    </Detail>
-                  )}
+                    <InformationTip
+                      title={
+                        hasLinkedAddr ? (
+                          <TooltipContent
+                            {...getTooltipProps()}
+                            wordBreak="keep-all"
+                            minWidth="325px"
+                            highlights={[
+                              { text: item.name || "" },
+                              { text: ensAddr || "" },
+                            ]}
+                          />
+                        ) : (
+                          ""
+                        )
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      {getTooltipProps()?.icons?.heading || <></>}
+                    </InformationTip>
+                  </FlexJustified>
                   <Grid container>
                     <Detail mr={1}>
-                      <Label>Expiry</Label>
+                      <Label>Expiry:</Label>
                       {expiration}
                     </Detail>
                     <Detail>
