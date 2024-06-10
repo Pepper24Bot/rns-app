@@ -199,7 +199,7 @@ export const EnsImageCard = styled("img")(({ theme }) => ({
   width: "-webkit-fill-available",
   height: "-webkit-fill-available",
 
-  border: `solid 1px ${alpha(grey[800], 0.25)}`,
+  border: `solid 1px ${darken(grey[900], 0.5)}`,
   borderRadius: "4px",
   boxShadow: `0px 0px 20px 0px ${darken(grey[900], 1)}`,
   position: "relative",

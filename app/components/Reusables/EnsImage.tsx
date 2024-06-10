@@ -30,6 +30,8 @@ const StyledImage = styled("img")(({ theme }) => ({
   width: "-webkit-fill-available",
   border: `solid 1px ${alpha(grey[700], 0.2)}`,
   borderRadius: "4px",
+  position: "relative",
+  zIndex: 2,
 
   [theme.breakpoints.between("sm", "md")]: {
     width: "25vw",
