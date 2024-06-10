@@ -46,6 +46,9 @@ export default function Page({ params }: { params: { name: string } }) {
       title: "Register",
       isCloseDisabled: true,
       isXDisabled: true,
+      data: {
+        name: normalizedLabel,
+      },
     });
   };
 

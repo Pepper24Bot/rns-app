@@ -26,7 +26,7 @@ import {
 import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
-import { NameStatus, useDomainState } from "@/redux/domain/domainSlice";
+import { NameStatus } from "@/redux/domain/domainSlice";
 import { parseCookie } from "@/utils/common";
 import { useRouter } from "next/navigation";
 
@@ -52,7 +52,7 @@ const SearchText = styled(SubTitle)(({ theme }) => ({
 
 const PopperContainer = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.darker,
-  padding: "25px 40px",
+  padding: "20px",
   borderRadius: "0 0 8px 8px",
 
   [theme.breakpoints.down("md")]: {
@@ -101,10 +101,10 @@ const SearchLabel = styled(SecondaryLabel)(({ theme }) => ({
 
 const FavoriteButton = styled(BaseIconButton)(({ theme }) => ({
   borderRadius: "32px",
-  padding: "8px",
+  padding: "4px",
   backgroundColor: "#161616",
   color: "#FFB800",
-  margin: "0 10px",
+  marginLeft: "8px",
 }));
 
 const FavoriteIcon = styled(Star)(({ theme }) => ({
@@ -118,7 +118,7 @@ const StarIcon = styled(StarBorder)(({ theme }) => ({
 }));
 
 const NextImage = styled(Image)(({ theme }) => ({
-  marginLeft: "20px",
+  margin: "0 8px",
   cursor: "pointer",
 }));
 
@@ -147,7 +147,6 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   const router = useRouter();
 
   const { toggleModal } = useModalState();
-  const { updateName } = useDomainState();
 
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
@@ -213,7 +212,6 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         <StarIcon />
                       </FavoriteButton>
                     </InformationTip>
-                    <Divider orientation="vertical" flexItem />
                     {status === "Available" ||
                     status === "Invalid" ||
                     status === "Not Supported" ? (
@@ -222,23 +220,17 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                           disabled={isNameInvalid || isNameNotSupported}
                           variant="contained"
                           onClick={() => {
-                            // Store in global state so the other componenst will be able to access the value
-                            updateName({ name: searchValue || "", status });
-
                             if (isInformationHidden) {
-                              // router.replace(`/${searchValue}`, {
-                              //   scroll: false,
-                              // });
-                              toggleModal({
-                                id: "Register Name",
-                                title: "Register",
-                                isCloseDisabled: true,
-                                isXDisabled: true,
+                              router.replace(`/${searchValue}`, {
+                                scroll: false,
                               });
                             } else {
                               toggleModal({
                                 id: "Registration Info",
                                 title: "Registration Process",
+                                data: {
+                                  label: searchValue,
+                                },
                               });
                             }
                           }}
@@ -251,33 +243,53 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                         </SearchButton>
                       </Grid>
                     ) : status === "Registered" ? (
-                      <SearchButton
-                        variant="contained"
-                        onClick={() => {
-                          toggleModal({
-                            id: "Registration Details",
-                            title: "Registration Details",
-                            data: {
-                              name: `${searchValue}.root` || "",
-                              domain: data,
-                            },
-                          });
-                        }}
-                      >
-                        View
-                      </SearchButton>
-                    ) : (
-                      <InformationTip
-                        title="View on secondary marketplace."
-                        arrow
-                      >
-                        <NextImage
-                          src="/icons/marketplace.svg"
-                          alt="MarketPlace Icon"
-                          width={36}
-                          height={36}
+                      <>
+                        <Divider
+                          orientation="vertical"
+                          flexItem
+                          sx={{ ml: 1 }}
                         />
-                      </InformationTip>
+                        <SearchButton
+                          variant="contained"
+                          onClick={() => {
+                            router.replace(`/${searchValue}`, {
+                              scroll: false,
+                            });
+                          }}
+                        >
+                          View
+                        </SearchButton>
+                      </>
+                    ) : (
+                      <>
+                        <InformationTip
+                          title="View on secondary marketplace."
+                          arrow
+                        >
+                          <NextImage
+                            src="/icons/marketplace.svg"
+                            alt="MarketPlace Icon"
+                            width={24}
+                            height={24}
+                          />
+                        </InformationTip>
+                        <Divider orientation="vertical" flexItem />
+                        <SearchButton
+                          variant="contained"
+                          onClick={() => {
+                            toggleModal({
+                              id: "Registration Details",
+                              title: "Registration Details",
+                              data: {
+                                name: `${searchValue}.root` || "",
+                                domain: data,
+                              },
+                            });
+                          }}
+                        >
+                          View
+                        </SearchButton>
+                      </>
                     )}
                   </FlexRight>
                   <SkeletonRectangular

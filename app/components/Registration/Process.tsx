@@ -11,7 +11,7 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { REGISTRATION_PROCESS } from "@/constants/content";
 import { parseCookie } from "@/utils/common";
-import { useModalState } from "@/redux/modal/modalSlice";
+import { useRouter } from "next/navigation";
 
 const Container = styled(Grid)(({ theme }) => ({
   maxWidth: "1000px",
@@ -79,8 +79,16 @@ const ContentText = styled(StepTitle)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Regular,
 }));
 
-export const RegistrationProcess: React.FC = () => {
-  const { toggleModal } = useModalState();
+interface ProcessProps {
+  label: string;
+}
+
+export const RegistrationProcess: React.FC<ProcessProps> = (
+  props: ProcessProps
+) => {
+  const { label: labelName } = props;
+
+  const router = useRouter();
 
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
@@ -138,9 +146,8 @@ export const RegistrationProcess: React.FC = () => {
           <ActionButton
             variant="contained"
             onClick={() => {
-              toggleModal({
-                id: "Register Name",
-                title: "Register",
+              router.replace(`/${labelName}`, {
+                scroll: false,
               });
             }}
           >

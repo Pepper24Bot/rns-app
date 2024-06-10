@@ -150,7 +150,7 @@ export const ModalContainer: React.FC = () => {
       case "Registration Details":
         return <RegistrationDetails {...props?.data} />;
       case "Registration Info":
-        return <RegistrationProcess />;
+        return <RegistrationProcess {...props?.data} />;
       case "Extend Expiry":
         return <Expiry {...props?.data} />;
       case "Link Identity":

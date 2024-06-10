@@ -79,10 +79,17 @@ const ViewProcessText = styled(SecondaryLabel, {
   color: disabled ? theme.palette.primary.dark : theme.palette.primary.main,
 }));
 
-export const RegisterName: React.FC = () => {
+interface RegistrationProps {
+  name: string; // label
+}
+
+export const RegisterName: React.FC<RegistrationProps> = (
+  props: RegistrationProps
+) => {
+  const { name = "" } = props;
   const { address = "0x" } = useAccount();
   const { useDomain, updateName } = useDomainState();
-  const { name = "", year = 1, payment } = useDomain();
+  const { year = 1, payment } = useDomain();
   const { enqueueSnackbar } = useSnackbar();
   const { isFeatureEnabled } = useFeatureToggle();
   const { useRootNetwork } = useRootNetworkState();
@@ -374,6 +381,7 @@ export const RegisterName: React.FC = () => {
       )}
       <Grid maxHeight="70vh" overflow="overlay">
         <Form
+          name={`${name}.root`}
           isShowing={!isRegistered}
           rentFee={rentFee}
           walletBalance={walletBalance}
@@ -452,9 +460,13 @@ export const RegisterName: React.FC = () => {
               <ActionButton
                 disabled={areBtnsDisabled}
                 onClick={() => {
+                  router.replace("/", { scroll: false });
                   toggleModal({
                     id: "Registration Info",
                     title: "Registration Process",
+                    data: {
+                      label: name,
+                    },
                   });
                 }}
                 sx={{
