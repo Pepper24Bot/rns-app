@@ -228,14 +228,6 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   }, [isApproved]);
 
   useEffect(() => {
-    // TODO: Fix this, should not manually resetting the name details here in this component
-    // TODO: Find a way to reset the values when the modal is closed
-    if (!isModalOpen) {
-      updateName({ ...nameInitialState });
-    }
-  }, [isModalOpen]);
-
-  useEffect(() => {
     if (xrpBalance?.value !== undefined) {
       const isSufficient =
         Number(formatEther(xrpBalance?.value ?? BigInt(0))) > 5;
@@ -323,6 +315,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
           sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
+            updateName({ ...nameInitialState });
             closeModal();
             router.replace("/", { scroll: false });
           }}

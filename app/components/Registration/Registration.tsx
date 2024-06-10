@@ -166,6 +166,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   const hashStr = hash as unknown as string;
 
   const handleCloseModal = () => {
+    updateName({ ...nameInitialState });
     closeModal();
     router.replace("/", { scroll: false });
   };
@@ -323,7 +324,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
 
       // Data Invalidation: Refresh Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
-      updateName({ status: "Registered" });
     }
   }, [isRegistered]);
 
@@ -344,14 +344,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
       handleRegister();
     }
   }, [isApproved]);
-
-  useEffect(() => {
-    // TODO: Fix this, should not manually resetting the name details here in this component
-    // TODO: Find a way to reset the values when the modal closes
-    if (!isModalOpen) {
-      updateName({ ...nameInitialState, name });
-    }
-  }, [isModalOpen]);
 
   useEffect(() => {
     if (xrpBalance?.value !== undefined) {

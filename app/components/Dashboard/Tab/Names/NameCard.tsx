@@ -191,15 +191,37 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     img.src = dataUrl;
   };
 
+  const toggleTransactionModal = (menuOption: Option) => {
+    const data: CardProps = {
+      domain: item.domain,
+      owner: item.owner,
+      ensName: ensName || "",
+      activeAddress,
+    };
+
+    toggleModal({
+      id: menuOption.label,
+      title: menuOption.title || menuOption.label,
+      data,
+      isCloseDisabled: true,
+      isXDisabled: true,
+    });
+  };
+
+  // THIS IS REDUNDANT
   const handleMenuSelect = (menuOption: Option) => {
     switch (menuOption.label) {
       case "Extend Expiry":
+        toggleTransactionModal(menuOption);
         return router.replace(`/expiry/${label}`, { scroll: false });
       case "Link Identity":
+        toggleTransactionModal(menuOption);
         return router.replace(`/record/${label}`, { scroll: false });
       case "Set as Primary":
+        toggleTransactionModal(menuOption);
         return router.replace(`/primary/${label}`, { scroll: false });
       case "Transfer":
+        toggleTransactionModal(menuOption);
         return router.replace(`/transfer/${label}`, { scroll: false });
       case "Download Image":
         setDownloadRequested(true);

@@ -37,7 +37,6 @@ export default function Page({ params }: { params: { name: string } }) {
   };
 
   const toggleRegistration = () => {
-    updateName({ name: normalizedLabel || "" });
     toggleModal({
       id: "Register Name",
       title: "Register",
