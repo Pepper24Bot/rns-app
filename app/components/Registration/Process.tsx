@@ -11,6 +11,7 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { REGISTRATION_PROCESS } from "@/constants/content";
 import { parseCookie } from "@/utils/common";
+import { useModalState } from "@/redux/modal/modalSlice";
 import { useRouter } from "next/navigation";
 
 const Container = styled(Grid)(({ theme }) => ({
@@ -87,6 +88,7 @@ export const RegistrationProcess: React.FC<ProcessProps> = (
   props: ProcessProps
 ) => {
   const { label: labelName } = props;
+  const { toggleModal } = useModalState();
 
   const router = useRouter();
 
@@ -148,6 +150,15 @@ export const RegistrationProcess: React.FC<ProcessProps> = (
             onClick={() => {
               router.replace(`/${labelName}`, {
                 scroll: false,
+              });
+              toggleModal({
+                id: "Register Name",
+                title: "Register",
+                isCloseDisabled: true,
+                isXDisabled: true,
+                data: {
+                  name: labelName,
+                },
               });
             }}
           >
