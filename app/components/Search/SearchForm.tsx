@@ -157,7 +157,7 @@ export const SearchForm: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const searchFieldRef = React.useRef(null);
   const isWalletLoading = isAccountLoading(status);
-  const address = root.address || "0x";
+  const address = root.address;
 
   const getNameStatus = () => {
     const isAvailable = isEmpty(data?.wrappedDomains);

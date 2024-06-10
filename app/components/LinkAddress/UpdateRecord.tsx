@@ -62,7 +62,7 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
             ),
         }}
       />
-      <InputField label="Owner" disabled value={owner} />
+      <InputField label="Owner" disabled value={ensName || owner} />
       <InputField
         error={!isFuturePassValid}
         helperText={

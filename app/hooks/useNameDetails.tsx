@@ -103,10 +103,10 @@ export default function useNameDetails(props: MakeCommitProps) {
   }, [name, isEnabled, duration, token]);
 
   useEffect(() => {
-    if (isEnabled && available) {
+    if (isEnabled && available && root.address) {
       makeCommitment();
     }
-  }, [name, isEnabled, duration, available]);
+  }, [name, isEnabled, duration, available, root.address]);
 
   const rentFee = rentPrice
     ? (rentPrice as unknown as RentPrice)

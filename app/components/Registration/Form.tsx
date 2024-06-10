@@ -13,7 +13,11 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
-import { Payment, useDomainState } from "@/redux/domain/domainSlice";
+import {
+  NameStatus,
+  Payment,
+  useDomainState,
+} from "@/redux/domain/domainSlice";
 import { PAYMENT_METHOD } from "@/constants/components";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { useAccount, useBalance } from "wagmi";
@@ -76,10 +80,17 @@ export interface FormProps {
 
   /** hide form when transaction is successful */
   isShowing?: boolean;
+  status?: NameStatus;
 }
 
 export const Form: React.FC<FormProps> = (props: FormProps) => {
-  const { name: nameProp, isShowing = true, rentFee, walletBalance } = props;
+  const {
+    name: nameProp,
+    isShowing = true,
+    rentFee,
+    walletBalance,
+    status,
+  } = props;
 
   // Get the native currency balance
   const { address = "0x" } = useAccount();
@@ -89,7 +100,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
 
   const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
     useDomainState();
-  const { name, payment, year, status } = useDomain();
+  const { name, payment, year } = useDomain();
 
   const getYearLabel = () => {
     return year && year > 1 ? "Years" : "Year";

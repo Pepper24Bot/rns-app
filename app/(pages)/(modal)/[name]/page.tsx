@@ -5,7 +5,6 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
 import { useDomainState } from "@/redux/domain/domainSlice";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import useValidateName from "@/hooks/useValidateName";
 
 export default function Page({ params }: { params: { name: string } }) {
@@ -14,8 +13,6 @@ export default function Page({ params }: { params: { name: string } }) {
 
   const { toggleModal } = useModalState();
   const { updateName } = useDomainState();
-  const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
 
   const { label: normalizedLabel } = useValidateName({
     label,
@@ -53,14 +50,14 @@ export default function Page({ params }: { params: { name: string } }) {
   };
 
   useEffect(() => {
-    if (normalizedLabel && root.address && isSuccess) {
+    if (normalizedLabel && isSuccess) {
       if (!isEmpty(data.wrappedDomains)) {
         toggleDetails();
       } else {
         toggleRegistration();
       }
     }
-  }, [normalizedLabel, root.address, isSuccess]);
+  }, [normalizedLabel, isSuccess]);
 
   return <></>;
 }

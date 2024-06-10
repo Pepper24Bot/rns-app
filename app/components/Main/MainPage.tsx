@@ -5,7 +5,6 @@ import { Grid, styled } from "@mui/material";
 
 import SearchForm from "@/components/Search/SearchForm";
 import Dashboard from "@/components/Dashboard/Dashboard";
-import Names from "../Dashboard/Tab/Names";
 
 const Container = styled(Grid)(({ theme }) => ({
   paddingTop: "80px",
@@ -21,10 +20,7 @@ export const MainPage: React.FC = () => {
   return (
     <Container>
       <SearchForm />
-      <Dashboard hasMounted={hasMounted}>
-        {/* Default active tab -- Identities */}
-        <Names hasMounted={hasMounted} />
-      </Dashboard>
+      <Dashboard hasMounted={hasMounted} />
     </Container>
   );
 };

@@ -87,7 +87,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   props: RegistrationProps
 ) => {
   const { name = "" } = props;
-  const { address = "0x" } = useAccount();
+  const { address } = useAccount();
   const { useDomain, updateName } = useDomainState();
   const { year = 1, payment } = useDomain();
   const { enqueueSnackbar } = useSnackbar();
@@ -270,7 +270,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
       resolver,
       args: {
         name,
-        owner: address,
+        owner: address || "0x",
         duration,
         secret,
         resolverAddr,
@@ -295,22 +295,24 @@ export const RegisterName: React.FC<RegistrationProps> = (
 
   // check wallet balance before doing transaction
   useEffect(() => {
-    const getBalanceOf = async () => {
-      const { data } = await getBalance({
-        payment,
-        fee: rentFee,
-      });
+    if (address) {
+      const getBalanceOf = async () => {
+        const { data } = await getBalance({
+          payment,
+          fee: rentFee,
+        });
 
-      const balance = formatUnits(data.balance, payment?.decimals ?? 6);
-      setWalletBalance(Number(balance));
+        const balance = formatUnits(data.balance, payment?.decimals ?? 6);
+        setWalletBalance(Number(balance));
 
-      setBalanceSufficient(data.isBalanceSufficient);
-    };
+        setBalanceSufficient(data.isBalanceSufficient);
+      };
 
-    if (hash) {
-      getBalanceOf();
+      if (hash) {
+        getBalanceOf();
+      }
     }
-  }, [rentFee, hash, payment?.address]);
+  }, [rentFee, hash, payment?.address, address]);
 
   useEffect(() => {
     if (isRegistered) {
@@ -385,6 +387,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
           isShowing={!isRegistered}
           rentFee={rentFee}
           walletBalance={walletBalance}
+          status={isRegistered ? "Registered" : "Available"}
         />
         <FlexCenter py={2}>
           <Relative>
