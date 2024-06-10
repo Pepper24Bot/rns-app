@@ -65,7 +65,7 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
     action: "NameWrapper",
   });
 
-  const [isImageLoading, setImageLoading] = useState<boolean>(true);
+  const [isImageLoading, setImageLoading] = useState<boolean>(false);
   const nameHash = namehash(name);
 
   return (
@@ -79,6 +79,9 @@ export const EnsImage: React.FC<EnsImage> = (props: EnsImage) => {
         fetchPriority="low"
         width={200}
         height={200}
+        onLoadStart={() => {
+          setImageLoading(true);
+        }}
         onLoad={() => {
           setImageLoading(false);
         }}

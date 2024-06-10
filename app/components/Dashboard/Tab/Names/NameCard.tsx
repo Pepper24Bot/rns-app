@@ -85,7 +85,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const nameRef = useRef<HTMLDivElement | null>(null);
 
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
-  const [isImageLoading, setImageLoading] = useState<boolean>(true);
+  const [isImageLoading, setImageLoading] = useState<boolean>(false);
   const [isDownloadRequested, setDownloadRequested] = useState<boolean>(false);
   const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
 
@@ -241,6 +241,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               fetchPriority="low"
               width={200}
               height={200}
+              onLoadStart={() => {
+                setImageLoading(true);
+              }}
               onLoad={() => {
                 setImageLoading(false);
               }}
