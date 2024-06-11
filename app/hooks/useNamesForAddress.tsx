@@ -47,7 +47,7 @@ export default function useNamesForAddress(props: NamesProps) {
     if (address && address !== "0x" && !skip) {
       getNames(address);
     }
-  }, [address]);
+  }, [address, skip]);
 
   return {
     names,

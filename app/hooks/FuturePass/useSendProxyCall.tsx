@@ -96,8 +96,10 @@ export default function useSendProxyCall() {
 
         return ethTx;
       } catch (error) {
-        console.log("proxycall-error:: ", error);
-        throw new Error((error as any).message);
+        // TODO: Fix this
+        console.log("proxycall-error:: ", (error as any).message);
+        const message = (error as any).message.split("Request Arguments:")[0];
+        throw new Error(message);
       }
     }
   };

@@ -9,8 +9,8 @@ import {
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/utils/common";
-import { Address } from "viem";
-import { graphqlApi, useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
+import { Address, isAddress } from "viem";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { useEnsName } from "wagmi";
 import { LinkProps } from "@/interfaces/components/transaction";
@@ -45,17 +45,16 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
-  const { domain: domainState, owner, ensName, activeAddress } = props;
+  const { item, address } = props;
+
+  const {
+    resolvedAddress: ensAddr, // linked address record
+    name,
+    owner,
+  } = item;
 
   const dispatch = useDispatch();
   const router = useRouter();
-
-  const { data } = useGetNamesByNameQuery(
-    { labelName: `${domainState?.labelName}` },
-    { skip: domainState?.name === null }
-  );
-
-  const { refetch: refetchEnsName } = useEnsName({ address: activeAddress });
 
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
@@ -64,25 +63,26 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isRemoveMode, setIsRemoveMode] = useState<boolean>(false);
 
+  const [isValidAddress, setValidAddress] = useState<boolean>(true);
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [resetProgress, setResetProgress] = useState<boolean>(false);
-  const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
 
+  const { data: ensName, refetch: refetchEnsName } = useEnsName({ address });
   const { setAddressRecord, isLoading } = useRecords();
   const { isWaiting, isCompleted } = useBlockLatency({
     enabled: isBlockEnabled,
   });
 
   const isTransactionLoading = isLoading || isWaiting;
-  const domain = data?.wrappedDomains[0]?.domain;
-  const ownerId = getMaskedAddress(owner?.id || "");
-  const linkedAddr = domain?.resolver?.addr?.id || "";
-  const linkedAddress = isEditMode ? linkedAddr : getMaskedAddress(linkedAddr);
+  const ownerId = getMaskedAddress(owner ?? "");
+  const linkedAddress = isEditMode
+    ? ensAddr
+    : getMaskedAddress(ensAddr ?? "0x");
 
   // Updating of Linked Address
   const [inputValue, setInputValue] = useState<string>(linkedAddress || "None");
@@ -99,22 +99,35 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   };
 
   const handleUpdateAddress = async (value: string) => {
-    initializeFlags();
+    const isValid = isAddress(value);
 
-    const { isSuccess, data } = await setAddressRecord({
-      name: domain?.name || "",
-      address: value as Address,
-    });
+    if (isValid) {
+      initializeFlags();
+      const { isSuccess, data } = await setAddressRecord({
+        name: name ?? "",
+        address: value as Address,
+      });
 
-    if (isSuccess) {
-      setIsBlockEnabled(true);
-      setTxHash(data.hash);
-    } else {
-      setIsError(true);
+      if (isSuccess) {
+        setIsBlockEnabled(true);
+        setTxHash(data.hash);
+      } else {
+        setIsError(true);
+      }
+
+      setResetProgress(false);
+      setIsPending(false);
     }
 
-    setResetProgress(false);
-    setIsPending(false);
+    setValidAddress(isValid);
+  };
+
+  const handleToggleEdit = (isEdit: boolean) => {
+    const addr = ensAddr ?? "";
+    setInputValue(isEdit ? addr : getMaskedAddress(addr));
+    setIsEditMode(isEdit);
+    setIsProgressVisible(false);
+    setValidAddress(true);
   };
 
   useEffect(() => {
@@ -125,7 +138,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
       enqueueSnackbar(
         `You have successfully ${
           isRemoveMode ? "removed" : "updated"
-        } the address record of ${domain?.name}!`,
+        } the address record of ${name}!`,
         { variant: "success" }
       );
 
@@ -137,44 +150,33 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
        * record of a primary name so that the components listening
        * to useEnsName hook will update the state
        */
-      if (ensName === domainState?.name) {
+      if (ensName === name) {
         refetchEnsName();
       }
     }
   }, [isCompleted]);
 
-  useEffect(() => {
-    setInputValue(linkedAddress);
-  }, [linkedAddr, isEditMode]);
-
   return (
     <Grid>
       <RecordContainer container>
-        <EnsImage name={domainState?.name || ""} />
+        <EnsImage name={name ?? ""} />
         <FormContainer>
           {!isRemoveMode ? (
             <UpdateRecord
               ensName={ensName}
-              name={domainState?.name || ""}
+              name={name ?? ""}
               owner={ownerId}
-              isFuturePassValid={isFuturePassValid}
               addressInput={inputValue}
               updateAddressInput={(value) => {
                 setInputValue(value);
+                if (!isValidAddress) {
+                  setValidAddress(true);
+                }
               }}
+              isAddress={isValidAddress} // TODO: Add validation
               isUpdateEnabled={isEditMode}
               toggleEditMode={() => {
-                setIsEditMode(!isEditMode);
-                setIsProgressVisible(false);
-
-                /**
-                 * TODO: Change validation to isAddress
-                 * If inputted address is invalid, and an onchange has been triggered,
-                 * reset the invalid field flag
-                 */
-                if (!isFuturePassValid) {
-                  setIsFuturePassValid(true);
-                }
+                handleToggleEdit(!isEditMode);
               }}
               toggleRemoveMode={() => {
                 setIsRemoveMode(!isRemoveMode);
@@ -182,7 +184,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
             />
           ) : (
             <RemoveAddress
-              addressInput={linkedAddr}
+              addressInput={ensAddr ?? ""}
               disableBack={isTransactionLoading || isPending || isSuccess}
               toggleRemoveMode={() => {
                 setIsProgressVisible(false);
@@ -223,10 +225,11 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
         >
           <ActionButton
             disabled={
-              inputValue === linkedAddr ||
+              inputValue === ensAddr ||
               isPending ||
               isSuccess ||
               isWaiting ||
+              !isValidAddress ||
               !isFeatureEnabled("Link")
             }
             sx={{ ml: 1 }}

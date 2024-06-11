@@ -8,6 +8,7 @@ import {
   PrimaryChip,
 } from "../Theme/StyledGlobal";
 import { Close, Edit } from "@mui/icons-material";
+import { GetEnsNameReturnType } from "viem";
 
 const ResolverButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButton-contained": {
@@ -25,12 +26,12 @@ const ResolverButton = styled(ActionButton)(({ theme }) => ({
 export interface UpdateProps {
   name?: string;
   owner?: string;
-  ensName?: string;
+  ensName?: GetEnsNameReturnType;
   isUpdateEnabled?: boolean;
   toggleEditMode: () => void;
   toggleRemoveMode: () => void;
 
-  isFuturePassValid?: boolean;
+  isAddress?: boolean;
   addressInput: string;
   updateAddressInput: (value: string) => void;
 }
@@ -42,7 +43,7 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
     owner = "",
     addressInput = "",
     isUpdateEnabled = false,
-    isFuturePassValid = false,
+    isAddress = false,
     toggleEditMode,
     toggleRemoveMode,
     updateAddressInput,
@@ -64,10 +65,8 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
       />
       <InputField label="Owner" disabled value={ensName || owner} />
       <InputField
-        error={!isFuturePassValid}
-        helperText={
-          !isFuturePassValid ? "Please insert a FuturePass Address only" : ""
-        }
+        error={!isAddress}
+        helperText={!isAddress ? "Please insert a valid Address only" : ""}
         focused
         label="Linked To / Resolver"
         value={addressInput}

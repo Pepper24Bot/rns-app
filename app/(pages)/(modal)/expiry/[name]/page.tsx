@@ -19,6 +19,7 @@ export default function Page({ params }: { params: { name: string } }) {
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
+
   const {
     data: { address },
   } = useRootNetwork();

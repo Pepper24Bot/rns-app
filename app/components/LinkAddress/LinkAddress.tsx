@@ -6,9 +6,8 @@ import AddRecord from "./AddRecord";
 import AddressRecord from "./AddressRecord";
 
 export const LinkAddress: React.FC<LinkProps> = (props: LinkProps) => {
-  const { domain } = props;
-
-  const ensAddr = domain?.resolver?.addr?.id;
+  const { item } = props;
+  const { resolvedAddress: ensAddr } = item;
 
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
 

@@ -8,7 +8,7 @@ import {
   Relative,
   FlexTop,
 } from "../Theme/StyledGlobal";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { isEmpty } from "lodash";
 import { LinkProps } from "@/interfaces/components/transaction";
@@ -43,7 +43,8 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
-  const { domain, activeAddress } = props;
+  const { item, address } = props;
+  const { name } = item;
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -53,18 +54,18 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { enqueueSnackbar } = useSnackbar();
 
   /** Status Flags */
+  const [isValidAddress, setValidAddress] = useState<boolean>(true);
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [resetProgress, setResetProgress] = useState<boolean>(false);
   const [isProgressVisible, setIsProgressVisible] = useState<boolean>(false);
 
-  const [isFuturePassValid, setIsFuturePassValid] = useState<boolean>(true);
   const [inputAddr, setInputAddr] = useState<string>("");
   const [isBlockEnabled, setIsBlockEnabled] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
 
-  const { refetch } = useEnsName({ address: activeAddress });
+  const { refetch } = useEnsName({ address });
 
   /** Use the isLoading Flag here for the progress bar */
   const { setAddressRecord, isLoading } = useRecords();
@@ -87,21 +88,26 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   };
 
   const handleSetAddress = async () => {
-    initializeFlags();
-    const { isSuccess, data } = await setAddressRecord({
-      name: domain?.name || "",
-      address: inputAddr as Address,
-    });
+    const isValid = isAddress(inputAddr);
 
-    if (isSuccess) {
-      setIsBlockEnabled(true);
-      setTxHash(data.hash);
-    } else {
-      setIsError(true);
+    if (isValid) {
+      initializeFlags();
+      const { isSuccess, data } = await setAddressRecord({
+        name: name ?? "",
+        address: inputAddr as Address,
+      });
+
+      if (isSuccess) {
+        setIsBlockEnabled(true);
+        setTxHash(data.hash);
+      } else {
+        setIsError(true);
+      }
+      setResetProgress(false);
+      setIsPending(false);
     }
 
-    setResetProgress(false);
-    setIsPending(false);
+    setValidAddress(isValid);
   };
 
   useEffect(() => {
@@ -110,7 +116,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
 
       enqueueSnackbar(
-        `You have successfully added an address record to ${domain?.name}.`,
+        `You have successfully added an address record to ${name ?? ""}.`,
         { variant: "success" }
       );
 
@@ -122,16 +128,14 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   return (
     <Grid item xs>
       <RecordContainer container>
-        <EnsImage name={domain?.name || ""} />
+        <EnsImage name={name ?? ""} />
         <FormContainer>
           <Grid>
-            <InputField disabled value={domain?.name} />
+            <InputField disabled value={name} />
             <InputField
-              error={!isFuturePassValid}
+              error={!isValidAddress}
               helperText={
-                !isFuturePassValid
-                  ? "Please insert a FuturePass Address only"
-                  : ""
+                !isValidAddress ? "Please insert a valid Address only" : ""
               }
               label="Address"
               placeholder="Enter Address"
@@ -140,14 +144,8 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
               onChange={(event) => {
                 const { value } = event.target;
                 setInputAddr(value);
-
-                /**
-                 * TODO: Change validation to isAddress
-                 * If inputted address is invalid, and an onchange has been triggered,
-                 * reset the invalid field flag
-                 */
-                if (!isFuturePassValid) {
-                  setIsFuturePassValid(true);
+                if (!isValidAddress) {
+                  setValidAddress(true);
                 }
               }}
             />
@@ -188,6 +186,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
               isPending ||
               isSuccess ||
               isWaiting ||
+              !isValidAddress ||
               !isFeatureEnabled("Link")
             }
             variant="contained"

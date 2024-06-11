@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Grid } from "@mui/material";
-import { WrappedDomain } from "@/redux/graphql/hooks";
 import {
   Flex,
   FlexJustified,
@@ -38,12 +37,8 @@ import {
 } from "./StyledName";
 import {
   findCharacterSet,
-  getDate,
-  getDistanceToExpiration,
-  getExpiration,
   getExpiry,
   getMaskedAddress,
-  isDateWithinRange,
   isRegisteredDuringQuest,
   isTooltipShowing,
   parseCookie,
@@ -80,7 +75,13 @@ export interface NameProps {
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item, address } = props;
-  const { name, labelName, expiryDate, createdAt } = item;
+  const {
+    name,
+    labelName,
+    expiryDate,
+    createdAt,
+    resolvedAddress: ensAddr,
+  } = item;
 
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
@@ -122,13 +123,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: address,
   });
 
-  const label = item.labelName || "";
-  const characterSet = findCharacterSet(label);
-  const ensAddr = item.resolvedAddress;
+  const characterSet = findCharacterSet(labelName ?? "");
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
+  const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
   const isTweetVerified =
     parseCookie("isTweetVerified") === "true" || isSuccess;
-  const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
   const { expiration, distance } = getExpiry(expiryDate?.date);
 
@@ -208,16 +207,14 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     const { label, title } = menuOption;
 
     const data: CardProps = {
-      domain: item.domain,
-      owner: item.owner,
-      ensName: ensName || "",
-      activeAddress: address,
+      item,
+      address,
     };
 
     toggleModal({
+      data,
       id: label,
       title: title || label,
-      data,
       isCloseDisabled: true,
       isXDisabled: true,
     });
@@ -229,17 +226,17 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
     switch (menuLabel) {
       case "Extend Expiry":
-        toggleTransactionModal(menuOption);
-        return router.replace(`/expiry/${label}`, { scroll: false });
+        // toggleTransactionModal(menuOption);
+        return router.replace(`/expiry/${labelName}`, { scroll: false });
       case "Link Identity":
-        toggleTransactionModal(menuOption);
-        return router.replace(`/record/${label}`, { scroll: false });
+        // toggleTransactionModal(menuOption);
+        return router.replace(`/record/${labelName}`, { scroll: false });
       case "Set as Primary":
         toggleTransactionModal(menuOption);
-        return router.replace(`/primary/${label}`, { scroll: false });
+        return; // router.replace(`/primary/${labelName}`, { scroll: false });
       case "Transfer":
         toggleTransactionModal(menuOption);
-        return router.replace(`/transfer/${label}`, { scroll: false });
+        return; // router.replace(`/transfer/${labelName}`, { scroll: false });
       case "Download Image":
         setDownloadRequested(true);
         return;
@@ -249,21 +246,21 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   const getTooltipProps = () => {
-    if (ensAddr === root.address?.toLowerCase()) {
+    if (ensAddr === address) {
       return {
         heading: "Linked to connected wallet address",
         icons: {
           heading: <CheckedIcon />,
         },
-        content: `${item.name} is linked to connected wallet address ${ensAddr}`,
+        content: `${name} is linked to connected wallet address ${ensAddr}`,
       };
-    } else if (hasLinkedAddr && ensAddr !== root.address?.toLowerCase()) {
+    } else if (hasLinkedAddr && ensAddr !== address) {
       return {
         heading: "Beware: Linked to an external wallet address!",
         icons: {
           heading: <ExternalAddressIcon />,
         },
-        content: `${item.name} is linked to external wallet address ${ensAddr}`,
+        content: `${name} is linked to external wallet address ${ensAddr}`,
       };
     } else if (!hasLinkedAddr) {
       return {
@@ -289,7 +286,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   }, [isMetadataSuccess, isDownloadRequested, isError]);
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} key={item.name}>
+    <Grid item xs={12} sm={6} md={4} lg={3} key={name}>
       <Container>
         <ItemContainer>
           <ImageContainer>
@@ -315,9 +312,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                   <InformationTip
                     arrow
                     placement="top"
-                    title={
-                      isShowTooltip ? <Highlight>{item.name}</Highlight> : ""
-                    }
+                    title={isShowTooltip ? <Highlight>{name}</Highlight> : ""}
                   >
                     <NameContainer
                       item
@@ -325,7 +320,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       ref={nameRef}
                       isShowTooltip={isShowTooltip}
                     >
-                      {item.name}
+                      {name}
                     </NameContainer>
                   </InformationTip>
                   <FlexRight>
@@ -357,7 +352,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         {
                           label: "Set as Primary",
                           icon: <PrimaryIcon />,
-                          disabled: ensName === item.name,
+                          disabled: ensName === name,
                         },
                         { label: "Transfer", icon: <TransferIcon /> },
                         {
@@ -387,7 +382,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                             wordBreak="keep-all"
                             minWidth="325px"
                             highlights={[
-                              { text: item.name || "" },
+                              { text: name || "" },
                               { text: ensAddr || "" },
                             ]}
                           />
@@ -416,7 +411,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
             </Summary>
             <FlexJustified>
               <Flex>
-                {ensName === item.name && (
+                {ensName === name && (
                   <SubContainer>
                     <PrimaryChip label="Primary" size="small" />
                   </SubContainer>
