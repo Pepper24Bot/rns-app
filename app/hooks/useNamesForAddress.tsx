@@ -18,6 +18,7 @@ export default function useNamesForAddress(
     data: { address },
   } = useRootNetwork();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [names, setNames] = useState<GetNamesForAddressReturnType>([]);
 
   const fetchData = async () => {
@@ -27,13 +28,16 @@ export default function useNamesForAddress(
       });
       setNames([...data]);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
+    setIsLoading(true);
     fetchData();
   }, [address]);
 
   return {
     names,
+    isLoading,
   };
 }
