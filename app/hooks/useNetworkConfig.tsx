@@ -1,6 +1,25 @@
 import { porcini, porciniWalletConfig } from "@/chains/porcini";
 import { root, rootWalletConfig } from "@/chains/root";
 import { NetworkName } from "@therootnetwork/api";
+import { createPublicClient, http } from "viem";
+import { porcini as porciniRns, root as rootRns } from "rootnameservice";
+
+export const rootCLient = createPublicClient({
+  chain: rootRns,
+  transport: http(),
+});
+
+export const porciniClient = createPublicClient({
+  chain: {
+    ...porciniRns,
+    subgraphs: {
+      ens: {
+        url: "https://subgraph-stage.rootnameservice.com/subgraphs/name/graphprotocol/ens",
+      },
+    },
+  },
+  transport: http(),
+});
 
 export const getNetworkConfig = (chainId: string) => {
   switch (chainId) {
@@ -12,6 +31,7 @@ export const getNetworkConfig = (chainId: string) => {
         config: porcini,
         walletConfig: porciniWalletConfig,
         chainId: 7672,
+        client: porciniClient,
       };
     // Mainnet - Root
     case "7668":
@@ -22,6 +42,7 @@ export const getNetworkConfig = (chainId: string) => {
         config: root,
         walletConfig: rootWalletConfig,
         chainId: 7668,
+        client: rootCLient,
       };
   }
 };

@@ -12,7 +12,7 @@
     "@emotion/styled": "^11.11.0",
     "@ensdomains/address-encoder": "^1.1.1",
     "@ensdomains/ens-contracts": "^1.1.4",
-    "@ensdomains/ensjs": "^3.4.4",
+    "@ensdomains/ensjs": "3.7",
     "@ethersproject/providers": "^5.7.2",
     "@fontsource/roboto": "^5.0.8",
     "@fontsource/roboto-mono": "^5.0.16",

@@ -44,7 +44,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const { hasMounted, areNamesLoading } = props;
 
   // initial values for pagination
-  const itemsPerPageCount = Number(parseCookie("itemsPerPage")) || 40;
+  const itemsPerPageCount = Number(parseCookie("itemsPerPage")) || 50;
 
   useEffect(() => {
     console.log("itemsPerPageCount:: ", itemsPerPageCount);
