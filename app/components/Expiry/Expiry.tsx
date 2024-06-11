@@ -185,7 +185,8 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
   // On initial load - check wallet balance before doing transaction
   useEffect(() => {
     const getBalanceOf = async () => {
-      if (address) {
+      // TODO: Remove the rentfee check in whitelist branch
+      if (address && rentFee) {
         const { data } = await getBalance({
           address,
           payment,

@@ -4,22 +4,17 @@ import {
   GetNamesForAddressReturnType,
   getNamesForAddress,
 } from "@ensdomains/ensjs/subgraph";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
-
 import useNetworkConfig from "./useNetworkConfig";
 
 export interface NamesProps extends GetNamesForAddressParameters {
   skip?: boolean;
+  isFromUrlRouter?: boolean; // for testing purposes only
 }
 
 export default function useNamesForAddress(props: NamesProps) {
-  const { filter, skip = false } = props;
+  const { filter, skip = false, address, isFromUrlRouter } = props;
   const { client } = useNetworkConfig();
-  const { useRootNetwork } = useRootNetworkState();
-  const {
-    data: { address },
-  } = useRootNetwork();
 
   const [isError, setIsError] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -29,7 +24,7 @@ export default function useNamesForAddress(props: NamesProps) {
   const getNames = async (address: Address) => {
     try {
       const data = await getNamesForAddress(client, {
-        address: address,
+        address,
         filter,
       });
 
@@ -45,6 +40,11 @@ export default function useNamesForAddress(props: NamesProps) {
 
   useEffect(() => {
     if (address && address !== "0x" && !skip) {
+      if (isFromUrlRouter) {
+        console.log("------------------------------------");
+        console.log("address:: ", address);
+      }
+
       getNames(address);
     }
   }, [address, skip]);

@@ -9,6 +9,7 @@ import { useSnackbar } from "notistack";
 
 import useValidateName from "@/hooks/useValidateName";
 import useNamesForAddress from "@/hooks/useNamesForAddress";
+import useGetWrappedData from "@/hooks/useGetWrappedData";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
@@ -28,9 +29,14 @@ export default function Page({ params }: { params: { name: string } }) {
     label,
   });
 
-  const { names, isSuccess } = useNamesForAddress({
+  const { name: wrappedName } = useGetWrappedData({
+    name: `${normalizedLabel}.root`,
     skip: !normalizedLabel,
-    address: address ?? "0x",
+  });
+
+  const { names, isSuccess } = useNamesForAddress({
+    skip: !normalizedLabel || !wrappedName?.owner,
+    address: wrappedName?.owner ?? "0x",
     filter: {
       searchString: `${normalizedLabel}.root`,
       searchType: "name",
