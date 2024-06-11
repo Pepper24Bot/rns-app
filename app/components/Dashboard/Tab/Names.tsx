@@ -6,7 +6,11 @@ import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
-import { isAccountLoading, scrollIntoElement } from "@/utils/common";
+import {
+  isAccountLoading,
+  parseCookie,
+  scrollIntoElement,
+} from "@/utils/common";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { useAccount } from "wagmi";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
@@ -39,6 +43,13 @@ interface NamesProps {
 export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const { hasMounted, areNamesLoading } = props;
 
+  // initial values for pagination
+  const itemsPerPageCount = Number(parseCookie("itemsPerPage")) || 40;
+
+  useEffect(() => {
+    console.log("itemsPerPageCount:: ", itemsPerPageCount);
+  }, [itemsPerPageCount]);
+
   const { status } = useAccount();
   const { useDashboard } = useDashboardState();
   const { names } = useDashboard();
@@ -47,13 +58,16 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const { data: root } = useRootNetwork();
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(1);
-  const [itemCountField, setItemCountField] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageCount);
+  const [itemCountField, setItemCountField] = useState(itemsPerPageCount);
   const [pageCount, setPageCount] = useState(1);
 
   const handleDebounceOnChange = (value: number) => {
     setItemsPerPage(value);
     setPage(1);
+
+    // store in cookies
+    document.cookie = `itemsPerPage=${value}; path=/`;
 
     // Scroll to the top
     scrollIntoElement("Dashboard-Container");
