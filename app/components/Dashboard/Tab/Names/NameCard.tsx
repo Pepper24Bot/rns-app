@@ -39,9 +39,12 @@ import {
 import {
   findCharacterSet,
   getDate,
+  getDistanceToExpiration,
   getExpiration,
+  getExpiry,
   getMaskedAddress,
   isDateWithinRange,
+  isRegisteredDuringQuest,
   isTooltipShowing,
   parseCookie,
 } from "@/utils/common";
@@ -57,6 +60,7 @@ import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useShareState } from "@/redux/share/shareSlice";
 import { WARNING_ASCII } from "@/constants/content";
 import { useRouter } from "next/navigation";
+import { NameWithRelation } from "@ensdomains/ensjs/subgraph";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -65,25 +69,35 @@ import useContractDetails from "@/hooks/useContractDetails";
 import TooltipContent from "@/components/Reusables/TooltipContent";
 
 export interface NameProps {
-  item: WrappedDomain;
-  activeAddress: Address;
+  item: NameWithRelation;
+
+  /**
+   * Always remember that this address
+   * can be either eoa or fp.
+   */
+  address: Address;
 }
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
-  const { item, activeAddress } = props;
+  const { item, address } = props;
+  const { name, labelName, expiryDate, createdAt } = item;
+
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { name: networkName } = useNetworkConfig();
+
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
+
   const { useShareStatus } = useShareState();
   const { isSuccess } = useShareStatus();
+
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
   });
 
   const router = useRouter();
-  const nameHash = namehash(item.name ?? "");
+  const nameHash = namehash(name ?? "");
   const nameRef = useRef<HTMLDivElement | null>(null);
 
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
@@ -105,26 +119,23 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   );
 
   const { data: ensName } = useEnsName({
-    address: activeAddress,
+    address: address,
   });
 
-  const label = item.domain.labelName || "";
+  const label = item.labelName || "";
   const characterSet = findCharacterSet(label);
-  const ensAddr = item.domain.resolver?.addr?.id;
+  const ensAddr = item.resolvedAddress;
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const isTweetVerified =
     parseCookie("isTweetVerified") === "true" || isSuccess;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
-  const { expiration, distanceToExpiration } = getExpiration(
-    item.domain.createdAt,
-    item.domain.expiryDate
-  );
+  const { expiration, distance } = getExpiry(expiryDate?.date);
 
   const handleDownloadPng = (imgURI: string) => {
     const link = document.createElement("a");
     link.href = imgURI;
-    link.download = `${item?.domain?.labelName || "rns-name"}.png`;
+    link.download = `${labelName || "rns-name"}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -194,16 +205,18 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   const toggleTransactionModal = (menuOption: Option) => {
+    const { label, title } = menuOption;
+
     const data: CardProps = {
       domain: item.domain,
       owner: item.owner,
       ensName: ensName || "",
-      activeAddress,
+      activeAddress: address,
     };
 
     toggleModal({
-      id: menuOption.label,
-      title: menuOption.title || menuOption.label,
+      id: label,
+      title: title || label,
       data,
       isCloseDisabled: true,
       isXDisabled: true,
@@ -212,7 +225,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   // THIS IS REDUNDANT
   const handleMenuSelect = (menuOption: Option) => {
-    switch (menuOption.label) {
+    const { label: menuLabel } = menuOption;
+
+    switch (menuLabel) {
       case "Extend Expiry":
         toggleTransactionModal(menuOption);
         return router.replace(`/expiry/${label}`, { scroll: false });
@@ -260,13 +275,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   useEffect(() => {
-    const start = new Date("2024-05-28T08:00:00.000+10:00");
-    const end = new Date("2024-06-25T08:00:00.000+10:00");
-    const createdDate = getDate(item.domain.createdAt);
-    const isShareable = isDateWithinRange(createdDate, start, end);
-
+    const isShareable = isRegisteredDuringQuest(createdAt.date);
     setShareEnabled(isShareable);
-  }, [item.domain.createdAt, isTweetVerified]);
+  }, [createdAt.date, isTweetVerified]);
 
   useEffect(() => {
     const isShowing = isTooltipShowing(nameRef);
@@ -397,7 +408,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                     </Detail>
                     <Detail>
                       <Label>In</Label>
-                      {distanceToExpiration}
+                      {distance}
                     </Detail>
                   </Grid>
                 </NameDetails>

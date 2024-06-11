@@ -55,7 +55,7 @@ const initialState: DashboardState = {
     names: [],
     options: {
         filter: {
-            views: ["Active", "Expired"],
+            views: ["Active"],
         },
         sort: {
             by: "Created Date",
@@ -94,17 +94,9 @@ export const useDashboardState = () => {
         updateFilterOptions: (props: Options) => {
             dispatch(actions.updateFilterOptions(props))
         },
-        toggleNamesLoading: (isLoading: boolean = false) => {
-            dispatch(actions.toggleNamesLoading(isLoading))
-        },
         useDashboard: () => {
             return useSelector((state: RootState) => {
                 return state.dashboardState
-            })
-        },
-        useNames: () => {
-            return useSelector((state: RootState) => {
-                return state.dashboardState.names
             })
         },
         useFilters: () => {

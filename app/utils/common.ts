@@ -53,7 +53,7 @@ export const getDate = (date: number) => {
 }
 
 /**
- * 
+ * @deprecated Use the new method instead - getDistanceToExpiration and getExpiry
  * @param date 
  * @returns string month-date-year
  */
@@ -71,6 +71,7 @@ export const getFormattedDate = (date: number) => {
 
 /**
  * 
+ * @deprecated Use the new method instead - getDistanceToExpiration and getExpiry
  * @param date 
  * @returns 
  */
@@ -91,6 +92,7 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
 }
 
 /**
+ * 
  * This util is very specific to get the dates of
  * - expected expiration
  * - grace period until the actual expiration
@@ -98,6 +100,7 @@ export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
  * 
  * @param dateCreated 
  * @param dateExpiration 
+ * @deprecated Use the new method instead - getDistanceToExpiration and getExpiry
  */
 export const getExpiration = (dateCreated: string, dateExpiration: string) => {
     const created = parseInt(dateCreated)
@@ -397,4 +400,69 @@ export const isTooltipShowing = (ref: React.MutableRefObject<HTMLDivElement | nu
     const clientWidth = ref?.current?.clientWidth || 0;
 
     return scrollWidth > clientWidth
+}
+
+/**
+ * 
+ * @param expiry 
+ * @returns 
+ */
+export const getDistanceToExpiration = (expiry: Date) => {
+    const current = new Date().toLocaleDateString("en-US")
+    const distance = formatDistanceStrict(
+        current,
+        expiry,
+        { unit: "day" }
+    );
+
+    return distance
+}
+
+/**
+ * 
+ * @param date 
+ * @returns 
+ */
+export const formatDate = (date: Date) => {
+    const newDate = date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    });
+
+    return newDate.replace(/[/]/g, "-")
+}
+
+/**
+ * 
+ * @param expiry 
+ * @returns 
+ */
+export const getExpiry = (expiry?: Date) => {
+    const date = expiry ? expiry : new Date();
+
+    const distance = getDistanceToExpiration(date);
+    const expiration = formatDate(date);
+
+    return {
+        distance,
+        expiration
+    }
+}
+
+/**
+ * This is a temporary util
+ * 
+ * TODO: Remove this post quest
+ */
+export const isRegisteredDuringQuest = (date?: Date) => {
+    if (date) {
+        const start = new Date("2024-05-28T08:00:00.000+10:00");
+        const end = new Date("2024-06-25T08:00:00.000+10:00");
+        const isShareable = isDateWithinRange(date, start, end);
+
+        return isShareable
+    }
+
+    return false
 }
