@@ -8,10 +8,8 @@ import { rootNetworkState } from './rootNetwork/rootNetworkSlice'
 import { shareState } from './share/shareSlice'
 
 const store = configureStore({
-    // Add reducers here
     reducer: {
         [api.reducerPath]: api.reducer,
-        // TODO: Add states here
         themeState: themeState.reducer,
         modalState: modalState.reducer,
         domainState: domainState.reducer,
@@ -20,9 +18,21 @@ const store = configureStore({
         shareState: shareState.reducer
     },
 
-    // Add middleware to handle api queries
     middleware: (getDefaultMiddleware) => {
-        return getDefaultMiddleware({}).concat([api.middleware])
+        return getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActionPaths: [
+                    'payload.data.item.createdAt.date',
+                    'payload.data.item.expiryDate.date',
+                    'payload.data.item.registrationDate.date',
+                ],
+                ignoredPaths: [
+                    'modalState.props.data.item.createdAt.date',
+                    'modalState.props.data.item.expiryDate.date',
+                    'modalState.props.data.item.registrationDate.date'
+                ],
+            }
+        }).concat([api.middleware])
     }
 })
 

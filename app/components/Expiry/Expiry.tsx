@@ -26,6 +26,7 @@ import { red } from "@mui/material/colors";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { ExpiryProps } from "@/interfaces/components/transaction";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -67,30 +68,24 @@ const HightlightText = styled("span")(({ theme }) => ({
   textDecoration: "underline",
 }));
 
-export interface Expiry {
-  domain?: Partial<Domain>;
-  owner?: {
-    id?: string;
-  };
-}
+export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
+  const { item, address } = props;
+  const { name, labelName } = item;
 
-export const Expiry: React.FC<Expiry> = (props: Expiry) => {
-  const { domain } = props;
-
-  const { address = "0x" } = useAccount();
+  const { address: walletAddress = "0x" } = useAccount();
   const { data: xrpBalance } = useBalance({
-    address,
+    address: walletAddress,
   });
+
   const { useDomain, updateName } = useDomainState();
   const { year = 1, payment } = useDomain();
+
   const { enqueueSnackbar } = useSnackbar();
-  const { closeModal, useModal } = useModalState();
-  const { isModalOpen } = useModal();
+  const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const labelName = domain?.labelName || "";
   const token = payment?.address || PAYMENT_METHOD[0].address;
 
   /**
@@ -128,7 +123,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
     rentPrice: { base },
     isLoading,
   } = useExtend({
-    name: labelName,
+    name: labelName ?? "",
     year,
     token,
     isEnabled: isDetailsEnabled,
@@ -174,7 +169,7 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
 
   const handleExtend = async () => {
     const { isSuccess, data } = await renew({
-      name: labelName,
+      name: labelName ?? "",
       duration,
     });
 
@@ -209,7 +204,9 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   useEffect(() => {
     if (isExtended) {
       enqueueSnackbar(
-        `Congratulations! You have successfully extended the expiry of ${domain?.name}!`,
+        `Congratulations! You have successfully extended the expiry of ${
+          name ?? ""
+        }!`,
         { variant: "success" }
       );
 
@@ -238,12 +235,12 @@ export const Expiry: React.FC<Expiry> = (props: Expiry) => {
   return (
     <Grid>
       <FormContainer container>
-        <EnsImage name={domain?.name || ""} />
+        <EnsImage name={name ?? ""} />
         <DetailsContainer item>
           {extendPage === 1 ? (
             <Grid>
               <Form
-                name={domain?.name || ""}
+                name={name ?? ""}
                 rentFee={rentFee}
                 walletBalance={walletBalance}
               />

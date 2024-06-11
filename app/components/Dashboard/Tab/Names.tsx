@@ -5,13 +5,7 @@ import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
-import {
-  isAccountLoading,
-  parseCookie,
-  scrollIntoElement,
-} from "@/utils/common";
-import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
-import { useAccount } from "wagmi";
+import { parseCookie, scrollIntoElement } from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
 
@@ -37,25 +31,26 @@ const Description = styled(SecondaryLabel)(({ theme }) => ({
 
 interface NamesProps {
   hasMounted?: boolean;
-  areNamesLoading?: boolean;
 }
 
 export const Names: React.FC<NamesProps> = (props: NamesProps) => {
-  const { hasMounted, areNamesLoading } = props;
+  const { hasMounted } = props;
+
+  const { useRootNetwork } = useRootNetworkState();
+  const {
+    data: { address },
+  } = useRootNetwork();
+
+  const { names, isLoading, isSuccess, isError } = useNamesForAddress({
+    address: address || "0x",
+  });
 
   // initial values for pagination
   const itemsPerPageCount = Number(parseCookie("itemsPerPage")) || 50;
 
-  const { status } = useAccount();
-  const { useDashboard } = useDashboardState();
-  // const { names } = useDashboard();
-
-  const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
-
-  const { names, isLoading: isNamesLoading } = useNamesForAddress({
-    address: root.address || "0x",
-  });
+  const isLoadingState = (!isSuccess && isLoading) || !hasMounted;
+  const hasNoNamesState =
+    (isEmpty(names) && isSuccess && !isLoading) || isError;
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageCount);
@@ -92,12 +87,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   };
 
   useEffect(() => {
-    console.log("names:: ", names);
-    console.log("isLoading:: ", isNamesLoading);
-    console.log("===============");
-  }, [names, isNamesLoading]);
-
-  useEffect(() => {
     const count = getNumberOfPages();
     setPageCount(count);
   }, [names, itemsPerPage]);
@@ -105,23 +94,17 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   return (
     <>
       {/* TODO: Clean this skeleton up - looks really ugly */}
-      {/* {(areNamesLoading || isAccountLoading(status) || !hasMounted) && (
-        <SkeletonNames count={4} />
+      {isLoadingState && <SkeletonNames count={2} />}
+      {hasNoNamesState && (
+        <Container>
+          <Label>No Names found</Label>
+          <Description>
+            There is no registered name under your account.
+          </Description>
+        </Container>
       )}
 
-      {isEmpty(names) &&
-        status === "connected" &&
-        !areNamesLoading &&
-        hasMounted && (
-          <Container>
-            <Label>No Names found</Label>
-            <Description>
-              There is no registered name under your account.
-            </Description>
-          </Container>
-        )} */}
-
-      {!isEmpty(names) && !isAccountLoading(status) && (
+      {!isEmpty(names) && (
         <Container id="Names-Container">
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
@@ -129,7 +112,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
                 return (
                   <React.Fragment key={name.name}>
                     {shouldItemShow(index) ? (
-                      <NameCard item={name} address={root.address as Address} />
+                      <NameCard item={name} address={address as Address} />
                     ) : (
                       <></>
                     )}

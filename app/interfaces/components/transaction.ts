@@ -1,4 +1,5 @@
-import { Domain, Account, NameWrapped, WrappedDomain } from "@/redux/graphql/hooks";
+import { Domain } from "@/redux/graphql/hooks";
+import { NameWithRelation } from "@ensdomains/ensjs/subgraph";
 import { Address } from "viem";
 
 export interface TransactionProps {
@@ -7,6 +8,8 @@ export interface TransactionProps {
     owner?: {
         id?: string;
     };
+    item: NameWithRelation;
+    address: Address;
 }
 
 export interface PrimaryProps extends TransactionProps {
@@ -15,14 +18,15 @@ export interface PrimaryProps extends TransactionProps {
     refetchEnsName?: () => void;
 }
 
-export interface LinkProps extends TransactionProps {
-    ensName?: string;
-}
 export interface CardProps extends Omit<PrimaryProps, "owner"> {
-    owner?: Partial<Account>; // TODO: Clean this
+    item: NameWithRelation;
+
+    /**
+     * Active Address:
+     * This can be EOA Address or FP Address
+    */
+    address: Address
 }
 
-export interface NameProps {
-    item: WrappedDomain;
-    activeAddress: Address;
-}
+export interface ExpiryProps extends TransactionProps { }
+export interface LinkProps extends TransactionProps { }
