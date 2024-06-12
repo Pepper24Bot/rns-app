@@ -235,8 +235,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         // toggleTransactionModal(menuOption);
         return router.replace(`/primary/${labelName}`, { scroll: false });
       case "Transfer":
-        toggleTransactionModal(menuOption);
-        return; // router.replace(`/transfer/${labelName}`, { scroll: false });
+        // toggleTransactionModal(menuOption);
+        return router.replace(`/transfer/${labelName}`, { scroll: false });
       case "Download Image":
         setDownloadRequested(true);
         return;

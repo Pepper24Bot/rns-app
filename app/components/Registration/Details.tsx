@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
-import {
-  findCharacterSet,
-  getExpiration,
-  isTooltipShowing,
-} from "@/utils/common";
+import { findCharacterSet, getExpiry, isTooltipShowing } from "@/utils/common";
 import {
   FieldContainer,
   Flex,
@@ -22,12 +18,12 @@ import {
   FlexJustified,
   TooltipText,
 } from "../Theme/StyledGlobal";
-import { WrappedDomain } from "@/redux/graphql/hooks";
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils";
 import { useEnsName } from "wagmi";
 import { WARNING_ASCII } from "@/constants/content";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { Address } from "viem";
+import { DetailsProps } from "@/interfaces/components/transaction";
 
 import Image from "next/image";
 import EnsImage from "../Reusables/EnsImage";
@@ -84,21 +80,19 @@ const WarningIcon = styled(StyledWarningIcon)(({ theme }) => ({
   marginRight: "8px",
 }));
 
-interface DetailsProps {
-  name?: string;
-  domain?: Partial<WrappedDomain>;
-  isSuccess?: boolean;
-}
-
 export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
-  const { name, domain, isSuccess = true } = props;
+  const { item, isSuccess = true } = props;
 
-  const details = domain;
-  const nameRef = useRef<HTMLDivElement | null>(null);
+  const {
+    name,
+    wrappedOwner: ownerAddr,
+    resolvedAddress: linkedAddr,
+    labelName,
+    expiryDate,
+  } = item;
 
-  const ownerAddr = domain?.owner?.id;
-  const linkedAddr = details?.domain?.resolver?.addr?.id;
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
+  const nameRef = useRef<HTMLDivElement | null>(null);
 
   const [isShowNameTooltip, setIsShowNameTooltip] = useState<boolean>(false);
 
@@ -112,13 +106,10 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
 
   const owner = ensName || ownerAddr;
   const resolverId = linkedTo || linkedAddr;
-  const characterSet = findCharacterSet(details?.domain?.labelName || "");
+  const characterSet = findCharacterSet(labelName ?? "");
   const hasWarning = characterSet === "emoji" || characterSet === "mixed";
 
-  const { expiration, distanceToExpiration } = getExpiration(
-    details?.domain?.createdAt,
-    details?.domain?.expiryDate
-  );
+  const { expiration, distance } = getExpiry(expiryDate?.date);
 
   useEffect(() => {
     const isNameShowing = isTooltipShowing(nameRef);
@@ -127,7 +118,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
 
   return (
     <Grid container mt={6} minWidth={250}>
-      <EnsImage name={name} />
+      <EnsImage name={name ?? ""} />
       <DetailsContainer item>
         <Grid>
           {/* NAME.ROOT */}
@@ -237,7 +228,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                 <SkeletonTypography isloading={!isSuccess} />
                 <FieldLabel
                   isloading={!isSuccess}
-                >{`In ${distanceToExpiration}`}</FieldLabel>
+                >{`In ${distance}`}</FieldLabel>
               </Relative>
             </FlexJustified>
           </Field>

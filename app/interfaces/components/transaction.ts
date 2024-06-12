@@ -8,6 +8,8 @@ export interface TransactionProps {
     owner?: {
         id?: string;
     };
+
+    // New properties for ensjs:getNamesForAddress support
     item: NameWithRelation;
     address: Address;
 }
@@ -30,3 +32,6 @@ export interface CardProps extends Omit<PrimaryProps, "owner"> {
 
 export interface ExpiryProps extends TransactionProps { }
 export interface LinkProps extends TransactionProps { }
+export interface DetailsProps extends TransactionProps {
+    isSuccess?: boolean
+}

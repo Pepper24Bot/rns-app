@@ -2,36 +2,43 @@
 
 import React, { useEffect } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
 import { isEmpty } from "lodash";
-import { useDomainState } from "@/redux/domain/domainSlice";
+
 import useValidateName from "@/hooks/useValidateName";
+import useGetWrappedData from "@/hooks/useGetWrappedData";
+import useNamesForAddress from "@/hooks/useNamesForAddress";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
   const label = name.split(".root")[0];
 
   const { toggleModal } = useModalState();
-  const { updateName } = useDomainState();
 
   const { label: normalizedLabel } = useValidateName({
     label,
   });
 
-  const { data, isSuccess } = useGetNamesByNameQuery(
-    { labelName: normalizedLabel },
-    { skip: isEmpty(normalizedLabel) }
-  );
+  const { name: wrappedName, isSuccess } = useGetWrappedData({
+    name: `${normalizedLabel}.root`,
+    skip: !normalizedLabel,
+  });
+
+  const { names, isSuccess: isNameSuccess } = useNamesForAddress({
+    skip: !normalizedLabel || !wrappedName?.owner,
+    address: wrappedName?.owner ?? "0x",
+    filter: {
+      searchString: `${normalizedLabel}.root`,
+      searchType: "name",
+    },
+  });
 
   const toggleDetails = () => {
     toggleModal({
       id: "Registration Details",
       title: "Registration Details",
       data: {
-        // use label then append .root, in case the user search for a label only
-        name: `${normalizedLabel}.root`,
-        domain: data?.wrappedDomains[0],
-        isSuccess,
+        item: names[0],
+        isSuccess: isNameSuccess,
       },
     });
   };
@@ -50,13 +57,13 @@ export default function Page({ params }: { params: { name: string } }) {
 
   useEffect(() => {
     if (normalizedLabel && isSuccess) {
-      if (!isEmpty(data.wrappedDomains)) {
-        toggleDetails();
-      } else {
+      if (isEmpty(wrappedName)) {
         toggleRegistration();
+      } else if (isNameSuccess && !isEmpty(names)) {
+        toggleDetails();
       }
     }
-  }, [normalizedLabel, isSuccess]);
+  }, [normalizedLabel, isSuccess, isNameSuccess]);
 
   return <></>;
 }

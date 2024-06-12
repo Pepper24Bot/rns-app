@@ -94,8 +94,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   const { isFeatureEnabled } = useFeatureToggle();
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
-  const { closeModal, toggleModal, useModal } = useModalState();
-  const { isModalOpen } = useModal();
+  const { closeModal, toggleModal } = useModalState();
   const { data: xrpBalance } = useBalance({
     address,
   });
