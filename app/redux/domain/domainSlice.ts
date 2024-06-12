@@ -74,10 +74,6 @@ export const domainState = createSlice({
             state.year = state.year ? state.year - 1 : 0
             return state
         }
-
-        // TODO: Add Extend Expiry Reducer
-        // TODO: Add Link Name Reducer
-        // TODO: Add Image
     }
 })
 

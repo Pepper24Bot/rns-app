@@ -400,8 +400,28 @@ export const ButtonLabel = styled(SecondaryLabel, {
 }));
 
 export const InformationTip = styled(
-  ({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
+  ({
+    className,
+    current,
+    ...props
+  }: TooltipProps & { current?: HTMLDivElement | null }) => (
+    <Tooltip
+      {...props}
+      classes={{ popper: className }}
+      PopperProps={{
+        disablePortal: true,
+        popperOptions: {
+          modifiers: [
+            {
+              name: "preventOverflow",
+              options: {
+                boundary: current,
+              },
+            },
+          ],
+        },
+      }}
+    />
   )
 )(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {

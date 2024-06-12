@@ -2,7 +2,10 @@ import { config } from "@/chains/config";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { Address } from "viem";
 
-/** TODO: Optimize this hook */
+/**
+ * TODO: Optimize this hook
+ * Why is it being called multiple times
+ */
 export default function useWaitTransaction() {
   const waitForWriteTransaction = async (hash: Address) => {
     const receipt = await waitForTransactionReceipt(config, {

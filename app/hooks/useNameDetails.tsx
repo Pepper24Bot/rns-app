@@ -10,7 +10,10 @@ import { MakeCommitProps } from "@/interfaces/registration";
 
 import useContractDetails from "./useContractDetails";
 
-/** TODO: Optimize this hook */
+/**
+ * TODO: Optimize this hook
+ * Why is it being called multiple times
+ */
 export default function useNameDetails(props: MakeCommitProps) {
   const { name, year, token, isEnabled } = props;
 

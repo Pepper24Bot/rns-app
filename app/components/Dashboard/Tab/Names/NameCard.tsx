@@ -71,10 +71,12 @@ export interface NameProps {
    * can be either eoa or fp.
    */
   address: Address;
+
+  boundingArea?: HTMLDivElement | null;
 }
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
-  const { item, address } = props;
+  const { item, address, boundingArea } = props;
   const {
     name,
     labelName,
@@ -314,6 +316,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                     arrow
                     placement="top"
                     title={isShowTooltip ? <Highlight>{name}</Highlight> : ""}
+                    current={boundingArea}
                   >
                     <NameContainer
                       item
@@ -328,6 +331,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                     <InformationTip
                       arrow
                       placement="top"
+                      current={boundingArea}
                       title={
                         <TooltipContent
                           content={WARNING_ASCII.content}
@@ -344,7 +348,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         }
                       />
                     </InformationTip>
-
                     <DropDownMenu
                       handleSelect={handleMenuSelect}
                       options={[
@@ -393,6 +396,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       }
                       arrow
                       placement="top"
+                      current={boundingArea}
                     >
                       {getTooltipProps()?.icons?.heading || <></>}
                     </InformationTip>
@@ -420,6 +424,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
               </Flex>
               <Flex>
                 <InformationTip
+                  current={boundingArea}
                   title={
                     !isShareEnabled
                       ? "This identity was registered outside of the quest period."
