@@ -128,6 +128,7 @@ export const Transfer: React.FC<TransactionProps> = (
     setNewOwner("");
   };
 
+  // TODO: Implement field validator
   const setValidAddress = async (value: string) => {
     setFieldValidating(true);
     const isValidAddress = isAddress(value);

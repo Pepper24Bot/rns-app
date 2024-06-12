@@ -2,6 +2,7 @@ import { ModalState } from "@/redux/modal/modalSlice";
 import { formatDistanceStrict } from "date-fns";
 import { isEmpty } from "lodash";
 import { Response } from "@/services/interfaces";
+import { OrderBy, OrderDirection } from "@/interfaces/components/types";
 import emojiRegex from "emoji-regex";
 
 export type CharacterSet = 'alphanumeric' | 'digit' | 'emoji' | 'letter' | 'mixed';
@@ -389,4 +390,14 @@ export const getIsAllowedExpired = (allowExpired: boolean = false) => {
 
     // prioritize the cookies value than the state
     return filterViews.includes("Expired") || allowExpired;
+}
+
+export const getOrderBy = (orderBy: OrderBy = "createdAt") => {
+    // prioritize the cookies value than the state
+    return (parseCookie("orderBy") || orderBy) as any;
+}
+
+export const getOrderDirection = (orderDirection: OrderDirection = "desc") => {
+    // prioritize the cookies value than the state
+    return (parseCookie("orderDirection") || orderDirection) as OrderDirection;
 }

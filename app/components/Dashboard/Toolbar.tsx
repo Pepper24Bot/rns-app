@@ -23,7 +23,7 @@ export const Toolbar: React.FC = () => {
     null
   );
 
-  const { updateFilterOptions, useFilters } = useDashboardState();
+  const { updateFilterOptions } = useDashboardState();
 
   const handleDebounceOnChange = (value: string) => {
     updateFilterOptions({

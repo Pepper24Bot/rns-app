@@ -14,7 +14,7 @@ export interface NamesProps extends GetNamesForAddressParameters {
 
 export default function useNamesForAddress(props: NamesProps) {
   const { skip = false, address, isFromUrlRouter, ...rest } = props;
-  const { filter } = rest;
+  const { filter, orderBy, orderDirection } = rest;
 
   const { client } = useNetworkConfig();
 
@@ -50,7 +50,14 @@ export default function useNamesForAddress(props: NamesProps) {
 
       getNames(address);
     }
-  }, [address, skip, filter?.searchString, filter?.allowExpired]);
+  }, [
+    address,
+    skip,
+    filter?.searchString,
+    filter?.allowExpired,
+    orderBy,
+    orderDirection,
+  ]);
 
   return {
     names,

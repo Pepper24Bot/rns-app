@@ -1,11 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
-
-export type View = "Active" | "Expired"
-export type ExpiryDate = "High" | "Low"
-export type SortBy = "Name" | "Length" | "Cost" | "Expiry" | "Created Date"
-export type SortOrder = "Ascending" | "Descending" | "High" | "Low"
+import { OrderBy, OrderDirection, SortBy, SortOrder, View } from "@/interfaces/components/types"
 
 export interface Options {
     /** Search By Name */
@@ -16,16 +12,19 @@ export interface Options {
          * are Active | Expired names
          */
         views?: View[],
-
-        /**
-         * The following properties are used by ensjs.getNamesForAddress
-         */
-        allowExpired?: boolean
     }
+    /** Remove this */
     sort?: {
         by?: SortBy
-        order?: SortOrder
+        order?: SortOrder,
+
     }
+    /**
+     * The following properties are used by ensjs.getNamesForAddress
+    */
+    orderBy?: OrderBy
+    orderDirection?: OrderDirection;
+    allowExpired?: boolean
 
 }
 
@@ -46,13 +45,15 @@ export interface DashboardState {
 const initialState: DashboardState = {
     options: {
         name: "",
+        allowExpired: false,
+        orderBy: "createdAt",
+        orderDirection: "desc",
         filter: {
             views: ["Active"],
-            allowExpired: false,
         },
         sort: {
             by: "Created Date",
-            order: "Ascending"
+            order: "Descending"
         }
     }
 }

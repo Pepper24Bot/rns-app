@@ -8,15 +8,17 @@ import {
   MenuItem,
 } from "@mui/material";
 import { BaseIconButton, SecondaryLabel } from "../Theme/StyledGlobal";
+import { OrderBy, OrderDirection } from "@/interfaces/components/types";
 
 export interface Option {
   label: string;
   icon?: React.ReactNode;
   type?: string;
+  orderBy?: OrderBy;
+  orderDirection?: OrderDirection;
 
   /** If this is provided, use this as the modal title instead of the label */
   title?: string;
-
   disabled?: boolean;
 }
 

@@ -13,15 +13,11 @@ import {
 } from "../Theme/StyledGlobal";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { SORTING_OPTIONS } from "@/constants/components";
-import {
-  SortBy,
-  SortOrder,
-  View,
-  useDashboardState,
-} from "@/redux/dashboard/dashboardSlice";
+import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { ArrowDropDown } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { parseCookie } from "@/utils/common";
+import { View, SortBy, SortOrder } from "@/interfaces/components/types";
 
 import MenuPopper from "./MenuPopper";
 import DropDownMenu, { Option } from "./DropDownMenu";
@@ -71,20 +67,26 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
     "Active",
   ]) as View[];
 
+  const orderBy = parseCookie("orderBy") || "createdAt";
+  const orderDirection = parseCookie("orderDirection") || "desc";
+
   const { updateFilterOptions, useFilters } = useDashboardState();
   const options = useFilters();
 
   const [isSortOpen, setIsSortOption] = useState<boolean>(false);
   const [views, setViews] = useState<View[]>(filterViews);
 
-  const initialSelectedOption = {
-    label: options?.sort?.by || "Name",
-    type: options?.sort?.order || "Ascending",
-  };
+  const initialSorting = SORTING_OPTIONS.find((sort) => {
+    return sort.orderBy === orderBy && sort.orderDirection === orderDirection;
+  }) as Option;
 
-  const [selectedOption, setSelectedOption] = useState<Option>(
-    initialSelectedOption
-  );
+  const [sortOption, setSortOption] = useState<Option>(initialSorting);
+
+  const saveToCookies = () => {
+    document.cookie = `filterByViews=${views}; path=/`;
+    document.cookie = `orderBy=${sortOption.orderBy}; path=/`;
+    document.cookie = `orderDirection=${sortOption.orderDirection}; path=/`;
+  };
 
   const handleViewsSelect = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -94,9 +96,8 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
   };
 
   const handleCancel = () => {
-    setViews(options?.filter?.views || []);
-    setSelectedOption(initialSelectedOption);
-
+    setViews(filterViews || options?.filter?.views || []);
+    setSortOption(initialSorting);
     toggleMenu(false);
   };
 
@@ -106,17 +107,19 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
     });
 
     updateFilterOptions({
+      allowExpired: !isEmpty(allowExpired),
+      orderBy: sortOption.orderBy,
+      orderDirection: sortOption.orderDirection,
       filter: {
         views,
-        allowExpired: !isEmpty(allowExpired),
       },
       sort: {
-        by: selectedOption.label as SortBy,
-        order: selectedOption.type as SortOrder,
+        by: sortOption.label as SortBy,
+        order: sortOption.type as SortOrder,
       },
     });
 
-    document.cookie = `filterByViews=${views}; path=/`;
+    saveToCookies();
     toggleMenu(false);
   };
 
@@ -150,13 +153,13 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
               }}
             >
               <Flex>
-                <SortValue>{selectedOption.label}</SortValue>
+                <SortValue>{sortOption.label}</SortValue>
                 <MuiDivider sx={{ mx: 1 }} flexItem orientation="vertical" />
-                <TypeLabel>{selectedOption.type}</TypeLabel>
+                <TypeLabel>{sortOption.type}</TypeLabel>
               </Flex>
               <DropDownMenu
-                selectedOption={selectedOption}
-                options={SORTING_OPTIONS}
+                selectedOption={sortOption}
+                options={SORTING_OPTIONS as Option[]}
                 hasButton
                 iconButton={<ArrowDownIcon />}
                 isOpen={isSortOpen}
@@ -167,7 +170,7 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
                   setIsSortOption(false);
                 }}
                 handleSelect={(option) => {
-                  setSelectedOption(option);
+                  setSortOption(option);
                 }}
               />
             </MenuField>

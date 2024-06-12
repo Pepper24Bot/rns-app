@@ -7,6 +7,8 @@ import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
 import {
   getIsAllowedExpired,
+  getOrderBy,
+  getOrderDirection,
   parseCookie,
   scrollIntoElement,
 } from "@/utils/common";
@@ -50,15 +52,15 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const options = useFilters();
 
   const { names, isLoading, isSuccess, isError } = useNamesForAddress({
-    address: address || "0x",
-    orderBy: "createdAt",
-    orderDirection: "desc",
-    skip: !hasMounted,
     isFromUrlRouter: true,
+    skip: !hasMounted,
+    address: address || "0x",
+    orderBy: getOrderBy(options?.orderBy),
+    orderDirection: getOrderDirection(options?.orderDirection),
     filter: {
       searchType: "name",
       searchString: options?.name,
-      allowExpired: getIsAllowedExpired(options?.filter?.allowExpired),
+      allowExpired: getIsAllowedExpired(options?.allowExpired),
     },
   });
 

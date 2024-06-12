@@ -1,3 +1,5 @@
+import { Option } from "@/components/Reusables/DropDownMenu";
+
 export const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 export const DEFAULT_DEBOUNCE = 500;
@@ -9,16 +11,66 @@ export const PAYMENT_METHOD = [
 ]
 
 export const SORTING_OPTIONS = [
-    { label: "Name", type: "Ascending" },
-    { label: "Name", type: "Descending" },
-    { label: "Cost", type: "High" },
-    { label: "Cost", type: "Low" },
-    { label: "Expiry", type: "High" },
-    { label: "Expiry", type: "Low" },
-    { label: "Length", type: "High" },
-    { label: "Length", type: "Low" },
-    { label: "Created Date", type: "Ascending" },
-    { label: "Created Date", type: "Descending" },
+    {
+        label: "Name",
+        type: "Ascending",
+        orderBy: "name",
+        orderDirection: "asc"
+    },
+    {
+        label: "Name",
+        type: "Descending",
+        orderBy: "name",
+        orderDirection: "desc"
+    },
+    // {
+    //     label: "Cost",
+    //     type: "High",
+    //     orderBy: "cost",
+    //     orderDirection: "asc"
+    // },
+    // {
+    //     label: "Cost",
+    //     type: "Low",
+    //     orderBy: "cost",
+    //     orderDirection: "desc"
+    // },
+    {
+        label: "Expiry",
+        type: "High",
+        orderBy: "expiryDate",
+        orderDirection: "desc"
+    },
+    {
+        label: "Expiry",
+        type: "Low",
+        orderBy: "expiryDate",
+        orderDirection: "asc"
+    },
+    // {
+    //     label: "Length",
+    //     type: "High",
+    //     orderBy: "length",
+    //     orderDirection: "asc"
+    // },
+    // {
+    //     label: "Length",
+    //     type: "Low",
+    //     orderBy: "length",
+    //     orderDirection: "desc"
+    // },
+    {
+        label: "Created Date",
+        type: "Ascending",
+        orderBy: "createdAt",
+        orderDirection: "asc"
+    },
+    {
+        label: "Created Date",
+        type: "Descending",
+        orderBy: "createdAt",
+        orderDirection: "desc"
+    },
 ]
 
 // day in seconds
