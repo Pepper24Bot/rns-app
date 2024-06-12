@@ -18,19 +18,15 @@ export const Toolbar: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isViewOpen, setIsViewOpen] = useState<boolean>(false);
   const [viewAnchor, setViewAnchor] = useState<HTMLButtonElement | null>(null);
-  const [searchValue, setSearchValue] = useState<string>("");
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [filterAnchor, setFilterAnchor] = useState<HTMLButtonElement | null>(
     null
   );
 
   const { updateFilterOptions, useFilters } = useDashboardState();
-  const options = useFilters();
 
   const handleDebounceOnChange = (value: string) => {
-    setSearchValue(value);
     updateFilterOptions({
-      ...options,
       name: value,
     });
   };

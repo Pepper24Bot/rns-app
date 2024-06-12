@@ -50,7 +50,7 @@ export default function useNamesForAddress(props: NamesProps) {
 
       getNames(address);
     }
-  }, [address, skip, filter?.searchString]);
+  }, [address, skip, filter?.searchString, filter?.allowExpired]);
 
   return {
     names,

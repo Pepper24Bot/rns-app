@@ -14,13 +14,15 @@ import {
 import { FONT_WEIGHT } from "../Theme/Global";
 import { SORTING_OPTIONS } from "@/constants/components";
 import {
-  Options,
   SortBy,
   SortOrder,
   View,
   useDashboardState,
 } from "@/redux/dashboard/dashboardSlice";
 import { ArrowDropDown } from "@mui/icons-material";
+import { isEmpty } from "lodash";
+import { parseCookie } from "@/utils/common";
+
 import MenuPopper from "./MenuPopper";
 import DropDownMenu, { Option } from "./DropDownMenu";
 
@@ -64,13 +66,16 @@ export interface FilterOption extends MenuPopper {
 
 export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
   const { isOpen, anchorEl, toggleMenu } = props;
-  const { useFilters } = useDashboardState();
 
+  const filterViews = (parseCookie("filterByViews")?.split(",") || [
+    "Active",
+  ]) as View[];
+
+  const { updateFilterOptions, useFilters } = useDashboardState();
   const options = useFilters();
 
   const [isSortOpen, setIsSortOption] = useState<boolean>(false);
-
-  const [views, setViews] = useState<View[]>(options?.filter?.views || []);
+  const [views, setViews] = useState<View[]>(filterViews);
 
   const initialSelectedOption = {
     label: options?.sort?.by || "Name",
@@ -80,8 +85,6 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
   const [selectedOption, setSelectedOption] = useState<Option>(
     initialSelectedOption
   );
-
-  const { updateFilterOptions } = useDashboardState();
 
   const handleViewsSelect = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -98,17 +101,22 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
   };
 
   const handleSaveFilter = () => {
-    const options: Options = {
+    const allowExpired = views?.find((view) => {
+      return view === "Expired";
+    });
+
+    updateFilterOptions({
       filter: {
         views,
+        allowExpired: !isEmpty(allowExpired),
       },
       sort: {
         by: selectedOption.label as SortBy,
         order: selectedOption.type as SortOrder,
       },
-    };
+    });
 
-    updateFilterOptions(options);
+    document.cookie = `filterByViews=${views}; path=/`;
     toggleMenu(false);
   };
 
@@ -122,7 +130,9 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
             <FlexJustified>
               <Field>View</Field>
               <ToggleButtonGroup value={views} onChange={handleViewsSelect}>
-                <ToggleButton value="Active">Active</ToggleButton>
+                <ToggleButton value="Active" disabled>
+                  Active
+                </ToggleButton>
                 <ToggleButton value="Expired">Expired</ToggleButton>
               </ToggleButtonGroup>
             </FlexJustified>

@@ -42,7 +42,6 @@ export const formState = createSlice({
     name: 'domain',
     initialState,
     reducers: {
-        /** This is for single name data only */
         updateForm: (state, { payload }: { payload: FormProps }): FormState => {
             state = { ...state, ...payload }
             return state
@@ -80,7 +79,6 @@ export const useFormState = () => {
     const { actions } = formState
 
     return {
-        // dispatcher
         updateForm: (props: FormProps) => {
             dispatch(actions.updateForm({ ...props }))
         },
@@ -90,7 +88,7 @@ export const useFormState = () => {
         },
 
         updatePaymentOption: (payment: Payment) => {
-            dispatch(actions.updatePaymentOption(payment))
+            dispatch(actions.updatePaymentOption({ ...payment }))
         },
 
         resetFormState: () => {

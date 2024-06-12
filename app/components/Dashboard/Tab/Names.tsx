@@ -5,7 +5,11 @@ import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
-import { parseCookie, scrollIntoElement } from "@/utils/common";
+import {
+  getIsAllowedExpired,
+  parseCookie,
+  scrollIntoElement,
+} from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
@@ -54,6 +58,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     filter: {
       searchType: "name",
       searchString: options?.name,
+      allowExpired: getIsAllowedExpired(options?.filter?.allowExpired),
     },
   });
 

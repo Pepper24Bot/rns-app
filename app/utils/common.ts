@@ -346,8 +346,8 @@ export const formatDate = (date: Date) => {
 
 /**
  * 
- * @param expiry 
- * @returns 
+ * @param expiry the expiration date of an identity
+ * @returns distance in days format and expiration in mm-dd-yyyy
  */
 export const getExpiry = (expiry?: Date) => {
     const date = expiry ? expiry : new Date();
@@ -362,9 +362,11 @@ export const getExpiry = (expiry?: Date) => {
 }
 
 /**
- * This is a temporary util
- *
- * TODO: Remove this post quest
+ * Temporary util to check where the date 
+ * created is within the quest period 
+ * 
+ * @param date the date when the identity is created
+ * @returns 
  */
 export const isRegisteredDuringQuest = (date?: Date) => {
     if (date) {
@@ -376,4 +378,15 @@ export const isRegisteredDuringQuest = (date?: Date) => {
     }
 
     return false
+}
+
+/**
+ * 
+ * @param allowExpired pass here the data from the dashboard state
+ */
+export const getIsAllowedExpired = (allowExpired: boolean = false) => {
+    const filterViews = (parseCookie("filterByViews") || "Active")
+
+    // prioritize the cookies value than the state
+    return filterViews.includes("Expired") || allowExpired;
 }
