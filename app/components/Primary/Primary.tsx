@@ -12,7 +12,7 @@ import {
 } from "../Theme/StyledGlobal";
 
 import { useModalState } from "@/redux/modal/modalSlice";
-import { Address, namehash } from "viem";
+import { namehash } from "viem";
 import { isEmpty } from "lodash";
 import { useEnsName } from "wagmi";
 import { PrimaryProps } from "@/interfaces/components/transaction";
@@ -58,13 +58,18 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
-  const { domain, ensName, activeAddress } = props;
-
-  const name = domain?.name || "";
-  const resolverAddress = domain?.resolver?.address;
+  const { item, address } = props;
+  const { name, resolvedAddress: ensAddress } = item;
 
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const { enqueueSnackbar } = useSnackbar();
+  const { refetch, data: ensName } = useEnsName({ address });
+  const { closeModal } = useModalState();
+  const { isFeatureEnabled } = useFeatureToggle();
+  const { setAddressRecord } = useRecords();
+  const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -76,13 +81,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const [isWatchingSetAddr, setWatchSetAddr] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
 
-  const { enqueueSnackbar } = useSnackbar();
-  const { refetch } = useEnsName({ address: activeAddress });
-  const { closeModal } = useModalState();
-  const { isFeatureEnabled } = useFeatureToggle();
-  const { setAddressRecord } = useRecords();
-  const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
-
   const { isWaiting: isSettingAddr, isCompleted: isSetAddrCompleted } =
     useBlockLatency({
       enabled: isWatchingSetAddr,
@@ -93,13 +91,11 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
       enabled: isWatchingSetPrimary,
     });
 
-  const ownerId = activeAddress?.toLowerCase() as Address;
-  const ensAddress = domain?.resolver?.addr?.id.toLowerCase();
   const isTransactionLoading = isLoading || isSettingPrimary || isSettingAddr;
 
   const setEnsRecord = async () => {
     if (isEmpty(ensName)) {
-      const reverseNode = `${ownerId.slice(2)}.addr.reverse`;
+      const reverseNode = `${address.slice(2)}.addr.reverse`;
       const reverseNamehash = namehash(reverseNode);
       const { data: ensPublicName } = await getPrimaryName({
         domainId: reverseNamehash,
@@ -130,8 +126,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   const handleSetPrimaryName = async () => {
     const reponse = await setPrimaryName({
-      name,
-      resolverAddress,
+      name: name ?? "",
     });
 
     return reponse;
@@ -141,9 +136,8 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     initializeFlags();
 
     const response = await setAddressRecord({
-      name,
-      address: ownerId,
-      resolverAddress,
+      name: name ?? "",
+      address,
     });
 
     return response;
@@ -154,13 +148,13 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
    * @returns
    */
   const getStep = () => {
-    if (ensAddress === ownerId) {
+    if (ensAddress === address) {
       return {
         transaction: "setName",
       };
     }
 
-    if (ensNameData === name && ensAddress !== ownerId) {
+    if (ensNameData === name && ensAddress !== address) {
       return {
         transaction: "setAddr",
       };
@@ -232,12 +226,12 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   useEffect(() => {
     setEnsRecord();
-  }, [ownerId]);
+  }, [address]);
 
   return (
     <Grid>
       <PrimaryContainer container>
-        <EnsImage name={name} />
+        <EnsImage name={name ?? ""} />
         <FormContainer>
           {getStep().transaction === "setName" && (
             <>

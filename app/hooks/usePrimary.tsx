@@ -64,10 +64,10 @@ export default function usePrimary() {
    * @returns
    */
   const handlePrimaryName = async (props: PrimaryNameProps) => {
-    const { name, resolverAddress } = props;
+    const { name } = props;
     let response = { ...initializeResponse() };
 
-    if (name && resolverAddress) {
+    if (name) {
       try {
         let primaryHash = "0x" as Address;
 

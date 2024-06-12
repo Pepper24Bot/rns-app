@@ -232,8 +232,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
         // toggleTransactionModal(menuOption);
         return router.replace(`/record/${labelName}`, { scroll: false });
       case "Set as Primary":
-        toggleTransactionModal(menuOption);
-        return; // router.replace(`/primary/${labelName}`, { scroll: false });
+        // toggleTransactionModal(menuOption);
+        return router.replace(`/primary/${labelName}`, { scroll: false });
       case "Transfer":
         toggleTransactionModal(menuOption);
         return; // router.replace(`/transfer/${labelName}`, { scroll: false });

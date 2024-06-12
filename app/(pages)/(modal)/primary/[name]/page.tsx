@@ -3,13 +3,12 @@
 import React, { useEffect } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { Domain } from "@/redux/graphql/hooks";
 import { isEmpty } from "lodash";
 import { useRouter } from "next/navigation";
-import { useGetNamesByIdAndNameQuery } from "@/redux/graphql/graphqlApi";
-import { useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
+
 import useValidateName from "@/hooks/useValidateName";
+import useNamesForAddress from "@/hooks/useNamesForAddress";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
@@ -20,43 +19,40 @@ export default function Page({ params }: { params: { name: string } }) {
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
+
+  const {
+    data: { address },
+  } = useRootNetwork();
 
   const { label: normalizedLabel } = useValidateName({
     label,
   });
 
-  const { data, isSuccess } = useGetNamesByIdAndNameQuery(
-    {
-      id: root.address?.toLowerCase() || "0x",
-      name: `${normalizedLabel}.root`,
+  const { names, isSuccess } = useNamesForAddress({
+    skip: !normalizedLabel || !address,
+    address: address ?? "0x",
+    filter: {
+      searchString: `${normalizedLabel}.root`,
+      searchType: "name",
     },
-    { skip: isEmpty(normalizedLabel) || !root.address }
-  );
-
-  const { data: ensName } = useEnsName({
-    address: root.address || "0x",
   });
 
   const togglePrimaryModal = () => {
-    const domain = data?.wrappedDomains[0].domain;
-
     toggleModal({
       id: "Set as Primary",
       title: "Set as Primary",
       isCloseDisabled: true,
       isXDisabled: true,
       data: {
-        domain: domain as Partial<Domain>,
-        ensName,
-        activeAddress: root.address,
+        item: names[0],
+        address,
       },
     });
   };
 
   useEffect(() => {
-    if (normalizedLabel && root.address && isSuccess) {
-      if (!isEmpty(data.wrappedDomains)) {
+    if (normalizedLabel && address && isSuccess) {
+      if (!isEmpty(names)) {
         togglePrimaryModal();
       } else {
         router.replace("/", { scroll: false });
@@ -66,7 +62,7 @@ export default function Page({ params }: { params: { name: string } }) {
         );
       }
     }
-  }, [normalizedLabel, root.address, isSuccess]);
+  }, [normalizedLabel, address, isSuccess]);
 
   return <></>;
 }
