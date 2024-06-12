@@ -13,7 +13,7 @@ export interface NamesProps extends GetNamesForAddressParameters {
 }
 
 export default function useNamesForAddress(props: NamesProps) {
-  const { filter, skip = false, address, isFromUrlRouter } = props;
+  const { skip = false, address, isFromUrlRouter, ...rest } = props;
   const { client } = useNetworkConfig();
 
   const [isError, setIsError] = useState<boolean>(false);
@@ -25,7 +25,7 @@ export default function useNamesForAddress(props: NamesProps) {
     try {
       const data = await getNamesForAddress(client, {
         address,
-        filter,
+        ...rest,
       });
 
       setNames([...data]);

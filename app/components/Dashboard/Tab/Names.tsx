@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Grid, styled } from "@mui/material";
 import { NameCard } from "./Names/NameCard";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
@@ -43,12 +43,17 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   const { names, isLoading, isSuccess, isError } = useNamesForAddress({
     address: address || "0x",
+    orderBy: "createdAt",
+    orderDirection: "desc",
     skip: !hasMounted,
     isFromUrlRouter: true,
   });
 
   // initial values for pagination
   const itemsPerPageCount = Number(parseCookie("itemsPerPage")) || 50;
+
+  // This is used so the tooltips in each name card will not go beyond the screensize
+  const boundingElement = useRef<HTMLDivElement | null>(null);
 
   const isLoadingState = (!isSuccess && isLoading) || !hasMounted;
   const hasNoNamesState =
@@ -115,14 +120,18 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
       )}
 
       {!isEmpty(names) && (
-        <Container id="Names-Container">
+        <Container id="Names-Container" ref={boundingElement}>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
               {names?.map((name, index) => {
                 return (
                   <React.Fragment key={name.name}>
                     {shouldItemShow(index) ? (
-                      <NameCard item={name} address={address as Address} />
+                      <NameCard
+                        item={name}
+                        address={address as Address}
+                        boundingArea={boundingElement.current}
+                      />
                     ) : (
                       <></>
                     )}
