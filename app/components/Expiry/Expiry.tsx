@@ -207,8 +207,6 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
         { variant: "success" }
       );
 
-      // Data Invalidation: Refresh Dashboard
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       setIsSuccess(true);
       setIsPending(false);
     }

@@ -194,9 +194,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   useEffect(() => {
     if (isSetAddrCompleted) {
-      // Data Invalidation: Refresh Dashboard list of names
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-
       enqueueSnackbar(`Updating the linked address of ${name} is completed!`, {
         variant: "info",
       });

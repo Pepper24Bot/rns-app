@@ -214,8 +214,6 @@ export const Transfer: React.FC<TransactionProps> = (
         { variant: "success" }
       );
 
-      // Data Invalidation: Refresh Dashboard list of names
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       // Refetch the ens name so that the toolbar will update the primary name
       refetchEnsName();
       setIsSuccess(true);
@@ -225,9 +223,6 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isAddrUpdated) {
-      // Data Invalidation: Refresh Dashboard list of names
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-
       enqueueSnackbar(`Updating the address of ${name} is completed!`, {
         variant: "info",
       });

@@ -112,9 +112,6 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
-      // Data Invalidation: Refresh Dashboard list of names
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-
       enqueueSnackbar(
         `You have successfully added an address record to ${name ?? ""}.`,
         { variant: "success" }

@@ -132,9 +132,6 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
-      // Data Invalidation: Refresh Dashboard list of names
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
-
       enqueueSnackbar(
         `You have successfully ${
           isRemoveMode ? "removed" : "updated"

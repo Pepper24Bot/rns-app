@@ -317,9 +317,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
         "Congratulations! You have successfully registered a new identity!",
         { variant: "success" }
       );
-
-      // Data Invalidation: Refresh Dashboard
-      dispatch(graphqlApi.util.invalidateTags(["Name"]));
     }
   }, [isRegistered]);
 
