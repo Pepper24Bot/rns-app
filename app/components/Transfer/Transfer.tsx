@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address, isAddress } from "viem";
 import { TransactionProps } from "@/interfaces/components/transaction";
-import { useEnsAddress, useEnsName } from "wagmi";
+import { useEnsName } from "wagmi";
 import { getMaskedAddress, isRootName } from "@/utils/common";
 import { config } from "@/chains/config";
 import { normalize } from "viem/ens";
@@ -67,16 +67,16 @@ export const Transfer: React.FC<TransactionProps> = (
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const { domain, owner, activeAddress } = props;
+  const { address, item } = props;
+  const { resolvedAddress: ensAddr, owner, name } = item;
+
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
 
   const { refetch: refetchEnsName } = useEnsName({
-    address: activeAddress as Address,
+    address,
   });
-
-  const ensAddr = domain?.resolver?.addr?.id;
 
   // Transaction status
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -144,13 +144,13 @@ export const Transfer: React.FC<TransactionProps> = (
 
       if (!addressRecord) {
         setErrorFieldData("The RNS is not linked to any address!");
-      } else if (addressRecord.toLowerCase() === owner?.id) {
+      } else if (addressRecord.toLowerCase() === owner) {
         setErrorFieldData("You are sending this identity to your own address!");
       } else {
         setNewOwner(addressRecord);
       }
     } else if (!isValidName && isValidAddress) {
-      if (value.toLowerCase() === owner?.id) {
+      if (value.toLowerCase() === owner) {
         setErrorFieldData("You are sending this identity to your own address!");
       } else {
         setNewOwner(value);
@@ -179,7 +179,7 @@ export const Transfer: React.FC<TransactionProps> = (
     initializeFlags();
 
     const { isSuccess } = await setAddressRecord({
-      name: domain?.name || "",
+      name: name ?? "",
       address: newOwner as Address,
     });
 
@@ -192,8 +192,6 @@ export const Transfer: React.FC<TransactionProps> = (
   };
 
   const handleTransfer = async () => {
-    const name = domain?.name;
-
     if (name) {
       const { data, isSuccess } = await transfer({ name, newOwner });
 
@@ -210,9 +208,9 @@ export const Transfer: React.FC<TransactionProps> = (
   useEffect(() => {
     if (isTransferred) {
       enqueueSnackbar(
-        `You have successfully transferred ${
-          domain?.name
-        } to ${getMaskedAddress(newOwner)}!`,
+        `You have successfully transferred ${name} to ${getMaskedAddress(
+          newOwner
+        )}!`,
         { variant: "success" }
       );
 
@@ -230,7 +228,7 @@ export const Transfer: React.FC<TransactionProps> = (
       // Data Invalidation: Refresh Dashboard list of names
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
 
-      enqueueSnackbar(`Updating the address of ${domain?.name} is completed!`, {
+      enqueueSnackbar(`Updating the address of ${name} is completed!`, {
         variant: "info",
       });
 
@@ -241,9 +239,9 @@ export const Transfer: React.FC<TransactionProps> = (
   return (
     <Grid>
       <TransferContainer container>
-        <EnsImage name={domain?.name || ""} />
+        <EnsImage name={name ?? ""} />
         <FormContainer>
-          <InputField disabled value={domain?.name} />
+          <InputField disabled value={name ?? ""} />
           <InputField
             error={isFieldError}
             helperText={helperText}

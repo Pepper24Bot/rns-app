@@ -17,14 +17,15 @@ import useWaitTransaction from "./useWaitTransaction";
 
 /** TODO: Optimize this hook */
 export default function useExtend(props: ExtendProps) {
-  // console.log("================ useExtend ================");
-  const { name, year, token, isEnabled } = props;
   const controller = useContractDetails({ action: "RegistrarController" });
 
+  const { name, year, token, isEnabled } = props;
   const { enqueueSnackbar } = useSnackbar();
-  const { abi, address } = controller;
+  const { abi, address: controllerAddr } = controller;
   const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
+  const {
+    data: { address, isFpActive },
+  } = useRootNetwork();
   const { waitForWriteTransaction } = useWaitTransaction();
   const { writeContractAsync } = useWriteContract();
   const { extendProxyCall } = useProxyExtend({
@@ -37,22 +38,18 @@ export default function useExtend(props: ExtendProps) {
   };
 
   const [isExtendLoading, setExtendLoading] = useState(false);
-  const [isRentLoading, setRentLoading] = useState(false);
-
   const [rentPrice, setRentPrice] = useState<RentPrice>(initialRentPrice);
 
   const duration = year * SECONDS;
 
   const getRentPrice = async () => {
-    setRentLoading(true);
     const data = await readContract(config, {
       abi,
-      address,
+      address: controllerAddr,
       functionName: "rentERC20Price",
       args: [token, name, duration],
     });
 
-    setRentLoading(false);
     setRentPrice(data as unknown as RentPrice);
   };
 
@@ -68,7 +65,7 @@ export default function useExtend(props: ExtendProps) {
       try {
         let renewHash = "0x" as Address;
 
-        if (root.isFpActive) {
+        if (isFpActive) {
           renewHash = (await extendProxyCall({
             name,
             duration,
@@ -77,9 +74,9 @@ export default function useExtend(props: ExtendProps) {
         } else {
           renewHash = await writeContractAsync({
             abi,
-            address,
+            address: controllerAddr,
             functionName: "renewWithERC20",
-            account: root.address as Address,
+            account: address as Address,
             args: [name, duration, token],
           });
         }

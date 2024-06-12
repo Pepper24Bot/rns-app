@@ -18,8 +18,10 @@ export default function useNameDetails(props: MakeCommitProps) {
   const resolver = useContractDetails({ action: "PublicResolver" });
 
   const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
-  const { abi, address } = controller;
+  const {
+    data: { address },
+  } = useRootNetwork();
+  const { abi, address: controllerAddr } = controller;
 
   const initialRentPrice: RentPrice = {
     base: BigInt(0),
@@ -39,7 +41,7 @@ export default function useNameDetails(props: MakeCommitProps) {
   const duration = year * SECONDS;
   const contract = {
     abi,
-    address,
+    address: controllerAddr,
   };
 
   /**
@@ -74,16 +76,16 @@ export default function useNameDetails(props: MakeCommitProps) {
     const addressRecord = encodeFunctionData({
       abi: resolver.abi,
       functionName: "setAddr",
-      args: [nameHash, root.address],
+      args: [nameHash, address],
     });
 
     const response = await readContract(config, {
       abi,
-      address,
+      address: controllerAddr,
       functionName: "makeCommitment",
       args: [
         name,
-        root.address as Address,
+        address as Address,
         duration,
         secret,
         resolverAddr,
@@ -103,10 +105,10 @@ export default function useNameDetails(props: MakeCommitProps) {
   }, [name, isEnabled, duration, token]);
 
   useEffect(() => {
-    if (isEnabled && available && root.address) {
+    if (isEnabled && available && address) {
       makeCommitment();
     }
-  }, [name, isEnabled, duration, available, root.address]);
+  }, [name, isEnabled, duration, available, address]);
 
   const rentFee = rentPrice
     ? (rentPrice as unknown as RentPrice)

@@ -146,7 +146,10 @@ export const SearchForm: React.FC = () => {
   const { status } = useAccount();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
+
+  const {
+    data: { address },
+  } = useRootNetwork();
 
   const { data, isLoading } = useGetNamesByNameQuery(
     { labelName: `${searchValue}` },
@@ -155,8 +158,6 @@ export const SearchForm: React.FC = () => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const searchFieldRef = React.useRef(null);
-  const isWalletLoading = isAccountLoading(status);
-  const address = root.address;
 
   const getNameStatus = () => {
     const isAvailable = isEmpty(data?.wrappedDomains);

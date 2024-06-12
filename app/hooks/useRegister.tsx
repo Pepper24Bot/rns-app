@@ -18,11 +18,13 @@ export default function useRegister() {
   const controller = useContractDetails({ action: "RegistrarController" });
 
   const { enqueueSnackbar } = useSnackbar();
-  const { abi, address } = controller;
+  const { abi, address: controllerAddr } = controller;
   const { writeContractAsync } = useWriteContract();
   const { waitForWriteTransaction } = useWaitTransaction();
   const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
+  const {
+    data: { isFpActive, address },
+  } = useRootNetwork();
   const { registerProxyCall, commitProxyCall } = useProxyRegister({
     registrarController: controller,
   });
@@ -39,7 +41,7 @@ export default function useRegister() {
       try {
         const commitments = await readContract(config, {
           abi,
-          address,
+          address: controllerAddr,
           functionName: "commitments",
           args: [hash],
         });
@@ -84,12 +86,12 @@ export default function useRegister() {
       try {
         let commitHash = "0x" as Address;
 
-        if (root.isFpActive) {
+        if (isFpActive) {
           commitHash = (await commitProxyCall({ hash })) as Address;
         } else {
           commitHash = await writeContractAsync({
             abi,
-            address,
+            address: controllerAddr,
             functionName: "commit",
             args: [hash],
           });
@@ -132,14 +134,14 @@ export default function useRegister() {
       const addressRecord = encodeFunctionData({
         abi: resolver?.abi || [],
         functionName: "setAddr",
-        args: [nameHash, root.address],
+        args: [nameHash, address],
       });
 
-      if (root.isFpActive) {
+      if (isFpActive) {
         registerHash = (await registerProxyCall({
           args: {
             name,
-            owner: root.address ?? "",
+            owner: address ?? "",
             duration,
             secret,
             resolverAddr,
@@ -150,7 +152,7 @@ export default function useRegister() {
       } else {
         registerHash = await writeContractAsync({
           abi,
-          address,
+          address: controllerAddr,
           functionName: "registerWithERC20",
           account: args.owner as Address,
           args: [

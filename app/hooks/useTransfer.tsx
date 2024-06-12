@@ -17,7 +17,11 @@ export default function useTransfer() {
 
   const { enqueueSnackbar } = useSnackbar();
   const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
+
+  const {
+    data: { address, isFpActive },
+  } = useRootNetwork();
+
   const { waitForWriteTransaction } = useWaitTransaction();
   const { writeContractAsync } = useWriteContract();
   const { transferProxyCall } = useProxyTransfer({
@@ -30,7 +34,7 @@ export default function useTransfer() {
     const { name, newOwner } = props;
     let response = { ...initializeResponse() };
 
-    if (name && newOwner && root.address) {
+    if (name && newOwner && address) {
       try {
         const nameHash = namehash(name);
         const tokenId = BigInt(nameHash);
@@ -38,9 +42,9 @@ export default function useTransfer() {
 
         let transferHash = "0x" as Address;
 
-        if (root.isFpActive) {
+        if (isFpActive) {
           transferHash = (await transferProxyCall({
-            fromOwner: root.address,
+            fromOwner: address,
             newOwner,
             tokenId,
             amount,
@@ -50,8 +54,8 @@ export default function useTransfer() {
             abi: nameWrapper.abi,
             address: nameWrapper.address,
             functionName: "safeTransferFrom",
-            account: root.address as Address,
-            args: [root.address, newOwner, tokenId, amount, "0x"],
+            account: address as Address,
+            args: [address, newOwner, tokenId, amount, "0x"],
           });
         }
 

@@ -59,7 +59,7 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
 
 export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const { item, address } = props;
-  const { name, resolvedAddress: ensAddress } = item;
+  const { name, resolvedAddress: ensAddr } = item;
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -148,13 +148,13 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
    * @returns
    */
   const getStep = () => {
-    if (ensAddress === address) {
+    if (ensAddr === address) {
       return {
         transaction: "setName",
       };
     }
 
-    if (ensNameData === name && ensAddress !== address) {
+    if (ensNameData === name && ensAddr !== address) {
       return {
         transaction: "setAddr",
       };

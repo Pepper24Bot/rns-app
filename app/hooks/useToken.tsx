@@ -26,11 +26,13 @@ export default function useToken() {
 
   const { enqueueSnackbar } = useSnackbar();
   const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
+  const {
+    data: { address, isFpActive },
+  } = useRootNetwork();
   const { approveProxyCall } = useProxyToken();
   const { waitForWriteTransaction } = useWaitTransaction();
   const { writeContractAsync } = useWriteContract();
-  const { address } = controller;
+  const { address: controllerAddr } = controller;
 
   const [isApprovalLoading, setApprovalLoading] = useState(false);
 
@@ -48,11 +50,11 @@ export default function useToken() {
       let approveHash = "0x" as Address;
 
       // The spender is the ETHRegistrarCntroller address
-      const spender = address as Address;
+      const spender = controllerAddr as Address;
       const tokenAddr = payment?.address as Address;
       const value = parseUnits(fee.toString(), payment?.decimals);
 
-      if (root.isFpActive) {
+      if (isFpActive) {
         approveHash = (await approveProxyCall({
           spender,
           tokenAddr,
@@ -95,7 +97,7 @@ export default function useToken() {
         abi: erc20Abi,
         address: tokenAddr,
         functionName: "balanceOf",
-        args: [root.address as Address],
+        args: [address as Address],
       });
 
       response.isSuccess = true;
