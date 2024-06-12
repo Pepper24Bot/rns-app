@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   SearchField,
   SearchIcon,
@@ -8,8 +8,9 @@ import { Grid, InputAdornment, IconButton } from "@mui/material";
 import { Tune, ViewColumn } from "@mui/icons-material";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
+import { FeatureList } from "@/hooks/useFeatureToggle";
+import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 
-import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import FeatureToggle from "../Reusables/FeatureToggle";
 import FilterOption from "../Reusables/FilterOption";
 
@@ -23,8 +24,15 @@ export const Toolbar: React.FC = () => {
     null
   );
 
+  const { updateFilterOptions, useFilters } = useDashboardState();
+  const options = useFilters();
+
   const handleDebounceOnChange = (value: string) => {
     setSearchValue(value);
+    updateFilterOptions({
+      ...options,
+      name: value,
+    });
   };
 
   const debounceFn = useCallback(

@@ -8,6 +8,7 @@ import { debounce as _debounce, isEmpty } from "lodash";
 import { parseCookie, scrollIntoElement } from "@/utils/common";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
+import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 
 import SkeletonNames from "./Names/SkeletonNames";
 import Pagination from "@/components/Reusables/Pagination";
@@ -36,10 +37,13 @@ interface NamesProps {
 export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const { hasMounted } = props;
 
+  const { useFilters } = useDashboardState();
   const { useRootNetwork } = useRootNetworkState();
   const {
     data: { address },
   } = useRootNetwork();
+
+  const options = useFilters();
 
   const { names, isLoading, isSuccess, isError } = useNamesForAddress({
     address: address || "0x",
@@ -47,6 +51,10 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     orderDirection: "desc",
     skip: !hasMounted,
     isFromUrlRouter: true,
+    filter: {
+      searchType: "name",
+      searchString: options?.name,
+    },
   });
 
   // initial values for pagination
@@ -99,10 +107,10 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   }, [names, itemsPerPage]);
 
   useEffect(() => {
-    console.log("hasMounted:: ", hasMounted);
-    console.log("isSuccess:: ", isSuccess);
-    console.log("isLoading:: ", isLoading);
-    console.log("------------------------------------");
+    // console.log("hasMounted:: ", hasMounted);
+    // console.log("isSuccess:: ", isSuccess);
+    // console.log("isLoading:: ", isLoading);
+    // console.log("------------------------------------");
   }, [isLoadingState]);
 
   return (

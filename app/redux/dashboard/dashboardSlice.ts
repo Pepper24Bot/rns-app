@@ -8,10 +8,18 @@ export type SortBy = "Name" | "Length" | "Cost" | "Expiry" | "Created Date"
 export type SortOrder = "Ascending" | "Descending" | "High" | "Low"
 
 export interface Options {
+    /** Search By Name */
+    name?: string
+
     filter?: {
+        /** 
+         * Only filteres available for now
+         * are Active | Expired names
+         */
         views?: View[],
 
     }
+
     sort?: {
         by?: SortBy
         order?: SortOrder
@@ -34,6 +42,7 @@ export interface DashboardState {
 
 const initialState: DashboardState = {
     options: {
+        name: "",
         filter: {
             views: ["Active"],
         },
