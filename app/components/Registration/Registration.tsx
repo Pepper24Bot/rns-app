@@ -16,10 +16,7 @@ import {
   CloseIcon,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Divider, Grid, Link, alpha, styled } from "@mui/material";
-import {
-  initialState as nameInitialState,
-  useDomainState,
-} from "@/redux/domain/domainSlice";
+import { useFormState } from "@/redux/form/formSlice";
 import { useAccount, useBalance } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { Address, formatEther, formatUnits } from "viem";
@@ -29,7 +26,7 @@ import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
-import { isDateWithinRange, parseCookie } from "@/utils/common";
+import { isRegisteredDuringQuest, parseCookie } from "@/utils/common";
 import { red } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { isEmpty } from "lodash";
@@ -88,8 +85,8 @@ export const RegisterName: React.FC<RegistrationProps> = (
 ) => {
   const { name = "" } = props;
   const { address } = useAccount();
-  const { useDomain, updateName } = useDomainState();
-  const { year = 1, payment } = useDomain();
+  const { useForm, resetFormState } = useFormState();
+  const { year = 1, payment } = useForm();
   const { enqueueSnackbar } = useSnackbar();
   const { isFeatureEnabled } = useFeatureToggle();
   const { useRootNetwork } = useRootNetworkState();
@@ -165,7 +162,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   const hashStr = hash as unknown as string;
 
   const handleCloseModal = () => {
-    updateName({ ...nameInitialState });
+    resetFormState();
     closeModal();
     router.replace("/", { scroll: false });
   };
@@ -353,11 +350,8 @@ export const RegisterName: React.FC<RegistrationProps> = (
   }, [xrpBalance?.value]);
 
   useEffect(() => {
-    const start = new Date("2024-05-28T08:00:00.000+10:00");
-    const end = new Date("2024-06-25T08:00:00.000+10:00");
     const createdDate = new Date();
-    const isShareable = isDateWithinRange(createdDate, start, end);
-
+    const isShareable = isRegisteredDuringQuest(createdDate);
     setShareEnabled(isShareable);
   }, [isRegistered, isTweetVerified]);
 

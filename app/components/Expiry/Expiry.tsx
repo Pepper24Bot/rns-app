@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  initialState as nameInitialState,
-  useDomainState,
-} from "@/redux/domain/domainSlice";
+import { useFormState } from "@/redux/form/formSlice";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useAccount, useBalance } from "wagmi";
 import { Collapse, Grid, IconButton, Link, alpha, styled } from "@mui/material";
@@ -16,7 +13,6 @@ import {
   ErrorTip,
 } from "../Theme/StyledGlobal";
 import { KeyboardBackspace } from "@mui/icons-material";
-import { Domain } from "@/redux/graphql/hooks";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
 import { PAYMENT_METHOD } from "@/constants/components";
@@ -77,8 +73,8 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
     address: walletAddress,
   });
 
-  const { useDomain, updateName } = useDomainState();
-  const { year = 1, payment } = useDomain();
+  const { useForm, updateFees, resetFormState } = useFormState();
+  const { year = 1, payment } = useForm();
 
   const { enqueueSnackbar } = useSnackbar();
   const { closeModal } = useModalState();
@@ -313,7 +309,7 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
           sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
-            updateName({ ...nameInitialState });
+            resetFormState();
             closeModal();
             router.replace("/", { scroll: false });
           }}
@@ -335,7 +331,7 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
               if (extendPage === 1) {
                 // Move to the next page
                 setExtendPage(extendPage + 1);
-                updateName({ fee: { total: rentFee } });
+                updateFees({ total: rentFee });
               } else {
                 if (isApproved) {
                   initializeFlags();

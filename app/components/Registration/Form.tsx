@@ -13,17 +13,14 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
-import {
-  NameStatus,
-  Payment,
-  useDomainState,
-} from "@/redux/domain/domainSlice";
+import { Payment, useFormState } from "@/redux/form/formSlice";
 import { PAYMENT_METHOD } from "@/constants/components";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "ethers/lib/utils";
 
 import MenuField from "@/components/Reusables/MenuField";
+import { NameStatus } from "@/interfaces/components/types";
 
 const SummaryContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -84,13 +81,7 @@ export interface FormProps {
 }
 
 export const Form: React.FC<FormProps> = (props: FormProps) => {
-  const {
-    name: nameProp,
-    isShowing = true,
-    rentFee,
-    walletBalance,
-    status,
-  } = props;
+  const { name, isShowing = true, rentFee, walletBalance, status } = props;
 
   // Get the native currency balance
   const { address = "0x" } = useAccount();
@@ -98,9 +89,9 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     address,
   });
 
-  const { useDomain, increaseYear, decreaseYear, updatePaymentOption } =
-    useDomainState();
-  const { name, payment, year } = useDomain();
+  const { useForm, increaseYear, decreaseYear, updatePaymentOption } =
+    useFormState();
+  const { payment, year } = useForm();
 
   const getYearLabel = () => {
     return year && year > 1 ? "Years" : "Year";
@@ -110,7 +101,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     <Grid minWidth={250}>
       <NameField
         disabled
-        value={nameProp ? nameProp : `${name}.root`}
+        value={name}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">

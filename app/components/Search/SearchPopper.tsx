@@ -1,126 +1,32 @@
 import React, { useEffect, useState } from "react";
-import {
-  Fade,
-  Grid,
-  alpha,
-  styled,
-  Popper as MuiPopper,
-  Divider,
-} from "@mui/material";
+import { Fade, Grid, Divider } from "@mui/material";
 import { isEmpty } from "lodash";
 import {
   FlexJustified,
   Relative,
   SkeletonTypography,
   SkeletonRectangular,
-  BaseButton,
-  BaseIconButton,
-  SubTitle,
   InformationTip,
-  SecondaryLabel,
   AvailableText,
   NotAvailableText,
   RegisteredText,
   FlexRight,
 } from "../Theme/StyledGlobal";
-import { Star, StarBorder } from "@mui/icons-material";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
-import { NameStatus } from "@/redux/domain/domainSlice";
 import { parseCookie } from "@/utils/common";
 import { useRouter } from "next/navigation";
-
-import Image from "next/image";
-
-const Popper = styled(MuiPopper)(({ theme }) => ({
-  zIndex: 15,
-  marginTop: "5px !important", //override inline styling
-  width: "100%",
-}));
-
-const SearchText = styled(SubTitle)(({ theme }) => ({
-  fontWeight: FONT_WEIGHT.Regular,
-  marginBottom: 0,
-  textAlign: "start",
-  wordBreak: "break-word",
-  fontFamily: "var(--secondary-font)",
-
-  [theme.breakpoints.down("md")]: {
-    fontSize: FONT_SIZE.Medium,
-  },
-}));
-
-const PopperContainer = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.background.darker,
-  padding: "20px",
-  borderRadius: "0 0 8px 8px",
-
-  [theme.breakpoints.down("md")]: {
-    padding: "10px 15px 15px",
-  },
-}));
-
-const ButtonsContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("md")]: {
-    paddingTop: "20px",
-  },
-}));
-
-const SearchButton = styled(BaseButton)(({ theme }) => ({
-  textTransform: "uppercase",
-  marginLeft: "10px",
-
-  "&.MuiButtonBase-root": {
-    filter: `drop-shadow(0px 0px 15px ${alpha(
-      theme.palette.background.paper,
-      0.5
-    )})`,
-
-    "&.MuiButton-contained": {
-      backgroundColor: theme.palette.primary.dark,
-      "&.Mui-disabled": {
-        backgroundColor: alpha(theme.palette.primary.dark, 0.25),
-      },
-    },
-
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.primary.main, 0.25),
-    },
-  },
-}));
-
-const SearchLabel = styled(SecondaryLabel)(({ theme }) => ({
-  fontWeight: FONT_WEIGHT.Regular,
-  fontSize: "14px",
-  padding: "4px 0",
-
-  [theme.breakpoints.down("md")]: {
-    fontSize: FONT_SIZE.Small,
-  },
-}));
-
-const FavoriteButton = styled(BaseIconButton)(({ theme }) => ({
-  borderRadius: "32px",
-  padding: "4px",
-  backgroundColor: "#161616",
-  color: "#FFB800",
-  marginLeft: "8px",
-}));
-
-const FavoriteIcon = styled(Star)(({ theme }) => ({
-  height: "20px",
-  width: "20px",
-}));
-
-const StarIcon = styled(StarBorder)(({ theme }) => ({
-  height: "20px",
-  width: "20px",
-}));
-
-const NextImage = styled(Image)(({ theme }) => ({
-  margin: "0 8px",
-  cursor: "pointer",
-}));
+import { NameStatus } from "@/interfaces/components/types";
+import {
+  Popper,
+  PopperContainer,
+  SearchText,
+  ButtonsContainer,
+  FavoriteButton,
+  StarIcon,
+  SearchButton,
+  SearchLabel,
+  NextImage,
+} from "./StyledSearch";
 
 export interface SearchPopper {
   isLoading: boolean;

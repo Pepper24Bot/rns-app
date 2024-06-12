@@ -53,95 +53,6 @@ export const getDate = (date: number) => {
 }
 
 /**
- * @deprecated Use the new method instead - getDistanceToExpiration and getExpiry
- * @param date 
- * @returns string month-date-year
- */
-export const getFormattedDate = (date: number) => {
-    const newDate = new Date(date * 1000)
-    const year = newDate.getFullYear()
-    const month = (newDate.getMonth() + 1).toString().padStart(2, "0")
-    const day = newDate.getDate().toString().padStart(2, "0")
-
-    return {
-        formatted: `${month}-${day}-${year}`,
-        date: `${month}/${day}/${year}`
-    }
-}
-
-/**
- * 
- * @deprecated Use the new method instead - getDistanceToExpiration and getExpiry
- * @param date 
- * @returns 
- */
-export const getExpiryDate = (dateCreated: number, dateExpiration: number) => {
-    // Get the year of expiration
-    const expiryDate = new Date(dateExpiration * 1000)
-    const yearExpiry = expiryDate.getFullYear()
-
-    // Get the date created
-    const createdDate = new Date(dateCreated * 1000)
-    const monthCreated = (createdDate.getMonth() + 1).toString().padStart(2, "0")
-    const dayCreated = createdDate.getDate().toString().padStart(2, "0")
-
-    return {
-        formatted: `${monthCreated}-${dayCreated}-${yearExpiry}`,
-        expiry: `${monthCreated}/${dayCreated}/${yearExpiry}`
-    }
-}
-
-/**
- * 
- * This util is very specific to get the dates of
- * - expected expiration
- * - grace period until the actual expiration
- * - remaining datys until expiration
- * 
- * @param dateCreated 
- * @param dateExpiration 
- * @deprecated Use the new method instead - getDistanceToExpiration and getExpiry
- */
-export const getExpiration = (dateCreated: string, dateExpiration: string) => {
-    const created = parseInt(dateCreated)
-    const expiration = parseInt(dateExpiration)
-
-    const dates = {
-        expiration: "",
-        distanceToExpiration: "",
-        gracePeriod: "",
-        distanceToGracePeriod: ""
-    }
-
-    if (!isNaN(created) && !isNaN(expiration)) {
-        const currentDate = new Date().toLocaleDateString("en-US")
-
-        const { formatted, expiry } = getExpiryDate(created, expiration)
-
-        // Expiration here is actually the expiration with grace period
-        const { formatted: formattedDate, date } = getFormattedDate(expiration)
-
-        const formattedExpiry = new Date(expiry).toLocaleDateString("en-US")
-        const formattedGracePeriod = new Date(date).toLocaleDateString("en-US")
-
-        dates.expiration = formatted
-        dates.gracePeriod = formattedDate
-
-        try {
-            const distanceToExpiration = formatDistanceStrict(currentDate, formattedExpiry, { unit: "day" })
-            dates.distanceToExpiration = distanceToExpiration
-
-            const distanceToGracePeriod = formatDistanceStrict(currentDate, formattedGracePeriod, { unit: "day" })
-            dates.distanceToGracePeriod = distanceToGracePeriod
-        } catch (error) {
-            console.log("Error formatDistanceStrict:: ", error)
-        }
-    }
-
-    return dates
-}
-
-/**
  * 
  * @param createdDate 
  * @param startDate 
@@ -452,7 +363,7 @@ export const getExpiry = (expiry?: Date) => {
 
 /**
  * This is a temporary util
- * 
+ *
  * TODO: Remove this post quest
  */
 export const isRegisteredDuringQuest = (date?: Date) => {

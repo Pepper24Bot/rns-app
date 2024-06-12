@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { api } from './baseSlice'
 import { themeState } from './theme/themeSlice'
 import { modalState } from './modal/modalSlice'
-import { domainState } from './domain/domainSlice'
+import { formState } from './form/formSlice'
 import { dashboardState } from './dashboard/dashboardSlice'
 import { rootNetworkState } from './rootNetwork/rootNetworkSlice'
 import { shareState } from './share/shareSlice'
@@ -12,7 +12,7 @@ const store = configureStore({
         [api.reducerPath]: api.reducer,
         themeState: themeState.reducer,
         modalState: modalState.reducer,
-        domainState: domainState.reducer,
+        formState: formState.reducer,
         dashboardState: dashboardState.reducer,
         rootNetworkSate: rootNetworkState.reducer,
         shareState: shareState.reducer

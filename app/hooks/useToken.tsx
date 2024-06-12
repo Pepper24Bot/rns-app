@@ -1,7 +1,7 @@
 import { useWriteContract } from "wagmi";
 import { Address, erc20Abi, parseUnits } from "viem";
 import { ErrorResponse } from "@/services/interfaces";
-import { Payment } from "@/redux/domain/domainSlice";
+import { Payment } from "@/redux/form/formSlice";
 import { PAYMENT_METHOD } from "@/constants/components";
 import { readContract } from "@wagmi/core";
 import { config } from "@/chains/config";

@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, styled } from "@mui/material";
 import { ModalInputField as InputField } from "../Theme/StyledGlobal";
-import { useDomainState } from "@/redux/domain/domainSlice";
+import { useFormState } from "@/redux/form/formSlice";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "360px",
@@ -18,8 +18,8 @@ export interface Summary {
 export const Summary: React.FC<Summary> = (props: Summary) => {
   const { title } = props;
 
-  const { useDomain } = useDomainState();
-  const { year = 1, payment, fee } = useDomain();
+  const { useForm } = useFormState();
+  const { year = 1, payment, fee } = useForm();
 
   const getYearLabel = () => {
     return year && year > 1 ? "Years" : "Year";

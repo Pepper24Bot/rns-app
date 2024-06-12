@@ -1,33 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { Domain } from "../graphql/hooks"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
-
-export interface Dashboard {
-
-}
 
 export type View = "Active" | "Expired"
 export type ExpiryDate = "High" | "Low"
 export type SortBy = "Name" | "Length" | "Cost" | "Expiry" | "Created Date"
 export type SortOrder = "Ascending" | "Descending" | "High" | "Low"
 
-export interface Name {
-    id: string,
-    name: string,
-    owner?: {
-        id?: string
-    }
-    domain?: Partial<Domain>
-    fuses?: number
-    transactionID?: string
-    expiryDate?: number
-    blockNumber?: number
-}
-
 export interface Options {
     filter?: {
-        views?: View[]
+        views?: View[],
+
     }
     sort?: {
         by?: SortBy
@@ -36,9 +19,7 @@ export interface Options {
 }
 
 export interface DashboardState {
-    names?: Name[]
-    isNameListLoading?: boolean,
-
+    /** Filters and Sorting Options */
     options?: Options
 
     // TODO: Implement this
@@ -52,7 +33,6 @@ export interface DashboardState {
 }
 
 const initialState: DashboardState = {
-    names: [],
     options: {
         filter: {
             views: ["Active"],
@@ -68,16 +48,8 @@ export const dashboardState = createSlice({
     name: "dashboard",
     initialState,
     reducers: {
-        updateNames: (state, { payload }: { payload: Name[] }): DashboardState => {
-            state = { ...state, names: payload }
-            return state
-        },
         updateFilterOptions: (state, { payload }: { payload: Options }): DashboardState => {
             state = { ...state, options: { ...payload } }
-            return state
-        },
-        toggleNamesLoading: (state, { payload }: { payload: boolean }): DashboardState => {
-            state = { ...state, isNameListLoading: payload }
             return state
         },
     }
@@ -88,21 +60,15 @@ export const useDashboardState = () => {
     const { actions } = dashboardState
 
     return {
-        updateNameList: (props: Name[]) => {
-            dispatch(actions.updateNames(props))
-        },
         updateFilterOptions: (props: Options) => {
             dispatch(actions.updateFilterOptions(props))
-        },
-        useDashboard: () => {
-            return useSelector((state: RootState) => {
-                return state.dashboardState
-            })
         },
         useFilters: () => {
             return useSelector((state: RootState) => {
                 return state.dashboardState.options
             })
         }
+        // TODO: Implement useFavorites
+        // TODO: Implement useNotifications
     }
 }
