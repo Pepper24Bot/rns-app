@@ -281,6 +281,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     setIsShowTooltip(isShowing);
   }, []);
 
+  // Move this to a callback
   useEffect(() => {
     initiateDownload();
   }, [isMetadataSuccess, isDownloadRequested, isError]);

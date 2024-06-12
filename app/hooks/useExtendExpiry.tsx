@@ -17,6 +17,7 @@ import useWaitTransaction from "./useWaitTransaction";
 
 /** TODO: Optimize this hook */
 export default function useExtend(props: ExtendProps) {
+  // console.log("================ useExtend ================");
   const { name, year, token, isEnabled } = props;
   const controller = useContractDetails({ action: "RegistrarController" });
 
@@ -36,11 +37,14 @@ export default function useExtend(props: ExtendProps) {
   };
 
   const [isExtendLoading, setExtendLoading] = useState(false);
+  const [isRentLoading, setRentLoading] = useState(false);
+
   const [rentPrice, setRentPrice] = useState<RentPrice>(initialRentPrice);
 
   const duration = year * SECONDS;
 
   const getRentPrice = async () => {
+    setRentLoading(true);
     const data = await readContract(config, {
       abi,
       address,
@@ -48,6 +52,7 @@ export default function useExtend(props: ExtendProps) {
       args: [token, name, duration],
     });
 
+    setRentLoading(false);
     setRentPrice(data as unknown as RentPrice);
   };
 
@@ -100,6 +105,12 @@ export default function useExtend(props: ExtendProps) {
 
   useEffect(() => {
     if (!isEmpty(name) && isEnabled) {
+      // console.log("=============================");
+      // console.log("name:: ", name);
+      // console.log("isEnabled:: ", isEnabled);
+      // console.log("duration:: ", duration);
+      // console.log("token:: ", token);
+      // console.log("isRentLoading:: ", isRentLoading);
       getRentPrice();
     }
   }, [name, isEnabled, duration, token]);

@@ -42,7 +42,7 @@ export default function useNamesForAddress(props: NamesProps) {
     if (address && address !== "0x" && !skip) {
       if (isFromUrlRouter) {
         console.log("------------------------------------");
-        console.log("address:: ", address);
+        console.log("getNames....");
       }
 
       getNames(address);

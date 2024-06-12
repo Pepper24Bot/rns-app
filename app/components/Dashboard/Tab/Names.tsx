@@ -43,6 +43,8 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   const { names, isLoading, isSuccess, isError } = useNamesForAddress({
     address: address || "0x",
+    skip: !hasMounted,
+    isFromUrlRouter: true,
   });
 
   // initial values for pagination
@@ -91,10 +93,18 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     setPageCount(count);
   }, [names, itemsPerPage]);
 
+  useEffect(() => {
+    console.log("hasMounted:: ", hasMounted);
+    console.log("isSuccess:: ", isSuccess);
+    console.log("isLoading:: ", isLoading);
+    console.log("------------------------------------");
+  }, [isLoadingState]);
+
   return (
     <>
       {/* TODO: Clean this skeleton up - looks really ugly */}
       {isLoadingState && <SkeletonNames count={2} />}
+
       {hasNoNamesState && (
         <Container>
           <Label>No Names found</Label>
