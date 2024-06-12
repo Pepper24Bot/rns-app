@@ -10,7 +10,7 @@ export interface WrappedProps extends GetWrapperDataParameters {
   skip?: boolean;
 }
 
-export default function useGetWrappedData(props: WrappedProps) {
+export default function useWrappedData(props: WrappedProps) {
   const { name, skip = false } = props;
   const { client } = useNetworkConfig();
 

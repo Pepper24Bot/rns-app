@@ -30,7 +30,7 @@ import { normalize } from "viem/ens";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import Image from "next/image";
-import useGetWrappedData from "@/hooks/useGetWrappedData";
+import useWrappedData from "@/hooks/useWrappedData";
 import useNamesForAddress from "@/hooks/useNamesForAddress";
 
 const Container = styled(Grid)(({ theme }) => ({
@@ -152,7 +152,7 @@ export const SearchForm: React.FC = () => {
     data: { address },
   } = useRootNetwork();
 
-  const { name: wrappedName, isLoading } = useGetWrappedData({
+  const { name: wrappedName, isLoading } = useWrappedData({
     name: `${searchValue}.root`,
     skip: !searchValue,
   });

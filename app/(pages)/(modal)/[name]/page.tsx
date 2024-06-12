@@ -5,7 +5,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { isEmpty } from "lodash";
 
 import useValidateName from "@/hooks/useValidateName";
-import useGetWrappedData from "@/hooks/useGetWrappedData";
+import useWrappedData from "@/hooks/useWrappedData";
 import useNamesForAddress from "@/hooks/useNamesForAddress";
 
 export default function Page({ params }: { params: { name: string } }) {
@@ -18,7 +18,7 @@ export default function Page({ params }: { params: { name: string } }) {
     label,
   });
 
-  const { name: wrappedName, isSuccess } = useGetWrappedData({
+  const { name: wrappedName, isSuccess } = useWrappedData({
     name: `${normalizedLabel}.root`,
     skip: !normalizedLabel,
   });
