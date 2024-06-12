@@ -15,6 +15,7 @@ import {
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
+import { GetNamesForAddressReturnType } from "@ensdomains/ensjs/subgraph";
 
 import SkeletonNames from "./Names/SkeletonNames";
 import Pagination from "@/components/Reusables/Pagination";
@@ -51,43 +52,49 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   const options = useFilters();
 
-  const { names, isLoading, isSuccess, isError } = useNamesForAddress({
-    isFromUrlRouter: true,
-    skip: !hasMounted,
-    address: address || "0x",
-    orderBy: getOrderBy(options?.orderBy),
-    orderDirection: getOrderDirection(options?.orderDirection),
-    filter: {
-      searchType: "name",
-      searchString: options?.name,
-      allowExpired: getIsAllowedExpired(options?.allowExpired),
-    },
-  });
-
   // initial values for pagination
-  const itemsPerPageCount = Number(parseCookie("itemsPerPage")) || 50;
+  const pageSize = Number(parseCookie("itemsPerPage")) || 50;
 
   // This is used so the tooltips in each name card will not go beyond the screensize
   const boundingElement = useRef<HTMLDivElement | null>(null);
+
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(pageSize);
+  const [pageCount, setPageCount] = useState(1);
+  const [previousPage, setPreviousPage] =
+    useState<GetNamesForAddressReturnType>([]);
+
+  const { names, isLoading, isSuccess, isError, totalNames } =
+    useNamesForAddress({
+      skip: !hasMounted,
+      enableAggregated: true,
+      address: address || "0x",
+      orderBy: getOrderBy(options?.orderBy),
+      orderDirection: getOrderDirection(options?.orderDirection),
+      pageSize: itemsPerPage,
+      previousPage,
+      filter: {
+        searchType: "name",
+        searchString: options?.name,
+        allowExpired: getIsAllowedExpired(options?.allowExpired),
+      },
+    });
 
   const isLoadingState = (!isSuccess && isLoading) || !hasMounted;
   const hasNoNamesState =
     (isEmpty(names) && isSuccess && !isLoading) || isError;
 
-  const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageCount);
-  const [itemCountField, setItemCountField] = useState(itemsPerPageCount);
-  const [pageCount, setPageCount] = useState(1);
-
   const handleDebounceOnChange = (value: number) => {
-    setItemsPerPage(value);
-    setPage(1);
+    if (value > 0 && value <= 1000) {
+      setItemsPerPage(value);
+      setPage(1);
 
-    // store in cookies
-    document.cookie = `itemsPerPage=${value}; path=/`;
+      // store in cookies
+      document.cookie = `itemsPerPage=${value}; path=/`;
 
-    // Scroll to the top
-    scrollIntoElement("Dashboard-Container");
+      // Scroll to the top
+      scrollIntoElement("Dashboard-Container");
+    }
   };
 
   const debounceFn = useCallback(
@@ -96,29 +103,22 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   );
 
   const getNumberOfPages = () => {
-    const pages = Math.ceil((names?.length || 0) / itemsPerPage);
-    return pages;
-  };
-
-  const shouldItemShow = (index: number) => {
-    if (page === 1) {
-      return index < page * itemsPerPage;
-    }
-
-    return index < page * itemsPerPage && index >= (page - 1) * itemsPerPage;
+    return Math.ceil(totalNames / itemsPerPage);
   };
 
   useEffect(() => {
     const count = getNumberOfPages();
     setPageCount(count);
-  }, [names, itemsPerPage]);
+  }, [totalNames, itemsPerPage]);
 
   useEffect(() => {
     // console.log("hasMounted:: ", hasMounted);
     // console.log("isSuccess:: ", isSuccess);
     // console.log("isLoading:: ", isLoading);
     // console.log("------------------------------------");
-  }, [isLoadingState]);
+    // console.log("names:: ", names);
+    // setNamesList([...names]);
+  }, [names]);
 
   return (
     <>
@@ -138,18 +138,14 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
         <Container id="Names-Container" ref={boundingElement}>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
-              {names?.map((name, index) => {
+              {names?.map((name) => {
                 return (
                   <React.Fragment key={name.name}>
-                    {shouldItemShow(index) ? (
-                      <NameCard
-                        item={name}
-                        address={address as Address}
-                        boundingArea={boundingElement.current}
-                      />
-                    ) : (
-                      <></>
-                    )}
+                    <NameCard
+                      item={name}
+                      address={address as Address}
+                      boundingArea={boundingElement.current}
+                    />
                   </React.Fragment>
                 );
               })}
@@ -160,15 +156,12 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
               pageCount={pageCount}
               totalItemsCount={names?.length || 0}
               itemsPerPage={itemsPerPage}
-              inputValue={itemCountField}
               page={page}
-              setPage={setPage}
-              handleInputChange={(value) => {
-                if (value) {
-                  debounceFn(value);
-                  setItemCountField(value);
-                }
+              setPage={(value) => {
+                setPreviousPage(names);
+                setPage(value);
               }}
+              handleInputChange={debounceFn}
             />
           </FlexCenter>
         </Container>

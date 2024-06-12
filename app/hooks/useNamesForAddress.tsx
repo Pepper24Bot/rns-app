@@ -9,12 +9,12 @@ import useNetworkConfig from "./useNetworkConfig";
 
 export interface NamesProps extends GetNamesForAddressParameters {
   skip?: boolean;
-  isFromUrlRouter?: boolean; // for testing purposes only
+  enableAggregated?: boolean;
 }
 
 export default function useNamesForAddress(props: NamesProps) {
-  const { skip = false, address, isFromUrlRouter, ...rest } = props;
-  const { filter, orderBy, orderDirection } = rest;
+  const { skip = false, address, enableAggregated, ...rest } = props;
+  const { filter, orderBy, orderDirection, pageSize, previousPage } = rest;
 
   const { client } = useNetworkConfig();
 
@@ -22,9 +22,24 @@ export default function useNamesForAddress(props: NamesProps) {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [names, setNames] = useState<GetNamesForAddressReturnType>([]);
+  const [totalNames, setTotalNames] = useState<GetNamesForAddressReturnType>(
+    []
+  );
+  const [totalCount, setTotalCount] = useState<number>(0);
+
+  const getTotalNames = async () => {
+    // TODO: Fix this
+    const data = await getNamesForAddress(client, {
+      address,
+      pageSize: 1000,
+    });
+
+    setTotalCount(data.length);
+    setTotalNames(data);
+  };
 
   const getNames = async (address: Address) => {
-    console.log("props:: ", rest);
+    console.log("previousPage:: ", previousPage);
     try {
       const data = await getNamesForAddress(client, {
         address,
@@ -42,8 +57,15 @@ export default function useNamesForAddress(props: NamesProps) {
   };
 
   useEffect(() => {
+    if (enableAggregated && address && !skip) {
+      getTotalNames();
+    }
+  }, [enableAggregated, address]);
+
+  // TODO: Memoize
+  useEffect(() => {
     if (address && address !== "0x" && !skip) {
-      if (isFromUrlRouter) {
+      if (enableAggregated) {
         console.log("------------------------------------");
         // console.log("getNames....");
       }
@@ -57,10 +79,13 @@ export default function useNamesForAddress(props: NamesProps) {
     filter?.allowExpired,
     orderBy,
     orderDirection,
+    pageSize,
+    previousPage,
   ]);
 
   return {
     names,
+    totalNames: totalCount,
     isLoading,
     isError,
     isSuccess,

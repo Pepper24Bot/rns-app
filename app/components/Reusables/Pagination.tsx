@@ -1,11 +1,18 @@
-import React from "react";
-import { FlexCenter, InputField, SecondaryLabel } from "../Theme/StyledGlobal";
+import React, { useState } from "react";
+import {
+  ErrorTip,
+  FlexCenter,
+  InputField,
+  SecondaryLabel,
+} from "../Theme/StyledGlobal";
 import {
   Divider,
   alpha,
   styled,
   Pagination as MuiPagination,
+  Grid,
 } from "@mui/material";
+import { red } from "@mui/material/colors";
 
 const PaginationContainer = styled(FlexCenter)(({ theme }) => ({
   width: "fit-content",
@@ -20,7 +27,7 @@ const PaginationContainer = styled(FlexCenter)(({ theme }) => ({
 
 const PageField = styled(InputField)(({ theme }) => ({
   "&.MuiFormControl-root": {
-    width: "50px",
+    width: "75px",
   },
 
   ".MuiInputBase-input": {
@@ -34,6 +41,14 @@ const PageField = styled(InputField)(({ theme }) => ({
       padding: "8px",
       "& fieldset": {
         borderColor: theme.palette.background.dark,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: alpha(theme.palette.primary.main, 0.25),
+      },
+
+      "&.Mui-error fieldset": {
+        borderColor: red[800],
+        borderWidth: "2px",
       },
     },
   },
@@ -69,10 +84,23 @@ export const Pagination: React.FC<PaginationProps> = (
     page,
     totalItemsCount,
     itemsPerPage = 1,
-    inputValue = 50,
     handleInputChange,
     setPage,
   } = props;
+
+  const [itemCountField, setItemCountField] = useState(itemsPerPage);
+  const [errorField, setErrorField] = useState(false);
+
+  const handleOnChange = (itemCount: number) => {
+    setErrorField(false);
+    setItemCountField(itemCount);
+    handleInputChange && handleInputChange(itemCount);
+
+    if (itemCount < 0 || itemCount > 1000) {
+      // throw error
+      setErrorField(true);
+    }
+  };
 
   const getTotalCountShowedItems = () => {
     const totalCount = totalItemsCount || 0;
@@ -90,79 +118,87 @@ export const Pagination: React.FC<PaginationProps> = (
   };
 
   return (
-    <PaginationContainer
-      sx={{
-        display: {
-          xs: "block",
-          sm: "flex",
-        },
-      }}
-    >
-      <FlexCenter px={1}>
-        <PageField
-          value={inputValue}
-          onChange={(event) => {
-            const { value } = event.target;
-            const itemCount = Number(value);
-            handleInputChange && handleInputChange(itemCount);
+    <Grid>
+      <PaginationContainer
+        sx={{
+          display: {
+            xs: "block",
+            sm: "flex",
+          },
+        }}
+      >
+        <FlexCenter px={1}>
+          <PageField
+            error={errorField}
+            value={itemCountField}
+            onChange={(event) => {
+              const { value } = event.target;
+              const itemCount = Number(value);
+              handleOnChange(itemCount);
+            }}
+          />
+          <PaginationText>Items per page</PaginationText>
+        </FlexCenter>
+        <Divider
+          flexItem
+          orientation="vertical"
+          sx={{
+            display: {
+              xs: "none",
+              sm: "flex",
+            },
           }}
         />
-        <PaginationText>Items per page</PaginationText>
-      </FlexCenter>
-      <Divider
-        flexItem
-        orientation="vertical"
-        sx={{
-          display: {
-            xs: "none",
-            sm: "flex",
-          },
-        }}
-      />
-      <Divider
-        flexItem
-        orientation="horizontal"
-        sx={{
-          mt: "8px",
-          display: {
-            xs: "block",
-            sm: "none",
-          },
-        }}
-      />
-      <MuiPagination
-        siblingCount={0}
-        count={pageCount}
-        page={page}
-        onChange={(_, value) => {
-          setPage && setPage(value);
-        }}
-      />
-      <Divider
-        flexItem
-        orientation="vertical"
-        sx={{
-          display: {
-            xs: "none",
-            sm: "flex",
-          },
-        }}
-      />
-      <Divider
-        flexItem
-        orientation="horizontal"
-        sx={{
-          mb: "8px",
-          display: {
-            xs: "block",
-            sm: "none",
-          },
-        }}
-      />
-      <FlexCenter px={1}>
-        <PaginationText>{`${getTotalCountShowedItems()} out of ${totalItemsCount}`}</PaginationText>
-      </FlexCenter>
-    </PaginationContainer>
+        <Divider
+          flexItem
+          orientation="horizontal"
+          sx={{
+            mt: "8px",
+            display: {
+              xs: "block",
+              sm: "none",
+            },
+          }}
+        />
+        <MuiPagination
+          siblingCount={0}
+          count={pageCount}
+          page={page}
+          onChange={(_, value) => {
+            setPage && setPage(value);
+          }}
+        />
+        <Divider
+          flexItem
+          orientation="vertical"
+          sx={{
+            display: {
+              xs: "none",
+              sm: "flex",
+            },
+          }}
+        />
+        <Divider
+          flexItem
+          orientation="horizontal"
+          sx={{
+            mb: "8px",
+            display: {
+              xs: "block",
+              sm: "none",
+            },
+          }}
+        />
+        <FlexCenter px={1}>
+          <PaginationText>{`${getTotalCountShowedItems()} out of ${totalItemsCount}`}</PaginationText>
+        </FlexCenter>
+      </PaginationContainer>
+      {errorField && (
+        <ErrorTip pt={1} pl={1} sx={{ textAlign: "start" }}>
+          Maximum items per page is 1000
+        </ErrorTip>
+      )}
+    </Grid>
   );
 };
 
