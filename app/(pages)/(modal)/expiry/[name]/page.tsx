@@ -56,7 +56,6 @@ export default function Page({ params }: { params: { name: string } }) {
     });
   };
 
-  // TODO: Fix this - should allow lookup without connected wallet
   useEffect(() => {
     if (normalizedLabel && address && isSuccess) {
       if (!isEmpty(names)) {

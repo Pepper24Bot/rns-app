@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { scrollIntoElement } from "@/utils/common";
 import Dashboard from "@/components/Dashboard/Dashboard";
-import FrequentlyAsked from "@/components/Dashboard/Tab/Faq/Faq";
 
 export default function Page() {
   const [hasMounted, setHasMounted] = useState<boolean>(false);
@@ -19,7 +18,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return (
-    <Dashboard hasMounted={hasMounted}>{/* <FrequentlyAsked /> */}</Dashboard>
-  );
+  return <Dashboard hasMounted={hasMounted} />;
 }
