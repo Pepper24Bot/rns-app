@@ -25,12 +25,13 @@ import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { SearchPopper } from "./SearchPopper";
 import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
-import { isAccountLoading, isNameSupported } from "@/utils/common";
-import { useGetNamesByNameQuery } from "@/redux/graphql/graphqlApi";
+import { isNameSupported } from "@/utils/common";
 import { normalize } from "viem/ens";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import Image from "next/image";
+import useGetWrappedData from "@/hooks/useGetWrappedData";
+import useNamesForAddress from "@/hooks/useNamesForAddress";
 
 const Container = styled(Grid)(({ theme }) => ({
   padding: "60px 10px 130px 10px",
@@ -151,20 +152,27 @@ export const SearchForm: React.FC = () => {
     data: { address },
   } = useRootNetwork();
 
-  const { data, isLoading } = useGetNamesByNameQuery(
-    { labelName: `${searchValue}` },
-    { skip: searchValue === null || isNameInvalid }
-  );
+  const { name: wrappedName, isLoading } = useGetWrappedData({
+    name: `${searchValue}.root`,
+    skip: !searchValue,
+  });
+
+  const { names } = useNamesForAddress({
+    skip: !searchValue || !wrappedName?.owner,
+    address: wrappedName?.owner ?? "0x",
+    filter: {
+      searchString: `${searchValue}.root`,
+      searchType: "name",
+    },
+  });
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const searchFieldRef = React.useRef(null);
 
   const getNameStatus = () => {
-    const isAvailable = isEmpty(data?.wrappedDomains);
-
-    const isNotAvailable =
-      !isEmpty(data?.wrappedDomains) &&
-      data?.wrappedDomains[0].owner.id !== address?.toLowerCase();
+    const item = names[0];
+    const isAvailable = isEmpty(wrappedName);
+    const isNotAvailable = !isEmpty(names) && item.wrappedOwner !== address;
 
     return isNameInvalid
       ? "Invalid"
@@ -254,7 +262,7 @@ export const SearchForm: React.FC = () => {
                   status={getNameStatus()}
                   isNameInvalid={isNameInvalid}
                   isNameNotSupported={isNameNotSupported}
-                  data={data?.wrappedDomains[0]}
+                  data={names[0]}
                 />
               </FlexCenter>
             </ClickAwayListener>

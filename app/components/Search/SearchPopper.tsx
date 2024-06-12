@@ -265,8 +265,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                               id: "Registration Details",
                               title: "Registration Details",
                               data: {
-                                name: `${searchValue}.root` || "",
-                                domain: data,
+                                item: data,
                               },
                             });
                             router.replace(`/${searchValue}`, {
@@ -298,8 +297,7 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                               id: "Registration Details",
                               title: "Registration Details",
                               data: {
-                                name: `${searchValue}.root` || "",
-                                domain: data,
+                                item: data,
                               },
                             });
                             router.replace(`/${searchValue}`, {

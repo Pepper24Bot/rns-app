@@ -55,18 +55,18 @@ const Label = styled(FieldLabel)(({ theme }) => ({
 
 const TooltipGrid = styled(TooltipContainer)(({ theme }) => ({
   fontSize: "16px",
-
-  [theme.breakpoints.up(715)]: {
-    width: "300px",
-  },
-
-  [theme.breakpoints.down(635)]: {
-    width: "70vw",
-  },
 }));
 
 const Field = styled(FieldContainer)(({ theme }) => ({
   marginTop: "24px",
+
+  [theme.breakpoints.up(715)]: {
+    width: "350px",
+  },
+
+  [theme.breakpoints.down(635)]: {
+    width: "75vw",
+  },
 }));
 
 const RegisteredLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -123,22 +123,28 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
         <Grid>
           {/* NAME.ROOT */}
           <Field sx={{ mt: 0 }}>
-            <Grid>
-              <InformationTip
-                arrow
-                placement="top"
-                title={
-                  isShowNameTooltip ? <HighlightText>{name}</HighlightText> : ""
-                }
-              >
-                <TooltipGrid ref={nameRef} isShowTooltip={isShowNameTooltip}>
-                  {name}
-                </TooltipGrid>
-              </InformationTip>
-              <RegisteredLabel>Registered</RegisteredLabel>
-              <Flex pt={2}>
+            <FlexJustified container>
+              <Grid item>
+                <InformationTip
+                  arrow
+                  placement="top"
+                  title={
+                    isShowNameTooltip ? (
+                      <HighlightText>{name}</HighlightText>
+                    ) : (
+                      ""
+                    )
+                  }
+                >
+                  <TooltipGrid ref={nameRef} isShowTooltip={isShowNameTooltip}>
+                    {name}
+                  </TooltipGrid>
+                </InformationTip>
+                <RegisteredLabel>Registered</RegisteredLabel>
+              </Grid>
+              <Flex item>
                 {ensName === name && (
-                  <PrimaryChip size="small" label="Primary" sx={{ mr: 1 }} />
+                  <PrimaryChip size="small" label="Primary" sx={{ mr: 0.5 }} />
                 )}
                 <InformationTip
                   arrow
@@ -163,7 +169,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                   />
                 </InformationTip>
               </Flex>
-            </Grid>
+            </FlexJustified>
           </Field>
 
           {/* OWNER */}
