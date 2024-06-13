@@ -15,7 +15,6 @@ import {
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
-import { GetNamesForAddressReturnType } from "@ensdomains/ensjs/subgraph";
 
 import SkeletonNames from "./Names/SkeletonNames";
 import Pagination from "@/components/Reusables/Pagination";
@@ -64,22 +63,21 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
-  const [pageCount, setPageCount] = useState(1);
-  const [previousPage, setPreviousPage] = useState<
-    GetNamesForAddressReturnType[]
-  >([]);
 
-  const { names, isLoading, isSuccess, isError, totalNames } =
+  const { names, isLoading, isSuccess, isError, totalCount, pageCount } =
     useNamesForAddress({
+      // custom props
       skip: !hasMounted,
       enableAggregated: true,
+      page,
+
+      // ensjs.getNamesForAddress props
       address: address || "0x",
       orderBy,
       orderDirection,
       pageSize: itemsPerPage,
-      previousPage: previousPage[page - 2],
       filter: {
-        searchType: "name",
+        searchType: "name", // default - search by name
         searchString: options?.name,
         allowExpired,
       },
@@ -94,9 +92,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
       setItemsPerPage(value);
       setPage(1);
 
-      // clear the previous change when the items per page is updated
-      setPreviousPage([]);
-
       // store in cookies
       document.cookie = `itemsPerPage=${value}; path=/`;
 
@@ -109,50 +104,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     _debounce(handleDebounceOnChange, DEFAULT_DEBOUNCE),
     []
   );
-
-  const handlePageChange = (value: number) => {
-    // Check whether the page has been stored already
-    const isPageStored = isEmpty(previousPage[value - 2]);
-
-    /**
-     * Next Page, only store a page when going
-     * forward and if the page has not been viewed/accessed
-     */
-    if (value > page && isPageStored) {
-      previousPage.push(names);
-      setPreviousPage([...previousPage]);
-    }
-
-    setPage(value);
-  };
-
-  const getNumberOfPages = () => {
-    return Math.ceil(totalNames / itemsPerPage);
-  };
-
-  useEffect(() => {
-    const count = getNumberOfPages();
-    setPageCount(count);
-  }, [totalNames, itemsPerPage]);
-
-  useEffect(() => {
-    // clear the previous page state when filters to get the total names count have changed
-    setPreviousPage([]);
-
-    // go back to first page when filters change
-    setPage(1);
-  }, [options?.name, allowExpired]);
-
-  useEffect(() => {
-    // console.log("hasMounted:: ", hasMounted);
-    // console.log("isSuccess:: ", isSuccess);
-    // console.log("isLoading:: ", isLoading);
-    // console.log("names:: ", names);
-    // setNamesList([...names]);
-    // console.log("------------------------------------");
-    // console.log("page:: ", page);
-    // console.log("names-previousPage:: ", previousPage);
-  }, [page]);
 
   return (
     <>
@@ -188,12 +139,10 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
           <FlexCenter pt={12}>
             <Pagination
               pageCount={pageCount}
-              totalItemsCount={totalNames ?? 0}
+              totalItemsCount={totalCount ?? 0}
               itemsPerPage={itemsPerPage}
               page={page}
-              setPage={(value) => {
-                handlePageChange(value);
-              }}
+              setPage={setPage}
               handleInputChange={debounceFn}
             />
           </FlexCenter>
