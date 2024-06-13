@@ -58,6 +58,7 @@ export default function useNamesForAddress(props: NamesProps) {
    * inifinitequery
    */
   const getTotalNames = async () => {
+    console.log("============ ENTERING GETTOTALNAMES ============");
     try {
       const data = await getNamesForAddress(client, {
         address,
@@ -79,6 +80,7 @@ export default function useNamesForAddress(props: NamesProps) {
   };
 
   const getNames = async (address: Address) => {
+    console.log("============ ENTERING GETNAMES ============");
     try {
       const data = await getNamesForAddress(client, {
         address,
@@ -98,20 +100,6 @@ export default function useNamesForAddress(props: NamesProps) {
 
   // TODO: Memoize
   useEffect(() => {
-    if (enableAggregated && address && !skip) {
-      getTotalNames();
-    }
-  }, [
-    enableAggregated,
-    address,
-    filter?.searchString,
-    filter?.allowExpired,
-    orderBy,
-    orderDirection,
-  ]);
-
-  // TODO: Memoize
-  useEffect(() => {
     if (isFetched && totalCount) {
       const count = Math.ceil(totalCount / pageSize);
       setPageCount(count);
@@ -121,12 +109,27 @@ export default function useNamesForAddress(props: NamesProps) {
 
   // TODO: Memoize
   useEffect(() => {
+    if (enableAggregated && address && !skip) {
+      getTotalNames();
+    }
+  }, [
+    skip,
+    address,
+    enableAggregated,
+    filter?.searchString,
+    filter?.allowExpired,
+    orderBy,
+    orderDirection,
+  ]);
+
+  // TODO: Memoize
+  useEffect(() => {
     if (address && address !== "0x" && !skip) {
       getNames(address);
     }
   }, [
-    address,
     skip,
+    address,
     filter?.searchString,
     filter?.allowExpired,
     orderBy,
