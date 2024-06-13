@@ -25,7 +25,7 @@ export const ViewTransaction: React.FC<Transaction> = (props: Transaction) => {
   const { config } = useNetworkConfig();
 
   const getUrl = () => {
-    return `${config.blockExplorers.default.url}/tx/${hash}`;
+    return `${config.blockExplorers?.default.url}/tx/${hash}`;
   };
 
   return (
