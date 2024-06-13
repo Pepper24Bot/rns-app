@@ -58,25 +58,30 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   // This is used so the tooltips in each name card will not go beyond the screensize
   const boundingElement = useRef<HTMLDivElement | null>(null);
 
+  const orderBy = getOrderBy(options?.orderBy);
+  const orderDirection = getOrderDirection(options?.orderDirection);
+  const allowExpired = getIsAllowedExpired(options?.allowExpired);
+
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
   const [pageCount, setPageCount] = useState(1);
-  const [previousPage, setPreviousPage] =
-    useState<GetNamesForAddressReturnType>([]);
+  const [previousPage, setPreviousPage] = useState<
+    GetNamesForAddressReturnType[]
+  >([]);
 
   const { names, isLoading, isSuccess, isError, totalNames } =
     useNamesForAddress({
       skip: !hasMounted,
       enableAggregated: true,
       address: address || "0x",
-      orderBy: getOrderBy(options?.orderBy),
-      orderDirection: getOrderDirection(options?.orderDirection),
+      orderBy,
+      orderDirection,
       pageSize: itemsPerPage,
-      previousPage,
+      previousPage: previousPage[page - 2],
       filter: {
         searchType: "name",
         searchString: options?.name,
-        allowExpired: getIsAllowedExpired(options?.allowExpired),
+        allowExpired,
       },
     });
 
@@ -88,6 +93,9 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     if (value > 0 && value <= 1000) {
       setItemsPerPage(value);
       setPage(1);
+
+      // clear the previous change when the items per page is updated
+      setPreviousPage([]);
 
       // store in cookies
       document.cookie = `itemsPerPage=${value}; path=/`;
@@ -102,6 +110,22 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     []
   );
 
+  const handlePageChange = (value: number) => {
+    // Check whether the page has been stored already
+    const isPageStored = isEmpty(previousPage[value - 2]);
+
+    /**
+     * Next Page, only store a page when going
+     * forward and if the page has not been viewed/accessed
+     */
+    if (value > page && isPageStored) {
+      previousPage.push(names);
+      setPreviousPage([...previousPage]);
+    }
+
+    setPage(value);
+  };
+
   const getNumberOfPages = () => {
     return Math.ceil(totalNames / itemsPerPage);
   };
@@ -112,13 +136,23 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   }, [totalNames, itemsPerPage]);
 
   useEffect(() => {
+    // clear the previous page state when filters to get the total names count have changed
+    setPreviousPage([]);
+
+    // go back to first page when filters change
+    setPage(1);
+  }, [options?.name, allowExpired]);
+
+  useEffect(() => {
     // console.log("hasMounted:: ", hasMounted);
     // console.log("isSuccess:: ", isSuccess);
     // console.log("isLoading:: ", isLoading);
-    // console.log("------------------------------------");
     // console.log("names:: ", names);
     // setNamesList([...names]);
-  }, [names]);
+    // console.log("------------------------------------");
+    // console.log("page:: ", page);
+    // console.log("names-previousPage:: ", previousPage);
+  }, [page]);
 
   return (
     <>
@@ -154,12 +188,11 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
           <FlexCenter pt={12}>
             <Pagination
               pageCount={pageCount}
-              totalItemsCount={names?.length || 0}
+              totalItemsCount={totalNames ?? 0}
               itemsPerPage={itemsPerPage}
               page={page}
               setPage={(value) => {
-                setPreviousPage(names);
-                setPage(value);
+                handlePageChange(value);
               }}
               handleInputChange={debounceFn}
             />

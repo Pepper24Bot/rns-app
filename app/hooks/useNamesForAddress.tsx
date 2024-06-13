@@ -27,11 +27,16 @@ export default function useNamesForAddress(props: NamesProps) {
   );
   const [totalCount, setTotalCount] = useState<number>(0);
 
+  /**
+   * TODO: Fix this
+   * check how to get the total count of items in graphql
+   * without the limit of 1000
+   */
   const getTotalNames = async () => {
-    // TODO: Fix this
     const data = await getNamesForAddress(client, {
       address,
       pageSize: 1000,
+      filter,
     });
 
     setTotalCount(data.length);
@@ -39,7 +44,6 @@ export default function useNamesForAddress(props: NamesProps) {
   };
 
   const getNames = async (address: Address) => {
-    console.log("previousPage:: ", previousPage);
     try {
       const data = await getNamesForAddress(client, {
         address,
@@ -60,16 +64,11 @@ export default function useNamesForAddress(props: NamesProps) {
     if (enableAggregated && address && !skip) {
       getTotalNames();
     }
-  }, [enableAggregated, address]);
+  }, [enableAggregated, address, filter?.searchString, filter?.allowExpired]);
 
   // TODO: Memoize
   useEffect(() => {
     if (address && address !== "0x" && !skip) {
-      if (enableAggregated) {
-        console.log("------------------------------------");
-        // console.log("getNames....");
-      }
-
       getNames(address);
     }
   }, [
