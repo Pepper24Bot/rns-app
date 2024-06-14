@@ -22,7 +22,7 @@ export default function useNamesForAddress(props: NamesProps) {
 
   const [isError, setIsError] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(!skip);
 
   const [isFetched, setIsFetched] = useState<boolean>(true);
 
@@ -124,6 +124,7 @@ export default function useNamesForAddress(props: NamesProps) {
 
   // TODO: Memoize
   useEffect(() => {
+    console.log("skip:: ", skip);
     if (address && address !== "0x" && !skip) {
       getNames(address);
     }

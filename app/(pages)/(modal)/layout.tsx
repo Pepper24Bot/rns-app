@@ -1,11 +1,14 @@
 import { Suspense } from "react";
-import MainPage from "@/components/Main/MainPage";
+import { Grid } from "@mui/material";
+import SearchForm from "@/components/Search/SearchForm";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<></>}>
-      <MainPage />
-      {children}
+      <Grid pt="80px">
+        <SearchForm />
+        {children}
+      </Grid>
     </Suspense>
   );
 }
