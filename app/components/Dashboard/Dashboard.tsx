@@ -69,9 +69,9 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
   };
 
   useEffect(() => {
-    if (hasMounted && status === "connected" && address) {
+    if (status === "connected" && address) {
       setIsDashboardVisible(true);
-    } else if (hasMounted && status === "disconnected" && !address) {
+    } else if (status === "disconnected" && !address) {
       setIsDashboardVisible(false);
     }
   }, [address, status, hasMounted]);
