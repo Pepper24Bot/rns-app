@@ -1,9 +1,19 @@
-import { Grid, alpha, styled, Popper as MuiPopper } from "@mui/material";
+import {
+  Grid,
+  alpha,
+  styled,
+  Popper as MuiPopper,
+  Divider as MuiDivider,
+} from "@mui/material";
+import { Search as MuiSearchIcon } from "@mui/icons-material";
 import {
   BaseButton,
   BaseIconButton,
   SubTitle,
   SecondaryLabel,
+  ActionButton,
+  BaseInputField,
+  Title,
 } from "../Theme/StyledGlobal";
 
 import Image from "next/image";
@@ -99,4 +109,103 @@ export const StarIcon = styled(StarBorder)(({ theme }) => ({
 export const NextImage = styled(Image)(({ theme }) => ({
   margin: "0 8px",
   cursor: "pointer",
+}));
+
+export const Container = styled(Grid)(({ theme }) => ({
+  padding: "60px 10px 130px 10px",
+
+  [theme.breakpoints.down("sm")]: {
+    padding: "80px 10px 75px 10px",
+  },
+}));
+
+export const SearchContainer = styled(Grid)(({ theme }) => ({
+  background: `linear-gradient(0deg, ${
+    theme.palette.background.paper
+  } 20%, ${alpha(theme.palette.primary.main, 0.5)} 100%)`,
+
+  // TODO: theme.palette.primary.main -- fix this
+  boxShadow: `0px 0px 30px 0px rgba(194,24,91,0.25)`,
+  position: "relative",
+  width: "100%",
+  maxWidth: "800px",
+  borderRadius: "16px",
+
+  "&::before": {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: "80%",
+    content: '""',
+    background: "linear-gradient(transparent 0%,#000000 100%)",
+    boxShadow: `0px 50px 30px 25px rgba(0,0,0)`,
+    borderRadius: "16px",
+  },
+}));
+
+export const Search = styled(Grid)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  padding: "75px 45px",
+  margin: "1px",
+  borderRadius: "16px",
+
+  position: "relative",
+  zIndex: 2,
+
+  [theme.breakpoints.down("lg")]: {
+    padding: "40px 20px",
+  },
+}));
+
+export const ViewContainer = styled(Grid)(({ theme }) => ({
+  textAlign: "center",
+  padding: "50px 0",
+}));
+
+export const SearchTitle = styled(Title)(({ theme }) => ({
+  fontSize: "48px",
+
+  [theme.breakpoints.down("lg")]: {
+    fontSize: FONT_SIZE.Xxlarge,
+  },
+}));
+
+export const SearchField = styled(BaseInputField)(({ theme }) => ({
+  marginTop: "50px",
+  maxWidth: "500px",
+}));
+
+export const SearchIcon = styled(MuiSearchIcon)(({ theme }) => ({
+  height: "24px",
+  width: "24px",
+}));
+
+export const SearchSubText = styled(SubTitle)(({ theme }) => ({
+  fontSize: "18px",
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: FONT_SIZE.Medium,
+  },
+}));
+
+export const ViewRnsText = styled(SubTitle)(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Regular,
+  marginTop: "80px",
+}));
+
+export const ConnectButton = styled(ActionButton)(({ theme }) => ({
+  fontFamily: "var(--default-font)",
+  textTransform: "uppercase",
+  color: theme.palette.text.primary,
+
+  "&.MuiButtonBase-root": {
+    padding: "8px 24px",
+    borderRadius: "16px",
+  },
+}));
+
+export const Divider = styled(MuiDivider)(({ theme }) => ({
+  width: "65vmin",
+  borderColor: "rgba(184,167,174,0.1)",
+  filter: `drop-shadow(0px 0px 5px ${alpha(theme.palette.primary.main, 0.15)})`,
 }));

@@ -184,7 +184,10 @@ export const Description = styled(Grid)(({ theme }) => ({
   color: theme.palette.secondary.main,
 }));
 
-export const Title = styled(Typography)(({ theme }) => ({
+export const Title = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== "isloading",
+})<{ isloading?: boolean }>(({ theme, isloading }) => ({
+  visibility: isloading ? "hidden" : "visible",
   fontFamily: "var(--default-font)",
   fontSize: "24px",
   fontWeight: FONT_WEIGHT.Bold,
@@ -202,7 +205,10 @@ export const SubTitle = styled(Title)(({ theme }) => ({
   letterSpacing: "normal",
 }));
 
-export const Heading = styled(Typography)(({ theme }) => ({
+export const Heading = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== "isloading",
+})<{ isloading?: boolean }>(({ theme, isloading }) => ({
+  visibility: isloading ? "hidden" : "visible",
   fontFamily: "var(--secondary-font)",
   fontSize: "36px",
   fontWeight: FONT_WEIGHT.Bold,
@@ -345,9 +351,10 @@ export const FieldContainer = styled(FlexJustified)(({ theme }) => ({
 
 export const SkeletonGeneric = styled(Skeleton, {
   shouldForwardProp: (prop) => prop !== "isloading",
-})<{ isloading?: boolean }>(({ isloading }) => ({
+})<{ isloading?: boolean }>(({ isloading, theme }) => ({
   display: isloading ? "block" : "none",
   position: "absolute",
+  backgroundColor: alpha(theme.palette.primary.dark, 0.15),
 }));
 
 export const SkeletonTypography = styled(SkeletonGeneric)(() => ({
@@ -361,10 +368,7 @@ export const SkeletonRectangular = styled(SkeletonGeneric)(() => ({
   borderRadius: "8px",
 }));
 
-export const PrimaryLabel = styled(SubTitle, {
-  shouldForwardProp: (prop) => prop !== "isloading",
-})<{ isloading?: boolean }>(({ theme, isloading }) => ({
-  visibility: isloading ? "hidden" : "visible",
+export const PrimaryLabel = styled(SubTitle)(({ theme }) => ({
   lineHeight: "normal",
   textAlign: "start",
   marginBottom: 0,
