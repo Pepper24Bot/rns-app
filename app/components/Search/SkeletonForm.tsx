@@ -18,7 +18,7 @@ export const SkeletonForm: React.FC = () => {
     <Container>
       <FlexCenter>
         <SearchContainer>
-          <Search>
+          <Search minHeight={345}>
             <Relative>
               <FlexCenter>
                 <SkeletonTypography isloading={true} width="35%" />

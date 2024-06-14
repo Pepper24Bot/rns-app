@@ -22,37 +22,53 @@ export const SkeletonDashboard: React.FC = () => {
         <FlexJustified>
           <Grid>
             <Relative>
-              <SkeletonTypography isloading={true} />
+              <SkeletonTypography variant="rectangular" isloading={true} />
               <Title isloading={true}>My Dashboard</Title>
             </Relative>
           </Grid>
           <Flex>
             <Relative>
-              <SkeletonTypography isloading={true} />
+              <SkeletonTypography variant="rectangular" isloading={true} />
               <Title isloading={true}>Toolbar: Search Field Here</Title>
             </Relative>
-            <Relative ml={2}>
-              <SkeletonTypography isloading={true} />
+            <Relative ml={1}>
+              <SkeletonTypography variant="rectangular" isloading={true} />
               <Title isloading={true}>Filter</Title>
             </Relative>
           </Flex>
         </FlexJustified>
         <Content>
           <Grid>
-            <Tabs>
+            <Tabs value={0}>
               <TabItem
+                sx={{
+                  "&.MuiTab-root": {
+                    padding: "4px 8px",
+                    height: "fit-content",
+                  },
+                }}
                 label={
                   <Relative>
                     <SkeletonTypography isloading={true} />
-                    <Title isloading={true}>Identities</Title>
+                    <Title sx={{ lineHeight: "normal" }} isloading={true}>
+                      IDENTITIES
+                    </Title>
                   </Relative>
                 }
               />
               <TabItem
+                sx={{
+                  "&.MuiTab-root": {
+                    padding: "4px 8px",
+                    height: "fit-content",
+                  },
+                }}
                 label={
                   <Relative>
                     <SkeletonTypography isloading={true} />
-                    <Title isloading={true}>Faq</Title>
+                    <Title sx={{ lineHeight: "normal" }} isloading={true}>
+                      FAQ
+                    </Title>
                   </Relative>
                 }
               />

@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { Grid, styled } from "@mui/material";
+import { useAccount } from "wagmi";
+import { isAccountLoading } from "@/utils/common";
 
 import SearchForm from "@/components/Search/SearchForm";
 import Dashboard from "@/components/Dashboard/Dashboard";
@@ -10,7 +12,7 @@ import SkeletonDashboard from "../Dashboard/SkeletonDashboard";
 
 const Container = styled(Grid)(({ theme }) => ({
   paddingTop: "80px",
-  minHeight: "80vh", // TODO: validate this
+  minHeight: "790px",
 }));
 
 interface MainPage {
@@ -20,6 +22,7 @@ interface MainPage {
 
 export const MainPage: React.FC<MainPage> = (props: MainPage) => {
   const { children } = props;
+  const { status } = useAccount();
 
   const [hasMounted, setHasMounted] = useState<boolean>(false);
 
@@ -30,10 +33,10 @@ export const MainPage: React.FC<MainPage> = (props: MainPage) => {
 
   return (
     <Container>
-      {hasMounted ? (
+      {hasMounted && !isAccountLoading(status) ? (
         <>
           <SearchForm />
-          <Dashboard hasMounted={hasMounted}>{children}</Dashboard>
+          <Dashboard>{children}</Dashboard>
         </>
       ) : (
         <>
