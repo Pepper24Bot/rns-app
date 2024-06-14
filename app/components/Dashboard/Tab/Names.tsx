@@ -120,8 +120,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   return (
     <>
-      {/* TODO: Clean this skeleton up - looks really ugly */}
-      {isLoadingState && <SkeletonNames count={3} />}
+      {isLoadingState && <SkeletonNames />}
 
       {hasNoNamesState && (
         <Container>

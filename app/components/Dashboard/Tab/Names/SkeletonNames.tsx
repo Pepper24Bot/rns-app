@@ -13,6 +13,7 @@ import {
   ImageContainer,
   ItemContainer,
 } from "./StyledName";
+import { parseCookie } from "@/utils/common";
 
 import Image from "next/image";
 
@@ -34,7 +35,8 @@ export interface SkeletonProps {
 export const SkeletonNames: React.FC<SkeletonProps> = (
   props: SkeletonProps
 ) => {
-  const { count } = props;
+  const pageSize = Number(parseCookie("itemsPerPage")) || 8;
+  const { count = pageSize } = props;
 
   return (
     <NamesContainer>

@@ -106,7 +106,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const [isShowTooltip, setIsShowTooltip] = useState<boolean>(false);
   const [isImageLoading, setImageLoading] = useState<boolean>(true);
   const [isDownloadRequested, setDownloadRequested] = useState<boolean>(false);
-  const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
 
   const {
     data: image,
@@ -125,6 +124,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: address,
   });
 
+  const isShareEnabled = isRegisteredDuringQuest(createdAt.date);
   const characterSet = findCharacterSet(labelName ?? "");
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
@@ -228,16 +228,16 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
     switch (menuLabel) {
       case "Extend Expiry":
-        // toggleTransactionModal(menuOption);
+        toggleTransactionModal(menuOption);
         return router.replace(`/expiry/${labelName}`, { scroll: false });
       case "Link Identity":
-        // toggleTransactionModal(menuOption);
+        toggleTransactionModal(menuOption);
         return router.replace(`/record/${labelName}`, { scroll: false });
       case "Set as Primary":
-        // toggleTransactionModal(menuOption);
+        toggleTransactionModal(menuOption);
         return router.replace(`/primary/${labelName}`, { scroll: false });
       case "Transfer":
-        // toggleTransactionModal(menuOption);
+        toggleTransactionModal(menuOption);
         return router.replace(`/transfer/${labelName}`, { scroll: false });
       case "Download Image":
         setDownloadRequested(true);
@@ -272,11 +272,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
       };
     }
   };
-
-  useEffect(() => {
-    const isShareable = isRegisteredDuringQuest(createdAt.date);
-    setShareEnabled(isShareable);
-  }, [createdAt.date, isTweetVerified]);
 
   useEffect(() => {
     const isShowing = isTooltipShowing(nameRef);

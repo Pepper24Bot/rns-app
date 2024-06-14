@@ -10,6 +10,7 @@ import { useSnackbar } from "notistack";
 import useValidateName from "@/hooks/useValidateName";
 import useNamesForAddress from "@/hooks/useNamesForAddress";
 import useWrappedData from "@/hooks/useWrappedData";
+import SkeletonNames from "@/components/Dashboard/Tab/Names/SkeletonNames";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
@@ -70,5 +71,5 @@ export default function Page({ params }: { params: { name: string } }) {
     }
   }, [normalizedLabel, address, isSuccess]);
 
-  return <></>;
+  return <SkeletonNames />;
 }

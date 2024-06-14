@@ -7,6 +7,7 @@ import { isEmpty } from "lodash";
 import useValidateName from "@/hooks/useValidateName";
 import useWrappedData from "@/hooks/useWrappedData";
 import useNamesForAddress from "@/hooks/useNamesForAddress";
+import SkeletonNames from "@/components/Dashboard/Tab/Names/SkeletonNames";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
@@ -65,5 +66,5 @@ export default function Page({ params }: { params: { name: string } }) {
     }
   }, [normalizedLabel, isSuccess, isNameSuccess]);
 
-  return <></>;
+  return <SkeletonNames />;
 }
