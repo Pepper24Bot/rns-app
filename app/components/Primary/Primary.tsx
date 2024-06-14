@@ -287,8 +287,8 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
           sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
-            closeModal();
             router.replace("/", { scroll: false });
+            closeModal();
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

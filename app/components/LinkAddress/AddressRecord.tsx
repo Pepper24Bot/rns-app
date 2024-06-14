@@ -210,8 +210,8 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
           disabled={isPending || isWaiting}
           variant="text"
           onClick={() => {
-            closeModal();
             router.replace("/", { scroll: false });
+            closeModal();
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

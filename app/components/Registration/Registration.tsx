@@ -162,9 +162,9 @@ export const RegisterName: React.FC<RegistrationProps> = (
   const hashStr = hash as unknown as string;
 
   const handleCloseModal = () => {
+    router.replace("/", { scroll: false });
     resetFormState();
     closeModal();
-    router.replace("/", { scroll: false });
   };
 
   const initializeFlags = () => {

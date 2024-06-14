@@ -2,135 +2,38 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  Divider as MuiDivider,
-  Grid,
   InputAdornment,
-  alpha,
   styled,
   Collapse,
   ClickAwayListener,
   IconButton,
 } from "@mui/material";
-import {
-  ActionButton,
-  FlexCenter,
-  BaseInputField,
-  SubTitle,
-  Title,
-} from "../Theme/StyledGlobal";
-import { Search as MuiSearchIcon } from "@mui/icons-material";
+import { FlexCenter } from "../Theme/StyledGlobal";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
 import { useAccount } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { SearchPopper } from "./SearchPopper";
-import { FONT_SIZE, FONT_WEIGHT } from "../Theme/Global";
 import { isNameSupported } from "@/utils/common";
 import { normalize } from "viem/ens";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import {
+  Search,
+  Container,
+  SearchContainer,
+  SearchTitle,
+  SearchSubText,
+  SearchField,
+  SearchIcon,
+  ViewContainer,
+  ViewRnsText,
+  ConnectButton,
+  Divider,
+} from "./StyledSearch";
 
 import Image from "next/image";
 import useWrappedData from "@/hooks/useWrappedData";
 import useNamesForAddress from "@/hooks/useNamesForAddress";
-
-const Container = styled(Grid)(({ theme }) => ({
-  padding: "60px 10px 130px 10px",
-
-  [theme.breakpoints.down("sm")]: {
-    padding: "80px 10px 75px 10px",
-  },
-}));
-
-const SearchContainer = styled(Grid)(({ theme }) => ({
-  background: `linear-gradient(0deg, ${
-    theme.palette.background.paper
-  } 20%, ${alpha(theme.palette.primary.main, 0.5)} 100%)`,
-
-  // TODO: theme.palette.primary.main -- fix this
-  boxShadow: `0px 0px 30px 0px rgba(194,24,91,0.25)`,
-  position: "relative",
-  width: "100%",
-  maxWidth: "800px",
-  borderRadius: "16px",
-
-  "&::before": {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: "80%",
-    content: '""',
-    background: "linear-gradient(transparent 0%,#000000 100%)",
-    boxShadow: `0px 50px 30px 25px rgba(0,0,0)`,
-    borderRadius: "16px",
-  },
-}));
-
-const Search = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  padding: "75px 45px",
-  margin: "1px",
-  borderRadius: "16px",
-
-  position: "relative",
-  zIndex: 2,
-
-  [theme.breakpoints.down("lg")]: {
-    padding: "40px 20px",
-  },
-}));
-
-const ViewContainer = styled(Grid)(({ theme }) => ({
-  textAlign: "center",
-  padding: "50px 0",
-}));
-
-const SearchTitle = styled(Title)(({ theme }) => ({
-  fontSize: "48px",
-
-  [theme.breakpoints.down("lg")]: {
-    fontSize: FONT_SIZE.Xxlarge,
-  },
-}));
-
-const SearchField = styled(BaseInputField)(({ theme }) => ({
-  marginTop: "50px",
-  maxWidth: "500px",
-}));
-
-const SearchIcon = styled(MuiSearchIcon)(({ theme }) => ({
-  height: "24px",
-  width: "24px",
-}));
-
-const SearchSubText = styled(SubTitle)(({ theme }) => ({
-  fontSize: "18px",
-
-  [theme.breakpoints.down("md")]: {
-    fontSize: FONT_SIZE.Medium,
-  },
-}));
-
-const ViewRnsText = styled(SubTitle)(({ theme }) => ({
-  fontWeight: FONT_WEIGHT.Regular,
-  marginTop: "80px",
-}));
-
-const ConnectButton = styled(ActionButton)(({ theme }) => ({
-  fontFamily: "var(--default-font)",
-  textTransform: "uppercase",
-  color: theme.palette.text.primary,
-
-  "&.MuiButtonBase-root": {
-    padding: "8px 24px",
-    borderRadius: "16px",
-  },
-}));
-
-const Divider = styled(MuiDivider)(({ theme }) => ({
-  width: "65vmin",
-  borderColor: "rgba(184,167,174,0.1)",
-  filter: `drop-shadow(0px 0px 5px ${alpha(theme.palette.primary.main, 0.15)})`,
-}));
 
 const NextImage = styled(Image)(({ theme }) => ({
   marginRight: "8px",
@@ -140,7 +43,6 @@ const NextImage = styled(Image)(({ theme }) => ({
 export const SearchForm: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
-  const [isViewRnsVisible, setIsViewRnsVisible] = useState<boolean>(false);
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
   const [isNameNotSupported, setIsNameNotSupported] = useState<boolean>(false);
 
@@ -210,10 +112,6 @@ export const SearchForm: React.FC = () => {
     []
   );
 
-  useEffect(() => {
-    setIsViewRnsVisible(status === "disconnected");
-  }, [status]);
-
   return (
     <Container>
       <FlexCenter>
@@ -269,7 +167,7 @@ export const SearchForm: React.FC = () => {
           </Search>
         </SearchContainer>
       </FlexCenter>
-      <Collapse in={isViewRnsVisible}>
+      <Collapse in={status === "disconnected"}>
         <FlexCenter>
           <ViewContainer>
             <Divider orientation="horizontal" variant="fullWidth" />

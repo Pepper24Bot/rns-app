@@ -169,9 +169,9 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
           sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
+            router.replace("/", { scroll: false });
             refetch();
             closeModal();
-            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}
