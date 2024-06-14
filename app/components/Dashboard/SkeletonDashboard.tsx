@@ -14,6 +14,7 @@ import {
   SkeletonTypography,
 } from "../Theme/StyledGlobal";
 import { Grid } from "@mui/material";
+import SkeletonNames from "./Tab/Names/SkeletonNames";
 
 export const SkeletonDashboard: React.FC = () => {
   return (
@@ -74,6 +75,9 @@ export const SkeletonDashboard: React.FC = () => {
               />
               {/* TODO: Make sure to add the rest here */}
             </Tabs>
+            <Grid id="Tab-Content">
+              <SkeletonNames count={2} />
+            </Grid>
           </Grid>
         </Content>
       </DashboardContainer>

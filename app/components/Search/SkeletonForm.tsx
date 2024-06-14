@@ -3,52 +3,58 @@ import {
   Container,
   Search,
   SearchContainer,
+  SearchField,
   SearchSubText,
   SearchTitle,
 } from "./StyledSearch";
 import {
   FlexCenter,
   Relative,
-  SkeletonRectangular,
   SkeletonTypography,
 } from "../Theme/StyledGlobal";
+import { alpha } from "@mui/material";
+import { pink } from "@mui/material/colors";
 
 export const SkeletonForm: React.FC = () => {
   return (
     <Container>
       <FlexCenter>
         <SearchContainer>
-          <Search minHeight={345}>
+          <Search height={332}>
             <Relative>
-              <FlexCenter>
-                <SkeletonTypography isloading={true} width="35%" />
+              <FlexCenter height="50px">
+                <SkeletonTypography
+                  variant="rectangular"
+                  isloading={true}
+                  width="35%"
+                />
                 <SearchTitle isloading={true}>Name Search</SearchTitle>
               </FlexCenter>
             </Relative>
             <Relative>
-              <FlexCenter>
+              <FlexCenter height="54px" pt={5}>
                 <SkeletonTypography
                   variant="rectangular"
                   isloading={true}
-                  width="75%"
+                  width="85%"
                 />
                 <SearchSubText isloading={true}>Dummy text</SearchSubText>
               </FlexCenter>
             </Relative>
             <Relative>
               <FlexCenter>
-                <SkeletonRectangular isloading={true} width="75%" />
-                <SearchSubText isloading={true}>Dummy text</SearchSubText>
-              </FlexCenter>
-            </Relative>
-            <Relative>
-              <FlexCenter>
-                <SkeletonTypography
-                  variant="rectangular"
-                  isloading={true}
-                  width="75%"
+                <SearchField
+                  fullWidth
+                  disabled
+                  variant="outlined"
+                  sx={{
+                    "&.MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: alpha(pink[800], 0.15),
+                      },
+                    },
+                  }}
                 />
-                <SearchSubText isloading={true}>Dummy text</SearchSubText>
               </FlexCenter>
             </Relative>
           </Search>
