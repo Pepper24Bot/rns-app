@@ -83,7 +83,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
       },
     });
 
-  const isLoadingState = !isSuccess && isLoading;
+  const isLoadingState = isLoading || !hasMounted || (!isSuccess && !isError);
   const hasNoNamesState =
     (isEmpty(names) && isSuccess && !isLoading) || isError;
 
@@ -105,14 +105,18 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     []
   );
 
-  console.log(`
-    ENTERING NAMES
-    ====================================
+  useEffect(() => {
+    console.log(`
     isEmpty(names):: ${isEmpty(names)}
     isLoadingState:: ${isLoadingState}
+    isSuccess:: ${isSuccess}
+    isLoading:: ${isLoading}
+    hasMounted:: ${hasMounted}
+    
     hasNoNamesState:: ${hasNoNamesState}
     ====================================
   `);
+  }, [names, isSuccess, isLoading, hasMounted]);
 
   return (
     <>

@@ -57,14 +57,6 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
     }
   };
 
-  console.log(`
-    DASHBOARD COMPONENT
-    ====================================
-    isDashboardVisible:: ${isDashboardVisible}
-    status:: ${status}
-    ====================================
-  `);
-
   return (
     <Collapse in={isDashboardVisible}>
       <Container id="Dashboard-Container">
