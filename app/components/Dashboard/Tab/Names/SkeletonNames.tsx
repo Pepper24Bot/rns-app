@@ -62,6 +62,7 @@ export const SkeletonNames: React.FC<SkeletonProps> = (
                         alt="Dummy Image Placeholder"
                         width={290}
                         height={200}
+                        priority={true}
                         style={{
                           width: "-webkit-fill-available",
                           height: "-webkit-fill-available",

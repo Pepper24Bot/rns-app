@@ -307,9 +307,9 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
           sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
-            router.replace("/", { scroll: false });
             resetFormState();
             closeModal();
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

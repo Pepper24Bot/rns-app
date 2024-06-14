@@ -9,7 +9,6 @@ import {
   FlexRight,
   HighlightText,
   PrimaryLabel,
-  SecondaryLabel,
 } from "../Theme/StyledGlobal";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
@@ -56,29 +55,11 @@ const WalletName = styled(PrimaryLabel)(({ theme }) => ({
   marginLeft: "20px",
 }));
 
-const HeaderLabel = styled(SecondaryLabel)(({ theme }) => ({
-  paddingBottom: "16px",
-  fontSize: "16px",
-  color: alpha(theme.palette.text.primary, 0.35),
-}));
-
 const Highlight = styled(HighlightText)(({ theme }) => ({
   cursor: "pointer",
   "&:hover": {
     color: theme.palette.text.secondary,
   },
-}));
-
-const Label = styled(PrimaryLabel)(({ theme }) => ({
-  fontSize: "12px",
-  padding: "0px 16px",
-  color: alpha(theme.palette.text.primary, 0.75),
-}));
-
-const AccountLabel = styled(PrimaryLabel)(({ theme }) => ({
-  fontSize: "12px",
-  padding: "0px 16px",
-  color: alpha(theme.palette.text.primary, 0.25),
 }));
 
 const DisconnectButton = styled(ActionButton)(({ theme }) => ({

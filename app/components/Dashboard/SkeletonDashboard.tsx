@@ -76,7 +76,7 @@ export const SkeletonDashboard: React.FC = () => {
               {/* TODO: Make sure to add the rest here */}
             </Tabs>
             <Grid id="Tab-Content">
-              <SkeletonNames />
+              <SkeletonNames count={8} />
             </Grid>
           </Grid>
         </Content>

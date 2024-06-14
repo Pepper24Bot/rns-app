@@ -285,8 +285,8 @@ export const Transfer: React.FC<TransactionProps> = (
           sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
-            closeModal();
             router.replace("/", { scroll: false });
+            closeModal();
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

@@ -77,6 +77,7 @@ export const PageFooter: React.FC = () => {
             <Image
               src="/images/rns-logo-4.png"
               alt="RNS Icon"
+              priority={true}
               width={400}
               height={30}
               style={{

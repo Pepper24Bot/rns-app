@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   SearchField,
   SearchIcon,
@@ -6,7 +6,7 @@ import {
 } from "./StyledDashboard";
 import { Grid, InputAdornment, IconButton } from "@mui/material";
 import { Tune, ViewColumn } from "@mui/icons-material";
-import { debounce as _debounce, isEmpty } from "lodash";
+import { debounce as _debounce } from "lodash";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
@@ -15,15 +15,16 @@ import FeatureToggle from "../Reusables/FeatureToggle";
 import FilterOption from "../Reusables/FilterOption";
 
 export const Toolbar: React.FC = () => {
-  const [inputValue, setInputValue] = useState<string>("");
+  const { updateFilterOptions, useFilters } = useDashboardState();
+  const options = useFilters();
+
+  const [inputValue, setInputValue] = useState<string>(options?.name || "");
   const [isViewOpen, setIsViewOpen] = useState<boolean>(false);
   const [viewAnchor, setViewAnchor] = useState<HTMLButtonElement | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [filterAnchor, setFilterAnchor] = useState<HTMLButtonElement | null>(
     null
   );
-
-  const { updateFilterOptions } = useDashboardState();
 
   const handleDebounceOnChange = (value: string) => {
     updateFilterOptions({

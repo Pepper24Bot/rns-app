@@ -15,8 +15,6 @@ import { LinkProps } from "@/interfaces/components/transaction";
 import { useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
-import { graphqlApi } from "@/redux/graphql/graphqlApi";
-import { useDispatch } from "react-redux";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -46,7 +44,6 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { item, address } = props;
   const { name } = item;
 
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const { closeModal } = useModalState();
@@ -169,9 +166,9 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
           sx={{ marginRight: 1 }}
           variant="text"
           onClick={() => {
-            router.replace("/", { scroll: false });
             refetch();
             closeModal();
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}

@@ -113,6 +113,7 @@ export const NavigationBar: React.FC = () => {
             <NextImage
               src="/images/rns-logo.svg"
               alt="RNS Icon"
+              priority={true}
               width={260}
               height={30}
               onClick={() => {

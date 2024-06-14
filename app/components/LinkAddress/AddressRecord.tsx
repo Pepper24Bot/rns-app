@@ -10,13 +10,11 @@ import {
 import { useModalState } from "@/redux/modal/modalSlice";
 import { getMaskedAddress } from "@/utils/common";
 import { Address, isAddress } from "viem";
-import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { useEnsName } from "wagmi";
 import { LinkProps } from "@/interfaces/components/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -53,7 +51,6 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
     owner,
   } = item;
 
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const { closeModal } = useModalState();
@@ -210,8 +207,8 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
           disabled={isPending || isWaiting}
           variant="text"
           onClick={() => {
-            router.replace("/", { scroll: false });
             closeModal();
+            router.replace("/", { scroll: false });
           }}
         >
           {isSuccess ? "Close" : "Cancel"}
