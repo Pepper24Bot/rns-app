@@ -12,6 +12,7 @@ export interface RegisterProps {
         resolverAddr: Address | string;
         paymentAddress?: Address | string;
         addressRecord?: string;
+        isPrimary?: boolean
     };
 }
 
@@ -42,4 +43,6 @@ export interface MakeCommitProps {
     token: Address;
 
     isEnabled?: boolean;
+
+    isPrimary?: boolean
 }

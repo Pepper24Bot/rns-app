@@ -122,8 +122,15 @@ export default function useRegister() {
    */
   const handleRegister = async (props: RegisterProps) => {
     const { resolver, args } = props;
-    const { name, owner, duration, secret, resolverAddr, paymentAddress } =
-      args;
+    const {
+      name,
+      owner,
+      duration,
+      secret,
+      resolverAddr,
+      paymentAddress,
+      isPrimary,
+    } = args;
 
     let response = { ...initializeResponse() };
 
@@ -147,6 +154,7 @@ export default function useRegister() {
             resolverAddr,
             paymentAddress,
             addressRecord,
+            isPrimary: isPrimary || false,
           },
         })) as Address;
       } else {
@@ -162,7 +170,7 @@ export default function useRegister() {
             secret,
             resolverAddr,
             [addressRecord],
-            false,
+            isPrimary || false,
             0,
             paymentAddress ?? "",
           ],

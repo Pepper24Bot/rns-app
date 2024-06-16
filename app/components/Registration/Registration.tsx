@@ -84,7 +84,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   const { name = "" } = props;
   const { address } = useAccount();
   const { useForm, resetFormState } = useFormState();
-  const { year = 1, payment } = useForm();
+  const { year = 1, payment, primary } = useForm();
   const { enqueueSnackbar } = useSnackbar();
   const { isFeatureEnabled } = useFeatureToggle();
   const { useRootNetwork } = useRootNetworkState();
@@ -143,6 +143,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
     year,
     token,
     isEnabled: isDetailsEnabled,
+    isPrimary: primary,
   });
 
   const { commit, register, isLoading, commitments } = useRegister();
@@ -269,6 +270,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
         secret,
         resolverAddr,
         paymentAddress,
+        isPrimary: primary,
       },
     });
 

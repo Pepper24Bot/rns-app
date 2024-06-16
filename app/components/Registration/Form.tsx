@@ -149,8 +149,13 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     address: walletAddress,
   });
 
-  const { useForm, increaseYear, decreaseYear, updatePaymentOption } =
-    useFormState();
+  const {
+    useForm,
+    increaseYear,
+    decreaseYear,
+    updatePaymentOption,
+    setAsPrimary,
+  } = useFormState();
   const { payment, year } = useForm();
 
   const [toggleValues, setToggleValues] = useState<boolean>(isEmpty(ensName));
@@ -225,7 +230,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
               value={toggleValues}
               onChange={(_, value) => {
                 if (value !== null) {
-                  console.log("values:: ", value);
+                  setAsPrimary(value);
                   setToggleValues(value);
                 }
               }}

@@ -22,6 +22,7 @@ export interface Fees {
 }
 
 export interface FormProps {
+    primary?: boolean
     year?: number
     payment?: Payment
     fee?: Fees
@@ -30,6 +31,7 @@ export interface FormProps {
 export interface FormState extends FormProps { }
 
 export const initialState: FormState = {
+    primary: false,
     year: 1,
     payment: PAYMENT_METHOD[0] as Payment, // root
     fee: {
@@ -67,6 +69,11 @@ export const formState = createSlice({
             return state
         },
 
+        setAsPrimary: (state, { payload }: { payload: boolean }): FormState => {
+            state.primary = payload
+            return state
+        },
+
         resetFormState: (state): FormState => {
             state = initialState;
             return state
@@ -101,6 +108,10 @@ export const useFormState = () => {
 
         decreaseYear: () => {
             dispatch(actions.decreaseYear())
+        },
+
+        setAsPrimary: (primary: boolean) => {
+            dispatch(actions.setAsPrimary(primary))
         },
 
         // selector

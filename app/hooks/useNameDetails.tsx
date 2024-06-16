@@ -15,7 +15,7 @@ import useContractDetails from "./useContractDetails";
  * Why is it being called multiple times
  */
 export default function useNameDetails(props: MakeCommitProps) {
-  const { name, year, token, isEnabled } = props;
+  const { name, year, token, isEnabled, isPrimary } = props;
 
   const controller = useContractDetails({ action: "RegistrarController" });
   const resolver = useContractDetails({ action: "PublicResolver" });
@@ -93,7 +93,7 @@ export default function useNameDetails(props: MakeCommitProps) {
         secret,
         resolverAddr,
         [addressRecord],
-        false,
+        isPrimary || false,
         0,
       ],
     });
@@ -111,7 +111,7 @@ export default function useNameDetails(props: MakeCommitProps) {
     if (isEnabled && available && address) {
       makeCommitment();
     }
-  }, [name, isEnabled, duration, available, address]);
+  }, [name, isEnabled, duration, available, address, isPrimary]);
 
   const rentFee = rentPrice
     ? (rentPrice as unknown as RentPrice)

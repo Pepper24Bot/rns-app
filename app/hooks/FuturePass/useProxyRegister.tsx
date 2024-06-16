@@ -54,7 +54,7 @@ export default function useProxyRegister(props: ProxyProps) {
         args.secret,
         args.resolverAddr,
         [args.addressRecord],
-        false,
+        args.isPrimary || false,
         0,
         args.paymentAddress,
       ]
