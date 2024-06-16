@@ -6,6 +6,8 @@ import { OrderBy, OrderDirection, SortBy, SortOrder, View } from "@/interfaces/c
 export interface Options {
     /** Search By Name */
     name?: string
+    /** Active page in Pagination */
+    page?: number
     filter?: {
         /** 
          * Only filteres available for now
@@ -45,6 +47,7 @@ export interface DashboardState {
 const initialState: DashboardState = {
     options: {
         name: "",
+        page: 1,
         allowExpired: false,
         orderBy: "createdAt",
         orderDirection: "desc",

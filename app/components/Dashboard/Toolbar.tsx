@@ -29,6 +29,7 @@ export const Toolbar: React.FC = () => {
   const handleDebounceOnChange = (value: string) => {
     updateFilterOptions({
       name: value,
+      page: 1, // reset active page in pagination when search name is updated
     });
   };
 
