@@ -121,7 +121,8 @@ export const Toolbar: React.FC = () => {
   const [steps, setSteps] = useState<Step[]>([]);
 
   const isLabelLoading =
-    isAccountLoading(status) || (isEnsFetching && !isEnsFetched);
+    isAccountLoading(status) ||
+    (status !== "disconnected" && isEnsFetching && !isEnsFetched);
 
   const addressRef = useRef(null);
   const isTutorialDisabled = parseCookie("showTutorial") === "false";
@@ -180,7 +181,14 @@ export const Toolbar: React.FC = () => {
       const walletIcon = address ? path : "/icons/wallet.svg";
       setIconPath(walletIcon);
     }
-  }, [address, ensName, isEnsFetched, isEnsFetching, hasMounted]);
+  }, [
+    address,
+    walletAddress,
+    ensName,
+    isEnsFetched,
+    isEnsFetching,
+    hasMounted,
+  ]);
 
   useEffect(() => {
     refetch();

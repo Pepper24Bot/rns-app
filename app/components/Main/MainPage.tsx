@@ -33,7 +33,7 @@ export const MainPage: React.FC<MainPage> = (props: MainPage) => {
 
   return (
     <Container>
-      {hasMounted && !isAccountLoading(status) ? (
+      {hasMounted && status !== "reconnecting" ? (
         <>
           <SearchForm />
           <Dashboard>{children}</Dashboard>
