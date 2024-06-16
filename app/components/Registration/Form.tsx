@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BaseButton,
   ModalInputField,
@@ -10,17 +10,25 @@ import {
   RegisteredText,
   Relative,
   SkeletonTypography,
+  ToggleButtonGroup,
+  ToggleButton,
+  Flex,
+  InformationTip,
 } from "@/components/Theme/StyledGlobal";
 import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
-import { Add, Remove } from "@mui/icons-material";
+import { Add, Help, Remove } from "@mui/icons-material";
 import { Payment, useFormState } from "@/redux/form/formSlice";
 import { PAYMENT_METHOD } from "@/constants/components";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useEnsName } from "wagmi";
 import { formatEther } from "ethers/lib/utils";
+import { NameStatus } from "@/interfaces/components/types";
+import { isEmpty } from "lodash";
+import { Address } from "viem";
+import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import MenuField from "@/components/Reusables/MenuField";
-import { NameStatus } from "@/interfaces/components/types";
+import TooltipContent from "../Reusables/TooltipContent";
 
 const SummaryContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -33,6 +41,17 @@ const NameField = styled(ModalInputField)(({ theme }) => ({
     maxWidth: "100%",
     width: "100%",
   },
+}));
+
+const PrimayField = styled(FlexJustified)(({ theme }) => ({
+  alignItems: "center",
+  padding: "10px 0",
+}));
+
+const PrimaryLabel = styled(SecondaryLabel)(({ theme }) => ({
+  marginLeft: "5px",
+  fontSize: "16px",
+  color: alpha(theme.palette.text.primary, 0.5),
 }));
 
 const Transaction = styled(FlexJustified)(({ theme }) => ({}));
@@ -53,6 +72,27 @@ const Balance = styled(TransactionLabel)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.25),
 }));
 
+const ButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  minWidth: "100px",
+}));
+
+const Toggle = styled(ToggleButton)(({ theme }) => ({
+  padding: "8px",
+  height: "auto",
+  backgroundColor: alpha(theme.palette.primary.dark, 0.1),
+
+  "&.MuiToggleButton-root": {
+    "&.Mui-selected": {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+}));
+
+const ToggleValue = styled(PrimaryLabel)(({ theme }) => ({
+  fontSize: "12px",
+  color: theme.palette.text.primary,
+}));
+
 const Button = styled(BaseButton)(({ theme }) => ({
   color: theme.palette.text.primary,
   "&.MuiButtonBase-root": {
@@ -68,30 +108,52 @@ const Button = styled(BaseButton)(({ theme }) => ({
   },
 }));
 
+export const HelpIcon = styled(Help)(({ theme }) => ({
+  width: "20px",
+  height: "20px",
+  marginLeft: "12px",
+  cursor: "pointer",
+  color: theme.palette.primary.dark,
+}));
+
 export interface FormProps {
   name?: string;
   rentFee?: number;
   transactionFee?: number;
   totalFee?: number;
   walletBalance?: number;
+  address?: Address;
 
   /** hide form when transaction is successful */
   isShowing?: boolean;
   status?: NameStatus;
+
+  isPrimaryEnabled?: boolean;
 }
 
 export const Form: React.FC<FormProps> = (props: FormProps) => {
-  const { name, isShowing = true, rentFee, walletBalance, status } = props;
+  const {
+    name,
+    isShowing = true,
+    rentFee,
+    walletBalance,
+    status,
+    address,
+    isPrimaryEnabled,
+  } = props;
 
   // Get the native currency balance
-  const { address = "0x" } = useAccount();
+  const { address: walletAddress = "0x" } = useAccount();
+  const { data: ensName } = useEnsName({ address });
   const { data: balance, isLoading: isXrpLoading } = useBalance({
-    address,
+    address: walletAddress,
   });
 
   const { useForm, increaseYear, decreaseYear, updatePaymentOption } =
     useFormState();
   const { payment, year } = useForm();
+
+  const [toggleValues, setToggleValues] = useState<boolean>(isEmpty(ensName));
 
   const getYearLabel = () => {
     return year && year > 1 ? "Years" : "Year";
@@ -116,6 +178,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
           ),
         }}
       />
+
       <Collapse in={isShowing}>
         <FieldContainer py={1.25} px={3.125}>
           <Button
@@ -143,6 +206,39 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
             updatePaymentOption(option as Payment);
           }}
         />
+        {isPrimaryEnabled && (
+          <PrimayField>
+            <Flex>
+              <PrimaryLabel>Set as Primary</PrimaryLabel>
+              <InformationTip
+                arrow
+                placement="bottom"
+                title={
+                  <TooltipContent content="Would you like to set your new RNS as your Primary Identity that will be displayed across third party applications, games and experiences instead of your long and complex wallet address?" />
+                }
+              >
+                <HelpIcon />
+              </InformationTip>
+            </Flex>
+            <ButtonGroup
+              exclusive
+              value={toggleValues}
+              onChange={(_, value) => {
+                if (value !== null) {
+                  console.log("values:: ", value);
+                  setToggleValues(value);
+                }
+              }}
+            >
+              <Toggle value={true}>
+                <ToggleValue>{toggleValues ? "" : "YES"}</ToggleValue>
+              </Toggle>
+              <Toggle value={false}>
+                <ToggleValue>{!toggleValues ? "" : "NO"}</ToggleValue>
+              </Toggle>
+            </ButtonGroup>
+          </PrimayField>
+        )}
         <FieldContainer>
           <SummaryContainer>
             <Grid py={1}>

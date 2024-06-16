@@ -13,8 +13,6 @@ import {
   ErrorTip,
 } from "../Theme/StyledGlobal";
 import { KeyboardBackspace } from "@mui/icons-material";
-import { graphqlApi } from "@/redux/graphql/graphqlApi";
-import { useDispatch } from "react-redux";
 import { PAYMENT_METHOD } from "@/constants/components";
 import { formatEther, formatUnits } from "viem";
 import { FUTUREVERSE, QUESTIONS, VIDEO_TUTORIAL } from "@/constants/url";
@@ -81,7 +79,6 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
   const { isFeatureEnabled } = useFeatureToggle();
 
   const router = useRouter();
-  const dispatch = useDispatch();
   const token = payment?.address || PAYMENT_METHOD[0].address;
 
   /**

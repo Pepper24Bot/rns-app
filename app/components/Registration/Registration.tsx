@@ -24,8 +24,6 @@ import { COMMITMENT_AGE, PAYMENT_METHOD } from "@/constants/components";
 import { FUTUREVERSE, QUESTIONS, VIDEO_TUTORIAL } from "@/constants/url";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { useDispatch } from "react-redux";
-import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { isRegisteredDuringQuest, parseCookie } from "@/utils/common";
 import { red } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
@@ -97,7 +95,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
   });
 
   const router = useRouter();
-  const dispatch = useDispatch();
   const token = payment?.address || (PAYMENT_METHOD[0].address as Address);
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
@@ -370,6 +367,8 @@ export const RegisterName: React.FC<RegistrationProps> = (
           rentFee={rentFee}
           walletBalance={walletBalance}
           status={isRegistered ? "Registered" : "Available"}
+          address={root?.address}
+          isPrimaryEnabled={true}
         />
         <FlexCenter py={2}>
           <Relative>
