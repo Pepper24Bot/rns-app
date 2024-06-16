@@ -5,6 +5,7 @@ import {
   getNamesForAddress,
 } from "@ensdomains/ensjs/subgraph";
 import { isEmpty } from "lodash";
+import { useEnsName } from "wagmi";
 
 import useNetworkConfig from "./useNetworkConfig";
 
@@ -18,6 +19,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
   const { skip = false, address, page = 1, isTesting, ...rest } = props;
   const { filter, orderBy, orderDirection, pageSize = 50 } = rest;
 
+  const { data: ensName } = useEnsName({ address });
   const { client } = useNetworkConfig();
 
   const [isError, setIsError] = useState<boolean>(false);
@@ -32,6 +34,24 @@ export default function useAllNamesForAddress(props: NamesProps) {
 
   // Sub pages
   const [pages, setPages] = useState<GetNamesForAddressReturnType[]>([]);
+
+  const movePrimaryNameToTop = (data: GetNamesForAddressReturnType) => {
+    // Get the primary name
+    const primaryName = data?.find((item) => {
+      return item.name === ensName;
+    });
+
+    if (primaryName && !isEmpty(primaryName)) {
+      const shifted = data?.filter((item) => {
+        return item.name !== ensName;
+      });
+
+      shifted.unshift(primaryName);
+      setRawNameList(shifted);
+    } else {
+      setRawNameList(data);
+    }
+  };
 
   const getSubPages = (
     data: GetNamesForAddressReturnType,
@@ -72,8 +92,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
       const count = Math.ceil(totalCount / pageSize);
 
       setPageCount(count);
-      //   getSubPages(data, count);
-      setRawNameList(data);
+      movePrimaryNameToTop(data);
 
       setIsFetched(true);
       setIsFetching(false);
@@ -110,6 +129,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
     orderBy,
     orderDirection,
     pageSize,
+    ensName,
     // page,
   ]);
 
