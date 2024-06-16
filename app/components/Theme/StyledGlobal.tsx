@@ -21,6 +21,7 @@ import {
 import { amber, grey, red, yellow } from "@mui/material/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "./Global";
 import { Close, Warning } from "@mui/icons-material";
+import { isEmpty } from "lodash";
 
 export const Container = styled(Grid, {
   shouldForwardProp: (prop) => prop !== "isLoading",
@@ -408,25 +409,31 @@ export const InformationTip = styled(
     className,
     current,
     ...props
-  }: TooltipProps & { current?: HTMLDivElement | null }) => (
-    <Tooltip
-      {...props}
-      classes={{ popper: className }}
-      PopperProps={{
-        disablePortal: true,
-        popperOptions: {
-          modifiers: [
-            {
-              name: "preventOverflow",
-              options: {
-                boundary: current,
+  }: TooltipProps & { current?: HTMLDivElement | null }) => {
+    const popperprops = !isEmpty(current)
+      ? {
+          disablePortal: true,
+          popperOptions: {
+            modifiers: [
+              {
+                name: "preventOverflow",
+                options: {
+                  boundary: current,
+                },
               },
-            },
-          ],
-        },
-      }}
-    />
-  )
+            ],
+          },
+        }
+      : {};
+
+    return (
+      <Tooltip
+        {...props}
+        classes={{ popper: className }}
+        PopperProps={{ ...popperprops }}
+      />
+    );
+  }
 )(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: darken(theme.palette.background.darker, 0.5),
