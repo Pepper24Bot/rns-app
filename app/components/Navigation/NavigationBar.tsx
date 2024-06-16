@@ -111,7 +111,7 @@ export const NavigationBar: React.FC = () => {
         <NavigationContainer>
           <Contents container>
             <NextImage
-              src="/images/rns-logo.svg"
+              src="/images/rns-logo.png"
               alt="RNS Icon"
               priority={true}
               width={260}
