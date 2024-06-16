@@ -11,8 +11,9 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     border: `solid 1px ${alpha(green[700], 0.6)}`,
     fontFamily: "var(--secondary-font)",
     fontSize: "14px",
+    wordBreak: "break-word",
     [theme.breakpoints.up("sm")]: {
-      maxWidth: "400px",
+      maxWidth: "500px",
     },
   },
   "&.notistack-MuiContent-error": {
@@ -21,8 +22,9 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     border: `solid 1px ${alpha(red[700], 0.6)}`,
     fontFamily: "var(--secondary-font)",
     fontSize: "14px",
+    wordBreak: "break-word",
     [theme.breakpoints.up("sm")]: {
-      maxWidth: "400px",
+      maxWidth: "500px",
     },
   },
   "&.notistack-MuiContent-warning": {
@@ -31,8 +33,9 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     border: `solid 1px ${alpha(yellow[800], 0.5)}`,
     fontFamily: "var(--secondary-font)",
     fontSize: "14px",
+    wordBreak: "break-word",
     [theme.breakpoints.up("sm")]: {
-      maxWidth: "400px",
+      maxWidth: "500px",
     },
   },
   "&.notistack-MuiContent-info": {
@@ -41,8 +44,9 @@ const CustomSnackbar = styled(MaterialDesignContent)(({ theme }) => ({
     border: `solid 1px ${theme.palette.primary.dark}`,
     fontFamily: "var(--secondary-font)",
     fontSize: "14px",
+    wordBreak: "break-word",
     [theme.breakpoints.up("sm")]: {
-      maxWidth: "400px",
+      maxWidth: "500px",
     },
   },
 }));

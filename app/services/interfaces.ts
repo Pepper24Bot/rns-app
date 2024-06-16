@@ -12,6 +12,7 @@ export interface ErrorResponse {
     name: string,
     message: string,
     shortMessage: string,
+    value?: string,
     cause: {
         data: {
             errorName: string

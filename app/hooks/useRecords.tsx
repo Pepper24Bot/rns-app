@@ -11,6 +11,7 @@ import { EMPTY_ADDRESS } from "@/constants/components";
 import useContractDetails from "./useContractDetails";
 import useProxyRecord from "./FuturePass/useProxyRecord";
 import useWaitTransaction from "./useWaitTransaction";
+import useErrorMessage from "./useErrorMessage";
 
 export default function useRecords() {
   const publicResolver = useContractDetails({ action: "PublicResolver" });
@@ -21,6 +22,7 @@ export default function useRecords() {
   const { data: root } = useRootNetwork();
   const { waitForWriteTransaction } = useWaitTransaction();
   const { setAddressProxyCall } = useProxyRecord({ publicResolver });
+  const { getErrorMessage } = useErrorMessage();
 
   const [isAddressLoading, setIsAddressLoading] = useState(false);
 
@@ -66,7 +68,7 @@ export default function useRecords() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
-        const message = error.shortMessage || error.message;
+        const message = getErrorMessage(error);
         enqueueSnackbar(message, { variant: "error" });
       }
     }

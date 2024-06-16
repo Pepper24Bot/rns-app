@@ -7,6 +7,7 @@ import { config } from "@/chains/config";
 
 import useEstimateFees from "../useEstimateFees";
 import useFuturePass from "./useFuturePass";
+import useErrorMessage from "../useErrorMessage";
 
 export interface SendProxyProps {
   evmContract: {
@@ -20,6 +21,7 @@ export default function useSendProxyCall() {
   const { getFuturepassContract } = useFuturePass();
   const { getEstimatedGas, getMaxFeePerGas } = useEstimateFees();
   const { useRootNetwork } = useRootNetworkState();
+  const { getProxyErrorMessage } = useErrorMessage();
   const {
     data: { futurePassAddress: futurePass },
   } = useRootNetwork();
@@ -61,8 +63,9 @@ export default function useSendProxyCall() {
 
         return ethTx;
       } catch (error) {
-        console.log("proxycall-error:: ", error);
-        throw new Error((error as any).message);
+        console.log("proxycall-error:: ", (error as any).message);
+        const message = getProxyErrorMessage((error as any).message);
+        throw new Error(message);
       }
     }
   };
@@ -96,9 +99,8 @@ export default function useSendProxyCall() {
 
         return ethTx;
       } catch (error) {
-        // TODO: Fix this
         console.log("proxycall-error:: ", (error as any).message);
-        const message = (error as any).message.split("Request Arguments:")[0];
+        const message = getProxyErrorMessage((error as any).message);
         throw new Error(message);
       }
     }

@@ -10,6 +10,7 @@ import { useSnackbar } from "notistack";
 import useContractDetails from "./useContractDetails";
 import useProxyTransfer from "./FuturePass/useProxyTransfer";
 import useWaitTransaction from "./useWaitTransaction";
+import useErrorMessage from "./useErrorMessage";
 
 /** TODO: Optimize this hook */
 export default function useTransfer() {
@@ -17,6 +18,7 @@ export default function useTransfer() {
 
   const { enqueueSnackbar } = useSnackbar();
   const { useRootNetwork } = useRootNetworkState();
+  const { getErrorMessage } = useErrorMessage();
 
   const {
     data: { address, isFpActive },
@@ -67,7 +69,7 @@ export default function useTransfer() {
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
-        const message = error.shortMessage || error.message;
+        const message = getErrorMessage(error);
         enqueueSnackbar(message, { variant: "error" });
       }
     }
