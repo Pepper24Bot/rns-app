@@ -311,15 +311,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
   }, [rentFee, hash, payment?.address, address]);
 
   useEffect(() => {
-    if (isRegistered) {
-      enqueueSnackbar(
-        "Congratulations! You have successfully registered a new identity!",
-        { variant: "success" }
-      );
-    }
-  }, [isRegistered]);
-
-  useEffect(() => {
     if (isCommitSuccess) {
       enqueueSnackbar("Request to register is completed!", { variant: "info" });
       handleApproval();
@@ -336,6 +327,15 @@ export const RegisterName: React.FC<RegistrationProps> = (
       handleRegister();
     }
   }, [isApproved]);
+
+  useEffect(() => {
+    if (isRegistered) {
+      enqueueSnackbar(
+        "Congratulations! You have successfully registered a new identity!",
+        { variant: "success" }
+      );
+    }
+  }, [isRegistered]);
 
   useEffect(() => {
     if (xrpBalance?.value !== undefined) {

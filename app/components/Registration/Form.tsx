@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   BaseButton,
   ModalInputField,
@@ -25,7 +25,6 @@ import { formatEther } from "ethers/lib/utils";
 import { NameStatus } from "@/interfaces/components/types";
 import { isEmpty } from "lodash";
 import { Address } from "viem";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 
 import MenuField from "@/components/Reusables/MenuField";
 import TooltipContent from "../Reusables/TooltipContent";
@@ -88,9 +87,13 @@ const Toggle = styled(ToggleButton)(({ theme }) => ({
   },
 }));
 
-const ToggleValue = styled(PrimaryLabel)(({ theme }) => ({
+const ToggleValue = styled(PrimaryLabel, {
+  shouldForwardProp: (prop) => prop !== "isSelected",
+})<{ isSelected?: boolean }>(({ isSelected, theme }) => ({
   fontSize: "12px",
-  color: theme.palette.text.primary,
+  color: isSelected
+    ? theme.palette.text.primary
+    : alpha(theme.palette.text.primary, 0.25),
 }));
 
 const Button = styled(BaseButton)(({ theme }) => ({
@@ -236,10 +239,10 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
               }}
             >
               <Toggle value={true}>
-                <ToggleValue>{toggleValues ? "" : "YES"}</ToggleValue>
+                <ToggleValue isSelected={toggleValues}>YES</ToggleValue>
               </Toggle>
               <Toggle value={false}>
-                <ToggleValue>{!toggleValues ? "" : "NO"}</ToggleValue>
+                <ToggleValue isSelected={!toggleValues}>NO</ToggleValue>
               </Toggle>
             </ButtonGroup>
           </PrimayField>
