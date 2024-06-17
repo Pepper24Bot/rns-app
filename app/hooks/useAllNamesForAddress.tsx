@@ -24,7 +24,8 @@ export default function useAllNamesForAddress(props: NamesProps) {
 
   const [isError, setIsError] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(!skip);
-  const [isFetched, setIsFetched] = useState<boolean>(true);
+  const [isFetched, setIsFetched] = useState<boolean>(false);
+  const [isComplete, setIsCompleted] = useState<boolean>(false);
 
   const [names, setNames] = useState<GetNamesForAddressReturnType>([]);
   const [rawNameList, setRawNameList] = useState<GetNamesForAddressReturnType>(
@@ -70,6 +71,9 @@ export default function useAllNamesForAddress(props: NamesProps) {
       names.length = 0;
       setNames([]);
     }
+
+    setIsCompleted(true);
+    setIsFetching(false);
   };
 
   /**
@@ -95,10 +99,9 @@ export default function useAllNamesForAddress(props: NamesProps) {
       movePrimaryNameToTop(data);
 
       setIsFetched(true);
-      setIsFetching(false);
     } catch (error) {
-      setIsFetched(false);
       setIsFetching(false);
+      setIsFetched(false);
 
       console.log("error:: ", error);
       setIsError(true);
@@ -159,7 +162,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
     pageCount,
 
     isFetching,
-    isFetched,
+    isFetched: isComplete,
     isError,
   };
 }

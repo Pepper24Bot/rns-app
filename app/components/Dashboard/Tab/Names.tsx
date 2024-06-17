@@ -102,21 +102,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     []
   );
 
-  useEffect(() => {
-    //   console.log(`
-    //   isEmpty(names):: ${isEmpty(names)}
-    //   isLoadingState:: ${isLoadingState}
-    //   isSuccess:: ${isSuccess}
-    //   isLoading:: ${isLoading}
-    //   hasMounted:: ${hasMounted}
-    //   hasNoNamesState:: ${hasNoNamesState}
-    //   ====================================
-    // `);
-    // console.log("component-names:: ", names);
-    // console.log("component-error:: ", isError);
-    // console.log("======================");
-  }, [names, isFetched, isFetching, hasMounted]);
-
   return (
     <>
       {isLoadingState && <SkeletonNames />}
