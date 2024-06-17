@@ -20,25 +20,21 @@ export const SkeletonForm: React.FC = () => {
     <Container>
       <FlexCenter>
         <SearchContainer>
-          <Search height={332}>
+          <Search>
             <Relative>
-              <FlexCenter height="50px">
-                <SkeletonTypography
-                  variant="rectangular"
-                  isloading={true}
-                  width="35%"
-                />
+              <FlexCenter>
+                <SkeletonTypography isloading={true} width="50%" />
                 <SearchTitle isloading={true}>Name Search</SearchTitle>
               </FlexCenter>
             </Relative>
             <Relative>
-              <FlexCenter height="54px" pt={5}>
-                <SkeletonTypography
-                  variant="rectangular"
-                  isloading={true}
-                  width="85%"
-                />
-                <SearchSubText isloading={true}>Dummy text</SearchSubText>
+              <FlexCenter>
+                <SkeletonTypography isloading={true} width="95%" />
+                <SearchSubText isloading={true}>
+                  Your premier cross platform, data, social and wallet identity
+                  on The Root Network. Take your identity and data wherever you
+                  go.
+                </SearchSubText>
               </FlexCenter>
             </Relative>
             <Relative>
@@ -50,7 +46,7 @@ export const SkeletonForm: React.FC = () => {
                   sx={{
                     "&.MuiOutlinedInput-root": {
                       "& fieldset": {
-                        borderColor: alpha(pink[800], 0.15),
+                        borderColor: alpha(pink[900], 0.05),
                       },
                     },
                   }}
