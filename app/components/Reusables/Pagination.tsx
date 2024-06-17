@@ -92,13 +92,15 @@ export const Pagination: React.FC<PaginationProps> = (
   const [errorField, setErrorField] = useState(false);
 
   const handleOnChange = (itemCount: number) => {
-    setErrorField(false);
-    setItemCountField(itemCount);
-    handleInputChange && handleInputChange(itemCount);
+    if (!isNaN(itemCount)) {
+      setErrorField(false);
+      setItemCountField(itemCount);
+      handleInputChange && handleInputChange(itemCount);
 
-    if (itemCount < 0 || itemCount > 1000) {
-      // throw error
-      setErrorField(true);
+      if (itemCount < 0 || itemCount > 1000) {
+        // throw error
+        setErrorField(true);
+      }
     }
   };
 
