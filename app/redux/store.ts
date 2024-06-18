@@ -21,10 +21,18 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware({
             serializableCheck: {
+                ignoredActions: [
+                    'subscriptions/internal_probeSubscription',
+                    'subscriptions/unsubscribeQueryResult',
+                    'executeQuery/fulfilled',
+                    'executeQuery/rejected',
+                ],
+
                 ignoredActionPaths: [
                     'payload.data.item.createdAt.date',
                     'payload.data.item.expiryDate.date',
                     'payload.data.item.registrationDate.date',
+                    'RnsApi.queries.NamesByAddress'
                 ],
                 ignoredPaths: [
                     'modalState.props.data.item.createdAt.date',

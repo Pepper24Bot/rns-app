@@ -23,18 +23,18 @@ export const SORTING_OPTIONS = [
         orderBy: "name",
         orderDirection: "desc"
     },
-    // {
-    //     label: "Cost",
-    //     type: "High",
-    //     orderBy: "cost",
-    //     orderDirection: "asc"
-    // },
-    // {
-    //     label: "Cost",
-    //     type: "Low",
-    //     orderBy: "cost",
-    //     orderDirection: "desc"
-    // },
+    {
+        label: "Cost",
+        type: "High",
+        orderBy: "cost",
+        orderDirection: "asc"
+    },
+    {
+        label: "Cost",
+        type: "Low",
+        orderBy: "cost",
+        orderDirection: "desc"
+    },
     {
         label: "Expiry",
         type: "High",
@@ -47,18 +47,18 @@ export const SORTING_OPTIONS = [
         orderBy: "expiryDate",
         orderDirection: "asc"
     },
-    // {
-    //     label: "Length",
-    //     type: "High",
-    //     orderBy: "length",
-    //     orderDirection: "asc"
-    // },
-    // {
-    //     label: "Length",
-    //     type: "Low",
-    //     orderBy: "length",
-    //     orderDirection: "desc"
-    // },
+    {
+        label: "Length",
+        type: "High",
+        orderBy: "length",
+        orderDirection: "asc"
+    },
+    {
+        label: "Length",
+        type: "Low",
+        orderBy: "length",
+        orderDirection: "desc"
+    },
     {
         label: "Created Date",
         type: "Ascending",

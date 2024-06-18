@@ -4713,6 +4713,20 @@ export type GetPrimaryNameResolverQueryVariables = Exact<{
 
 export type GetPrimaryNameResolverQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> } }> };
 
+export type NamesByAddressQueryVariables = Exact<{
+  ensName?: InputMaybe<Scalars['String']['input']>;
+  expiryDate?: InputMaybe<Scalars['BigInt']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  orderBy?: InputMaybe<Domain_OrderBy>;
+}>;
+
+
+export type NamesByAddressQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, isMigrated: boolean, createdAt: any, parent?: { __typename?: 'Domain', name?: string | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, owner: { __typename?: 'Account', id: string }, registrant?: { __typename?: 'Account', id: string } | null, wrappedOwner?: { __typename?: 'Account', id: string } | null, registration?: { __typename?: 'Registration', cost?: any | null, registrationDate: any, expiryDate: any } | null, wrappedDomain?: { __typename?: 'WrappedDomain', expiryDate: any, fuses: number } | null, resolver?: { __typename?: 'Resolver', texts?: Array<string> | null, coinTypes?: Array<any> | null } | null }> };
+
 
 export const GetNamesByNameDocument = `
     query GetNamesByName($labelName: String!) {
@@ -4921,6 +4935,52 @@ export const GetPrimaryNameResolverDocument = `
   }
 }
     `;
+export const NamesByAddressDocument = `
+    query NamesByAddress($ensName: String = "", $expiryDate: BigInt = "0", $pageSize: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate) {
+  domains(
+    where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gt: $expiryDate}
+    first: $pageSize
+    skip: $skip
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    id
+    labelName
+    labelhash
+    name
+    isMigrated
+    parent {
+      name
+    }
+    createdAt
+    resolvedAddress {
+      id
+    }
+    owner {
+      id
+    }
+    registrant {
+      id
+    }
+    wrappedOwner {
+      id
+    }
+    registration {
+      cost
+      registrationDate
+      expiryDate
+    }
+    wrappedDomain {
+      expiryDate
+      fuses
+    }
+    resolver {
+      texts
+      coinTypes
+    }
+  }
+}
+    `;
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -4939,9 +4999,12 @@ const injectedRtkApi = api.injectEndpoints({
     GetPrimaryNameResolver: build.query<GetPrimaryNameResolverQuery, GetPrimaryNameResolverQueryVariables>({
       query: (variables) => ({ document: GetPrimaryNameResolverDocument, variables })
     }),
+    NamesByAddress: build.query<NamesByAddressQuery, NamesByAddressQueryVariables | void>({
+      query: (variables) => ({ document: NamesByAddressDocument, variables })
+    }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByUserAndLabelQuery, useLazyGetNamesByUserAndLabelQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery, useGetNamesByIdAndNameQuery, useLazyGetNamesByIdAndNameQuery, useGetPrimaryNameResolverQuery, useLazyGetPrimaryNameResolverQuery } = injectedRtkApi;
+export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByUserAndLabelQuery, useLazyGetNamesByUserAndLabelQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery, useGetNamesByIdAndNameQuery, useLazyGetNamesByIdAndNameQuery, useGetPrimaryNameResolverQuery, useLazyGetPrimaryNameResolverQuery, useNamesByAddressQuery, useLazyNamesByAddressQuery } = injectedRtkApi;
 

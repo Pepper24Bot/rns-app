@@ -102,6 +102,10 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     []
   );
 
+  useEffect(() => {
+    console.log("names:: ", names);
+  }, [names]);
+
   return (
     <>
       {isLoadingState && <SkeletonNames />}

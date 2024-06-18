@@ -8,6 +8,10 @@ import { isEmpty } from "lodash";
 import { useEnsName } from "wagmi";
 
 import useNetworkConfig from "./useNetworkConfig";
+import {
+  useGetNamesByIdQuery,
+  useNamesByAddressQuery,
+} from "@/redux/graphql/graphqlApi";
 
 export interface NamesProps extends GetNamesForAddressParameters {
   skip?: boolean;
@@ -19,7 +23,20 @@ export default function useAllNamesForAddress(props: NamesProps) {
   const { skip = false, address, page = 1, isTesting, ...rest } = props;
   const { filter, orderBy, orderDirection, pageSize = 50 } = rest;
 
-  const { data: ensName } = useEnsName({ address });
+  const { data: ensName, isFetching: isEnsFetching } = useEnsName({ address });
+  const { data, isSuccess } = useNamesByAddressQuery(
+    {
+      id: address.toLowerCase(),
+      ensName,
+    },
+    { skip: skip || !address || isEnsFetching }
+  );
+
+  useEffect(() => {
+    console.log("data:: ", data);
+    console.log("====================");
+  }, [data?.domains]);
+
   const { client } = useNetworkConfig();
 
   const [isError, setIsError] = useState<boolean>(false);
@@ -84,6 +101,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
    * inifinitequery
    */
   const getAllNames = async () => {
+    setIsError(false);
     try {
       const data = await getNamesForAddress(client, {
         address,

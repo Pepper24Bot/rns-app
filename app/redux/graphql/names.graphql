@@ -199,3 +199,61 @@ query GetPrimaryNameResolver($id: ID!) {
     }
   }
 }
+
+query NamesByAddress(
+  $ensName: String = ""
+  $expiryDate: BigInt = "0"
+  $pageSize: Int = 1000
+  $skip: Int = 0
+  $name: String = ""
+  $id: ID = ""
+  $orderDirection: OrderDirection = desc
+  $orderBy: Domain_orderBy = registration__registrationDate
+) {
+  domains(
+    where: {
+      wrappedOwner_: { id: $id }
+      name_contains: $name
+      expiryDate_gt: $expiryDate
+    }
+    first: $pageSize
+    skip: $skip
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    id
+    labelName
+    labelhash
+    name
+    isMigrated
+    parent {
+      name
+    }
+    createdAt
+    resolvedAddress {
+      id
+    }
+    owner {
+      id
+    }
+    registrant {
+      id
+    }
+    wrappedOwner {
+      id
+    }
+    registration {
+      cost
+      registrationDate
+      expiryDate
+    }
+    wrappedDomain {
+      expiryDate
+      fuses
+    }
+    resolver {
+      texts
+      coinTypes
+    }
+  }
+}
