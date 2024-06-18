@@ -340,7 +340,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   useEffect(() => {
     if (xrpBalance?.value !== undefined) {
       const isSufficient =
-        Number(formatEther(xrpBalance?.value ?? BigInt(0))) > 5;
+        Number(formatEther(xrpBalance?.value ?? BigInt(0))) >= 5;
       setXrpSufficient(isSufficient);
     }
   }, [xrpBalance?.value]);
