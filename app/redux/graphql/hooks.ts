@@ -4676,43 +4676,6 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type GetNamesByNameQueryVariables = Exact<{
-  labelName: Scalars['String']['input'];
-}>;
-
-
-export type GetNamesByNameQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
-
-export type GetNamesByUserAndLabelQueryVariables = Exact<{
-  labelName: Scalars['String']['input'];
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetNamesByUserAndLabelQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
-
-export type GetNamesByIdQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetNamesByIdQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
-
-export type GetNamesByIdAndNameQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
-}>;
-
-
-export type GetNamesByIdAndNameQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', id: string, name?: string | null, fuses: number, expiryDate: any, owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> }, domain: { __typename?: 'Domain', id: string, name?: string | null, labelName?: string | null, labelhash?: any | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, registration?: { __typename?: 'Registration', cost?: any | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, resolver?: { __typename?: 'Resolver', id: string, address: any, texts?: Array<string> | null, coinTypes?: Array<any> | null, addr?: { __typename?: 'Account', id: string } | null } | null } }> };
-
-export type GetPrimaryNameResolverQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetPrimaryNameResolverQuery = { __typename?: 'Query', wrappedDomains: Array<{ __typename?: 'WrappedDomain', owner: { __typename?: 'Account', id: string, domains: Array<{ __typename?: 'Domain', id: string, name?: string | null, resolver?: { __typename?: 'Resolver', id: string, address: any } | null }> } }> };
-
 export type NamesByAddressQueryVariables = Exact<{
   ensName?: InputMaybe<Scalars['String']['input']>;
   expiryDate?: InputMaybe<Scalars['BigInt']['input']>;
@@ -4727,214 +4690,18 @@ export type NamesByAddressQueryVariables = Exact<{
 
 export type NamesByAddressQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, isMigrated: boolean, createdAt: any, parent?: { __typename?: 'Domain', name?: string | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, owner: { __typename?: 'Account', id: string }, registrant?: { __typename?: 'Account', id: string } | null, wrappedOwner?: { __typename?: 'Account', id: string } | null, registration?: { __typename?: 'Registration', cost?: any | null, registrationDate: any, expiryDate: any } | null, wrappedDomain?: { __typename?: 'WrappedDomain', expiryDate: any, fuses: number } | null, resolver?: { __typename?: 'Resolver', texts?: Array<string> | null, coinTypes?: Array<any> | null } | null }> };
 
+export type TotalDomainsQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  expiryDate_gt?: InputMaybe<Scalars['BigInt']['input']>;
+}>;
 
-export const GetNamesByNameDocument = `
-    query GetNamesByName($labelName: String!) {
-  wrappedDomains(where: {domain_: {labelName: $labelName}}) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-    `;
-export const GetNamesByUserAndLabelDocument = `
-    query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
-  wrappedDomains(
-    where: {domain_: {labelName_contains: $labelName}, owner_: {id: $id}}
-  ) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-    `;
-export const GetNamesByIdDocument = `
-    query GetNamesById($id: ID!) {
-  wrappedDomains(first: 1000, where: {owner_: {id: $id}}) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-    `;
-export const GetNamesByIdAndNameDocument = `
-    query GetNamesByIdAndName($id: ID!, $name: String!) {
-  wrappedDomains(where: {owner_: {id: $id}, name: $name}) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-    `;
-export const GetPrimaryNameResolverDocument = `
-    query GetPrimaryNameResolver($id: ID!) {
-  wrappedDomains(where: {owner_: {id: $id}}, first: 1) {
-    owner {
-      id
-      domains(where: {resolver_: {address_not: ""}}) {
-        id
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-  }
-}
-    `;
+
+export type TotalDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', name?: string | null, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
+
+
 export const NamesByAddressDocument = `
     query NamesByAddress($ensName: String = "", $expiryDate: BigInt = "0", $pageSize: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate) {
   domains(
@@ -4981,30 +4748,32 @@ export const NamesByAddressDocument = `
   }
 }
     `;
+export const TotalDomainsDocument = `
+    query TotalDomains($first: Int = 1000, $skip: Int = 0, $id: ID = "", $name: String = "", $expiryDate_gt: BigInt = "0") {
+  domains(
+    first: $first
+    skip: $skip
+    where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gt: $expiryDate_gt}
+  ) {
+    name
+    wrappedOwner {
+      id
+    }
+  }
+}
+    `;
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    GetNamesByName: build.query<GetNamesByNameQuery, GetNamesByNameQueryVariables>({
-      query: (variables) => ({ document: GetNamesByNameDocument, variables })
-    }),
-    GetNamesByUserAndLabel: build.query<GetNamesByUserAndLabelQuery, GetNamesByUserAndLabelQueryVariables>({
-      query: (variables) => ({ document: GetNamesByUserAndLabelDocument, variables })
-    }),
-    GetNamesById: build.query<GetNamesByIdQuery, GetNamesByIdQueryVariables>({
-      query: (variables) => ({ document: GetNamesByIdDocument, variables })
-    }),
-    GetNamesByIdAndName: build.query<GetNamesByIdAndNameQuery, GetNamesByIdAndNameQueryVariables>({
-      query: (variables) => ({ document: GetNamesByIdAndNameDocument, variables })
-    }),
-    GetPrimaryNameResolver: build.query<GetPrimaryNameResolverQuery, GetPrimaryNameResolverQueryVariables>({
-      query: (variables) => ({ document: GetPrimaryNameResolverDocument, variables })
-    }),
     NamesByAddress: build.query<NamesByAddressQuery, NamesByAddressQueryVariables | void>({
       query: (variables) => ({ document: NamesByAddressDocument, variables })
+    }),
+    TotalDomains: build.query<TotalDomainsQuery, TotalDomainsQueryVariables | void>({
+      query: (variables) => ({ document: TotalDomainsDocument, variables })
     }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useGetNamesByNameQuery, useLazyGetNamesByNameQuery, useGetNamesByUserAndLabelQuery, useLazyGetNamesByUserAndLabelQuery, useGetNamesByIdQuery, useLazyGetNamesByIdQuery, useGetNamesByIdAndNameQuery, useLazyGetNamesByIdAndNameQuery, useGetPrimaryNameResolverQuery, useLazyGetPrimaryNameResolverQuery, useNamesByAddressQuery, useLazyNamesByAddressQuery } = injectedRtkApi;
+export const { useNamesByAddressQuery, useLazyNamesByAddressQuery, useTotalDomainsQuery, useLazyTotalDomainsQuery } = injectedRtkApi;
 

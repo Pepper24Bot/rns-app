@@ -1,205 +1,3 @@
-query GetNamesByName($labelName: String!) {
-  wrappedDomains(where: { domain_: { labelName: $labelName } }) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-
-query GetNamesByUserAndLabel($labelName: String!, $id: ID!) {
-  wrappedDomains(
-    where: { domain_: { labelName_contains: $labelName }, owner_: { id: $id } }
-  ) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-
-query GetNamesById($id: ID!) {
-  wrappedDomains(first: 1000, where: { owner_: { id: $id } }) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-
-query GetNamesByIdAndName($id: ID!, $name: String!) {
-  wrappedDomains(where: { owner_: { id: $id }, name: $name }) {
-    id
-    name
-    owner {
-      id
-      domains {
-        id
-        labelName
-        labelhash
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-    domain {
-      id
-      name
-      labelName
-      labelhash
-      isMigrated
-      expiryDate
-      createdAt
-      registration {
-        cost
-      }
-      resolvedAddress {
-        id
-      }
-      resolver {
-        id
-        address
-        texts
-        coinTypes
-        addr {
-          id
-        }
-      }
-    }
-    fuses
-    expiryDate
-  }
-}
-
-query GetPrimaryNameResolver($id: ID!) {
-  wrappedDomains(where: { owner_: { id: $id } }, first: 1) {
-    owner {
-      id
-      domains(where: { resolver_: { address_not: "" } }) {
-        id
-        name
-        resolver {
-          id
-          address
-        }
-      }
-    }
-  }
-}
-
 query NamesByAddress(
   $ensName: String = ""
   $expiryDate: BigInt = "0"
@@ -254,6 +52,29 @@ query NamesByAddress(
     resolver {
       texts
       coinTypes
+    }
+  }
+}
+
+query TotalDomains(
+  $first: Int = 1000
+  $skip: Int = 0
+  $id: ID = ""
+  $name: String = ""
+  $expiryDate_gt: BigInt = "0"
+) {
+  domains(
+    first: $first
+    skip: $skip
+    where: {
+      wrappedOwner_: { id: $id }
+      name_contains: $name
+      expiryDate_gt: $expiryDate_gt
+    }
+  ) {
+    name
+    wrappedOwner {
+      id
     }
   }
 }

@@ -1,5 +1,5 @@
+import { DomainResponse } from "@/redux/graphql/graphqlApi";
 import { Domain } from "@/redux/graphql/hooks";
-import { NameWithRelation } from "@ensdomains/ensjs/subgraph";
 import { Address } from "viem";
 
 export interface TransactionProps {
@@ -10,7 +10,7 @@ export interface TransactionProps {
     };
 
     // New properties for ensjs:getNamesForAddress support
-    item: NameWithRelation;
+    item: DomainResponse;
     address: Address;
 }
 
@@ -21,7 +21,7 @@ export interface PrimaryProps extends TransactionProps {
 }
 
 export interface CardProps extends Omit<PrimaryProps, "owner"> {
-    item: NameWithRelation;
+    item: DomainResponse;
 
     /**
      * Active Address:

@@ -109,7 +109,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
   const characterSet = findCharacterSet(labelName ?? "");
   const hasWarning = characterSet === "emoji" || characterSet === "mixed";
 
-  const { expiration, distance } = getExpiry(expiryDate?.date);
+  const { expiration, distance } = getExpiry(expiryDate);
 
   useEffect(() => {
     const isNameShowing = isTooltipShowing(nameRef);

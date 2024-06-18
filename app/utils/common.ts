@@ -320,10 +320,12 @@ export const isTooltipShowing = (ref: React.MutableRefObject<HTMLDivElement | nu
  * @returns 
  */
 export const getDistanceToExpiration = (expiry: Date) => {
-    const current = new Date().toLocaleDateString("en-US")
+    const currentDate = new Date().toLocaleDateString("en-US")
+    const expiryDate = expiry.toLocaleDateString("en-US")
+
     const distance = formatDistanceStrict(
-        current,
-        expiry,
+        currentDate,
+        expiryDate,
         { unit: "day" }
     );
 
@@ -350,8 +352,9 @@ export const formatDate = (date: Date) => {
  * @param expiry the expiration date of an identity
  * @returns distance in days format and expiration in mm-dd-yyyy
  */
-export const getExpiry = (expiry?: Date) => {
-    const date = expiry ? expiry : new Date();
+export const getExpiry = (expiry: string = "") => {
+    const expiryDate = new Date(parseInt(expiry) * 1000)
+    const date = expiry ? expiryDate : new Date();
 
     const distance = getDistanceToExpiration(date);
     const expiration = formatDate(date);
@@ -369,11 +372,12 @@ export const getExpiry = (expiry?: Date) => {
  * @param date the date when the identity is created
  * @returns 
  */
-export const isRegisteredDuringQuest = (date?: Date) => {
+export const isRegisteredDuringQuest = (date: string = "") => {
     if (date) {
+        const createdDate = new Date(parseInt(date) * 1000)
         const start = new Date("2024-05-28T08:00:00.000+10:00");
         const end = new Date("2024-06-25T08:00:00.000+10:00");
-        const isShareable = isDateWithinRange(date, start, end);
+        const isShareable = isDateWithinRange(createdDate, start, end);
 
         return isShareable
     }

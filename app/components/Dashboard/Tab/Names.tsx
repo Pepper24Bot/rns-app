@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Box, Grid, styled } from "@mui/material";
 import { NameCard } from "./Names/NameCard";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
@@ -67,21 +67,21 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     useAllNamesForAddress({
       // custom props
       skip: !hasMounted,
-      page: options?.page,
-
-      // ensjs.getNamesForAddress props
-      address: address || "0x",
-      orderBy,
-      orderDirection,
-      pageSize: itemsPerPage,
-      filter: {
-        searchType: "name", // default - search by name
-        searchString: options?.name?.toLowerCase(),
-        allowExpired,
+      pagination: {
+        page: options?.page,
+        pageSize: itemsPerPage,
       },
+      filter: {
+        address: address || "0x",
+        name: options?.name?.toLowerCase(),
+      },
+      // sorting: {
+      //   orderBy,
+      //   orderDirection,
+      // },
     });
 
-  const isLoadingState = isFetching || !hasMounted || (!isFetched && !isError);
+  const isLoadingState = isFetching || !hasMounted || !names; // names is undefined initially
   const hasNoNamesState =
     (isEmpty(names) && isFetched && !isFetching) || isError;
 
@@ -101,10 +101,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     _debounce(handleDebounceOnChange, DEFAULT_DEBOUNCE),
     []
   );
-
-  useEffect(() => {
-    console.log("names:: ", names);
-  }, [names]);
 
   return (
     <>

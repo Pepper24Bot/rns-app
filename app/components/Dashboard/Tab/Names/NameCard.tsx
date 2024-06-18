@@ -43,6 +43,7 @@ import {
   isTooltipShowing,
   parseCookie,
 } from "@/utils/common";
+import { DomainResponse } from "@/redux/graphql/graphqlApi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { FeatureList } from "@/hooks/useFeatureToggle";
@@ -55,7 +56,6 @@ import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useShareState } from "@/redux/share/shareSlice";
 import { WARNING_ASCII } from "@/constants/content";
 import { useRouter } from "next/navigation";
-import { NameWithRelation } from "@ensdomains/ensjs/subgraph";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
 import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
@@ -64,7 +64,7 @@ import useContractDetails from "@/hooks/useContractDetails";
 import TooltipContent from "@/components/Reusables/TooltipContent";
 
 export interface NameProps {
-  item: NameWithRelation;
+  item: DomainResponse;
 
   /**
    * Always remember that this address
@@ -124,14 +124,14 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: address,
   });
 
-  const isShareEnabled = isRegisteredDuringQuest(createdAt.date);
+  const isShareEnabled = isRegisteredDuringQuest(createdAt);
   const characterSet = findCharacterSet(labelName ?? "");
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
   const isTweetVerified =
     parseCookie("isTweetVerified") === "true" || isSuccess;
 
-  const { expiration, distance } = getExpiry(expiryDate?.date);
+  const { expiration, distance } = getExpiry(expiryDate);
 
   const handleDownloadPng = (imgURI: string) => {
     const link = document.createElement("a");
@@ -170,7 +170,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
   const handleSvgToPng = (dataUrl: string) => {
     const img = new Image();
-    // aligns with metadata-server - TODO: fix this
     img.width = 540;
     img.height = 540;
     img.crossOrigin = "Anonymous";

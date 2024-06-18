@@ -1,158 +1,89 @@
-import { useEffect, useState } from "react";
-import {
-  GetNamesForAddressParameters,
-  GetNamesForAddressReturnType,
-  getNamesForAddress,
-} from "@ensdomains/ensjs/subgraph";
-import { isEmpty } from "lodash";
+import { useEffect } from "react";
 import { useEnsName } from "wagmi";
-
-import useNetworkConfig from "./useNetworkConfig";
 import {
-  useGetNamesByIdQuery,
+  DomainResponse,
+  NamesByAddressResponse,
   useNamesByAddressQuery,
 } from "@/redux/graphql/graphqlApi";
+import { Address } from "viem";
+import {
+  Domain_OrderBy,
+  OrderDirection,
+  useTotalDomainsQuery,
+} from "@/redux/graphql/hooks";
+import { isEmpty } from "lodash";
 
-export interface NamesProps extends GetNamesForAddressParameters {
+export interface NamesProps {
   skip?: boolean;
-  page?: number;
   isTesting?: boolean;
+  pagination?: {
+    /** Currently displayed page */
+    page?: number;
+
+    /** Number of items displayed per page */
+    pageSize?: number;
+  };
+  filter?: {
+    address: Address;
+    name?: string;
+  };
+  sorting?: {
+    orderBy?: Domain_OrderBy;
+    orderDirection?: OrderDirection;
+  };
 }
 
 export default function useAllNamesForAddress(props: NamesProps) {
-  const { skip = false, address, page = 1, isTesting, ...rest } = props;
-  const { filter, orderBy, orderDirection, pageSize = 50 } = rest;
-
-  const { data: ensName, isFetching: isEnsFetching } = useEnsName({ address });
-  const { data, isSuccess } = useNamesByAddressQuery(
-    {
-      id: address.toLowerCase(),
-      ensName,
+  const {
+    skip = false,
+    filter = { name: "", address: "0x" },
+    pagination = { page: 1, pageSize: 1000 },
+    sorting = {
+      orderBy: Domain_OrderBy["RegistrationRegistrationDate"],
+      orderDirection: OrderDirection["Desc"],
     },
-    { skip: skip || !address || isEnsFetching }
-  );
+  } = props;
 
-  useEffect(() => {
-    console.log("data:: ", data);
-    console.log("====================");
-  }, [data?.domains]);
+  const { name, address } = filter;
+  const { page = 1, pageSize = 1000 } = pagination;
+  const { orderBy, orderDirection } = sorting;
 
-  const { client } = useNetworkConfig();
+  const { data: ensName, isFetching: isEnsFetching } = useEnsName({
+    address,
+    query: {
+      enabled: address !== "0x",
+    },
+  });
 
-  const [isError, setIsError] = useState<boolean>(false);
-  const [isFetching, setIsFetching] = useState<boolean>(!skip);
-  const [isFetched, setIsFetched] = useState<boolean>(false);
-  const [isComplete, setIsCompleted] = useState<boolean>(false);
-
-  const [names, setNames] = useState<GetNamesForAddressReturnType>([]);
-  const [rawNameList, setRawNameList] = useState<GetNamesForAddressReturnType>(
-    []
-  );
-  const [pageCount, setPageCount] = useState(1);
-
-  // Sub pages
-  const [pages, setPages] = useState<GetNamesForAddressReturnType[]>([]);
-
-  const movePrimaryNameToTop = (data: GetNamesForAddressReturnType) => {
-    // Get the primary name
-    const primaryName = data?.find((item) => {
-      return item.name === ensName;
-    });
-
-    if (primaryName && !isEmpty(primaryName)) {
-      const shifted = data?.filter((item) => {
-        return item.name !== ensName;
-      });
-
-      shifted.unshift(primaryName);
-      setRawNameList(shifted);
-    } else {
-      setRawNameList(data);
-    }
-  };
-
-  const getSubPages = (
-    data: GetNamesForAddressReturnType,
-    pageCount: number
-  ) => {
-    const subPages = Array.from({ length: pageCount }).map((_, index) => {
-      return data.slice(index * pageSize, index * pageSize + pageSize);
-    });
-
-    if (!isEmpty(subPages)) {
-      setPages(subPages);
-      if (!isEmpty(subPages[page - 1])) {
-        setNames([...subPages[page - 1]]);
-      }
-    } else {
-      names.length = 0;
-      setNames([]);
-    }
-
-    setIsCompleted(true);
-    setIsFetching(false);
-  };
-
-  /**
-   * TODO: Fix this
-   * check how to get the total count of items in graphql
-   * without the limit of 1000
-   *
-   * inifinitequery
-   */
-  const getAllNames = async () => {
-    setIsError(false);
-    try {
-      const data = await getNamesForAddress(client, {
-        address,
-        pageSize: 1000,
-        filter,
+  const { data, isSuccess, isLoading, isFetching, isError } =
+    useNamesByAddressQuery(
+      {
+        id: address.toLowerCase(),
+        name,
+        ensName,
+        pageSize,
+        skip: (page - 1) * pageSize,
         orderBy,
         orderDirection,
-      });
-      const totalCount = data.length;
-      const count = Math.ceil(totalCount / pageSize);
+      },
+      { skip: skip || address === "0x" || isEnsFetching }
+    );
 
-      setPageCount(count);
-      movePrimaryNameToTop(data);
+  const { data: aggregated } = useTotalDomainsQuery(
+    {
+      id: address.toLowerCase(),
+      name,
+    },
+    { skip: skip || address === "0x" }
+  );
 
-      setIsFetched(true);
-    } catch (error) {
-      setIsFetching(false);
-      setIsFetched(false);
+  const domains = (data as NamesByAddressResponse)?.domains;
+  const totalDomains =
+    (aggregated as NamesByAddressResponse)?.totalDomains || 0;
 
-      console.log("error:: ", error);
-      setIsError(true);
-    }
-  };
+  useEffect(() => {}, [isFetching, isLoading, isSuccess, isError, domains]);
 
-  useEffect(() => {
-    if (address && address !== "0x" && !skip) {
-      setIsFetching(true);
-    }
-  }, [skip, address]);
-
-  useEffect(() => {
-    if (isFetched) {
-      getSubPages(rawNameList, pageCount);
-    }
-  }, [page, pageCount, rawNameList, isFetched]);
-
-  useEffect(() => {
-    if (address && address !== "0x" && !skip) {
-      getAllNames();
-    }
-  }, [
-    skip,
-    address,
-    filter?.searchString,
-    filter?.allowExpired,
-    orderBy,
-    orderDirection,
-    pageSize,
-    ensName,
-    // page,
-  ]);
+  const count = Math.ceil(totalDomains / pageSize);
 
   return {
     /**
@@ -162,25 +93,17 @@ export default function useAllNamesForAddress(props: NamesProps) {
      * e.g pagesize = 3
      * this will only contain 3 names
      */
-    names,
+    names: domains as unknown as DomainResponse[],
 
-    /**
-     * This will return all names divided by
-     * the page size.
-     *
-     * e.g
-     * total names = 30
-     * pagesize = 3
-     *
-     * returns array size of 10, and each item in the array
-     * will contain 3 names
-     */
-    pages,
-    totalNames: rawNameList.length,
-    pageCount,
+    /** Total count of names for the given address disregarding pagination */
+    totalNames: totalDomains,
 
-    isFetching,
-    isFetched: isComplete,
+    /** The total number of pages */
+    pageCount: count,
+
+    isLoading,
+    isFetching: isFetching && isEmpty(domains),
+    isFetched: isSuccess,
     isError,
   };
 }

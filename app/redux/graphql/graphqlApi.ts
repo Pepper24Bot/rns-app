@@ -1,7 +1,19 @@
-import { makeNameObject } from "@ensdomains/ensjs/subgraph"
+import { Name, makeNameObject } from "@ensdomains/ensjs/subgraph"
 import { NamesByAddressQuery, NamesByAddressQueryVariables, api } from "./hooks"
-import { argsToArgsConfig } from "graphql/type/definition"
 import { isEmpty } from "lodash"
+
+export interface NamesByAddressResponse extends NamesByAddressQuery {
+    totalDomains: number
+}
+
+export interface DomainResponse extends Omit<Name, "createdAt" | "expiryDate" | "registrationDate"> {
+    labelLength?: number,
+    cost?: string,
+    records?: { text?: string[], coinTypes: string[] }
+    createdAt?: string,
+    expiryDate?: string
+    registrationDate?: string
+}
 
 /**
  * Use ensjs getNamesForAddress and getWrappedDate
@@ -12,23 +24,14 @@ import { isEmpty } from "lodash"
 export const graphqlApi = api.enhanceEndpoints({
     addTagTypes: ["Name", "Primary"],
     endpoints: {
-        GetNamesById: {
-            providesTags: ["Name"]
-        },
-        GetNamesByName: {
-            providesTags: ["Name"]
-        },
-        GetNamesByUserAndLabel: {
-            providesTags: ["Name"]
-        },
-        GetNamesByIdAndName: {
-            providesTags: ["Name"]
-        },
-        GetPrimaryNameResolver: {
-            providesTags: ["Name"]
+        TotalDomains: {
+            transformResponse: (response: NamesByAddressResponse, meta, arg) => {
+                return { ...response, totalDomains: response.domains?.length }
+            },
+            providesTags: ["Name"],
         },
         NamesByAddress: {
-            transformResponse: (response: NamesByAddressQuery, meta, arg) => {
+            transformResponse: (response: NamesByAddressResponse, meta, arg) => {
                 const { ensName } = arg as NamesByAddressQueryVariables
 
                 const domains = response.domains
@@ -60,7 +63,7 @@ export const graphqlApi = api.enhanceEndpoints({
                     response.domains = shifted as any
                 }
 
-                return response
+                return { ...response }
             },
             providesTags: ["Name"],
         }
@@ -68,10 +71,6 @@ export const graphqlApi = api.enhanceEndpoints({
 })
 
 export const {
-    useGetNamesByIdQuery,
-    useGetNamesByNameQuery,
-    useGetNamesByUserAndLabelQuery,
-    useGetPrimaryNameResolverQuery,
-    useGetNamesByIdAndNameQuery,
-    useNamesByAddressQuery
+    useNamesByAddressQuery,
+    useTotalDomainsQuery
 } = graphqlApi

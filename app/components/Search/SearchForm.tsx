@@ -33,7 +33,7 @@ import {
 
 import Image from "next/image";
 import useWrappedData from "@/hooks/useWrappedData";
-import useNamesForAddress from "@/hooks/useNamesForAddress";
+import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
 
 const NextImage = styled(Image)(({ theme }) => ({
   marginRight: "8px",
@@ -59,12 +59,11 @@ export const SearchForm: React.FC = () => {
     skip: !searchValue,
   });
 
-  const { names } = useNamesForAddress({
+  const { names } = useAllNamesForAddress({
     skip: !searchValue || !wrappedName?.owner,
-    address: wrappedName?.owner ?? "0x",
     filter: {
-      searchString: `${searchValue}.root`,
-      searchType: "name",
+      name: `${searchValue}.root`,
+      address: wrappedName?.owner ?? "0x",
     },
   });
 
@@ -72,9 +71,10 @@ export const SearchForm: React.FC = () => {
   const searchFieldRef = React.useRef(null);
 
   const getNameStatus = () => {
-    const item = names[0];
+    const item = names && names[0];
     const isAvailable = isEmpty(wrappedName);
-    const isNotAvailable = !isEmpty(names) && item.wrappedOwner !== address;
+    const isNotAvailable =
+      !isEmpty(item) && item && item.wrappedOwner !== address;
 
     return isNameInvalid
       ? "Invalid"
@@ -160,7 +160,7 @@ export const SearchForm: React.FC = () => {
                   status={getNameStatus()}
                   isNameInvalid={isNameInvalid}
                   isNameNotSupported={isNameNotSupported}
-                  data={names[0]}
+                  data={names && names[0]}
                 />
               </FlexCenter>
             </ClickAwayListener>

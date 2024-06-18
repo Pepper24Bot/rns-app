@@ -6,8 +6,8 @@ import { isEmpty } from "lodash";
 
 import useValidateName from "@/hooks/useValidateName";
 import useWrappedData from "@/hooks/useWrappedData";
-import useNamesForAddress from "@/hooks/useNamesForAddress";
 import SkeletonNames from "@/components/Dashboard/Tab/Names/SkeletonNames";
+import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
@@ -24,12 +24,11 @@ export default function Page({ params }: { params: { name: string } }) {
     skip: !normalizedLabel,
   });
 
-  const { names, isSuccess: isNameSuccess } = useNamesForAddress({
+  const { names, isFetched: isNameSuccess } = useAllNamesForAddress({
     skip: !normalizedLabel || !wrappedName?.owner,
-    address: wrappedName?.owner ?? "0x",
     filter: {
-      searchString: `${normalizedLabel}.root`,
-      searchType: "name",
+      name: `${normalizedLabel}.root`,
+      address: wrappedName?.owner ?? "0x",
     },
   });
 
