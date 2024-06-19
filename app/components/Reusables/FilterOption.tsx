@@ -16,11 +16,13 @@ import { SORTING_OPTIONS } from "@/constants/components";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { ArrowDropDown } from "@mui/icons-material";
 import { isEmpty } from "lodash";
-import { parseCookie } from "@/utils/common";
-import { View, SortBy, SortOrder } from "@/interfaces/components/types";
+import { getOrderBy, getOrderDirection, parseCookie } from "@/utils/common";
+import { View, SortBy, SortOrder } from "@/interfaces/global/types";
+import { Option } from "@/interfaces/global/components";
 
 import MenuPopper from "./MenuPopper";
-import DropDownMenu, { Option } from "./DropDownMenu";
+import DropDownMenu from "./DropDownMenu";
+import { OrderDirection } from "@/redux/graphql/hooks";
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
   margin: "25px 0",
@@ -67,8 +69,8 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
     "Active",
   ]) as View[];
 
-  const orderBy = parseCookie("orderBy") || "createdAt";
-  const orderDirection = parseCookie("orderDirection") || "desc";
+  const orderBy = getOrderBy();
+  const orderDirection = getOrderDirection();
 
   const { updateFilterOptions, useFilters } = useDashboardState();
   const options = useFilters();

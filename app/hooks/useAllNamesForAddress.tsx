@@ -12,6 +12,7 @@ import {
   useTotalDomainsQuery,
 } from "@/redux/graphql/hooks";
 import { isEmpty } from "lodash";
+import { OrderBy } from "@/constants/components";
 
 export interface NamesProps {
   skip?: boolean;
@@ -28,7 +29,7 @@ export interface NamesProps {
     name?: string;
   };
   sorting?: {
-    orderBy?: Domain_OrderBy;
+    orderBy?: OrderBy;
     orderDirection?: OrderDirection;
   };
 }
@@ -39,8 +40,8 @@ export default function useAllNamesForAddress(props: NamesProps) {
     filter = { name: "", address: "0x" },
     pagination = { page: 1, pageSize: 1000 },
     sorting = {
-      orderBy: Domain_OrderBy["RegistrationRegistrationDate"],
-      orderDirection: OrderDirection["Desc"],
+      orderBy: Domain_OrderBy.RegistrationRegistrationDate,
+      orderDirection: OrderDirection.Desc,
     },
   } = props;
 
@@ -63,7 +64,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
         ensName,
         pageSize,
         skip: (page - 1) * pageSize,
-        orderBy,
+        orderBy: orderBy as Domain_OrderBy,
         orderDirection,
       },
       { skip: skip || address === "0x" || isEnsFetching }

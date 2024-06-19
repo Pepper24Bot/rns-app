@@ -1,6 +1,6 @@
 import React from "react";
 import { EMPTY_ADDRESS } from "@/constants/components";
-import { LinkProps } from "@/interfaces/components/transaction";
+import { LinkProps } from "@/interfaces/global/transaction";
 
 import AddRecord from "./AddRecord";
 import AddressRecord from "./AddressRecord";

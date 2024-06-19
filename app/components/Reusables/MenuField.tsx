@@ -7,7 +7,8 @@ import {
 } from "../Theme/StyledGlobal";
 import { styled, alpha, Menu as MuiMenu, Grid } from "@mui/material";
 import { ArrowDropDown } from "@mui/icons-material";
-import DropDownMenu, { Option } from "./DropDownMenu";
+import { Option } from "@/interfaces/global/components";
+import DropDownMenu from "./DropDownMenu";
 
 export interface Menu {
   options: Option[];

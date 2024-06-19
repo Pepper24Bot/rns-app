@@ -22,7 +22,7 @@ import { PAYMENT_METHOD } from "@/constants/components";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { useAccount, useBalance, useEnsName } from "wagmi";
 import { formatEther } from "ethers/lib/utils";
-import { NameStatus } from "@/interfaces/components/types";
+import { NameStatus } from "@/interfaces/global/types";
 import { isEmpty } from "lodash";
 import { Address } from "viem";
 

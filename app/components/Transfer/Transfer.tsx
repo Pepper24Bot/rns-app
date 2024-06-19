@@ -20,7 +20,7 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address, isAddress } from "viem";
-import { TransactionProps } from "@/interfaces/components/transaction";
+import { TransactionProps } from "@/interfaces/global/transaction";
 import { useEnsName } from "wagmi";
 import { getMaskedAddress, isRootName } from "@/utils/common";
 import { config } from "@/chains/config";

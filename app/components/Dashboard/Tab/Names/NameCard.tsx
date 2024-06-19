@@ -50,7 +50,8 @@ import { FeatureList } from "@/hooks/useFeatureToggle";
 import { useEnsName } from "wagmi";
 import { namehash, Address } from "viem";
 import { useGetNftImageQuery } from "@/redux/metadata/metadataApi";
-import { CardProps } from "@/interfaces/components/transaction";
+import { CardProps } from "@/interfaces/global/transaction";
+import { Option } from "@/interfaces/global/components";
 import { useSnackbar } from "notistack";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { useShareState } from "@/redux/share/shareSlice";
@@ -58,7 +59,7 @@ import { WARNING_ASCII } from "@/constants/content";
 import { useRouter } from "next/navigation";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
-import DropDownMenu, { Option } from "@/components/Reusables/DropDownMenu";
+import DropDownMenu from "@/components/Reusables/DropDownMenu";
 import useNetworkConfig from "@/hooks/useNetworkConfig";
 import useContractDetails from "@/hooks/useContractDetails";
 import TooltipContent from "@/components/Reusables/TooltipContent";

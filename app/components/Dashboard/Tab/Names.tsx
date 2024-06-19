@@ -3,7 +3,7 @@ import { Box, Grid, styled } from "@mui/material";
 import { NameCard } from "./Names/NameCard";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
-import { DEFAULT_DEBOUNCE } from "@/constants/components";
+import { DEFAULT_DEBOUNCE, OrderBy } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
 import {
   getIsAllowedExpired,
@@ -15,6 +15,7 @@ import {
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
+import { OrderDirection } from "@/redux/graphql/hooks";
 
 import SkeletonNames from "./Names/SkeletonNames";
 import Pagination from "@/components/Reusables/Pagination";
@@ -57,8 +58,16 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   // This is used so the tooltips in each name card will not go beyond the screensize
   const boundingElement = useRef<HTMLDivElement | null>(null);
 
-  const orderBy = getOrderBy(options?.orderBy);
-  const orderDirection = getOrderDirection(options?.orderDirection);
+  const orderBy = getOrderBy(
+    OrderBy[options?.orderBy as unknown as keyof typeof OrderBy]
+  );
+
+  const orderDirection = getOrderDirection(
+    OrderDirection[
+      options?.orderDirection as unknown as keyof typeof OrderDirection
+    ]
+  );
+
   const allowExpired = getIsAllowedExpired(options?.allowExpired);
 
   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
@@ -75,10 +84,10 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
         address: address || "0x",
         name: options?.name?.toLowerCase(),
       },
-      // sorting: {
-      //   orderBy,
-      //   orderDirection,
-      // },
+      sorting: {
+        orderBy,
+        orderDirection,
+      },
     });
 
   const isLoadingState = isFetching || !hasMounted || !names; // names is undefined initially

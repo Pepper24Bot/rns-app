@@ -11,7 +11,7 @@ import {
 import { Address, isAddress } from "viem";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { isEmpty } from "lodash";
-import { LinkProps } from "@/interfaces/components/transaction";
+import { LinkProps } from "@/interfaces/global/transaction";
 import { useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";

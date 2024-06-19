@@ -2,7 +2,8 @@ import { ModalState } from "@/redux/modal/modalSlice";
 import { formatDistanceStrict } from "date-fns";
 import { isEmpty } from "lodash";
 import { Response } from "@/services/interfaces";
-import { OrderBy, OrderDirection } from "@/interfaces/components/types";
+import { OrderDirection } from "@/redux/graphql/hooks";
+import { OrderBy } from "@/constants/components";
 import emojiRegex from "emoji-regex";
 
 export type CharacterSet = 'alphanumeric' | 'digit' | 'emoji' | 'letter' | 'mixed';
@@ -373,16 +374,12 @@ export const getExpiry = (expiry: string = "") => {
  * @returns 
  */
 export const isRegisteredDuringQuest = (date: string = "") => {
-    if (date) {
-        const createdDate = new Date(parseInt(date) * 1000)
-        const start = new Date("2024-05-28T08:00:00.000+10:00");
-        const end = new Date("2024-06-25T08:00:00.000+10:00");
-        const isShareable = isDateWithinRange(createdDate, start, end);
+    const createdDate = date ? new Date(parseInt(date) * 1000) : new Date()
+    const start = new Date("2024-05-28T08:00:00.000+10:00");
+    const end = new Date("2024-06-25T08:00:00.000+10:00");
+    const isShareable = isDateWithinRange(createdDate, start, end);
 
-        return isShareable
-    }
-
-    return false
+    return isShareable
 }
 
 /**
@@ -396,12 +393,12 @@ export const getIsAllowedExpired = (allowExpired: boolean = false) => {
     return filterViews.includes("Expired") || allowExpired;
 }
 
-export const getOrderBy = (orderBy: OrderBy = "createdAt") => {
+export const getOrderBy = (orderBy: OrderBy = OrderBy.RegistrationRegistrationDate) => {
     // prioritize the cookies value than the state
-    return (parseCookie("orderBy") || orderBy) as any;
+    return (parseCookie("orderBy") || orderBy) as OrderBy;
 }
 
-export const getOrderDirection = (orderDirection: OrderDirection = "desc") => {
+export const getOrderDirection = (orderDirection: OrderDirection = OrderDirection.Desc) => {
     // prioritize the cookies value than the state
     return (parseCookie("orderDirection") || orderDirection) as OrderDirection;
 }

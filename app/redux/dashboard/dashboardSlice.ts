@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
-import { OrderBy, OrderDirection, SortBy, SortOrder, View } from "@/interfaces/components/types"
+import { SortBy, SortOrder, View } from "@/interfaces/global/types"
+import { OrderDirection } from "../graphql/hooks"
+import { OrderBy } from "@/constants/components"
 
 export interface Options {
     /** Search By Name */
@@ -27,7 +29,6 @@ export interface Options {
     orderBy?: OrderBy
     orderDirection?: OrderDirection;
     allowExpired?: boolean
-
 }
 
 export interface DashboardState {
@@ -49,8 +50,8 @@ const initialState: DashboardState = {
         name: "",
         page: 1,
         allowExpired: false,
-        orderBy: "createdAt",
-        orderDirection: "desc",
+        orderBy: OrderBy.RegistrationRegistrationDate,
+        orderDirection: OrderDirection.Desc,
         filter: {
             views: ["Active"],
         },

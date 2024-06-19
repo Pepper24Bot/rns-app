@@ -1,4 +1,5 @@
-import { Option } from "@/components/Reusables/DropDownMenu";
+import { SortingOption } from "@/interfaces/global/components";
+import { OrderDirection } from "@/redux/graphql/hooks";
 
 export const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -10,66 +11,98 @@ export const PAYMENT_METHOD = [
     { label: "USDC", decimals: 6, address: "0xCCcCCcCC00000C64000000000000000000000000" }
 ]
 
-export const SORTING_OPTIONS = [
+/** Aligns with Domain_OrderBy Graphql */
+export enum OrderBy {
+    CreatedAt = 'createdAt',
+    ExpiryDate = 'expiryDate',
+    Id = 'id',
+    IsMigrated = 'isMigrated',
+    LabelName = 'labelName',
+    Labelhash = 'labelhash',
+    LabelNameLength = 'labelName_length',
+    Name = 'name',
+    Owner = 'owner',
+    OwnerId = 'owner__id',
+    RegistrantId = 'registrant__id',
+    RegistrationCost = 'registration__cost',
+    RegistrationExpiryDate = 'registration__expiryDate',
+    RegistrationId = 'registration__id',
+    RegistrationLabelName = 'registration__labelName',
+    RegistrationRegistrationDate = 'registration__registrationDate',
+    ResolvedAddress = 'resolvedAddress',
+    ResolvedAddressId = 'resolvedAddress__id',
+    ResolverAddress = 'resolver__address',
+    ResolverContentHash = 'resolver__contentHash',
+    ResolverId = 'resolver__id',
+    SubdomainCount = 'subdomainCount',
+    WrappedDomainExpiryDate = 'wrappedDomain__expiryDate',
+    WrappedDomainFuses = 'wrappedDomain__fuses',
+    WrappedDomainId = 'wrappedDomain__id',
+    WrappedDomainName = 'wrappedDomain__name',
+    WrappedOwner = 'wrappedOwner',
+    WrappedOwnerId = 'wrappedOwner__id',
+}
+
+export const SORTING_OPTIONS: SortingOption[] = [
     {
         label: "Name",
         type: "Ascending",
-        orderBy: "name",
-        orderDirection: "asc"
+        orderBy: OrderBy.Name,
+        orderDirection: OrderDirection.Asc
     },
     {
         label: "Name",
         type: "Descending",
-        orderBy: "name",
-        orderDirection: "desc"
+        orderBy: OrderBy.Name,
+        orderDirection: OrderDirection.Desc
     },
     {
         label: "Cost",
         type: "High",
-        orderBy: "cost",
-        orderDirection: "asc"
+        orderBy: OrderBy.RegistrationCost,
+        orderDirection: OrderDirection.Desc
     },
     {
         label: "Cost",
         type: "Low",
-        orderBy: "cost",
-        orderDirection: "desc"
+        orderBy: OrderBy.RegistrationCost,
+        orderDirection: OrderDirection.Asc
     },
     {
         label: "Expiry",
         type: "High",
-        orderBy: "expiryDate",
-        orderDirection: "desc"
+        orderBy: OrderBy.RegistrationExpiryDate,
+        orderDirection: OrderDirection.Desc
     },
     {
         label: "Expiry",
         type: "Low",
-        orderBy: "expiryDate",
-        orderDirection: "asc"
+        orderBy: OrderBy.RegistrationExpiryDate,
+        orderDirection: OrderDirection.Asc
     },
     {
         label: "Length",
         type: "High",
-        orderBy: "length",
-        orderDirection: "asc"
+        orderBy: OrderBy.LabelNameLength,
+        orderDirection: OrderDirection.Asc
     },
     {
         label: "Length",
         type: "Low",
-        orderBy: "length",
-        orderDirection: "desc"
+        orderBy: OrderBy.LabelNameLength,
+        orderDirection: OrderDirection.Desc
     },
     {
         label: "Created Date",
         type: "Ascending",
-        orderBy: "createdAt",
-        orderDirection: "asc"
+        orderBy: OrderBy.RegistrationRegistrationDate,
+        orderDirection: OrderDirection.Asc
     },
     {
         label: "Created Date",
         type: "Descending",
-        orderBy: "createdAt",
-        orderDirection: "desc"
+        orderBy: OrderBy.RegistrationRegistrationDate,
+        orderDirection: OrderDirection.Desc
     },
 ]
 

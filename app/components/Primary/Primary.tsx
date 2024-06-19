@@ -15,11 +15,10 @@ import { useModalState } from "@/redux/modal/modalSlice";
 import { namehash } from "viem";
 import { isEmpty } from "lodash";
 import { useEnsName } from "wagmi";
-import { PrimaryProps } from "@/interfaces/components/transaction";
+import { PrimaryProps } from "@/interfaces/global/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { graphqlApi } from "@/redux/graphql/graphqlApi";
 
 import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";

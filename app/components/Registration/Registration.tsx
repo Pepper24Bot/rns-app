@@ -346,8 +346,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   }, [xrpBalance?.value]);
 
   useEffect(() => {
-    const createdDate = new Date();
-    const isShareable = isRegisteredDuringQuest(createdDate);
+    const isShareable = isRegisteredDuringQuest();
     setShareEnabled(isShareable);
   }, [isRegistered, isTweetVerified]);
 

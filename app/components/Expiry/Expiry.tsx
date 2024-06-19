@@ -20,7 +20,7 @@ import { red } from "@mui/material/colors";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
-import { ExpiryProps } from "@/interfaces/components/transaction";
+import { ExpiryProps } from "@/interfaces/global/transaction";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";

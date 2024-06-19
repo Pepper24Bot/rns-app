@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
 import { Address } from "viem"
 import { PAYMENT_METHOD } from "@/constants/components"
-import { PaymentMethod } from "@/interfaces/components/types"
+import { PaymentMethod } from "@/interfaces/global/types"
 
 export interface Payment {
     label: PaymentMethod,

@@ -12,7 +12,7 @@ import { getMaskedAddress } from "@/utils/common";
 import { Address, isAddress } from "viem";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { useEnsName } from "wagmi";
-import { LinkProps } from "@/interfaces/components/transaction";
+import { LinkProps } from "@/interfaces/global/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 

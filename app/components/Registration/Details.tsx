@@ -23,7 +23,7 @@ import { useEnsName } from "wagmi";
 import { WARNING_ASCII } from "@/constants/content";
 import { FONT_WEIGHT } from "../Theme/Global";
 import { Address } from "viem";
-import { DetailsProps } from "@/interfaces/components/transaction";
+import { DetailsProps } from "@/interfaces/global/transaction";
 
 import Image from "next/image";
 import EnsImage from "../Reusables/EnsImage";

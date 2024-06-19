@@ -8,44 +8,11 @@ import {
   MenuItem,
 } from "@mui/material";
 import { BaseIconButton, SecondaryLabel } from "../Theme/StyledGlobal";
-import { OrderBy, OrderDirection } from "@/interfaces/components/types";
-
-export interface Option {
-  label: string;
-  icon?: React.ReactNode;
-  type?: string;
-  orderBy?: OrderBy;
-  orderDirection?: OrderDirection;
-
-  /** If this is provided, use this as the modal title instead of the label */
-  title?: string;
-  disabled?: boolean;
-}
-
-export type DropdownType = "Menu" | "Options";
-
-export interface DropdownProps {
-  arrow?: boolean;
-  type?: DropdownType;
-  isSelected?: boolean;
-}
-
-export interface DropDown {
-  selectedOption?: Option;
-  options: Option[];
-  arrow?: boolean;
-  type?: DropdownType;
-  hasButton?: boolean;
-  /** if hasButton is true, this should be provided */
-  iconButton?: React.ReactNode;
-  handleSelect: (option: Option) => void | any;
-
-  /** if hasButton is true, these are no longer necessary */
-  isOpen?: boolean;
-  anchorRef?: React.RefObject<HTMLButtonElement>;
-  handleClose?: (event: Event | React.SyntheticEvent) => void;
-  handleOpen?: () => void;
-}
+import {
+  DropdownProps,
+  DropDown,
+  Option,
+} from "@/interfaces/global/components";
 
 const Menu = styled(MuiMenu, {
   shouldForwardProp: (prop) => prop !== "props",
@@ -117,7 +84,7 @@ export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {
     options,
     iconButton,
     hasButton = false,
-    selectedOption = { label: "" },
+    selectedOption = { label: "", type: "Descending" },
     anchorRef = btnAnchorRef,
     isOpen = isMenuOpen,
     type = "Options",

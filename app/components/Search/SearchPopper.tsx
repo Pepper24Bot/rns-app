@@ -15,7 +15,7 @@ import {
 import { useModalState } from "@/redux/modal/modalSlice";
 import { parseCookie } from "@/utils/common";
 import { useRouter } from "next/navigation";
-import { NameStatus } from "@/interfaces/components/types";
+import { NameStatus } from "@/interfaces/global/types";
 import {
   Popper,
   PopperContainer,
