@@ -1,8 +1,10 @@
+import { useModalState } from "@/redux/modal/modalSlice";
 import { isNameSupported } from "@/utils/common";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { normalize } from "viem/ens";
+import useErrorMessage from "./useErrorMessage";
 
 export interface NameProps {
   name?: string;
@@ -14,6 +16,8 @@ export default function useValidateName(props: NameProps) {
 
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { closeModal } = useModalState();
+  const { getErrorDisplay } = useErrorMessage();
 
   const [hasMounted, setHasMounted] = useState<boolean>(false);
   const [normalizedLabel, setNormalizedLabel] = useState<string>("");
@@ -27,10 +31,10 @@ export default function useValidateName(props: NameProps) {
         setNormalizedLabel(normalized);
       } catch (error) {
         router.replace("/", { scroll: false });
-        enqueueSnackbar(
-          `Unable to normalize ${label}.root. Redirecting to main page.`,
-          { variant: "info" }
-        );
+        const reason = `Unable to normalize ${label}.root. Redirecting to main page.`;
+        const value = (error as any).message || "";
+        enqueueSnackbar(getErrorDisplay(reason, value), { variant: "info" });
+        closeModal();
       }
     } else {
       router.replace("/", { scroll: false });
@@ -40,6 +44,7 @@ export default function useValidateName(props: NameProps) {
           variant: "info",
         }
       );
+      closeModal();
     }
   };
 
