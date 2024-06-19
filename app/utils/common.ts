@@ -4,6 +4,7 @@ import { isEmpty } from "lodash";
 import { Response } from "@/services/interfaces";
 import { OrderDirection } from "@/redux/graphql/hooks";
 import { OrderBy } from "@/constants/components";
+import { DomainResponse } from "@/redux/graphql/graphqlApi";
 import emojiRegex from "emoji-regex";
 
 export type CharacterSet = 'alphanumeric' | 'digit' | 'emoji' | 'letter' | 'mixed';
@@ -402,3 +403,22 @@ export const getOrderDirection = (orderDirection: OrderDirection = OrderDirectio
     // prioritize the cookies value than the state
     return (parseCookie("orderDirection") || orderDirection) as OrderDirection;
 }
+
+export const getSubPages = (
+    props: {
+        data: DomainResponse[],
+
+        /** Total number of pages */
+        pageCount: number,
+
+        /** Number of items per page */
+        pageSize: number,
+    }
+) => {
+    const { data, pageCount, pageSize } = props
+    const subPages = Array.from({ length: pageCount }).map((_, index) => {
+        return data.slice(index * pageSize, index * pageSize + pageSize);
+    });
+
+    return subPages
+};

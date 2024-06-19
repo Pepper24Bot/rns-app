@@ -6,7 +6,6 @@ import { isEmpty } from "lodash";
 
 import useValidateName from "@/hooks/useValidateName";
 import useWrappedData from "@/hooks/useWrappedData";
-import SkeletonNames from "@/components/Dashboard/Tab/Names/SkeletonNames";
 import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
 
 export default function Page({ params }: { params: { name: string } }) {
@@ -65,5 +64,5 @@ export default function Page({ params }: { params: { name: string } }) {
     }
   }, [normalizedLabel, isSuccess, isNameSuccess]);
 
-  return <SkeletonNames />;
+  return <></>;
 }

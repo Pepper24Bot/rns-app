@@ -1,12 +1,15 @@
 query NamesByAddress(
-  $ensName: String = ""
   $expiryDate: BigInt = "0"
-  $pageSize: Int = 1000
+  $first: Int = 1000
   $skip: Int = 0
   $name: String = ""
   $id: ID = ""
   $orderDirection: OrderDirection = desc
   $orderBy: Domain_orderBy = registration__registrationDate
+  $ensName: String = ""
+  $pageSize: Int = 1000
+  $pageCount: Int = 1
+  $currentPage: Int = 1
 ) {
   domains(
     where: {
@@ -14,7 +17,7 @@ query NamesByAddress(
       name_contains: $name
       expiryDate_gt: $expiryDate
     }
-    first: $pageSize
+    first: $first
     skip: $skip
     orderBy: $orderBy
     orderDirection: $orderDirection

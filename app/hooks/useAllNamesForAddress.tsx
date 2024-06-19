@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useEnsName } from "wagmi";
 import {
   DomainResponse,
@@ -6,17 +6,15 @@ import {
   useNamesByAddressQuery,
 } from "@/redux/graphql/graphqlApi";
 import { Address } from "viem";
-import {
-  Domain_OrderBy,
-  OrderDirection,
-  useTotalDomainsQuery,
-} from "@/redux/graphql/hooks";
+import { Domain_OrderBy, OrderDirection } from "@/redux/graphql/hooks";
 import { isEmpty } from "lodash";
 import { OrderBy } from "@/constants/components";
+import { getSubPages } from "@/utils/common";
+import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 
 export interface NamesProps {
   skip?: boolean;
-  isTesting?: boolean;
+  dashboard?: boolean;
   pagination?: {
     /** Currently displayed page */
     page?: number;
@@ -36,6 +34,7 @@ export interface NamesProps {
 
 export default function useAllNamesForAddress(props: NamesProps) {
   const {
+    dashboard = false,
     skip = false,
     filter = { name: "", address: "0x" },
     pagination = { page: 1, pageSize: 1000 },
@@ -48,6 +47,12 @@ export default function useAllNamesForAddress(props: NamesProps) {
   const { name, address } = filter;
   const { page = 1, pageSize = 1000 } = pagination;
   const { orderBy, orderDirection } = sorting;
+
+  const [displayedPage, setDisplayedPage] = useState<
+    DomainResponse[] | undefined
+  >(undefined);
+
+  const { updateDisplayedNames } = useDashboardState();
 
   const { data: ensName, isFetching: isEnsFetching } = useEnsName({
     address,
@@ -62,29 +67,44 @@ export default function useAllNamesForAddress(props: NamesProps) {
         id: address.toLowerCase(),
         name,
         ensName,
-        pageSize,
-        skip: (page - 1) * pageSize,
         orderBy: orderBy as Domain_OrderBy,
         orderDirection,
       },
       { skip: skip || address === "0x" || isEnsFetching }
     );
 
-  const { data: aggregated } = useTotalDomainsQuery(
-    {
-      id: address.toLowerCase(),
-      name,
-    },
-    { skip: skip || address === "0x" }
-  );
+  const response = data as NamesByAddressResponse;
+  const domains = response?.domains as unknown as DomainResponse[];
+  const totalDomains = response?.totalDomains || 0;
+  const count = Math.ceil(totalDomains / pageSize) || 1;
 
-  const domains = (data as NamesByAddressResponse)?.domains;
-  const totalDomains =
-    (aggregated as NamesByAddressResponse)?.totalDomains || 0;
+  useEffect(() => {
+    if (domains) {
+      if (dashboard) {
+        const subPages = getSubPages({
+          data: domains as any[],
+          pageCount: count,
+          pageSize: pageSize,
+        });
 
-  useEffect(() => {}, [isFetching, isLoading, isSuccess, isError, domains]);
+        const displayedPage = subPages[page - 1] || undefined;
 
-  const count = Math.ceil(totalDomains / pageSize);
+        setDisplayedPage([...displayedPage]);
+        updateDisplayedNames([...displayedPage]);
+      }
+    }
+  }, [domains, page, count, pageSize, orderBy, orderDirection]);
+
+  // useEffect(() => {
+  //   console.log(`
+  //     isLoading:: ${isLoading}
+  //     isFetching:: ${isFetching}
+  //     isSuccess:: ${isSuccess}
+  //     isError:: ${isError}
+  //     domains:: ${domains?.length}
+  //     displayedPage:: ${displayedPage?.length}
+  //   `);
+  // }, [isFetching, isLoading, isSuccess, isError, domains, displayedPage]);
 
   return {
     /**
@@ -94,6 +114,8 @@ export default function useAllNamesForAddress(props: NamesProps) {
      * e.g pagesize = 3
      * this will only contain 3 names
      */
+    displayedNames: displayedPage,
+
     names: domains as unknown as DomainResponse[],
 
     /** Total count of names for the given address disregarding pagination */

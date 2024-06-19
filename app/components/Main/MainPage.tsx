@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, styled } from "@mui/material";
 import { useAccount } from "wagmi";
-import { isAccountLoading } from "@/utils/common";
 
 import SearchForm from "@/components/Search/SearchForm";
 import Dashboard from "@/components/Dashboard/Dashboard";

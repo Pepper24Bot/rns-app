@@ -4677,14 +4677,17 @@ export enum _SubgraphErrorPolicy_ {
 }
 
 export type NamesByAddressQueryVariables = Exact<{
-  ensName?: InputMaybe<Scalars['String']['input']>;
   expiryDate?: InputMaybe<Scalars['BigInt']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   orderDirection?: InputMaybe<OrderDirection>;
   orderBy?: InputMaybe<Domain_OrderBy>;
+  ensName?: InputMaybe<Scalars['String']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  pageCount?: InputMaybe<Scalars['Int']['input']>;
+  currentPage?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
@@ -4703,10 +4706,10 @@ export type TotalDomainsQuery = { __typename?: 'Query', domains: Array<{ __typen
 
 
 export const NamesByAddressDocument = `
-    query NamesByAddress($ensName: String = "", $expiryDate: BigInt = "0", $pageSize: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate) {
+    query NamesByAddress($expiryDate: BigInt = "0", $first: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate, $ensName: String = "", $pageSize: Int = 1000, $pageCount: Int = 1, $currentPage: Int = 1) {
   domains(
     where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gt: $expiryDate}
-    first: $pageSize
+    first: $first
     skip: $skip
     orderBy: $orderBy
     orderDirection: $orderDirection

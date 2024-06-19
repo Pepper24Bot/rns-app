@@ -3,7 +3,9 @@ import { NamesByAddressQuery, NamesByAddressQueryVariables, api } from "./hooks"
 import { isEmpty } from "lodash"
 
 export interface NamesByAddressResponse extends NamesByAddressQuery {
-    totalDomains: number
+    totalDomains: number,
+    subPages: DomainResponse[][]
+    displayedPage: DomainResponse[]
 }
 
 export interface DomainResponse extends Omit<Name, "createdAt" | "expiryDate" | "registrationDate"> {
@@ -59,11 +61,15 @@ export const graphqlApi = api.enhanceEndpoints({
                     });
 
                     shifted.unshift(primary[0]);
-
                     response.domains = shifted as any
                 }
 
-                return { ...response }
+                const totalDomains = response.domains?.length
+
+                return {
+                    ...response,
+                    totalDomains
+                }
             },
             providesTags: ["Name"],
         }

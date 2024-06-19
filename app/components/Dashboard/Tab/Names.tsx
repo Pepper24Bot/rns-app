@@ -44,13 +44,12 @@ interface NamesProps {
 export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const { hasMounted } = props;
 
-  const { useFilters, updateFilterOptions } = useDashboardState();
+  const { updateFilterOptions, useDashboard } = useDashboardState();
+  const { identities, options } = useDashboard();
   const { useRootNetwork } = useRootNetworkState();
   const {
     data: { address },
   } = useRootNetwork();
-
-  const options = useFilters();
 
   // initial values for pagination
   const pageSize = Number(parseCookie("itemsPerPage")) || 50;
@@ -70,29 +69,45 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   const allowExpired = getIsAllowedExpired(options?.allowExpired);
 
+  /** names stored in state */
+  const displayedNames = identities?.displayedNames;
+
   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
 
-  const { names, isFetching, isFetched, isError, totalNames, pageCount } =
-    useAllNamesForAddress({
-      // custom props
-      skip: !hasMounted,
-      pagination: {
-        page: options?.page,
-        pageSize: itemsPerPage,
-      },
-      filter: {
-        address: address || "0x",
-        name: options?.name?.toLowerCase(),
-      },
-      sorting: {
-        orderBy,
-        orderDirection,
-      },
-    });
+  const {
+    displayedNames: names,
+    isFetching,
+    isFetched,
+    isError,
+    totalNames,
+    pageCount,
+  } = useAllNamesForAddress({
+    dashboard: true,
+    skip: !hasMounted,
+    pagination: {
+      page: options?.page,
+      pageSize: itemsPerPage,
+    },
+    filter: {
+      address: address || "0x",
+      name: options?.name?.toLowerCase(),
+    },
+    sorting: {
+      orderBy,
+      orderDirection,
+    },
+  });
 
-  const isLoadingState = isFetching || !hasMounted || !names; // names is undefined initially
+  const isLoadingState =
+    isFetching || !hasMounted || (!names && !displayedNames); // names is undefined initially
+
   const hasNoNamesState =
-    (isEmpty(names) && isFetched && !isFetching) || isError;
+    (isEmpty(names) && isEmpty(displayedNames) && isFetched && !isFetching) ||
+    isError;
+
+  // TODO: Why does nextJS clears the api response
+  /** get the list from api response or from the state */
+  const nameList = names || displayedNames;
 
   const handleDebounceOnChange = (value: number) => {
     if (value > 0 && value <= 1000) {
@@ -124,11 +139,11 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
         </Container>
       )}
 
-      {!isEmpty(names) && (
+      {!isEmpty(nameList) && (
         <Container id="Names-Container" ref={boundingElement}>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
-              {names?.map((name) => {
+              {nameList?.map((name) => {
                 return (
                   <React.Fragment key={name.name}>
                     <NameCard
