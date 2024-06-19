@@ -15,6 +15,8 @@ import { useEnsName } from "wagmi";
 import { LinkProps } from "@/interfaces/global/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
+import { useDispatch } from "react-redux";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -52,6 +54,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   } = item;
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
@@ -129,6 +132,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `You have successfully ${
           isRemoveMode ? "removed" : "updated"

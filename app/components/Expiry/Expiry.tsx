@@ -21,6 +21,8 @@ import { FONT_WEIGHT } from "../Theme/Global";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { ExpiryProps } from "@/interfaces/global/transaction";
+import { useDispatch } from "react-redux";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -79,6 +81,7 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
   const { isFeatureEnabled } = useFeatureToggle();
 
   const router = useRouter();
+  const dispatch = useDispatch();
   const token = payment?.address || PAYMENT_METHOD[0].address;
 
   /**
@@ -197,6 +200,7 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
 
   useEffect(() => {
     if (isExtended) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `Congratulations! You have successfully extended the expiry of ${
           name ?? ""

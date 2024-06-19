@@ -208,6 +208,7 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isTransferred) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `You have successfully transferred ${name} to ${getMaskedAddress(
           newOwner

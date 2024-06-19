@@ -15,6 +15,8 @@ import { LinkProps } from "@/interfaces/global/transaction";
 import { useEnsName } from "wagmi";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -45,6 +47,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { name } = item;
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
@@ -109,6 +112,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `You have successfully added an address record to ${name ?? ""}.`,
         { variant: "success" }

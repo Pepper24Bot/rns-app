@@ -30,6 +30,8 @@ import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { isEmpty } from "lodash";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { graphqlApi } from "@/redux/graphql/graphqlApi";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -95,6 +97,8 @@ export const RegisterName: React.FC<RegistrationProps> = (
   });
 
   const router = useRouter();
+  const dispatch = useDispatch();
+
   const token = payment?.address || (PAYMENT_METHOD[0].address as Address);
   const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
@@ -330,6 +334,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
 
   useEffect(() => {
     if (isRegistered) {
+      dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         "Congratulations! You have successfully registered a new identity!",
         { variant: "success" }
