@@ -6,6 +6,12 @@ import { OrderDirection } from "../graphql/hooks"
 import { OrderBy } from "@/constants/components"
 import { DomainResponse } from "../graphql/graphqlApi"
 
+export interface Identities {
+    /** Currently displayed names - used in pagination */
+    displayedNames?: DomainResponse[],
+    totalDomains?: number
+}
+
 export interface Options {
     /** Search By Name */
     name?: string
@@ -36,10 +42,7 @@ export interface DashboardState {
     /** Filters and Sorting Options */
     options?: Options
 
-    identities?: {
-        /** Currently displayed names - used in pagination */
-        displayedNames?: DomainResponse[]
-    }
+    identities?: Identities
 
     // TODO: Implement this
     favorites?: {}
@@ -53,7 +56,8 @@ export interface DashboardState {
 
 const initialState: DashboardState = {
     identities: {
-        displayedNames: undefined
+        displayedNames: undefined,
+        totalDomains: 0
     },
     options: {
         name: "",
@@ -75,8 +79,8 @@ export const dashboardState = createSlice({
     name: "dashboard",
     initialState,
     reducers: {
-        updateDisplayedNames: (state, { payload }: { payload: DomainResponse[] }): DashboardState => {
-            state.identities = { ...state.identities, displayedNames: [...payload] }
+        updateIdentities: (state, { payload }: { payload: Identities }): DashboardState => {
+            state.identities = { ...state.identities, ...payload }
             return state
         },
         updateFilterOptions: (state, { payload }: { payload: Options }): DashboardState => {
@@ -95,8 +99,8 @@ export const useDashboardState = () => {
             dispatch(actions.updateFilterOptions({ ...props }))
         },
 
-        updateDisplayedNames: (props: DomainResponse[]) => {
-            dispatch(actions.updateDisplayedNames([...props]))
+        updateIdentities: (props: Identities) => {
+            dispatch(actions.updateIdentities({ ...props }))
         },
 
         useDashboard: () => {

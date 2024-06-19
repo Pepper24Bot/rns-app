@@ -7,9 +7,7 @@ query NamesByAddress(
   $orderDirection: OrderDirection = desc
   $orderBy: Domain_orderBy = registration__registrationDate
   $ensName: String = ""
-  $pageSize: Int = 1000
-  $pageCount: Int = 1
-  $currentPage: Int = 1
+  $sortByLength: Boolean = false
 ) {
   domains(
     where: {

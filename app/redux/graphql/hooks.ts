@@ -4685,9 +4685,7 @@ export type NamesByAddressQueryVariables = Exact<{
   orderDirection?: InputMaybe<OrderDirection>;
   orderBy?: InputMaybe<Domain_OrderBy>;
   ensName?: InputMaybe<Scalars['String']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
-  pageCount?: InputMaybe<Scalars['Int']['input']>;
-  currentPage?: InputMaybe<Scalars['Int']['input']>;
+  sortByLength?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
@@ -4706,7 +4704,7 @@ export type TotalDomainsQuery = { __typename?: 'Query', domains: Array<{ __typen
 
 
 export const NamesByAddressDocument = `
-    query NamesByAddress($expiryDate: BigInt = "0", $first: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate, $ensName: String = "", $pageSize: Int = 1000, $pageCount: Int = 1, $currentPage: Int = 1) {
+    query NamesByAddress($expiryDate: BigInt = "0", $first: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate, $ensName: String = "", $sortByLength: Boolean = false) {
   domains(
     where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gt: $expiryDate}
     first: $first

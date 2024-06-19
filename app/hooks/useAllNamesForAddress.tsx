@@ -52,7 +52,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
     DomainResponse[] | undefined
   >(undefined);
 
-  const { updateDisplayedNames } = useDashboardState();
+  const { updateIdentities } = useDashboardState();
 
   const { data: ensName, isFetching: isEnsFetching } = useEnsName({
     address,
@@ -67,8 +67,12 @@ export default function useAllNamesForAddress(props: NamesProps) {
         id: address.toLowerCase(),
         name,
         ensName,
-        orderBy: orderBy as Domain_OrderBy,
+        orderBy:
+          orderBy === OrderBy.LabelNameLength
+            ? Domain_OrderBy.RegistrationRegistrationDate
+            : (orderBy as Domain_OrderBy),
         orderDirection,
+        sortByLength: orderBy === OrderBy.LabelNameLength,
       },
       { skip: skip || address === "0x" || isEnsFetching }
     );
@@ -79,19 +83,20 @@ export default function useAllNamesForAddress(props: NamesProps) {
   const count = Math.ceil(totalDomains / pageSize) || 1;
 
   useEffect(() => {
-    if (domains) {
-      if (dashboard) {
-        const subPages = getSubPages({
-          data: domains as any[],
-          pageCount: count,
-          pageSize: pageSize,
-        });
+    if (domains && dashboard) {
+      const subPages = getSubPages({
+        data: domains as any[],
+        pageCount: count,
+        pageSize: pageSize,
+      });
 
-        const displayedPage = subPages[page - 1] || undefined;
+      const displayedPage = subPages[page - 1] || undefined;
 
-        setDisplayedPage([...displayedPage]);
-        updateDisplayedNames([...displayedPage]);
-      }
+      setDisplayedPage([...displayedPage]);
+      updateIdentities({
+        totalDomains,
+        displayedNames: [...displayedPage],
+      });
     }
   }, [domains, page, count, pageSize, orderBy, orderDirection]);
 

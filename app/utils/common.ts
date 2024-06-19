@@ -422,3 +422,8 @@ export const getSubPages = (
 
     return subPages
 };
+
+export const orderByLength = (data: DomainResponse[]) => {
+
+    return data
+}

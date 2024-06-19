@@ -69,9 +69,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   const allowExpired = getIsAllowedExpired(options?.allowExpired);
 
-  /** names stored in state */
-  const displayedNames = identities?.displayedNames;
-
   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
 
   const {
@@ -97,6 +94,10 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
       orderDirection,
     },
   });
+
+  /** names stored in state */
+  const displayedNames = identities?.displayedNames;
+  const totalCount = identities?.totalDomains || totalNames || 0;
 
   const isLoadingState =
     isFetching || !hasMounted || (!names && !displayedNames); // names is undefined initially
@@ -159,7 +160,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
           <FlexCenter pt={12}>
             <Pagination
               pageCount={pageCount}
-              totalItemsCount={totalNames ?? 0}
+              totalItemsCount={totalCount}
               itemsPerPage={itemsPerPage}
               page={options?.page || 1}
               setPage={(value) => {

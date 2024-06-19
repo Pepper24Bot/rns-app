@@ -1,6 +1,7 @@
 import { Name, makeNameObject } from "@ensdomains/ensjs/subgraph"
 import { NamesByAddressQuery, NamesByAddressQueryVariables, api } from "./hooks"
 import { isEmpty } from "lodash"
+import { orderByLength } from "@/utils/common"
 
 export interface NamesByAddressResponse extends NamesByAddressQuery {
     totalDomains: number,
@@ -34,7 +35,7 @@ export const graphqlApi = api.enhanceEndpoints({
         },
         NamesByAddress: {
             transformResponse: (response: NamesByAddressResponse, meta, arg) => {
-                const { ensName } = arg as NamesByAddressQueryVariables
+                const { ensName, sortByLength } = arg as NamesByAddressQueryVariables
 
                 const domains = response.domains
 
@@ -50,6 +51,10 @@ export const graphqlApi = api.enhanceEndpoints({
                     }
                 })
                 response.domains = newList as any
+
+                if (sortByLength) {
+                    response.domains = orderByLength(newList as DomainResponse[]) as any
+                }
 
                 const primary = newList?.filter((domain) => {
                     return domain.name === ensName
