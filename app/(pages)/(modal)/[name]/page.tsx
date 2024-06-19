@@ -10,7 +10,7 @@ import useNamesForAddress from "@/hooks/useNamesForAddress";
 import SkeletonNames from "@/components/Dashboard/Tab/Names/SkeletonNames";
 
 export default function Page({ params }: { params: { name: string } }) {
-  const name = decodeURI(params.name);
+  const name = decodeURIComponent(params.name);
   const label = name.split(".root")[0];
 
   const { toggleModal } = useModalState();

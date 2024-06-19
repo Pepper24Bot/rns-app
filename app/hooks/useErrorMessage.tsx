@@ -8,16 +8,16 @@ const Reason = styled(SecondaryLabel)(({ theme }) => ({
 
 const Details = styled(Reason)(({ theme }) => ({
   fontSize: "13px",
-  paddingTop: "16px",
+  paddingTop: "10px",
   color: darken(theme.palette.text.secondary, 0.35),
 }));
 
 export default function useErrorMessage() {
-  const getInvalidAddress = (error: ErrorResponse) => {
+  const getErrorDisplay = (reason: string, value: string = "") => {
     return (
       <Grid>
-        <Reason>{`Invalid Address!`}</Reason>
-        <Details>{`${error.value}`}</Details>
+        <Reason>{reason}</Reason>
+        {value && <Details>{`${value}`}</Details>}
       </Grid>
     );
   };
@@ -28,7 +28,7 @@ export default function useErrorMessage() {
    */
   const getErrorMessage = (error: ErrorResponse) => {
     if (error.message.includes("invalid address")) {
-      return getInvalidAddress(error);
+      return getErrorDisplay("Invalid Address", error.value);
     } else {
       return error.shortMessage || error.message;
     }
@@ -41,5 +41,5 @@ export default function useErrorMessage() {
     return reason || error;
   };
 
-  return { getErrorMessage, getProxyErrorMessage };
+  return { getErrorMessage, getProxyErrorMessage, getErrorDisplay };
 }
