@@ -423,7 +423,13 @@ export const getSubPages = (
     return subPages
 };
 
-export const orderByLength = (data: DomainResponse[]) => {
+export const orderByLength = (data: DomainResponse[], orderDirection: OrderDirection = OrderDirection.Desc) => {
+    return data?.sort((a, b) => {
+        const current = b?.name?.length || 0
+        const prev = a?.name?.length || 0
 
-    return data
+        return orderDirection === OrderDirection.Desc
+            ? prev - current
+            : current - prev
+    })
 }

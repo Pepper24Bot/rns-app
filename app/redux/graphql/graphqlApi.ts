@@ -1,5 +1,5 @@
 import { Name, makeNameObject } from "@ensdomains/ensjs/subgraph"
-import { NamesByAddressQuery, NamesByAddressQueryVariables, api } from "./hooks"
+import { NamesByAddressQuery, NamesByAddressQueryVariables, OrderDirection, api } from "./hooks"
 import { isEmpty } from "lodash"
 import { orderByLength } from "@/utils/common"
 
@@ -35,7 +35,7 @@ export const graphqlApi = api.enhanceEndpoints({
         },
         NamesByAddress: {
             transformResponse: (response: NamesByAddressResponse, meta, arg) => {
-                const { ensName, sortByLength } = arg as NamesByAddressQueryVariables
+                const { ensName, sortByLength, orderDirection } = arg as NamesByAddressQueryVariables
 
                 const domains = response.domains
 
@@ -52,13 +52,13 @@ export const graphqlApi = api.enhanceEndpoints({
                 })
                 response.domains = newList as any
 
-                if (sortByLength) {
-                    response.domains = orderByLength(newList as DomainResponse[]) as any
-                }
-
                 const primary = newList?.filter((domain) => {
                     return domain.name === ensName
                 })
+
+                if (sortByLength) {
+                    response.domains = orderByLength(newList as DomainResponse[], orderDirection || OrderDirection.Desc) as any
+                }
 
                 if (primary && !isEmpty(primary)) {
                     const shifted = newList?.filter((domain) => {
