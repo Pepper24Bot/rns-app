@@ -113,7 +113,7 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
       orderBy: sortOption.orderBy,
       orderDirection: sortOption.orderDirection,
       filter: {
-        views,
+        views: [...views],
       },
       sort: {
         by: sortOption.label as SortBy,
@@ -135,9 +135,7 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
             <FlexJustified>
               <Field>View</Field>
               <ToggleButtonGroup value={views} onChange={handleViewsSelect}>
-                <ToggleButton value="Active" disabled>
-                  Active
-                </ToggleButton>
+                <ToggleButton value="Active">Active</ToggleButton>
                 <ToggleButton value="Expired">Expired</ToggleButton>
               </ToggleButtonGroup>
             </FlexJustified>

@@ -5,6 +5,7 @@ import { Response } from "@/services/interfaces";
 import { OrderDirection } from "@/redux/graphql/hooks";
 import { OrderBy } from "@/constants/components";
 import { DomainResponse } from "@/redux/graphql/graphqlApi";
+import { View } from "@/interfaces/global/types";
 import emojiRegex from "emoji-regex";
 
 export type CharacterSet = 'alphanumeric' | 'digit' | 'emoji' | 'letter' | 'mixed';
@@ -381,6 +382,32 @@ export const isRegisteredDuringQuest = (date: string = "") => {
     const isShareable = isDateWithinRange(createdDate, start, end);
 
     return isShareable
+}
+
+export const getFilterExpiry = (views?: View[]) => {
+    const filterViews = parseCookie("filterByViews") === ""
+        ? "Active,Expired"
+        : views?.toString() || parseCookie("filterByViews")
+
+    const filters = filterViews?.split(",") as View[]
+
+    const dateToday = Math.floor(Date.now() / 1000).toString()
+
+    const options = {
+        expiryDate_gte: "0",
+        expiryDate_lt: Number.MAX_SAFE_INTEGER.toString()
+    }
+
+    // If views contains both active and expired, return initial options
+    if (filters.length === 1) {
+        if (filters[0] === "Active") {
+            options.expiryDate_gte = dateToday
+        } else if (filters[0] === "Expired") {
+            options.expiryDate_lt = dateToday
+        }
+    }
+
+    return options
 }
 
 /**

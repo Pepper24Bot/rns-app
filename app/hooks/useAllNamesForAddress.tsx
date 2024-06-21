@@ -11,6 +11,7 @@ import { isEmpty } from "lodash";
 import { OrderBy } from "@/constants/components";
 import { getSubPages } from "@/utils/common";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
+import { View } from "@/interfaces/global/types";
 
 export interface NamesProps {
   skip?: boolean;
@@ -25,6 +26,13 @@ export interface NamesProps {
   filter?: {
     address: Address;
     name?: string;
+    views?: View[];
+
+    /** get names that are expired */
+    expiryDate_lt?: string;
+
+    /** get names that are active */
+    expiryDate_gte?: string;
   };
   sorting?: {
     orderBy?: OrderBy;
@@ -36,7 +44,12 @@ export default function useAllNamesForAddress(props: NamesProps) {
   const {
     dashboard = false,
     skip = false,
-    filter = { name: "", address: "0x" },
+    filter = {
+      name: "",
+      address: "0x",
+      expiryDate_lt: BigInt(0),
+      expiryDate_gte: BigInt(0),
+    },
     pagination = { page: 1, pageSize: 1000 },
     sorting = {
       orderBy: Domain_OrderBy.RegistrationRegistrationDate,
@@ -44,7 +57,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
     },
   } = props;
 
-  const { name, address } = filter;
+  const { name, address, expiryDate_gte, expiryDate_lt } = filter;
   const { page = 1, pageSize = 1000 } = pagination;
   const { orderBy, orderDirection } = sorting;
 
@@ -61,15 +74,37 @@ export default function useAllNamesForAddress(props: NamesProps) {
     },
   });
 
+  /**
+   * if the date passed < the expiry date, then the name is active   *
+   * if the date passed > the expiry date, then the name is expired
+  
+   * #1. how to get the expired names today
+   * expiryDate_lt: "1718928000" // e.g today
+   * expiryDate_gte: "0" // bottom most date
+   *
+   * #2. how to get active names today
+   * expiryDate_gte: "1718928000" // e.g today
+   * expiryDate_lt: "9007199254740991" // Number.MAX_SAFE_INTEGER
+   *
+   * #3. how to get both active and expired
+   * expiryDate_gte: "0" // bottom most date
+   * expiryDate_lt: "9007199254740991" // Number.MAX_SAFE_INTEGER
+   *
+   * expiryDate_gte and expiryDate_lt should always be a combination
+   * avoid using OR in condition to avoid performance issue
+   * see: https://thegraph.com/docs/en/querying/graphql-api/
+   */
   const { data, isSuccess, isLoading, isFetching, isError } =
     useNamesByAddressQuery(
       {
         id: address.toLowerCase(),
-        name,
         ensName,
+        name,
+        expiryDate_gte,
+        expiryDate_lt,
         orderBy:
           orderBy === OrderBy.LabelNameLength
-            ? Domain_OrderBy.RegistrationRegistrationDate
+            ? Domain_OrderBy.RegistrationRegistrationDate // default
             : (orderBy as Domain_OrderBy),
         orderDirection,
         sortByLength: orderBy === OrderBy.LabelNameLength,

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Grid, styled } from "@mui/material";
 import { NameCard } from "./Names/NameCard";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
@@ -6,7 +6,7 @@ import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { DEFAULT_DEBOUNCE, OrderBy } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
 import {
-  getIsAllowedExpired,
+  getFilterExpiry,
   getOrderBy,
   getOrderDirection,
   parseCookie,
@@ -67,7 +67,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     ]
   );
 
-  const allowExpired = getIsAllowedExpired(options?.allowExpired);
+  const filterExpiry = getFilterExpiry(options?.filter?.views);
 
   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
 
@@ -88,6 +88,8 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     filter: {
       address: address || "0x",
       name: options?.name?.toLowerCase(),
+      expiryDate_gte: filterExpiry.expiryDate_gte,
+      expiryDate_lt: filterExpiry.expiryDate_lt,
     },
     sorting: {
       orderBy,
