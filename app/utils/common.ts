@@ -387,7 +387,7 @@ export const isRegisteredDuringQuest = (date: string = "") => {
 export const getFilterExpiry = (views?: View[]) => {
     const filterViews = parseCookie("filterByViews") === ""
         ? "Active,Expired"
-        : views?.toString() || parseCookie("filterByViews")
+        : parseCookie("filterByViews") || views?.toString()
 
     const filters = filterViews?.split(",") as View[]
 
