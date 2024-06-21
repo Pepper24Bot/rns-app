@@ -1,5 +1,6 @@
 query NamesByAddress(
-  $expiryDate: BigInt = "0"
+  $expiryDate_gte: BigInt = "0"
+  $expiryDate_lt: BigInt = "0"
   $first: Int = 1000
   $skip: Int = 0
   $name: String = ""
@@ -13,7 +14,8 @@ query NamesByAddress(
     where: {
       wrappedOwner_: { id: $id }
       name_contains: $name
-      expiryDate_gt: $expiryDate
+      expiryDate_gte: $expiryDate_gte
+      expiryDate_lt: $expiryDate_lt
     }
     first: $first
     skip: $skip

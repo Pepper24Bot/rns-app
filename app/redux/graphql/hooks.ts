@@ -4677,7 +4677,8 @@ export enum _SubgraphErrorPolicy_ {
 }
 
 export type NamesByAddressQueryVariables = Exact<{
-  expiryDate?: InputMaybe<Scalars['BigInt']['input']>;
+  expiryDate_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  expiryDate_lt?: InputMaybe<Scalars['BigInt']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -4704,9 +4705,9 @@ export type TotalDomainsQuery = { __typename?: 'Query', domains: Array<{ __typen
 
 
 export const NamesByAddressDocument = `
-    query NamesByAddress($expiryDate: BigInt = "0", $first: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate, $ensName: String = "", $sortByLength: Boolean = false) {
+    query NamesByAddress($expiryDate_gte: BigInt = "0", $expiryDate_lt: BigInt = "0", $first: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate, $ensName: String = "", $sortByLength: Boolean = false) {
   domains(
-    where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gt: $expiryDate}
+    where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gte: $expiryDate_gte, expiryDate_lt: $expiryDate_lt}
     first: $first
     skip: $skip
     orderBy: $orderBy
