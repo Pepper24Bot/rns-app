@@ -3,6 +3,11 @@
   --secondary-font: Roboto, Segoe UI emoji;
 }
 
+/* Hide Frequently Used list in EmojiPopper */
+[data-name="suggested"] {
+  display: none;
+}
+
 /* Modal PDF Reader starts here */
 .react-pdf__Page {
   min-width: 0 !important;

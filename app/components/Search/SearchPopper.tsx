@@ -231,4 +231,4 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   );
 };
 
-export default Popper;
+export default SearchPopper;

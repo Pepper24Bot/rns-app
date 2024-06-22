@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   InputAdornment,
   styled,
@@ -30,10 +30,12 @@ import {
   ConnectButton,
   Divider,
 } from "./StyledSearch";
+import { EmojiEmotions } from "@mui/icons-material";
 
 import Image from "next/image";
 import useWrappedData from "@/hooks/useWrappedData";
 import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
+import EmojiPopper from "./EmojiPopper";
 
 const NextImage = styled(Image)(({ theme }) => ({
   marginRight: "8px",
@@ -67,8 +69,10 @@ export const SearchForm: React.FC = () => {
     },
   });
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const searchFieldRef = React.useRef(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorEmoji, setAnchorEmoji] = useState<null | HTMLElement>(null);
+
+  const searchFieldRef = useRef(null);
 
   const getNameStatus = () => {
     const item = names && names[0];
@@ -88,7 +92,10 @@ export const SearchForm: React.FC = () => {
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    if (anchorEmoji === null) {
+      setAnchorEl(null);
+    }
+    setAnchorEmoji(null);
   };
 
   const handleDebounceOnChange = (value: string) => {
@@ -144,6 +151,13 @@ export const SearchForm: React.FC = () => {
                       <InputAdornment position="end">
                         <IconButton
                           onClick={() => {
+                            setAnchorEmoji(searchFieldRef.current);
+                          }}
+                        >
+                          <EmojiEmotions />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => {
                             setAnchorEl(searchFieldRef.current);
                           }}
                         >
@@ -151,6 +165,16 @@ export const SearchForm: React.FC = () => {
                         </IconButton>
                       </InputAdornment>
                     ),
+                  }}
+                />
+                <EmojiPopper
+                  anchorEl={anchorEmoji}
+                  value={inputValue}
+                  debounceFn={(value) => {
+                    debounceFn(value);
+                  }}
+                  setValue={(value) => {
+                    setInputValue(value);
                   }}
                 />
                 <SearchPopper
