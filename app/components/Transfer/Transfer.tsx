@@ -68,7 +68,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const router = useRouter();
 
   const { address, item } = props;
-  const { resolvedAddress: ensAddr, owner, name } = item;
+  const { resolvedAddress: ensAddr, wrappedOwner: owner, name } = item;
 
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
@@ -145,7 +145,7 @@ export const Transfer: React.FC<TransactionProps> = (
 
       if (!addressRecord) {
         setErrorFieldData("The RNS is not linked to any address!");
-      } else if (addressRecord.toLowerCase() === owner) {
+      } else if (addressRecord === owner) {
         setErrorFieldData("You are sending this identity to your own address!");
       } else {
         setNewOwner(addressRecord);

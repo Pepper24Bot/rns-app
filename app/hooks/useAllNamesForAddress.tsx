@@ -47,7 +47,6 @@ export default function useAllNamesForAddress(props: NamesProps) {
     filter = {
       name: "",
       address: "0x",
-      views: [],
     },
     pagination = { page: 1, pageSize: 1000 },
     sorting = {
@@ -64,8 +63,9 @@ export default function useAllNamesForAddress(props: NamesProps) {
     DomainResponse[] | undefined
   >(undefined);
 
-  const { updateIdentities } = useDashboardState();
-  const filterExpiry = getFilterExpiry(views);
+  const { updateIdentities, useFilters } = useDashboardState();
+  const options = useFilters();
+  const filterExpiry = getFilterExpiry(options?.filter?.views);
 
   const { data: ensName, isFetching: isEnsFetching } = useEnsName({
     address,

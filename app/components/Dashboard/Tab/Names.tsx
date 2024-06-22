@@ -67,8 +67,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     ]
   );
 
-  const filterExpiry = getFilterExpiry(options?.filter?.views);
-
   const [itemsPerPage, setItemsPerPage] = useState(pageSize);
 
   const {

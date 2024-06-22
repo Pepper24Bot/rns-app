@@ -50,7 +50,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const {
     resolvedAddress: ensAddr, // linked address record
     name,
-    owner,
+    wrappedOwner: owner,
   } = item;
 
   const router = useRouter();
