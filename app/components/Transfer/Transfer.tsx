@@ -149,6 +149,7 @@ export const Transfer: React.FC<TransactionProps> = (
         setErrorFieldData("You are sending this identity to your own address!");
       } else {
         setNewOwner(addressRecord);
+        setHelperText(`Linked to: ${getMaskedAddress(addressRecord || "")}`);
       }
     } else if (!isValidName && isValidAddress) {
       if (value.toLowerCase() === owner) {
