@@ -88,8 +88,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     filter: {
       address: address || "0x",
       name: options?.name?.toLowerCase(),
-      expiryDate_gte: filterExpiry.expiryDate_gte,
-      expiryDate_lt: filterExpiry.expiryDate_lt,
     },
     sorting: {
       orderBy,

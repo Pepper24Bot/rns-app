@@ -399,7 +399,7 @@ export const getFilterExpiry = (views?: View[]) => {
     }
 
     // If views contains both active and expired, return initial options
-    if (filters.length === 1) {
+    if (filters?.length === 1) {
         if (filters[0] === "Active") {
             options.expiryDate_gte = dateToday
         } else if (filters[0] === "Expired") {

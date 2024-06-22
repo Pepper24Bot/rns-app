@@ -9,7 +9,7 @@ import { Address } from "viem";
 import { Domain_OrderBy, OrderDirection } from "@/redux/graphql/hooks";
 import { isEmpty } from "lodash";
 import { OrderBy } from "@/constants/components";
-import { getSubPages } from "@/utils/common";
+import { getFilterExpiry, getSubPages } from "@/utils/common";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { View } from "@/interfaces/global/types";
 
@@ -47,8 +47,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
     filter = {
       name: "",
       address: "0x",
-      expiryDate_lt: "0",
-      expiryDate_gte: "0",
+      views: [],
     },
     pagination = { page: 1, pageSize: 1000 },
     sorting = {
@@ -57,13 +56,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
     },
   } = props;
 
-  const {
-    name,
-    address,
-    expiryDate_gte = "0",
-    expiryDate_lt = Number.MAX_SAFE_INTEGER.toString(),
-  } = filter;
-
+  const { name, address, views } = filter;
   const { page = 1, pageSize = 1000 } = pagination;
   const { orderBy, orderDirection } = sorting;
 
@@ -72,6 +65,7 @@ export default function useAllNamesForAddress(props: NamesProps) {
   >(undefined);
 
   const { updateIdentities } = useDashboardState();
+  const filterExpiry = getFilterExpiry(views);
 
   const { data: ensName, isFetching: isEnsFetching } = useEnsName({
     address,
@@ -106,8 +100,8 @@ export default function useAllNamesForAddress(props: NamesProps) {
         id: address.toLowerCase(),
         ensName,
         name,
-        expiryDate_gte,
-        expiryDate_lt,
+        expiryDate_gte: filterExpiry.expiryDate_gte,
+        expiryDate_lt: filterExpiry.expiryDate_lt,
         orderBy:
           orderBy === OrderBy.LabelNameLength
             ? Domain_OrderBy.RegistrationRegistrationDate // default
@@ -115,7 +109,9 @@ export default function useAllNamesForAddress(props: NamesProps) {
         orderDirection,
         sortByLength: orderBy === OrderBy.LabelNameLength,
       },
-      { skip: skip || address === "0x" || isEnsFetching }
+      {
+        skip: skip || address === "0x" || isEnsFetching,
+      }
     );
 
   const response = data as NamesByAddressResponse;
