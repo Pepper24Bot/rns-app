@@ -47,8 +47,8 @@ export default function useAllNamesForAddress(props: NamesProps) {
     filter = {
       name: "",
       address: "0x",
-      expiryDate_lt: BigInt(0),
-      expiryDate_gte: BigInt(0),
+      expiryDate_lt: "0",
+      expiryDate_gte: "0",
     },
     pagination = { page: 1, pageSize: 1000 },
     sorting = {
@@ -57,7 +57,13 @@ export default function useAllNamesForAddress(props: NamesProps) {
     },
   } = props;
 
-  const { name, address, expiryDate_gte, expiryDate_lt } = filter;
+  const {
+    name,
+    address,
+    expiryDate_gte = "0",
+    expiryDate_lt = Number.MAX_SAFE_INTEGER.toString(),
+  } = filter;
+
   const { page = 1, pageSize = 1000 } = pagination;
   const { orderBy, orderDirection } = sorting;
 

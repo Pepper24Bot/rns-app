@@ -59,7 +59,7 @@ export const SearchForm: React.FC = () => {
     skip: !searchValue,
   });
 
-  const { names } = useAllNamesForAddress({
+  const { names, isFetching } = useAllNamesForAddress({
     skip: !searchValue || !wrappedName?.owner,
     filter: {
       name: `${searchValue}.root`,
@@ -154,7 +154,7 @@ export const SearchForm: React.FC = () => {
                   }}
                 />
                 <SearchPopper
-                  isLoading={isLoading}
+                  isLoading={isFetching || isLoading}
                   anchorEl={anchorEl}
                   searchValue={searchValue}
                   status={getNameStatus()}
