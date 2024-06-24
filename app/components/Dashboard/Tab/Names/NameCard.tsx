@@ -206,7 +206,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   };
 
   const toggleTransactionModal = (menuOption: Option) => {
-    const { label, title } = menuOption;
+    const { label: menuLabel, title } = menuOption;
 
     const data: CardProps = {
       item,
@@ -215,8 +215,8 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
 
     toggleModal({
       data,
-      id: label,
-      title: title || label,
+      id: menuLabel,
+      title: title || menuLabel,
       isCloseDisabled: true,
       isXDisabled: true,
     });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, Divider as MuiDivider, alpha, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import {
@@ -22,7 +22,6 @@ import { Option } from "@/interfaces/global/components";
 
 import MenuPopper from "./MenuPopper";
 import DropDownMenu from "./DropDownMenu";
-import { OrderDirection } from "@/redux/graphql/hooks";
 
 const Divider = styled(MuiDivider)(({ theme }) => ({
   margin: "25px 0",
@@ -124,6 +123,10 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
     saveToCookies();
     toggleMenu(false);
   };
+
+  useEffect(() => {
+    console.log("filteroption:: ", sortOption);
+  }, []);
 
   return (
     <MenuPopper isOpen={isOpen} anchorEl={anchorEl}>
