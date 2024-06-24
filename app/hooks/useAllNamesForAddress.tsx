@@ -55,13 +55,15 @@ export default function useAllNamesForAddress(props: NamesProps) {
     },
   } = props;
 
-  const { name, address, views } = filter;
+  const { name, address } = filter;
   const { page = 1, pageSize = 1000 } = pagination;
   const { orderBy, orderDirection } = sorting;
 
   const [displayedPage, setDisplayedPage] = useState<
     DomainResponse[] | undefined
   >(undefined);
+
+  const [displayedPageCount, setDisplayedPageCount] = useState<number>(0);
 
   const { updateIdentities, useFilters } = useDashboardState();
   const options = useFilters();
@@ -130,23 +132,14 @@ export default function useAllNamesForAddress(props: NamesProps) {
       const displayedPage = subPages[page - 1] || undefined;
 
       setDisplayedPage([...displayedPage]);
+      setDisplayedPageCount(count);
       updateIdentities({
         totalDomains,
+        totalPageCount: count,
         displayedNames: [...displayedPage],
       });
     }
   }, [domains, page, count, pageSize, orderBy, orderDirection]);
-
-  // useEffect(() => {
-  //   console.log(`
-  //     isLoading:: ${isLoading}
-  //     isFetching:: ${isFetching}
-  //     isSuccess:: ${isSuccess}
-  //     isError:: ${isError}
-  //     domains:: ${domains?.length}
-  //     displayedPage:: ${displayedPage?.length}
-  //   `);
-  // }, [isFetching, isLoading, isSuccess, isError, domains, displayedPage]);
 
   return {
     /**
@@ -164,6 +157,8 @@ export default function useAllNamesForAddress(props: NamesProps) {
     totalNames: totalDomains,
 
     /** The total number of pages */
+    totalPageCount: displayedPageCount,
+
     pageCount: count,
 
     isLoading,

@@ -9,6 +9,7 @@ import { DomainResponse } from "../graphql/graphqlApi"
 export interface Identities {
     /** Currently displayed names - used in pagination */
     displayedNames?: DomainResponse[],
+    totalPageCount?: number,
     totalDomains?: number
 }
 
@@ -57,6 +58,7 @@ export interface DashboardState {
 const initialState: DashboardState = {
     identities: {
         displayedNames: undefined,
+        totalPageCount: 0,
         totalDomains: 0
     },
     options: {

@@ -75,7 +75,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     isFetched,
     isError,
     totalNames,
-    pageCount,
+    totalPageCount,
   } = useAllNamesForAddress({
     dashboard: true,
     skip: !hasMounted,
@@ -95,23 +95,17 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   /** names stored in state */
   const displayedNames = identities?.displayedNames;
-  const totalCount = totalNames || identities?.totalDomains || 0;
+  const totalDomainsCount = totalNames || identities?.totalDomains || 0;
+  const totalPagesCount = totalPageCount || identities?.totalPageCount || 1;
 
   // TODO: Why does nextJS clears the api response
   /** get the list from api response or from the state */
   const nameList = names || displayedNames;
 
   const isLoadingState =
-    isFetching || !hasMounted || (!names && !displayedNames); // names is undefined initially
-
-  useEffect(() => {
-    console.log(`
-      isLoadingState:: ${isLoadingState}
-      isFetching:: ${isFetching}
-      isEmpty(displayedNames):: ${isEmpty(displayedNames)} || ${!displayedNames}
-      isEmpty(names):: ${isEmpty(names)} || ${!names}
-    `);
-  }, [isLoadingState, displayedNames, names]);
+    isFetching ||
+    (!hasMounted && !displayedNames) ||
+    (!names && !displayedNames); // names is undefined initially
 
   const hasNoNamesState =
     (isEmpty(names) && isEmpty(displayedNames) && isFetched && !isFetching) ||
@@ -166,8 +160,8 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
           </Box>
           <FlexCenter pt={12}>
             <Pagination
-              pageCount={pageCount}
-              totalItemsCount={totalCount}
+              pageCount={totalPagesCount}
+              totalItemsCount={totalDomainsCount}
               itemsPerPage={itemsPerPage}
               page={options?.page || 1}
               setPage={(value) => {
