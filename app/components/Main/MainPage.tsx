@@ -35,7 +35,7 @@ export const MainPage: React.FC<MainPage> = (props: MainPage) => {
       {hasMounted && status !== "reconnecting" ? (
         <>
           <SearchForm />
-          <Dashboard>{children}</Dashboard>
+          {children}
         </>
       ) : (
         <>

@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { scrollIntoElement } from "@/utils/common";
-import Names from "@/components/Dashboard/Tab/Names";
-import Dashboard from "@/components/Dashboard/Dashboard";
+import Holders from "@/components/Holders/Holders";
 
 export default function Page() {
   const [hasMounted, setHasMounted] = useState<boolean>(false);
@@ -19,9 +18,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return (
-    <Dashboard>
-      <Names hasMounted={hasMounted} />
-    </Dashboard>
-  );
+  return <Holders />;
 }

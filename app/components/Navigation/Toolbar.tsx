@@ -26,6 +26,7 @@ import {
 import { Address } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { DISCORD, DOCS, TWITTER } from "@/constants/url";
+import { usePathname, useRouter } from "next/navigation";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import ReactJoyride, { Step } from "react-joyride";
@@ -98,6 +99,9 @@ export const Toolbar: React.FC = () => {
   } = useEnsName({
     address: address as Address,
   });
+
+  const router = useRouter();
+  const pathName = usePathname();
 
   const { toggleModal } = useModalState();
   const { path } = useWalletIcon({ name: connector?.name as Wallet });
@@ -220,10 +224,26 @@ export const Toolbar: React.FC = () => {
           <>
             <ToolbarLabel
               onClick={() => {
-                scrollIntoElement("my-dashboard");
+                if (pathName === "" || pathName === "/identities") {
+                  scrollIntoElement("my-dashboard");
+                } else {
+                  router.replace(`/identities`, { scroll: false });
+                }
               }}
             >
               My Dashboard
+            </ToolbarLabel>
+            <Divider orientation="vertical" flexItem />
+            <ToolbarLabel
+              onClick={() => {
+                if (pathName !== "holders") {
+                  router.replace(`/holders`, { scroll: false });
+                } else {
+                  scrollIntoElement("my-holders");
+                }
+              }}
+            >
+              Holders
             </ToolbarLabel>
             <Divider orientation="vertical" flexItem />
           </>
