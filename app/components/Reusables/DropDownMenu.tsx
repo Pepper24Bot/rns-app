@@ -121,10 +121,6 @@ export const DropDownMenu: React.FC<DropDown> = (props: DropDown) => {
   };
 
   const isOptionSelected = (option: Option) => {
-    console.log("selectedoption-dropdown:: ", selectedOption);
-    console.log("option-dropdown:: ", option);
-    console.log("=====================");
-
     if (option?.type) {
       return (
         option.label === selectedOption.label &&

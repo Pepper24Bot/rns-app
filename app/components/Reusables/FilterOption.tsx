@@ -124,10 +124,6 @@ export const FilterOption: React.FC<FilterOption> = (props: FilterOption) => {
     toggleMenu(false);
   };
 
-  useEffect(() => {
-    console.log("filteroption:: ", sortOption);
-  }, []);
-
   return (
     <MenuPopper isOpen={isOpen} anchorEl={anchorEl}>
       <Grid width={275}>
