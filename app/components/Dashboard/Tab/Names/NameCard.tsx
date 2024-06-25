@@ -39,9 +39,7 @@ import {
   findCharacterSet,
   getExpiry,
   getMaskedAddress,
-  isRegisteredDuringQuest,
   isTooltipShowing,
-  parseCookie,
 } from "@/utils/common";
 import { DomainResponse } from "@/redux/graphql/graphqlApi";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -53,9 +51,7 @@ import { useGetNftImageQuery } from "@/redux/metadata/metadataApi";
 import { CardProps } from "@/interfaces/global/transaction";
 import { Option } from "@/interfaces/global/components";
 import { useSnackbar } from "notistack";
-import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { useShareState } from "@/redux/share/shareSlice";
-import { WARNING_ASCII } from "@/constants/content";
+import { TWEETS_RNS, WARNING_ASCII } from "@/constants/content";
 import { useRouter } from "next/navigation";
 
 import FeatureToggle from "@/components/Reusables/FeatureToggle";
@@ -78,24 +74,11 @@ export interface NameProps {
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item, address, boundingArea } = props;
-  const {
-    name,
-    labelName,
-    expiryDate,
-    createdAt,
-    resolvedAddress: ensAddr,
-  } = item;
+  const { name, labelName, expiryDate, resolvedAddress: ensAddr } = item;
 
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { name: networkName } = useNetworkConfig();
-
-  const { useRootNetwork } = useRootNetworkState();
-  const { data: root } = useRootNetwork();
-
-  const { useShareStatus } = useShareState();
-  const { isSuccess } = useShareStatus();
-
   const { address: contractAddr } = useContractDetails({
     action: "NameWrapper",
   });
@@ -125,12 +108,9 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: address,
   });
 
-  const isShareEnabled = isRegisteredDuringQuest(createdAt);
   const characterSet = findCharacterSet(labelName ?? "");
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
-  const isTweetVerified =
-    parseCookie("isTweetVerified") === "true" || isSuccess;
 
   const { expiration, distance } = getExpiry(expiryDate);
 
@@ -270,6 +250,21 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
           heading: <NoAddressIcon />,
         },
       };
+    }
+  };
+
+  /**
+   * Share the newly registered name
+   */
+  const handleTweet = () => {
+    const content = TWEETS_RNS[Math.floor(Math.random() * TWEETS_RNS.length)];
+
+    const url = `http://twitter.com/intent/tweet?text=${encodeURIComponent(
+      content
+    )}`;
+
+    if (typeof window !== "undefined") {
+      window.open(url, "_blank");
     }
   };
 
@@ -421,44 +416,19 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                 <InformationTip
                   current={boundingArea}
                   title={
-                    !isShareEnabled
-                      ? "This identity was registered outside of the quest period."
-                      : !root.futurePassAddress
-                      ? "You do not have a FuturePass address, please create one to complete the Quest."
-                      : isTweetVerified
-                      ? "Post sharing during Quest period successfully completed."
-                      : ""
+                    "Help us spread the word by sharing your new RNS on X and go into the running to win monthly prizes!"
                   }
                 >
                   <SubContainer>
                     <ShareButton
                       variant="contained"
-                      disabled={
-                        !isShareEnabled ||
-                        isTweetVerified ||
-                        !root.futurePassAddress
-                      }
                       onClick={() => {
-                        toggleModal({
-                          id: "Share RNS",
-                          title: "",
-                          fullHeight: true,
-                          fullWidth: true,
-                          isCloseDisabled: true,
-                        });
+                        handleTweet();
                       }}
                     >
                       <TwitterIcon />
                       <Divider orientation="vertical" flexItem />
-                      <ShareLabel
-                        isDisabled={
-                          !isShareEnabled ||
-                          isTweetVerified ||
-                          !root.futurePassAddress
-                        }
-                      >
-                        Share
-                      </ShareLabel>
+                      <ShareLabel>Share</ShareLabel>
                     </ShareButton>
                   </SubContainer>
                 </InformationTip>
