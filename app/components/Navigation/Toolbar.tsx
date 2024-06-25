@@ -225,7 +225,7 @@ export const Toolbar: React.FC = () => {
             <ToolbarLabel
               onClick={() => {
                 if (pathName === "" || pathName === "/identities") {
-                  scrollIntoElement("My Dashboard");
+                  scrollIntoElement("My Dashboard-Container");
                 } else {
                   router.replace(`/identities`, { scroll: false });
                 }

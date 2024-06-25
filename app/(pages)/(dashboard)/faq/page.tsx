@@ -15,7 +15,7 @@ export default function Page() {
   useEffect(() => {
     if (hasMounted) {
       // scroll into element
-      scrollIntoElement("Dashboard-Container");
+      scrollIntoElement("My Dashboard-Container");
     }
   }, [hasMounted]);
 
