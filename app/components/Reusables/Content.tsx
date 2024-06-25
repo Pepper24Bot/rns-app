@@ -16,7 +16,7 @@ import {
   Heading,
 } from "../Theme/StyledGlobal";
 import { FONT_SIZE } from "../Theme/Global";
-import useFeatureToggle from "@/hooks/useFeatureToggle";
+import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 import Toolbar from "./Toolbar";
 
 export const GridContainer = styled(FlexCenter)(({ theme }) => ({
@@ -144,9 +144,9 @@ export const Content: React.FC<ContentProps> = (props: ContentProps) => {
               >
                 {tabs?.map((item, index) => {
                   return (
-                    isFeatureEnabled(item) && (
-                      <TabItem key={item} label={item.toUpperCase()} />
-                    )
+                    isFeatureEnabled(
+                      FeatureList[item as keyof typeof FeatureList]
+                    ) && <TabItem key={item} label={item} />
                   );
                 })}
               </Tabs>

@@ -111,23 +111,23 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     (isEmpty(names) && isEmpty(displayedNames) && isFetched && !isFetching) ||
     isError;
 
-  useEffect(() => {
-    console.log(`
-      isLoadingState:: ${isLoadingState}
-      isFetching:: ${isFetching}
-      isFetched:: ${isFetched}
-      !hasMounted:: ${!hasMounted}
-      isEmpty(names):: ${isEmpty(names)} || ${names}
-      isEmpty(displayedNames):: ${isEmpty(displayedNames)} || ${displayedNames}
-    `);
-  }, [
-    isFetching,
-    isLoadingState,
-    hasMounted,
-    isFetched,
-    names,
-    displayedNames,
-  ]);
+  // useEffect(() => {
+  //   console.log(`
+  //     isLoadingState:: ${isLoadingState}
+  //     isFetching:: ${isFetching}
+  //     isFetched:: ${isFetched}
+  //     !hasMounted:: ${!hasMounted}
+  //     isEmpty(names):: ${isEmpty(names)} || ${names}
+  //     isEmpty(displayedNames):: ${isEmpty(displayedNames)} || ${displayedNames}
+  //   `);
+  // }, [
+  //   isFetching,
+  //   isLoadingState,
+  //   hasMounted,
+  //   isFetched,
+  //   names,
+  //   displayedNames,
+  // ]);
 
   const handleDebounceOnChange = (value: number) => {
     if (value > 0 && value <= 1000) {

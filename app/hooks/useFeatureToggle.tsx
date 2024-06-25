@@ -28,7 +28,7 @@ export enum FeatureList {
  */
 export default function useFeatureToggle() {
   const isFeatureEnabled = (feature?: string | number, name?: string) => {
-    if (feature === "true" || feature === "false") {
+    if (feature === "true" || feature === "false" || feature === undefined) {
       return feature === "true" || feature === undefined ? true : false;
     } else {
       return (
