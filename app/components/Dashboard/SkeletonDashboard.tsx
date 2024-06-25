@@ -1,21 +1,22 @@
 import React from "react";
 import {
   Container,
+  GridContainer,
   Content,
-  DashboardContainer,
+  ContentContainer,
   TabItem,
   Tabs,
   Title,
-} from "./StyledDashboard";
+} from "./../Reusables/Content";
 import { FlexJustified } from "../Theme/StyledGlobal";
 import { Grid } from "@mui/material";
 import SkeletonNames from "./Tab/Names/SkeletonNames";
-import Toolbar from "./Toolbar";
+import Toolbar from "../Reusables/Toolbar";
 
 export const SkeletonDashboard: React.FC = () => {
   return (
-    <Container>
-      <DashboardContainer>
+    <GridContainer>
+      <Container>
         <FlexJustified container>
           <Grid>
             <Title>My Dashboard</Title>
@@ -24,7 +25,7 @@ export const SkeletonDashboard: React.FC = () => {
             <Toolbar />
           </Grid>
         </FlexJustified>
-        <Content>
+        <ContentContainer>
           <Grid>
             <Tabs value={0}>
               <TabItem label="IDENTITIES" />
@@ -35,9 +36,9 @@ export const SkeletonDashboard: React.FC = () => {
               <SkeletonNames count={2} />
             </Grid>
           </Grid>
-        </Content>
-      </DashboardContainer>
-    </Container>
+        </ContentContainer>
+      </Container>
+    </GridContainer>
   );
 };
 

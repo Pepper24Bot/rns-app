@@ -123,3 +123,12 @@ export const DASHBOARD_TAB_ITEMS = [
     "Notifications",
     "LoyaltyPoints",
 ]
+
+// Leaderboard Tabs
+export const LEADERBOARD_TAB_ITEMS = [
+    "Top 50",
+    "Single Emoji",
+    "Single Character",
+    "999 Club",
+    "10k Club",
+]

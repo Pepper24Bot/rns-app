@@ -225,7 +225,7 @@ export const Toolbar: React.FC = () => {
             <ToolbarLabel
               onClick={() => {
                 if (pathName === "" || pathName === "/identities") {
-                  scrollIntoElement("my-dashboard");
+                  scrollIntoElement("My Dashboard");
                 } else {
                   router.replace(`/identities`, { scroll: false });
                 }
@@ -236,11 +236,12 @@ export const Toolbar: React.FC = () => {
             <Divider orientation="vertical" flexItem />
             <ToolbarLabel
               onClick={() => {
-                if (pathName !== "holders") {
-                  router.replace(`/holders`, { scroll: false });
-                } else {
-                  scrollIntoElement("my-holders");
-                }
+                // TODO: Add check here
+                router.replace(`/top-50`, { scroll: false });
+                // if (pathName !== "top-50") {
+                // } else {
+                //   scrollIntoElement("my-holders");
+                // }
               }}
             >
               Holders
