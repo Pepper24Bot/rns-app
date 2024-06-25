@@ -19,9 +19,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return (
-    <Dashboard>
-      <FrequentlyAsked />
-    </Dashboard>
-  );
+  return <FrequentlyAsked />;
 }
