@@ -289,9 +289,10 @@ export const RegisterName: React.FC<RegistrationProps> = (
    */
   const handleTweet = () => {
     const content = TWEETS_RNS[Math.floor(Math.random() * TWEETS_RNS.length)];
+    const imageTweet = "https://t.co/x0QM05p4ia"; //  "pic.twitter.com/x0QM05p4ia"; // `https://pic.x.com/x0qm05p4ia`;
 
-    const url = `http://twitter.com/intent/tweet?text=${encodeURIComponent(
-      content
+    const url = `http://twitter.com/intent/tweet?url=${imageTweet}&text=${encodeURIComponent(
+      `${content}`
     )}`;
 
     if (typeof window !== "undefined") {
