@@ -24,7 +24,6 @@ import { COMMITMENT_AGE, PAYMENT_METHOD } from "@/constants/components";
 import { FUTUREVERSE, QUESTIONS, VIDEO_TUTORIAL } from "@/constants/url";
 import { X } from "@mui/icons-material";
 import { FONT_WEIGHT } from "../Theme/Global";
-import { isRegisteredDuringQuest, parseCookie } from "@/utils/common";
 import { red } from "@mui/material/colors";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { isEmpty } from "lodash";
@@ -32,6 +31,7 @@ import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
+import { TWEETS_RNS } from "@/constants/content";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -100,7 +100,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
   const dispatch = useDispatch();
 
   const token = payment?.address || (PAYMENT_METHOD[0].address as Address);
-  const isTweetVerified = parseCookie("isTweetVerified") === "true";
 
   const [isCommitSuccess, setIsCommitSuccess] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -112,7 +111,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
 
   const [isBalanceSufficient, setBalanceSufficient] = useState<boolean>(true);
   const [isXrpSufficient, setXrpSufficient] = useState<boolean>(true);
-  const [isShareEnabled, setShareEnabled] = useState<boolean>(false);
 
   const [isSkipCommit, setSkipCommit] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
@@ -286,6 +284,22 @@ export const RegisterName: React.FC<RegistrationProps> = (
     }
   };
 
+  /**
+   * Share the newly registered name
+   */
+  const handleTweet = () => {
+    const content = TWEETS_RNS[Math.floor(Math.random() * TWEETS_RNS.length)];
+    const imageTweet = "https://t.co/x0QM05p4ia"; //  "pic.twitter.com/x0QM05p4ia"; // `https://pic.x.com/x0qm05p4ia`;
+
+    const url = `http://twitter.com/intent/tweet?url=${imageTweet}&text=${encodeURIComponent(
+      `${content}`
+    )}`;
+
+    if (typeof window !== "undefined") {
+      window.open(url, "_blank");
+    }
+  };
+
   // on initial load only - get the commitment's validity
   useEffect(() => {
     if (hash) {
@@ -349,11 +363,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
       setXrpSufficient(isSufficient);
     }
   }, [xrpBalance?.value]);
-
-  useEffect(() => {
-    const isShareable = isRegisteredDuringQuest();
-    setShareEnabled(isShareable);
-  }, [isRegistered, isTweetVerified]);
 
   return (
     <Grid mt={6} minWidth={250} maxWidth={400}>
@@ -533,31 +542,19 @@ export const RegisterName: React.FC<RegistrationProps> = (
           )}
         </Grid>
       </Collapse>
-      <Collapse
-        in={
-          !isTweetVerified &&
-          isRegistered &&
-          isShareEnabled &&
-          !isEmpty(root.futurePassAddress)
-        }
-      >
+      <Collapse in={isRegistered && !isEmpty(root.futurePassAddress)}>
         <Grid mt={3}>
           <FlexCenter>
             <ShareTip isDisabled={true}>
-              Help us spread the word by sharing your new RNS on X.
+              Help us spread the word by sharing your new RNS on X and go into
+              the running to win monthly prizes!
             </ShareTip>
           </FlexCenter>
           <FlexCenter>
             <ShareButton
               variant="contained"
               onClick={() => {
-                toggleModal({
-                  id: "Share RNS",
-                  title: "",
-                  fullHeight: true,
-                  fullWidth: true,
-                  isCloseDisabled: true,
-                });
+                handleTweet();
               }}
             >
               <TwitterIcon fontSize="small" />

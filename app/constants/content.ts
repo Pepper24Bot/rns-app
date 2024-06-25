@@ -1,37 +1,16 @@
-/**
- * This is temporary
- * 
- * Implement intl
- */
-
 export const TWEETS_RNS = [
-    `I’ve registered my @RootNameService Identity on @therootnetwork. Secure yours to unlock exclusive @Futureverse Quest Rewards and strengthen your digital presence. 💫
-    %0D%0DHow will you 𝗕𝗲 𝗞𝗻𝗼𝘄𝗻? ✨
-    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+    `Don’t be known as 0xFffF..00D4FR. Be known as legend.𝗿𝗼𝗼𝘁✨\n\nWith @RootNameService, my wallet, gaming and social identities are unified on @TheRootNetwork. Register yours and share it to enter monthly raffles for prizes!🎁\n\n🔗rootnameservice.com`,
 
-    `Excited to have my @RootNameService Identity on @TheRootNetwork! 💫
-    %0D%0D@Ethereum and Web3 users, enhance your digital identity today and get exclusive @Futureverse Quest Rewards! 🪙
-    %0D%0DHow will you 𝗕𝗲 𝗞𝗻𝗼𝘄𝗻? ✨
-    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+    `Why be 0xFffF..00D4FR? Be known as legend.𝗿𝗼𝗼𝘁 🌐✨\n\n@RootNameService lets me unify my wallet, gaming, and social identities on @TheRootNetwork. Register yours and share to join monthly raffles for prizes!🎁\n\n🔗rootnameservice.com`,
 
-    `I just got my new @RootNameService Identity on @TheRootNetwork! 💫✨
-    %0D%0D@Ethereum and Web3 users, now’s the time to upgrade your digital identity and earn exclusive @Futureverse Quest Rewards. 🪙
-    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+    `Thrilled to have my @RootNameService Identity on @TheRootNetwork!💫 #Web3 users, secure the .𝗿𝗼𝗼𝘁 equivalent of your digital Identity and share it to join monthly raffles for prizes!🎁\n\nHow will you 𝗕𝗲 𝗞𝗻𝗼𝘄𝗻?✨\n\n🔗rootnameservice.com`,
 
-    `Just secured my @RootNameService Identity on @TheRootNetwork! 💫✨
-    %0D%0D@Ethereum and Web3 users, elevate your digital identity and access exclusive @Futureverse Quest Rewards! 🪙
-    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+    `Why be a random string like 0xFff..0D4FR? Be known as legend.𝗿𝗼𝗼𝘁✨\n\nWith @RootNameService, streamline your wallet, gaming, & social identities on @TheRootNetwork. Register yours and share it to enter into monthly raffles!🎁\n\n🔗rootnameservice.com`,
 
-    `Proud to have my @RootNameService Identity on @TheRootNetwork! 💫✨
-    %0D%0D@Ethereum and Web3 users, enhance your digital identity and get exclusive @Futureverse Quest Rewards! 🪙
-    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+    `Don’t be known as 0xFf..D4FR. Be known as legend.𝗿𝗼𝗼𝘁✨\n\nWith @RootNameService, get your wallet, gaming & social identity all in one on @TheRootNetwork. Register yours and share it to enter into monthly raffles for prizes!🎁\n\n🔗rootnameservice.com`,
 
-    `Registered my @RootNameService Identity on @TheRootNetwork! 💫✨
-    %0D%0D@Ethereum and Web3 users, now’s the time to elevate your digital identity and be eligible for exclusive @Futureverse Quest Rewards. 🪙
-    %0D%0DComplete Quest Now: https://futureverse.com/futurepass/quests/`,
+    `Thrilled to have my RNS Identity on @TheRootNetwork! My .𝗿𝗼𝗼𝘁 extension ensures seamless experiences and easy identity management.\n\nRegister, link to FuturePass, and share yours to join monthly raffles for great prizes!🎁✨\n\n🔗rootnameservice.com`,
 ]
-
-
 
 export const REGISTRATION_PROCESS = [
     {
