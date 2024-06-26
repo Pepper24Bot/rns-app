@@ -1,23 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
+import { NameResponse } from "../graphql/graphqlApi"
 
 export interface Ranking {
-    rank?: number,
     /** Address or Primary Name of the holder */
     owner?: string,
+    /** identities */
+    names?: NameResponse[],
     /** The number of identities owned by the holder */
-    nameCount?: number
+    total?: number
 }
 
 export interface TopRanking extends Ranking { }
 
 export interface SingleRanking extends Ranking {
-    names?: string[]
 }
 
 export interface ClubRanking extends Ranking {
-    names?: string[]
 }
 
 export interface LeaderBoardState {
@@ -69,23 +69,23 @@ export const useLeaderboardState = () => {
 
     return {
         updateTopRanking: (ranking: TopRanking[]) => {
-            dispatch(actions.updateTopRanking({ ...ranking }))
+            dispatch(actions.updateTopRanking([...ranking]))
         },
 
         updateEmojiRanking: (ranking: SingleRanking[]) => {
-            dispatch(actions.updateEmojiRanking({ ...ranking }))
+            dispatch(actions.updateEmojiRanking([...ranking]))
         },
 
         updateCharacterRanking: (ranking: SingleRanking[]) => {
-            dispatch(actions.updateCharacterRanking({ ...ranking }))
+            dispatch(actions.updateCharacterRanking([...ranking]))
         },
 
         update999ClubRanking: (ranking: ClubRanking[]) => {
-            dispatch(actions.update999ClubRanking({ ...ranking }))
+            dispatch(actions.update999ClubRanking([...ranking]))
         },
 
         update10kClubRanking: (ranking: ClubRanking[]) => {
-            dispatch(actions.update10kClubRanking({ ...ranking }))
+            dispatch(actions.update10kClubRanking([...ranking]))
         },
 
         useLeaderboardState: () => {
