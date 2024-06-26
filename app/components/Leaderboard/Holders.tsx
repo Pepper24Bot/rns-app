@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { LEADERBOARD_TAB_ITEMS } from "@/constants/components";
 import { usePathname, useRouter } from "next/navigation";
 import Content from "../Reusables/Content";
+import useAllNames from "@/hooks/useAllNames";
 
 export interface HolderProps {
   children?: React.ReactNode;
@@ -9,6 +10,9 @@ export interface HolderProps {
 
 export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const { children } = props;
+
+  // prefetch here
+  useAllNames();
 
   const router = useRouter();
   const pathName = usePathname();

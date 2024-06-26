@@ -6,6 +6,7 @@ import { formState } from './form/formSlice'
 import { dashboardState } from './dashboard/dashboardSlice'
 import { rootNetworkState } from './rootNetwork/rootNetworkSlice'
 import { shareState } from './share/shareSlice'
+import { leaderboardState } from './leaderboard/leaderboardSlice'
 
 const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
         modalState: modalState.reducer,
         formState: formState.reducer,
         dashboardState: dashboardState.reducer,
+        leaderboardState: leaderboardState.reducer,
         rootNetworkSate: rootNetworkState.reducer,
         shareState: shareState.reducer
     },
