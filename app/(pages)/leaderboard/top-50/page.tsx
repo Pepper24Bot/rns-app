@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { scrollIntoElement } from "@/utils/common";
 import Holders from "@/components/Leaderboard/Holders";
+import Top50 from "@/components/Leaderboard/Top50/Top50";
 
 export default function Page() {
   const [hasMounted, setHasMounted] = useState<boolean>(false);
@@ -20,7 +21,7 @@ export default function Page() {
 
   return (
     <Holders>
-      <>Top 50 Content here</>
+      <Top50 />
     </Holders>
   );
 }

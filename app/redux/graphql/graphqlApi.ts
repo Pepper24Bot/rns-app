@@ -18,6 +18,14 @@ export interface DomainResponse extends Omit<Name, "createdAt" | "expiryDate" | 
     registrationDate?: string
 }
 
+export interface NameResponse {
+    id: string,
+    labelName: string,
+    wrappedOwner: {
+        id: string
+    }
+}
+
 /**
  * Use ensjs getNamesForAddress and getWrappedDate
  * using the following new hooks
@@ -27,10 +35,7 @@ export interface DomainResponse extends Omit<Name, "createdAt" | "expiryDate" | 
 export const graphqlApi = api.enhanceEndpoints({
     addTagTypes: ["Name", "Primary"],
     endpoints: {
-        TotalDomains: {
-            transformResponse: (response: NamesByAddressResponse, meta, arg) => {
-                return { ...response, totalDomains: response.domains?.length }
-            },
+        Names: {
             providesTags: ["Name"],
         },
         NamesByAddress: {
@@ -83,5 +88,5 @@ export const graphqlApi = api.enhanceEndpoints({
 
 export const {
     useNamesByAddressQuery,
-    useTotalDomainsQuery
+    useNamesQuery
 } = graphqlApi
