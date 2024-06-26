@@ -15,15 +15,15 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
 
   const getSelectedTab = () => {
     switch (pathName) {
-      case "/top-50":
+      case "/leaderboard/top-50":
         return 0;
-      case "/single-emoji":
+      case "/leaderboard/single-emoji":
         return 1;
-      case "/single-character":
+      case "/leaderboard/single-character":
         return 2;
-      case "/999-club":
+      case "/leaderboard/999-club":
         return 3;
-      case "/10k-club":
+      case "/leaderboard/10k-club":
         return 4;
       default:
         return 0;
@@ -33,15 +33,17 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const setPathNameFromTab = (tab: number) => {
     switch (tab) {
       case 0:
-        return router.replace("/top-50", { scroll: false });
+        return router.replace("/leaderboard/top-50", { scroll: false });
       case 1:
-        return router.replace("/single-emoji", { scroll: false });
+        return router.replace("/leaderboard/single-emoji", { scroll: false });
       case 2:
-        return router.replace("/single-character", { scroll: false });
+        return router.replace("/leaderboard/single-character", {
+          scroll: false,
+        });
       case 3:
-        return router.replace("/999-club", { scroll: false });
+        return router.replace("/leaderboard/999-club", { scroll: false });
       case 4:
-        return router.replace("/10k-club", { scroll: false });
+        return router.replace("/leaderboard/10k-club", { scroll: false });
       default:
         return router.replace("/", { scroll: false });
     }

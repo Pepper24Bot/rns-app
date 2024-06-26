@@ -74,10 +74,13 @@ const ToggleButton = styled(StyledToggleButton)(({ theme }) => ({
   },
 }));
 
-const ToolbarLabel = styled(SecondaryLabel)(({ theme }) => ({
+const ToolbarLabel = styled(SecondaryLabel, {
+  shouldForwardProp: (prop) => prop !== "isSelected",
+})<{ isSelected?: boolean }>(({ theme, isSelected }) => ({
   padding: "11px 0",
   fontSize: "15px",
   width: "max-content",
+  color: isSelected ? theme.palette.primary.main : theme.palette.text.primary,
 
   "&:hover": {
     color: theme.palette.primary.main,
@@ -223,6 +226,7 @@ export const Toolbar: React.FC = () => {
         {address && (
           <>
             <ToolbarLabel
+              isSelected={pathName === "" || pathName === "/identities"}
               onClick={() => {
                 if (pathName === "" || pathName === "/identities") {
                   scrollIntoElement("My Dashboard-Container");
@@ -235,13 +239,13 @@ export const Toolbar: React.FC = () => {
             </ToolbarLabel>
             <Divider orientation="vertical" flexItem />
             <ToolbarLabel
+              isSelected={pathName.includes("/leaderboard")}
               onClick={() => {
-                // TODO: Add check here
-                router.replace(`/top-50`, { scroll: false });
-                // if (pathName !== "top-50") {
-                // } else {
-                //   scrollIntoElement("my-holders");
-                // }
+                if (pathName.includes("/leaderboard")) {
+                  scrollIntoElement("Holders-Container");
+                } else {
+                  router.replace(`/leaderboard/top-50`, { scroll: false });
+                }
               }}
             >
               Holders
