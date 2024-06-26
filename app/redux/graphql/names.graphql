@@ -59,25 +59,17 @@ query NamesByAddress(
   }
 }
 
-query TotalDomains(
-  $first: Int = 1000
-  $skip: Int = 0
-  $id: ID = ""
-  $name: String = ""
-  $expiryDate_gt: BigInt = "0"
-) {
+query Names($first: Int = 1000, $lastId: ID = "") {
   domains(
     first: $first
-    skip: $skip
-    where: {
-      wrappedOwner_: { id: $id }
-      name_contains: $name
-      expiryDate_gt: $expiryDate_gt
-    }
+    orderBy: id
+    orderDirection: asc
+    where: { id_gt: $lastId, labelName_not: "" }
   ) {
-    name
+    labelName
     wrappedOwner {
       id
     }
+    id
   }
 }

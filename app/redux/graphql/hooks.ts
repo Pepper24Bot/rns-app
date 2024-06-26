@@ -4692,16 +4692,13 @@ export type NamesByAddressQueryVariables = Exact<{
 
 export type NamesByAddressQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, isMigrated: boolean, createdAt: any, parent?: { __typename?: 'Domain', name?: string | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, owner: { __typename?: 'Account', id: string }, registrant?: { __typename?: 'Account', id: string } | null, wrappedOwner?: { __typename?: 'Account', id: string } | null, registration?: { __typename?: 'Registration', cost?: any | null, registrationDate: any, expiryDate: any } | null, wrappedDomain?: { __typename?: 'WrappedDomain', expiryDate: any, fuses: number } | null, resolver?: { __typename?: 'Resolver', texts?: Array<string> | null, coinTypes?: Array<any> | null } | null }> };
 
-export type TotalDomainsQueryVariables = Exact<{
+export type NamesQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  expiryDate_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  lastId?: InputMaybe<Scalars['ID']['input']>;
 }>;
 
 
-export type TotalDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', name?: string | null, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
+export type NamesQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', labelName?: string | null, id: string, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
 
 
 export const NamesByAddressDocument = `
@@ -4750,17 +4747,19 @@ export const NamesByAddressDocument = `
   }
 }
     `;
-export const TotalDomainsDocument = `
-    query TotalDomains($first: Int = 1000, $skip: Int = 0, $id: ID = "", $name: String = "", $expiryDate_gt: BigInt = "0") {
+export const NamesDocument = `
+    query Names($first: Int = 1000, $lastId: ID = "") {
   domains(
     first: $first
-    skip: $skip
-    where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gt: $expiryDate_gt}
+    orderBy: id
+    orderDirection: asc
+    where: {id_gt: $lastId, labelName_not: ""}
   ) {
-    name
+    labelName
     wrappedOwner {
       id
     }
+    id
   }
 }
     `;
@@ -4770,12 +4769,12 @@ const injectedRtkApi = api.injectEndpoints({
     NamesByAddress: build.query<NamesByAddressQuery, NamesByAddressQueryVariables | void>({
       query: (variables) => ({ document: NamesByAddressDocument, variables })
     }),
-    TotalDomains: build.query<TotalDomainsQuery, TotalDomainsQueryVariables | void>({
-      query: (variables) => ({ document: TotalDomainsDocument, variables })
+    Names: build.query<NamesQuery, NamesQueryVariables | void>({
+      query: (variables) => ({ document: NamesDocument, variables })
     }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useNamesByAddressQuery, useLazyNamesByAddressQuery, useTotalDomainsQuery, useLazyTotalDomainsQuery } = injectedRtkApi;
+export const { useNamesByAddressQuery, useLazyNamesByAddressQuery, useNamesQuery, useLazyNamesQuery } = injectedRtkApi;
 
