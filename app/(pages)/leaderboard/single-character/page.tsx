@@ -14,13 +14,13 @@ export default function Page() {
   useEffect(() => {
     if (hasMounted) {
       // scroll into element
-      scrollIntoElement("My Dashboard-Container");
+      scrollIntoElement("Holders-Container");
     }
   }, [hasMounted]);
 
   return (
     <Holders>
-      <>999 Club Content here</>
+      <>Single character content here</>
     </Holders>
   );
 }
