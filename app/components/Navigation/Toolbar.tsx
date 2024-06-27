@@ -238,21 +238,21 @@ export const Toolbar: React.FC = () => {
               My Dashboard
             </ToolbarLabel>
             <Divider orientation="vertical" flexItem />
-            <ToolbarLabel
-              isSelected={pathName.includes("/leaderboard")}
-              onClick={() => {
-                if (pathName.includes("/leaderboard")) {
-                  scrollIntoElement("Holders-Container");
-                } else {
-                  router.replace(`/leaderboard/top-50`, { scroll: false });
-                }
-              }}
-            >
-              Holders
-            </ToolbarLabel>
-            <Divider orientation="vertical" flexItem />
           </>
         )}
+        <ToolbarLabel
+          isSelected={pathName.includes("/leaderboard")}
+          onClick={() => {
+            if (pathName.includes("/leaderboard")) {
+              scrollIntoElement("Holders-Container");
+            } else {
+              router.replace(`/leaderboard/top-50`, { scroll: false });
+            }
+          }}
+        >
+          Holders
+        </ToolbarLabel>
+        <Divider orientation="vertical" flexItem />
         <Link href={DOCS} target="_blank">
           <ToolbarLabel>Docs</ToolbarLabel>
         </Link>

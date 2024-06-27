@@ -9,7 +9,11 @@ export interface Ranking {
     /** identities */
     names?: NameResponse[],
     /** The number of identities owned by the holder */
-    total?: number
+    total?: number,
+
+    primary?: string,
+
+    label?: string
 }
 
 export interface TopRanking extends Ranking { }
@@ -21,11 +25,11 @@ export interface ClubRanking extends Ranking {
 }
 
 export interface LeaderBoardState {
-    top: TopRanking[],
-    singleEmoji: SingleRanking[],
-    singleCharacter: SingleRanking[],
-    "999Club": ClubRanking[],
-    "10KClub": ClubRanking[],
+    top?: TopRanking[],
+    singleEmoji?: SingleRanking[],
+    singleCharacter?: SingleRanking[],
+    "999Club"?: ClubRanking[],
+    "10KClub"?: ClubRanking[],
 }
 
 const initialState: LeaderBoardState = {
@@ -40,6 +44,11 @@ export const leaderboardState = createSlice({
     name: "leaderboard",
     initialState,
     reducers: {
+        updateRankings: (state, { payload }: { payload: LeaderBoardState }): LeaderBoardState => {
+            state = { ...state, ...payload }
+            return state
+        },
+
         updateTopRanking: (state, { payload }: { payload: TopRanking[] }): LeaderBoardState => {
             state.top = payload
             return state
@@ -68,6 +77,10 @@ export const useLeaderboardState = () => {
     const { actions } = leaderboardState
 
     return {
+        updateRankings: (ranking: LeaderBoardState) => {
+            dispatch(actions.updateRankings({ ...ranking }))
+        },
+
         updateTopRanking: (ranking: TopRanking[]) => {
             dispatch(actions.updateTopRanking([...ranking]))
         },
