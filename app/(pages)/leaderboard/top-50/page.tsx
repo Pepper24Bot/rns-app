@@ -19,9 +19,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return (
-    <Holders>
-      <Top50 />
-    </Holders>
-  );
+  return <Holders />;
 }

@@ -21,6 +21,7 @@ export interface DomainResponse extends Omit<Name, "createdAt" | "expiryDate" | 
 export interface NameResponse {
     id: string,
     labelName: string,
+    expiryDate: string,
     wrappedOwner: {
         id: string
     }

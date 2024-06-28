@@ -4698,7 +4698,7 @@ export type NamesQueryVariables = Exact<{
 }>;
 
 
-export type NamesQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', labelName?: string | null, id: string, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
+export type NamesQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', labelName?: string | null, expiryDate?: any | null, id: string, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
 
 
 export const NamesByAddressDocument = `
@@ -4756,6 +4756,7 @@ export const NamesDocument = `
     where: {id_gt: $lastId, labelName_not: ""}
   ) {
     labelName
+    expiryDate
     wrappedOwner {
       id
     }

@@ -13,7 +13,9 @@ export interface Ranking {
 
     primary?: string,
 
-    label?: string
+    label?: string,
+
+    expiryDate?: string
 }
 
 export interface TopRanking extends Ranking { }

@@ -2,9 +2,10 @@ import { NameResponse, useNamesQuery } from "@/redux/graphql/graphqlApi";
 import {
   ClubRanking,
   SingleRanking,
+  TopRanking,
   useLeaderboardState,
 } from "@/redux/leaderboard/leaderboardSlice";
-import { findCharacterSet, isASCII } from "@/utils/common";
+import { findCharacterSet, getExpiry } from "@/utils/common";
 import { isEmpty } from "lodash";
 import { useEffect, useState } from "react";
 
@@ -20,9 +21,9 @@ export default function useAllNames(props?: Props) {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [domains, setDomains] = useState<NameResponse[]>([]);
 
+  const [topFifty, setTopFity] = useState<TopRanking[]>([]);
   const [singleEmojis, setSingleEmojis] = useState<SingleRanking[]>([]);
   const [singleCharacters, setSingleCharacters] = useState<SingleRanking[]>([]);
-
   const [oneKClub, setOneKClub] = useState<ClubRanking[]>([]);
   const [tenKClub, setTenKClub] = useState<ClubRanking[]>([]);
 
@@ -43,23 +44,25 @@ export default function useAllNames(props?: Props) {
       .sort((a, b) => {
         return b[1].length - a[1].length;
       })
+      .slice(0, 50)
       .map((item) => {
         return {
           owner: item[0],
           names: item[1],
           total: item[1].length,
         };
-      })
-      .slice(0, 50);
+      });
 
+    setTopFity(sorted);
     updateTopRanking(sorted);
   };
 
   const getRankings = () => {
-    domains?.forEach(({ wrappedOwner, labelName }, index) => {
+    domains?.forEach(({ wrappedOwner, labelName, expiryDate }, index) => {
       const itemData = {
         owner: wrappedOwner?.id,
         label: labelName,
+        expiryDate: getExpiry(expiryDate).distance,
       };
 
       const length = labelName.length;
@@ -150,5 +153,10 @@ export default function useAllNames(props?: Props) {
     domains,
     isFetching,
     isFetched,
+    topFifty,
+    singleEmojis,
+    singleCharacters,
+    oneKClub,
+    tenKClub,
   };
 }

@@ -18,9 +18,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return (
-    <Holders>
-      <>Single emoji content here</>
-    </Holders>
-  );
+  return <Holders />;
 }

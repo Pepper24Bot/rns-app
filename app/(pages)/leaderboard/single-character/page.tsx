@@ -18,9 +18,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return (
-    <Holders>
-      <>Single character content here</>
-    </Holders>
-  );
+  return <Holders />;
 }

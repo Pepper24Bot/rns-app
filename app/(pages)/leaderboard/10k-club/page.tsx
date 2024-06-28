@@ -18,9 +18,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return (
-    <Holders>
-      <>10k Club Content here</>
-    </Holders>
-  );
+  return <Holders />;
 }

@@ -67,6 +67,7 @@ query Names($first: Int = 1000, $lastId: ID = "") {
     where: { id_gt: $lastId, labelName_not: "" }
   ) {
     labelName
+    expiryDate
     wrappedOwner {
       id
     }
