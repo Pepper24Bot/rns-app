@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { LEADERBOARD_TAB_ITEMS } from "@/constants/components";
 import { usePathname, useRouter } from "next/navigation";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import Content from "../Reusables/Content";
 import useAllNames from "@/hooks/useAllNames";
@@ -15,8 +16,15 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const { children } = props;
 
   // prefetch here
-  const { topFifty, singleEmojis, singleCharacters, oneKClub, tenKClub } =
-    useAllNames();
+  const { isFetched, isFetching } = useAllNames();
+  const { useLeaderboard } = useLeaderboardState();
+  const {
+    top = [],
+    singleEmoji = [],
+    singleCharacter = [],
+    oneKClub = [],
+    tenKClub = [],
+  } = useLeaderboard();
 
   const router = useRouter();
   const pathName = usePathname();
@@ -64,17 +72,17 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const getContent = () => {
     switch (tab) {
       case 0:
-        return <Top50 ranking={topFifty} />;
+        return <Top50 ranking={top} />;
       case 1:
-        return <Ranking ranking={singleEmojis} />;
+        return <Ranking ranking={singleEmoji} />;
       case 2:
-        return <Ranking ranking={singleCharacters} />;
+        return <Ranking ranking={singleCharacter} />;
       case 3:
         return <Ranking ranking={oneKClub} />;
       case 4:
         return <Ranking ranking={tenKClub} />;
       default:
-        return <Top50 ranking={topFifty} />;
+        return <Top50 ranking={top} />;
     }
   };
 

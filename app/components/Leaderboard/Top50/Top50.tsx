@@ -1,23 +1,36 @@
 import React from "react";
-import { Grid } from "@mui/material";
-import { TopRanking } from "@/redux/leaderboard/leaderboardSlice";
+import { Grid, styled } from "@mui/material";
+import {
+  TopRanking,
+  useLeaderboardState,
+} from "@/redux/leaderboard/leaderboardSlice";
 import { getMaskedAddress } from "@/utils/common";
 import { Flex, FlexCenter } from "@/components/Theme/StyledGlobal";
 import {
-  Container,
   TopContainer,
   TopTotalCount,
   TopHolder,
   ColumnContainer,
   Header,
   ColumnTitle,
-  ColumnContent,
+  ColumnContent as StyledColumnContent,
   Row,
   RowText,
   Divider,
   HighlightValue,
 } from "../StyledLeaderboard";
 import Image from "next/image";
+
+const Container = styled(Grid)(({ theme }) => ({
+  // marginTop: "20px",
+  // height: "500px",
+  // overflow: "overlay",
+}));
+
+const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({
+  height: "500px",
+  overflow: "overlay",
+}));
 
 export const Top50: React.FC<{ ranking: TopRanking[] }> = (props: {
   ranking: TopRanking[];
@@ -29,7 +42,7 @@ export const Top50: React.FC<{ ranking: TopRanking[] }> = (props: {
 
   return (
     <Grid>
-      <FlexCenter container p={2} my={6}>
+      <FlexCenter container p={2} mt={6} mb={4}>
         {top3?.map((rank, index) => {
           return (
             <TopContainer key={`top-${index + 1}`} xs={3} mx={1} container>

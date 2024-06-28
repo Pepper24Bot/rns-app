@@ -46,7 +46,7 @@ export const ColumnTitle = styled(SecondaryLabel)(({ theme }) => ({
 
 export const ColumnContainer = styled(Grid)(({ theme }) => ({
   borderRadius: "4px",
-  margin: "16px 8px",
+  margin: "4px 8px",
 }));
 
 export const ColumnContent = styled(Grid)(({ theme }) => ({}));

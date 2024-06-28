@@ -27,8 +27,11 @@ export default function useAllNames(props?: Props) {
   const [oneKClub, setOneKClub] = useState<ClubRanking[]>([]);
   const [tenKClub, setTenKClub] = useState<ClubRanking[]>([]);
 
-  const { data } = useNamesQuery({ lastId: lastQueryId });
-  const { updateTopRanking, updateRankings } = useLeaderboardState();
+  const { data } = useNamesQuery({ lastId: lastQueryId }, { skip: isFetched });
+  const { updateTopRanking, updateRankings, useLeaderboard } =
+    useLeaderboardState();
+
+  const { isFetched: isSuccess } = useLeaderboard();
 
   const getTop50Ranking = () => {
     const groupedBy = domains.reduce(
@@ -116,30 +119,31 @@ export default function useAllNames(props?: Props) {
     updateRankings({
       singleEmoji: singleEmojis,
       singleCharacter: sortedCharacter,
-      "999Club": sortedOneK,
-      "10KClub": sortedTenK,
+      oneKClub: sortedOneK,
+      tenKClub: sortedTenK,
+      isFetched: true,
     });
   };
 
   useEffect(() => {
-    if (!isEmpty(data?.domains)) {
+    if (!isEmpty(data?.domains) && !isSuccess) {
       setIsFetching(true);
       const queryId = data?.domains[999]?.id || lastQueryId;
       const length = (data?.domains?.length || 0) - 1;
       const id = data?.domains[length]?.id || lastId;
 
-      setLastQueryId(queryId);
       setLastId(id);
-
       if (isEmpty(data?.domains[999]?.id)) {
         setIsFetched(true);
         setIsFetching(false);
+      } else {
+        setLastQueryId(queryId);
       }
     }
   }, [data?.domains[999]]);
 
   useEffect(() => {
-    if (lastQueryId && !isEmpty(data?.domains)) {
+    if (lastId && !isEmpty(data?.domains) && !isSuccess) {
       const domainList = data?.domains as NameResponse[];
       domains.push(...domainList);
       setDomains([...domains]);
@@ -148,8 +152,6 @@ export default function useAllNames(props?: Props) {
 
   useEffect(() => {
     if (isFetched) {
-      // Get Top 50 Ranking here
-      // console.log("domains:: ", domains);
       getTop50Ranking();
       getRankings();
     }

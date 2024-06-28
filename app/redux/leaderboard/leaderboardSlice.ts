@@ -30,16 +30,18 @@ export interface LeaderBoardState {
     top?: TopRanking[],
     singleEmoji?: SingleRanking[],
     singleCharacter?: SingleRanking[],
-    "999Club"?: ClubRanking[],
-    "10KClub"?: ClubRanking[],
+    oneKClub?: ClubRanking[],
+    tenKClub?: ClubRanking[],
+    isFetched?: boolean,
 }
 
 const initialState: LeaderBoardState = {
     top: [],
     singleEmoji: [],
     singleCharacter: [],
-    "999Club": [],
-    "10KClub": []
+    oneKClub: [],
+    tenKClub: [],
+    isFetched: false
 }
 
 export const leaderboardState = createSlice({
@@ -64,11 +66,11 @@ export const leaderboardState = createSlice({
             return state
         },
         update999ClubRanking: (state, { payload }: { payload: ClubRanking[] }): LeaderBoardState => {
-            state["999Club"] = payload
+            state.oneKClub = payload
             return state
         },
         update10kClubRanking: (state, { payload }: { payload: ClubRanking[] }): LeaderBoardState => {
-            state["10KClub"] = payload
+            state.tenKClub = payload
             return state
         }
     }
@@ -103,7 +105,7 @@ export const useLeaderboardState = () => {
             dispatch(actions.update10kClubRanking([...ranking]))
         },
 
-        useLeaderboardState: () => {
+        useLeaderboard: () => {
             return useSelector((state: RootState) => {
                 return state.leaderboardState
             })
@@ -129,13 +131,13 @@ export const useLeaderboardState = () => {
 
         use999Ranking: () => {
             return useSelector((state: RootState) => {
-                return state.leaderboardState["999Club"]
+                return state.leaderboardState.oneKClub
             })
         },
 
         use10kRanking: () => {
             return useSelector((state: RootState) => {
-                return state.leaderboardState["10KClub"]
+                return state.leaderboardState.tenKClub
             })
         },
     }

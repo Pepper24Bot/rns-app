@@ -12,7 +12,15 @@ import {
 import { getMaskedAddress } from "@/utils/common";
 import { FlexCenter } from "@/components/Theme/StyledGlobal";
 
-const Container = styled(Grid)(({ theme }) => ({}));
+const ContentContainer = styled(Grid)(({ theme }) => ({
+  height: "700px",
+  overflow: "overlay",
+
+  // "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+  //   width: "0",
+  //   height: "0",
+  // },
+}));
 
 const Title = styled(ColumnTitle)(({ theme }) => ({
   textAlign: "center",
@@ -32,12 +40,8 @@ export const Ranking: React.FC<{ ranking: SingleRanking[] }> = (props: {
 }) => {
   const { ranking } = props;
 
-  useEffect(() => {
-    console.log("ranking:: ", ranking);
-  }, [ranking]);
-
   return (
-    <Container>
+    <Grid mt={2}>
       <ColumnContainer xs={12}>
         <Grid container>
           <Grid item xs={0.5} />
@@ -54,28 +58,30 @@ export const Ranking: React.FC<{ ranking: SingleRanking[] }> = (props: {
           </Header>
         </Grid>
 
-        {ranking?.map((rank, index) => {
-          return (
-            <Grid key={`emoji-${rank.owner}-${index}`} container>
-              <FlexCenter item xs={0.5}>
-                <RowText>{index + 1}</RowText>
-              </FlexCenter>
-              <Row container item xs>
-                <Grid item xs={5}>
-                  <RowText>{getMaskedAddress(rank.owner || "")}</RowText>
-                </Grid>
-                <FlexCenter item xs={3}>
-                  <HighlightValue>{rank.label}</HighlightValue>
+        <ContentContainer>
+          {ranking?.map((rank, index) => {
+            return (
+              <Grid key={`emoji-${rank.owner}-${index}`} container>
+                <FlexCenter item xs={0.5}>
+                  <RowText>{index + 1}</RowText>
                 </FlexCenter>
-                <FlexCenter item xs={3}>
-                  <RowText>In {rank.expiryDate}</RowText>
-                </FlexCenter>
-              </Row>
-            </Grid>
-          );
-        })}
+                <Row container item xs>
+                  <Grid item xs={5}>
+                    <RowText>{getMaskedAddress(rank.owner || "")}</RowText>
+                  </Grid>
+                  <FlexCenter item xs={3}>
+                    <HighlightValue>{rank.label}</HighlightValue>
+                  </FlexCenter>
+                  <FlexCenter item xs={3}>
+                    <RowText>In {rank.expiryDate}</RowText>
+                  </FlexCenter>
+                </Row>
+              </Grid>
+            );
+          })}
+        </ContentContainer>
       </ColumnContainer>
-    </Container>
+    </Grid>
   );
 };
 
