@@ -19,8 +19,6 @@ const Title = styled(ColumnTitle)(({ theme }) => ({
 }));
 
 const RowText = styled(StyledRowText)(({ theme }) => ({
-  fontSize: "16px",
-  color: theme.palette.text.primary,
   textAlign: "center",
 }));
 
@@ -29,7 +27,7 @@ const Row = styled(StyledRow)(({ theme }) => ({
   margin: "4px 0",
 }));
 
-export const SingleRank: React.FC<{ ranking: SingleRanking[] }> = (props: {
+export const Ranking: React.FC<{ ranking: SingleRanking[] }> = (props: {
   ranking: SingleRanking[];
 }) => {
   const { ranking } = props;
@@ -81,4 +79,4 @@ export const SingleRank: React.FC<{ ranking: SingleRanking[] }> = (props: {
   );
 };
 
-export default SingleRank;
+export default Ranking;

@@ -5,9 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Content from "../Reusables/Content";
 import useAllNames from "@/hooks/useAllNames";
 import Top50 from "./Top50/Top50";
-import OneKClub from "./OneKClub/OneKClub";
-import TenKClub from "./TenKClub/TenKClub";
-import SingleRank from "./SingleRank/SingleRank";
+import Ranking from "./Ranking/Ranking";
 
 export interface HolderProps {
   children?: React.ReactNode;
@@ -68,13 +66,13 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
       case 0:
         return <Top50 ranking={topFifty} />;
       case 1:
-        return <SingleRank ranking={singleEmojis} />;
+        return <Ranking ranking={singleEmojis} />;
       case 2:
-        return <SingleRank ranking={singleCharacters} />;
+        return <Ranking ranking={singleCharacters} />;
       case 3:
-        return <OneKClub ranking={oneKClub} />;
+        return <Ranking ranking={oneKClub} />;
       case 4:
-        return <TenKClub ranking={tenKClub} />;
+        return <Ranking ranking={tenKClub} />;
       default:
         return <Top50 ranking={topFifty} />;
     }

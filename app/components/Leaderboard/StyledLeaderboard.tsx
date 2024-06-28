@@ -62,7 +62,7 @@ export const Row = styled(FlexJustified)(({ theme }) => ({
 
 export const RowText = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
-  color: alpha(theme.palette.text.primary, 0.6),
+  color: theme.palette.text.primary,
 }));
 
 export const HighlightValue = styled(RowText)(({ theme }) => ({
