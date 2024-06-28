@@ -94,6 +94,12 @@ export default function useAllNames(props?: Props) {
       }
     });
 
+    const sortedCharacter = singleCharacters.sort((a, b) => {
+      return (
+        a.label?.localeCompare(b.label || "", "en", { numeric: true }) || 0
+      );
+    });
+
     const sortedOneK = oneKClub.sort((a, b) => {
       return Number(a.label) - Number(b.label);
     });
@@ -103,15 +109,15 @@ export default function useAllNames(props?: Props) {
     });
 
     setSingleEmojis([...singleEmojis]);
-    setSingleCharacters([...singleCharacters]);
+    setSingleCharacters([...sortedCharacter]);
     setOneKClub([...sortedOneK]);
     setTenKClub([...sortedTenK]);
 
     updateRankings({
       singleEmoji: singleEmojis,
-      singleCharacter: singleCharacters,
-      "999Club": oneKClub,
-      "10KClub": tenKClub,
+      singleCharacter: sortedCharacter,
+      "999Club": sortedOneK,
+      "10KClub": sortedTenK,
     });
   };
 

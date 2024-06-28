@@ -5,6 +5,7 @@ import {
   ColumnContainer,
   ColumnTitle,
   Header,
+  HighlightValue,
   Row as StyledRow,
   RowText as StyledRowText,
 } from "../StyledLeaderboard";
@@ -18,17 +19,17 @@ const Title = styled(ColumnTitle)(({ theme }) => ({
 }));
 
 const RowText = styled(StyledRowText)(({ theme }) => ({
-  fontSize: "18px",
+  fontSize: "16px",
   color: theme.palette.text.primary,
   textAlign: "center",
 }));
 
 const Row = styled(StyledRow)(({ theme }) => ({
-  padding: "16px",
+  padding: "8px",
   margin: "4px 0",
 }));
 
-export const SingleEmoji: React.FC<{ ranking: SingleRanking[] }> = (props: {
+export const SingleRank: React.FC<{ ranking: SingleRanking[] }> = (props: {
   ranking: SingleRanking[];
 }) => {
   const { ranking } = props;
@@ -66,7 +67,7 @@ export const SingleEmoji: React.FC<{ ranking: SingleRanking[] }> = (props: {
                   <RowText>{getMaskedAddress(rank.owner || "")}</RowText>
                 </Grid>
                 <FlexCenter item xs={3}>
-                  <RowText>{rank.label}</RowText>
+                  <HighlightValue>{rank.label}</HighlightValue>
                 </FlexCenter>
                 <FlexCenter item xs={3}>
                   <RowText>In {rank.expiryDate}</RowText>
@@ -80,4 +81,4 @@ export const SingleEmoji: React.FC<{ ranking: SingleRanking[] }> = (props: {
   );
 };
 
-export default SingleEmoji;
+export default SingleRank;

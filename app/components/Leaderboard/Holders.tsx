@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { LEADERBOARD_TAB_ITEMS } from "@/constants/components";
 import { usePathname, useRouter } from "next/navigation";
+
 import Content from "../Reusables/Content";
 import useAllNames from "@/hooks/useAllNames";
 import Top50 from "./Top50/Top50";
-import SingleEmoji from "./SingleEmoji/SingleEmoji";
-import SingleCharacter from "./SingleCharacter.tsx/SingleCharacter";
 import OneKClub from "./OneKClub/OneKClub";
 import TenKClub from "./TenKClub/TenKClub";
+import SingleRank from "./SingleRank/SingleRank";
 
 export interface HolderProps {
   children?: React.ReactNode;
@@ -68,9 +68,9 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
       case 0:
         return <Top50 ranking={topFifty} />;
       case 1:
-        return <SingleEmoji ranking={singleEmojis} />;
+        return <SingleRank ranking={singleEmojis} />;
       case 2:
-        return <SingleCharacter ranking={singleCharacters} />;
+        return <SingleRank ranking={singleCharacters} />;
       case 3:
         return <OneKClub ranking={oneKClub} />;
       case 4:

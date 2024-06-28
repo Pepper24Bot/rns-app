@@ -53,7 +53,7 @@ export const ColumnContent = styled(Grid)(({ theme }) => ({}));
 
 export const Row = styled(FlexJustified)(({ theme }) => ({
   alignItems: "center",
-  padding: "20px 8px",
+  padding: "8px",
   margin: "8px 0",
   borderRadius: "4px",
   backgroundColor: theme.palette.background.paper,
@@ -63,6 +63,12 @@ export const Row = styled(FlexJustified)(({ theme }) => ({
 export const RowText = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "16px",
   color: alpha(theme.palette.text.primary, 0.6),
+}));
+
+export const HighlightValue = styled(RowText)(({ theme }) => ({
+  fontSize: "32px",
+  color: darken(theme.palette.primary.main, 0.5),
+  textAlign: "center",
 }));
 
 export const Divider = styled(MuiDivider)(({ theme }) => ({

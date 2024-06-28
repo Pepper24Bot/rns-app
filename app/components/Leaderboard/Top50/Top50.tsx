@@ -15,6 +15,7 @@ import {
   Row,
   RowText,
   Divider,
+  HighlightValue,
 } from "../StyledLeaderboard";
 import Image from "next/image";
 
@@ -93,9 +94,9 @@ export const Top50: React.FC<{ ranking: TopRanking[] }> = (props: {
                             {getMaskedAddress(holder.owner || "")}
                           </RowText>
                         </Grid>
-                        <Flex item xs={4}>
-                          <RowText>{holder.total}</RowText>
-                        </Flex>
+                        <FlexCenter item xs={4}>
+                          <HighlightValue>{holder.total}</HighlightValue>
+                        </FlexCenter>
                       </Row>
                     );
                   })}
