@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Grid, styled } from "@mui/material";
 import { SingleRanking } from "@/redux/leaderboard/leaderboardSlice";
 import {
   ColumnContainer,
+  ColumnContent,
   ColumnTitle,
   Header,
   HighlightValue,
@@ -10,16 +11,19 @@ import {
   RowText as StyledRowText,
 } from "../StyledLeaderboard";
 import { getMaskedAddress } from "@/utils/common";
-import { FlexCenter } from "@/components/Theme/StyledGlobal";
+import {
+  FlexCenter,
+  Relative,
+  SkeletonTypography,
+} from "@/components/Theme/StyledGlobal";
+import { isEmpty } from "lodash";
+import { EMPTY_ADDRESS } from "@/constants/components";
 
-const ContentContainer = styled(Grid)(({ theme }) => ({
-  height: "700px",
-  overflow: "overlay",
-
-  // "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
-  //   width: "0",
-  //   height: "0",
-  // },
+const ContentContainer = styled(ColumnContent)(({ theme }) => ({
+  height: "600px",
+  border: "none",
+  padding: 0, // override columncontent
+  paddingRight: "8px",
 }));
 
 const Title = styled(ColumnTitle)(({ theme }) => ({
@@ -35,10 +39,17 @@ const Row = styled(StyledRow)(({ theme }) => ({
   margin: "4px 0",
 }));
 
-export const Ranking: React.FC<{ ranking: SingleRanking[] }> = (props: {
+const RelativeCenter = styled(FlexCenter)(({ theme }) => ({
+  position: "relative",
+}));
+
+interface RankingProps {
   ranking: SingleRanking[];
-}) => {
-  const { ranking } = props;
+  isFetched?: boolean;
+}
+
+export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
+  const { ranking, isFetched } = props;
 
   return (
     <Grid mt={2}>
@@ -52,29 +63,38 @@ export const Ranking: React.FC<{ ranking: SingleRanking[] }> = (props: {
             <Grid item xs={3}>
               <Title>Name</Title>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} pr={1}>
               <Title>Expiry</Title>
             </Grid>
           </Header>
         </Grid>
 
         <ContentContainer>
-          {ranking?.map((rank, index) => {
+          {[...(isEmpty(ranking) ? Array(10) : ranking)]?.map((rank, index) => {
             return (
-              <Grid key={`emoji-${rank.owner}-${index}`} container>
+              <Grid key={`emoji-${rank?.owner}-${index}`} container>
                 <FlexCenter item xs={0.5}>
                   <RowText>{index + 1}</RowText>
                 </FlexCenter>
                 <Row container item xs>
-                  <Grid item xs={5}>
-                    <RowText>{getMaskedAddress(rank.owner || "")}</RowText>
-                  </Grid>
-                  <FlexCenter item xs={3}>
-                    <HighlightValue>{rank.label}</HighlightValue>
-                  </FlexCenter>
-                  <FlexCenter item xs={3}>
-                    <RowText>In {rank.expiryDate}</RowText>
-                  </FlexCenter>
+                  <Relative item xs={5}>
+                    <SkeletonTypography isloading={!isFetched} />
+                    <RowText isloading={!isFetched}>
+                      {getMaskedAddress(rank?.owner || EMPTY_ADDRESS)}
+                    </RowText>
+                  </Relative>
+                  <RelativeCenter item xs={3}>
+                    <SkeletonTypography isloading={!isFetched} width="50%" />
+                    <HighlightValue isloading={!isFetched}>
+                      {rank?.label || "00"}
+                    </HighlightValue>
+                  </RelativeCenter>
+                  <RelativeCenter item xs={3}>
+                    <SkeletonTypography isloading={!isFetched} width="50%" />
+                    <RowText isloading={!isFetched}>
+                      In {rank?.expiryDate}
+                    </RowText>
+                  </RelativeCenter>
                 </Row>
               </Grid>
             );

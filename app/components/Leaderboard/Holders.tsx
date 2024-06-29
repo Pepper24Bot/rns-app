@@ -16,7 +16,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const { children } = props;
 
   // prefetch here
-  const { isFetched, isFetching } = useAllNames();
+  const { isFetching } = useAllNames();
   const { useLeaderboard } = useLeaderboardState();
   const {
     top = [],
@@ -24,6 +24,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
     singleCharacter = [],
     oneKClub = [],
     tenKClub = [],
+    isFetched,
   } = useLeaderboard();
 
   const router = useRouter();
@@ -72,17 +73,17 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const getContent = () => {
     switch (tab) {
       case 0:
-        return <Top50 ranking={top} />;
+        return <Top50 ranking={top} isFetched={isFetched} />;
       case 1:
-        return <Ranking ranking={singleEmoji} />;
+        return <Ranking ranking={singleEmoji} isFetched={isFetched} />;
       case 2:
-        return <Ranking ranking={singleCharacter} />;
+        return <Ranking ranking={singleCharacter} isFetched={isFetched} />;
       case 3:
-        return <Ranking ranking={oneKClub} />;
+        return <Ranking ranking={oneKClub} isFetched={isFetched} />;
       case 4:
-        return <Ranking ranking={tenKClub} />;
+        return <Ranking ranking={tenKClub} isFetched={isFetched} />;
       default:
-        return <Top50 ranking={top} />;
+        return <Top50 ranking={top} isFetched={isFetched} />;
     }
   };
 

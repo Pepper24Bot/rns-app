@@ -49,7 +49,22 @@ export const ColumnContainer = styled(Grid)(({ theme }) => ({
   margin: "4px 8px",
 }));
 
-export const ColumnContent = styled(Grid)(({ theme }) => ({}));
+export const ColumnContent = styled(Grid)(({ theme }) => ({
+  padding: "16px",
+  borderBottom: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+  borderLeft: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+
+  overflow: "overlay",
+  overscrollBehavior: "contain",
+
+  "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+    backgroundColor: theme.palette.background.paper,
+  },
+
+  "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+    backgroundColor: darken(theme.palette.primary.main, 0.85),
+  },
+}));
 
 export const Row = styled(FlexJustified)(({ theme }) => ({
   alignItems: "center",

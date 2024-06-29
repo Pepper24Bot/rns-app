@@ -1,11 +1,13 @@
 import React from "react";
 import { Grid, styled } from "@mui/material";
-import {
-  TopRanking,
-  useLeaderboardState,
-} from "@/redux/leaderboard/leaderboardSlice";
+import { TopRanking } from "@/redux/leaderboard/leaderboardSlice";
 import { getMaskedAddress } from "@/utils/common";
-import { Flex, FlexCenter } from "@/components/Theme/StyledGlobal";
+import {
+  Flex,
+  FlexCenter,
+  Relative,
+  SkeletonTypography,
+} from "@/components/Theme/StyledGlobal";
 import {
   TopContainer,
   TopTotalCount,
@@ -19,23 +21,23 @@ import {
   Divider,
   HighlightValue,
 } from "../StyledLeaderboard";
+import { EMPTY_ADDRESS } from "@/constants/components";
+import { isEmpty } from "lodash";
 import Image from "next/image";
 
-const Container = styled(Grid)(({ theme }) => ({
-  // marginTop: "20px",
-  // height: "500px",
-  // overflow: "overlay",
-}));
+const Container = styled(Grid)(({ theme }) => ({}));
 
 const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({
   height: "500px",
-  overflow: "overlay",
 }));
 
-export const Top50: React.FC<{ ranking: TopRanking[] }> = (props: {
+interface TopRankingProps {
   ranking: TopRanking[];
-}) => {
-  const { ranking } = props;
+  isFetched?: boolean;
+}
+
+export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
+  const { ranking, isFetched } = props;
 
   const top3 = ranking?.slice(0, 3);
   const ranks = [ranking?.slice(3, 27), ranking?.slice(27, 50)];
@@ -43,7 +45,7 @@ export const Top50: React.FC<{ ranking: TopRanking[] }> = (props: {
   return (
     <Grid>
       <FlexCenter container p={2} mt={6} mb={4}>
-        {top3?.map((rank, index) => {
+        {[...Array(3)].map((_, index) => {
           return (
             <TopContainer key={`top-${index + 1}`} xs={3} mx={1} container>
               <Flex mr={1}>
@@ -55,12 +57,19 @@ export const Top50: React.FC<{ ranking: TopRanking[] }> = (props: {
                 />
               </Flex>
               <Grid pb={1}>
-                <Grid>
-                  <TopTotalCount>{rank.total}</TopTotalCount>
-                </Grid>
-                <Grid>
-                  <TopHolder>{getMaskedAddress(rank.owner || "")}</TopHolder>
-                </Grid>
+                <Relative>
+                  <SkeletonTypography isloading={!isFetched} />
+                  <TopTotalCount isloading={!isFetched}>
+                    {top3[index]?.total || "0000"}
+                  </TopTotalCount>
+                </Relative>
+                <Relative>
+                  <SkeletonTypography isloading={!isFetched} />
+                  <TopHolder isloading={!isFetched}>
+                    {/* Pass empty address for skeleton loading */}
+                    {getMaskedAddress(top3[index]?.owner || EMPTY_ADDRESS)}
+                  </TopHolder>
+                </Relative>
               </Grid>
             </TopContainer>
           );
@@ -94,25 +103,36 @@ export const Top50: React.FC<{ ranking: TopRanking[] }> = (props: {
                   </Grid>
                 </Header>
                 <ColumnContent>
-                  {rank?.map((holder, index) => {
-                    return (
-                      <Row container key={`${holder.owner}-${index}`}>
-                        <Grid item xs={2}>
-                          <RowText pl={4}>
-                            {columnIndex ? index + 28 : index + 4}
-                          </RowText>
-                        </Grid>
-                        <Grid item xs={5} pl={2}>
-                          <RowText>
-                            {getMaskedAddress(holder.owner || "")}
-                          </RowText>
-                        </Grid>
-                        <FlexCenter item xs={4}>
-                          <HighlightValue>{holder.total}</HighlightValue>
-                        </FlexCenter>
-                      </Row>
-                    );
-                  })}
+                  {[...(isEmpty(rank) ? Array(10) : rank)]?.map(
+                    (holder, index) => {
+                      return (
+                        <Row container key={`${holder?.owner}-${index}`}>
+                          <Relative item xs={2}>
+                            <RowText pl={4}>
+                              {columnIndex ? index + 28 : index + 4}
+                            </RowText>
+                          </Relative>
+                          <Relative item xs={5} pl={2}>
+                            <SkeletonTypography isloading={!isFetched} />
+                            <RowText isloading={!isFetched}>
+                              {getMaskedAddress(holder?.owner || EMPTY_ADDRESS)}
+                            </RowText>
+                          </Relative>
+                          <Relative
+                            display="flex"
+                            justifyContent="center"
+                            item
+                            xs={4}
+                          >
+                            <SkeletonTypography isloading={!isFetched} />
+                            <HighlightValue isloading={!isFetched}>
+                              {holder?.total || "000"}
+                            </HighlightValue>
+                          </Relative>
+                        </Row>
+                      );
+                    }
+                  )}
                 </ColumnContent>
               </ColumnContainer>
             </Grid>
