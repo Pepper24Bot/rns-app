@@ -43,11 +43,13 @@ export default function useAllNames(props?: Props) {
       new Map()
     );
 
+    const maxLength = groupedBy.size > 50 ? 50 : groupedBy.size;
+
     const sorted = [...groupedBy.entries()]
       .sort((a, b) => {
         return b[1].length - a[1].length;
       })
-      .slice(0, 50)
+      .slice(0, maxLength)
       .map((item) => {
         return {
           owner: item[0],
@@ -122,6 +124,7 @@ export default function useAllNames(props?: Props) {
       oneKClub: sortedOneK,
       tenKClub: sortedTenK,
       isFetched: true,
+      totalNames: domains?.length,
     });
   };
 
@@ -140,7 +143,7 @@ export default function useAllNames(props?: Props) {
         setLastQueryId(queryId);
       }
     }
-  }, [data?.domains[999]]);
+  }, [data?.domains]);
 
   useEffect(() => {
     if (lastId && !isEmpty(data?.domains) && !isSuccess) {

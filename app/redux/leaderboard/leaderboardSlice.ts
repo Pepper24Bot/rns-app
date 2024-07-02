@@ -33,6 +33,7 @@ export interface LeaderBoardState {
     oneKClub?: ClubRanking[],
     tenKClub?: ClubRanking[],
     isFetched?: boolean,
+    totalNames?: number
 }
 
 const initialState: LeaderBoardState = {

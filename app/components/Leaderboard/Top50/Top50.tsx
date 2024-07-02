@@ -34,13 +34,15 @@ const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({
 interface TopRankingProps {
   ranking: TopRanking[];
   isFetched?: boolean;
+  totalNames?: number;
 }
 
 export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
-  const { ranking, isFetched } = props;
+  const { ranking, isFetched, totalNames } = props;
 
   const top3 = ranking?.slice(0, 3);
-  const ranks = [ranking?.slice(3, 27), ranking?.slice(27, 50)];
+  const end = Math.floor(ranking?.length / 2 + 3) - 1;
+  const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
 
   return (
     <Grid>
@@ -75,7 +77,17 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
           );
         })}
       </FlexCenter>
-      <Divider />
+      <Divider textAlign="right">
+        <Flex>
+          <RowText pr={1}>Total Registered Identities:</RowText>
+          <Relative>
+            <SkeletonTypography isloading={!isFetched} />
+            <HighlightValue isloading={!isFetched}>
+              {Number(totalNames).toLocaleString() || 0}
+            </HighlightValue>
+          </Relative>
+        </Flex>
+      </Divider>
       <Container container>
         {ranks?.map((rank, columnIndex) => {
           return (
@@ -109,11 +121,14 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                         <Row container key={`${holder?.owner}-${index}`}>
                           <Relative item xs={2}>
                             <RowText pl={4}>
-                              {columnIndex ? index + 28 : index + 4}
+                              {columnIndex ? index + end + 1 : index + 4}
                             </RowText>
                           </Relative>
                           <Relative item xs={5} pl={2}>
-                            <SkeletonTypography isloading={!isFetched} />
+                            <SkeletonTypography
+                              isloading={!isFetched}
+                              width="85%"
+                            />
                             <RowText isloading={!isFetched}>
                               {getMaskedAddress(holder?.owner || EMPTY_ADDRESS)}
                             </RowText>
@@ -124,7 +139,10 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                             item
                             xs={4}
                           >
-                            <SkeletonTypography isloading={!isFetched} />
+                            <SkeletonTypography
+                              isloading={!isFetched}
+                              width="60%"
+                            />
                             <HighlightValue isloading={!isFetched}>
                               {holder?.total || "000"}
                             </HighlightValue>

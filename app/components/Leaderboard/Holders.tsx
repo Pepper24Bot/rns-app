@@ -25,6 +25,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
     oneKClub = [],
     tenKClub = [],
     isFetched,
+    totalNames,
   } = useLeaderboard();
 
   const router = useRouter();
@@ -73,7 +74,9 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const getContent = () => {
     switch (tab) {
       case 0:
-        return <Top50 ranking={top} isFetched={isFetched} />;
+        return (
+          <Top50 ranking={top} isFetched={isFetched} totalNames={totalNames} />
+        );
       case 1:
         return <Ranking ranking={singleEmoji} isFetched={isFetched} />;
       case 2:
@@ -83,7 +86,9 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
       case 4:
         return <Ranking ranking={tenKClub} isFetched={isFetched} />;
       default:
-        return <Top50 ranking={top} isFetched={isFetched} />;
+        return (
+          <Top50 ranking={top} isFetched={isFetched} totalNames={totalNames} />
+        );
     }
   };
 

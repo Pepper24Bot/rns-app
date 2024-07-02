@@ -42,7 +42,6 @@ export const graphqlApi = api.enhanceEndpoints({
         NamesByAddress: {
             transformResponse: (response: NamesByAddressResponse, meta, arg) => {
                 const { ensName, sortByLength, orderDirection } = arg as NamesByAddressQueryVariables
-
                 const domains = response.domains
 
                 const newList = domains.map((domain) => {

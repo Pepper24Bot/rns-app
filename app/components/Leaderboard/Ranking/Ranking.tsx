@@ -70,7 +70,7 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
         </Grid>
 
         <ContentContainer>
-          {[...(isEmpty(ranking) ? Array(10) : ranking)]?.map((rank, index) => {
+          {[...(!isFetched ? Array(10) : ranking)]?.map((rank, index) => {
             return (
               <Grid key={`emoji-${rank?.owner}-${index}`} container>
                 <FlexCenter item xs={0.5}>
@@ -99,6 +99,10 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
               </Grid>
             );
           })}
+
+          {isFetched && isEmpty(ranking) && (
+            <RowText pt={3}>There is no name found under this category</RowText>
+          )}
         </ContentContainer>
       </ColumnContainer>
     </Grid>
