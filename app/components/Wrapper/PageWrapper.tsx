@@ -35,7 +35,7 @@ export interface WrapperProps {
 export const PageWrapper: React.FC<WrapperProps> = (props: WrapperProps) => {
   const { children } = props;
   return (
-    <WagmiProvider config={config as unknown as Config}>
+    <WagmiProvider config={config as unknown as Config} reconnectOnMount={true}>
       {/* Tanstack Provider - Server side and needed by wagmi */}
       <QueryClientProvider client={queryClient}>
         {/* RTK Query Provider - Client side State Management */}

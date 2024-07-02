@@ -18,31 +18,52 @@ export interface Ranking {
     expiryDate?: string
 }
 
-export interface TopRanking extends Ranking { }
-
-export interface SingleRanking extends Ranking {
+export interface TopRanking {
+    isFetched?: boolean,
+    ranking?: Ranking[]
 }
 
-export interface ClubRanking extends Ranking {
+export interface SingleRanking {
+    isFetched?: boolean,
+    ranking?: Ranking[]
+}
+
+export interface ClubRanking {
+    isFetched?: boolean,
+    ranking?: Ranking[]
 }
 
 export interface LeaderBoardState {
-    top?: TopRanking[],
-    singleEmoji?: SingleRanking[],
-    singleCharacter?: SingleRanking[],
-    oneKClub?: ClubRanking[],
-    tenKClub?: ClubRanking[],
+    top?: TopRanking,
+    singleEmoji?: SingleRanking,
+    singleCharacter?: SingleRanking,
+    oneKClub?: SingleRanking,
+    tenKClub?: SingleRanking,
     isFetched?: boolean,
-    totalNames?: number
+    totalCountNames?: number
 }
 
 const initialState: LeaderBoardState = {
-    top: [],
-    singleEmoji: [],
-    singleCharacter: [],
-    oneKClub: [],
-    tenKClub: [],
-    isFetched: false
+    top: {
+        isFetched: false,
+        ranking: [],
+    },
+    singleEmoji: {
+        isFetched: false,
+        ranking: [],
+    },
+    singleCharacter: {
+        isFetched: false,
+        ranking: [],
+    },
+    oneKClub: {
+        isFetched: false,
+        ranking: [],
+    },
+    tenKClub: {
+        isFetched: false,
+        ranking: [],
+    },
 }
 
 export const leaderboardState = createSlice({
@@ -54,23 +75,23 @@ export const leaderboardState = createSlice({
             return state
         },
 
-        updateTopRanking: (state, { payload }: { payload: TopRanking[] }): LeaderBoardState => {
+        updateTopRanking: (state, { payload }: { payload: TopRanking }): LeaderBoardState => {
             state.top = payload
             return state
         },
-        updateEmojiRanking: (state, { payload }: { payload: SingleRanking[] }): LeaderBoardState => {
+        updateEmojiRanking: (state, { payload }: { payload: SingleRanking }): LeaderBoardState => {
             state.singleEmoji = payload
             return state
         },
-        updateCharacterRanking: (state, { payload }: { payload: SingleRanking[] }): LeaderBoardState => {
+        updateCharacterRanking: (state, { payload }: { payload: SingleRanking }): LeaderBoardState => {
             state.singleCharacter = payload
             return state
         },
-        update999ClubRanking: (state, { payload }: { payload: ClubRanking[] }): LeaderBoardState => {
+        update999ClubRanking: (state, { payload }: { payload: SingleRanking }): LeaderBoardState => {
             state.oneKClub = payload
             return state
         },
-        update10kClubRanking: (state, { payload }: { payload: ClubRanking[] }): LeaderBoardState => {
+        update10kClubRanking: (state, { payload }: { payload: SingleRanking }): LeaderBoardState => {
             state.tenKClub = payload
             return state
         }
@@ -86,24 +107,24 @@ export const useLeaderboardState = () => {
             dispatch(actions.updateRankings({ ...ranking }))
         },
 
-        updateTopRanking: (ranking: TopRanking[]) => {
-            dispatch(actions.updateTopRanking([...ranking]))
+        updateTopRanking: (ranking: TopRanking) => {
+            dispatch(actions.updateTopRanking({ ...ranking }))
         },
 
-        updateEmojiRanking: (ranking: SingleRanking[]) => {
-            dispatch(actions.updateEmojiRanking([...ranking]))
+        updateEmojiRanking: (ranking: SingleRanking) => {
+            dispatch(actions.updateEmojiRanking({ ...ranking }))
         },
 
-        updateCharacterRanking: (ranking: SingleRanking[]) => {
-            dispatch(actions.updateCharacterRanking([...ranking]))
+        updateCharacterRanking: (ranking: SingleRanking) => {
+            dispatch(actions.updateCharacterRanking({ ...ranking }))
         },
 
-        update999ClubRanking: (ranking: ClubRanking[]) => {
-            dispatch(actions.update999ClubRanking([...ranking]))
+        update999ClubRanking: (ranking: SingleRanking) => {
+            dispatch(actions.update999ClubRanking({ ...ranking }))
         },
 
-        update10kClubRanking: (ranking: ClubRanking[]) => {
-            dispatch(actions.update10kClubRanking([...ranking]))
+        update10kClubRanking: (ranking: SingleRanking) => {
+            dispatch(actions.update10kClubRanking({ ...ranking }))
         },
 
         useLeaderboard: () => {

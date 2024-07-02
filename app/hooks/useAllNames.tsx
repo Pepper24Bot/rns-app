@@ -1,13 +1,14 @@
+import { config } from "@/chains/config";
 import { NameResponse, useNamesQuery } from "@/redux/graphql/graphqlApi";
 import {
-  ClubRanking,
-  SingleRanking,
-  TopRanking,
+  Ranking,
   useLeaderboardState,
 } from "@/redux/leaderboard/leaderboardSlice";
 import { findCharacterSet, getExpiry } from "@/utils/common";
+import { getEnsName } from "@wagmi/core";
 import { isEmpty } from "lodash";
 import { useEffect, useState } from "react";
+import { Address } from "viem";
 
 interface Props {
   /** Flag to know whether the hook will be called */
@@ -21,19 +22,13 @@ export default function useAllNames(props?: Props) {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [domains, setDomains] = useState<NameResponse[]>([]);
 
-  const [topFifty, setTopFity] = useState<TopRanking[]>([]);
-  const [singleEmojis, setSingleEmojis] = useState<SingleRanking[]>([]);
-  const [singleCharacters, setSingleCharacters] = useState<SingleRanking[]>([]);
-  const [oneKClub, setOneKClub] = useState<ClubRanking[]>([]);
-  const [tenKClub, setTenKClub] = useState<ClubRanking[]>([]);
-
   const { data } = useNamesQuery({ lastId: lastQueryId }, { skip: isFetched });
   const { updateTopRanking, updateRankings, useLeaderboard } =
     useLeaderboardState();
 
   const { isFetched: isSuccess } = useLeaderboard();
 
-  const getTop50Ranking = () => {
+  const getTop50Ranking = async () => {
     const groupedBy = domains.reduce(
       (entryMap, item) =>
         entryMap.set(item?.wrappedOwner?.id, [
@@ -45,24 +40,38 @@ export default function useAllNames(props?: Props) {
 
     const maxLength = groupedBy.size > 50 ? 50 : groupedBy.size;
 
-    const sorted = [...groupedBy.entries()]
-      .sort((a, b) => {
-        return b[1].length - a[1].length;
-      })
-      .slice(0, maxLength)
-      .map((item) => {
-        return {
-          owner: item[0],
-          names: item[1],
-          total: item[1].length,
-        };
-      });
+    const sorted = await Promise.all(
+      [...groupedBy.entries()]
+        .sort((a, b) => {
+          return b[1].length - a[1].length;
+        })
+        .slice(0, maxLength)
+        .map(async (item, index) => {
+          const response = await getEnsName(config, {
+            address: item[0] as Address,
+          });
 
-    setTopFity(sorted);
-    updateTopRanking(sorted);
+          return {
+            owner: item[0],
+            names: item[1],
+            total: item[1].length,
+            primary: response as string,
+          };
+        })
+    );
+
+    updateTopRanking({
+      isFetched: true,
+      ranking: [...sorted],
+    });
   };
 
   const getRankings = () => {
+    const singleEmojis: Ranking[] = [];
+    const singleCharacters: Ranking[] = [];
+    const oneKClub: Ranking[] = [];
+    const tenKClub: Ranking[] = [];
+
     domains?.forEach(({ wrappedOwner, labelName, expiryDate }, index) => {
       const itemData = {
         owner: wrappedOwner?.id,
@@ -113,18 +122,24 @@ export default function useAllNames(props?: Props) {
       return Number(a.label) - Number(b.label);
     });
 
-    setSingleEmojis([...singleEmojis]);
-    setSingleCharacters([...sortedCharacter]);
-    setOneKClub([...sortedOneK]);
-    setTenKClub([...sortedTenK]);
-
     updateRankings({
-      singleEmoji: singleEmojis,
-      singleCharacter: sortedCharacter,
-      oneKClub: sortedOneK,
-      tenKClub: sortedTenK,
-      isFetched: true,
-      totalNames: domains?.length,
+      singleEmoji: {
+        isFetched: true,
+        ranking: [...singleEmojis],
+      },
+      singleCharacter: {
+        isFetched: true,
+        ranking: [...sortedCharacter],
+      },
+      oneKClub: {
+        isFetched: true,
+        ranking: [...sortedOneK],
+      },
+      tenKClub: {
+        isFetched: true,
+        ranking: [...sortedTenK],
+      },
+      totalCountNames: domains?.length,
     });
   };
 
@@ -164,10 +179,5 @@ export default function useAllNames(props?: Props) {
     domains,
     isFetching,
     isFetched,
-    topFifty,
-    singleEmojis,
-    singleCharacters,
-    oneKClub,
-    tenKClub,
   };
 }

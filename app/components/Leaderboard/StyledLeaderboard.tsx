@@ -28,11 +28,6 @@ export const TopTotalCount = styled(SecondaryLabel)(({ theme }) => ({
   fontWeight: FONT_WEIGHT.Bold,
 }));
 
-export const TopHolder = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "16px",
-  color: alpha(theme.palette.text.primary, 0.75),
-}));
-
 export const Header = styled(FlexJustified)(({ theme }) => ({
   padding: "16px",
   backgroundColor: alpha(theme.palette.primary.dark, 0.05),
@@ -75,9 +70,17 @@ export const Row = styled(FlexJustified)(({ theme }) => ({
   border: `solid 1px ${darken(theme.palette.primary.main, 0.85)}`,
 }));
 
-export const RowText = styled(SecondaryLabel)(({ theme }) => ({
+export const RowText = styled(SecondaryLabel, {
+  shouldForwardProp: (prop) => prop !== "isPrimary",
+})<{ isPrimary?: boolean }>(({ theme, isPrimary }) => ({
   fontSize: "16px",
-  color: theme.palette.text.primary,
+  color: isPrimary ? theme.palette.primary.main : theme.palette.text.primary,
+}));
+
+export const TopHolder = styled(RowText)(({ theme, isPrimary }) => ({
+  color: isPrimary
+    ? theme.palette.primary.main
+    : alpha(theme.palette.text.primary, 0.75),
 }));
 
 export const HighlightValue = styled(RowText)(({ theme }) => ({

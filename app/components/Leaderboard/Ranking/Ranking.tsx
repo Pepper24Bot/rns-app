@@ -44,12 +44,13 @@ const RelativeCenter = styled(FlexCenter)(({ theme }) => ({
 }));
 
 interface RankingProps {
-  ranking: SingleRanking[];
-  isFetched?: boolean;
+  leaderboard: SingleRanking;
 }
 
 export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
-  const { ranking, isFetched } = props;
+  const {
+    leaderboard: { isFetched, ranking = [] },
+  } = props;
 
   return (
     <Grid mt={2}>

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, styled } from "@mui/material";
-import { TopRanking } from "@/redux/leaderboard/leaderboardSlice";
+import { Ranking, TopRanking } from "@/redux/leaderboard/leaderboardSlice";
 import { getMaskedAddress } from "@/utils/common";
 import {
   Flex,
@@ -28,17 +28,20 @@ import Image from "next/image";
 const Container = styled(Grid)(({ theme }) => ({}));
 
 const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({
-  height: "500px",
+  maxHeight: "500px",
 }));
 
 interface TopRankingProps {
-  ranking: TopRanking[];
+  leaderboard: TopRanking;
   isFetched?: boolean;
   totalNames?: number;
 }
 
 export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
-  const { ranking, isFetched, totalNames } = props;
+  const {
+    leaderboard: { ranking = [], isFetched },
+    totalNames,
+  } = props;
 
   const top3 = ranking?.slice(0, 3);
   const end = Math.floor(ranking?.length / 2 + 3) - 1;
@@ -67,9 +70,13 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                 </Relative>
                 <Relative>
                   <SkeletonTypography isloading={!isFetched} />
-                  <TopHolder isloading={!isFetched}>
+                  <TopHolder
+                    isloading={!isFetched}
+                    isPrimary={!!top3[index]?.primary}
+                  >
                     {/* Pass empty address for skeleton loading */}
-                    {getMaskedAddress(top3[index]?.owner || EMPTY_ADDRESS)}
+                    {top3[index]?.primary ||
+                      getMaskedAddress(top3[index]?.owner || EMPTY_ADDRESS)}
                   </TopHolder>
                 </Relative>
               </Grid>
@@ -116,7 +123,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                 </Header>
                 <ColumnContent>
                   {[...(isEmpty(rank) ? Array(10) : rank)]?.map(
-                    (holder, index) => {
+                    (holder: Ranking, index) => {
                       return (
                         <Row container key={`${holder?.owner}-${index}`}>
                           <Relative item xs={2}>
@@ -129,8 +136,14 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                               isloading={!isFetched}
                               width="85%"
                             />
-                            <RowText isloading={!isFetched}>
-                              {getMaskedAddress(holder?.owner || EMPTY_ADDRESS)}
+                            <RowText
+                              isloading={!isFetched}
+                              isPrimary={!!holder?.primary}
+                            >
+                              {holder?.primary ||
+                                getMaskedAddress(
+                                  holder?.owner || EMPTY_ADDRESS
+                                )}
                             </RowText>
                           </Relative>
                           <Relative

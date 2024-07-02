@@ -16,16 +16,15 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const { children } = props;
 
   // prefetch here
-  const { isFetching } = useAllNames();
+  const {} = useAllNames();
   const { useLeaderboard } = useLeaderboardState();
   const {
-    top = [],
-    singleEmoji = [],
-    singleCharacter = [],
-    oneKClub = [],
-    tenKClub = [],
-    isFetched,
-    totalNames,
+    top = { ranking: [] },
+    singleEmoji = { ranking: [] },
+    singleCharacter = { ranking: [] },
+    oneKClub = { ranking: [] },
+    tenKClub = { ranking: [] },
+    totalCountNames: totalNames,
   } = useLeaderboard();
 
   const router = useRouter();
@@ -74,21 +73,17 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const getContent = () => {
     switch (tab) {
       case 0:
-        return (
-          <Top50 ranking={top} isFetched={isFetched} totalNames={totalNames} />
-        );
+        return <Top50 leaderboard={top} totalNames={totalNames} />;
       case 1:
-        return <Ranking ranking={singleEmoji} isFetched={isFetched} />;
+        return <Ranking leaderboard={singleEmoji} />;
       case 2:
-        return <Ranking ranking={singleCharacter} isFetched={isFetched} />;
+        return <Ranking leaderboard={singleCharacter} />;
       case 3:
-        return <Ranking ranking={oneKClub} isFetched={isFetched} />;
+        return <Ranking leaderboard={oneKClub} />;
       case 4:
-        return <Ranking ranking={tenKClub} isFetched={isFetched} />;
+        return <Ranking leaderboard={tenKClub} />;
       default:
-        return (
-          <Top50 ranking={top} isFetched={isFetched} totalNames={totalNames} />
-        );
+        return <Top50 leaderboard={top} totalNames={totalNames} />;
     }
   };
 
