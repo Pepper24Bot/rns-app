@@ -80,8 +80,9 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
                 <Row container item xs>
                   <Relative item xs={5}>
                     <SkeletonTypography isloading={!isFetched} />
-                    <RowText isloading={!isFetched}>
-                      {getMaskedAddress(rank?.owner || EMPTY_ADDRESS)}
+                    <RowText isloading={!isFetched} isPrimary={!!rank?.primary}>
+                      {rank?.primary ||
+                        getMaskedAddress(rank?.owner || EMPTY_ADDRESS)}
                     </RowText>
                   </Relative>
                   <RelativeCenter item xs={3}>

@@ -15,6 +15,13 @@ interface Props {
   skip?: boolean;
 }
 
+interface PushProps {
+  labelName: string;
+  length: number;
+  item: Ranking;
+  ranks: Ranking[];
+}
+
 export default function useAllNames(props?: Props) {
   const [lastQueryId, setLastQueryId] = useState<string>("");
   const [lastId, setLastId] = useState<string>("");
@@ -22,11 +29,142 @@ export default function useAllNames(props?: Props) {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [domains, setDomains] = useState<NameResponse[]>([]);
 
-  const { data } = useNamesQuery({ lastId: lastQueryId }, { skip: isFetched });
-  const { updateTopRanking, updateRankings, useLeaderboard } =
-    useLeaderboardState();
+  const [rankings, setRankings] = useState<Ranking[]>([]);
 
-  const { isFetched: isSuccess } = useLeaderboard();
+  const { data } = useNamesQuery({ lastId: lastQueryId }, { skip: isFetched });
+  const { updateRankings, useLeaderboard } = useLeaderboardState();
+
+  const { top: { isFetched: isSuccess } = { isFetched: false } } =
+    useLeaderboard();
+
+  const pushToEmojis = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (findCharacterSet(labelName) === "emoji" && length <= 2) {
+      ranks.push(item);
+    }
+  };
+
+  const pushToCharacters = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (
+      (findCharacterSet(labelName) === "letter" ||
+        findCharacterSet(labelName) === "digit") &&
+      length === 1
+    ) {
+      ranks.push(item);
+    }
+  };
+
+  const pushToOneKClub = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (
+      findCharacterSet(labelName) === "digit" &&
+      length <= 3 &&
+      Number(labelName) < 1000 &&
+      String(parseInt(labelName)).length === length
+    ) {
+      ranks.push(item);
+    }
+  };
+
+  const pushToTenKClub = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (
+      findCharacterSet(labelName) === "digit" &&
+      length <= 4 &&
+      Number(labelName) < 10000 &&
+      Number(labelName) > 999
+    ) {
+      ranks.push(item);
+    }
+  };
+
+  const groupNameByAddres = (items: Ranking[]) => {
+    const groupedByOwner = items.reduce(
+      (entryMap, item) =>
+        entryMap.set(item.owner, [...(entryMap.get(item.owner) || []), item]),
+      new Map()
+    );
+
+    return groupedByOwner;
+  };
+
+  const primaryMapper = (items: Ranking[], ranksWithPrimary: Ranking[]) => {
+    return items.map((item) => {
+      const data = [...rankings, ...ranksWithPrimary].find((name) => {
+        return name.owner === item.owner;
+      });
+
+      return {
+        ...data,
+        ...item,
+      };
+    });
+  };
+
+  // only fetch names that are not yet fetched by TopRanking50
+  const getPrimaryNamesOfAllranks = async (items: Ranking[]) => {
+    const filteredNames: Ranking[] = [];
+
+    /**
+     * group names by address to avoid calling getEnsName multiple times on the same address.
+     * and filter the address, address that exists already in rankings list, should
+     * not be included in the new list, to lessen api calls
+     */
+    groupNameByAddres(items).forEach((name, index) => {
+      const isExist = rankings?.find((rank) => {
+        return rank.owner === name[0].owner;
+      });
+
+      if (isEmpty(isExist)) {
+        filteredNames.push(name[0]);
+      }
+    });
+
+    // get primary names
+    const primaryNames = await Promise.all(
+      filteredNames?.map(async (name, index) => {
+        const response = await getEnsName(config, {
+          address: name.owner as Address,
+        });
+
+        return {
+          ...name,
+          primary: response as string,
+        };
+      })
+    );
+
+    return primaryNames;
+  };
+
+  const appendPrimaryInCharacters = (
+    items: Ranking[],
+    ranksWithPrimary: Ranking[]
+  ) => {
+    const sortedItems = items.sort((a, b) => {
+      return (
+        a.label?.localeCompare(b.label || "", "en", { numeric: true }) || 0
+      );
+    });
+
+    return primaryMapper(sortedItems, ranksWithPrimary);
+  };
+
+  const appendPrimaryInClubRank = (
+    items: Ranking[],
+    ranksWithPrimary: Ranking[]
+  ) => {
+    const sortedItems = items.sort((a, b) => {
+      return Number(a.label) - Number(b.label);
+    });
+
+    return primaryMapper(sortedItems, ranksWithPrimary);
+  };
 
   const getTop50Ranking = async () => {
     const groupedBy = domains.reduce(
@@ -40,96 +178,90 @@ export default function useAllNames(props?: Props) {
 
     const maxLength = groupedBy.size > 50 ? 50 : groupedBy.size;
 
-    const sorted = await Promise.all(
-      [...groupedBy.entries()]
-        .sort((a, b) => {
-          return b[1].length - a[1].length;
-        })
-        .slice(0, maxLength)
-        .map(async (item, index) => {
-          const response = await getEnsName(config, {
-            address: item[0] as Address,
-          });
+    const sorted = [...groupedBy.entries()]
+      .sort((a, b) => {
+        return b[1].length - a[1].length;
+      })
+      .slice(0, maxLength);
 
-          return {
-            owner: item[0],
-            names: item[1],
-            total: item[1].length,
-            primary: response as string,
-          };
-        })
+    const mappedNames = await Promise.all(
+      sorted.map(async (item, index) => {
+        const response = await getEnsName(config, {
+          address: item[0] as Address,
+        });
+
+        return {
+          owner: item[0],
+          names: item[1],
+          total: item[1].length,
+          primary: response as string,
+        };
+      })
     );
 
-    updateTopRanking({
-      isFetched: true,
-      ranking: [...sorted],
+    setRankings(mappedNames);
+    updateRankings({
+      top: {
+        isFetched: true,
+        ranking: [...mappedNames],
+      },
+      allRankings: [...mappedNames],
+      totalCountNames: domains?.length,
     });
   };
 
-  const getRankings = () => {
+  const getRankings = async () => {
     const singleEmojis: Ranking[] = [];
     const singleCharacters: Ranking[] = [];
     const oneKClub: Ranking[] = [];
     const tenKClub: Ranking[] = [];
 
+    // loop through each of the item and push to leaderboard categories
     domains?.forEach(({ wrappedOwner, labelName, expiryDate }, index) => {
-      const itemData = {
+      const item = {
         owner: wrappedOwner?.id,
         label: labelName,
         expiryDate: getExpiry(expiryDate).distance,
       };
 
-      const length = labelName.length;
+      const props = {
+        labelName,
+        length: labelName.length,
+        item,
+      };
 
-      if (findCharacterSet(labelName) === "emoji" && length <= 2) {
-        singleEmojis.push(itemData);
-      } else if (
-        (findCharacterSet(labelName) === "letter" ||
-          findCharacterSet(labelName) === "digit") &&
-        length === 1
-      ) {
-        singleCharacters.push(itemData);
-      }
-
-      if (
-        findCharacterSet(labelName) === "digit" &&
-        length <= 3 &&
-        Number(labelName) < 1000 &&
-        String(parseInt(labelName)).length === length
-      ) {
-        oneKClub.push(itemData);
-      } else if (
-        findCharacterSet(labelName) === "digit" &&
-        length <= 4 &&
-        Number(labelName) < 10000 &&
-        Number(labelName) > 999
-      ) {
-        tenKClub.push(itemData);
-      }
+      pushToEmojis({ ...props, ranks: singleEmojis });
+      pushToCharacters({ ...props, ranks: singleCharacters });
+      pushToOneKClub({ ...props, ranks: oneKClub });
+      pushToTenKClub({ ...props, ranks: tenKClub });
     });
 
-    const sortedCharacter = singleCharacters.sort((a, b) => {
-      return (
-        a.label?.localeCompare(b.label || "", "en", { numeric: true }) || 0
-      );
-    });
+    // get the primary names of the addresses in the ranking
+    const rankingsWithPrimary = await getPrimaryNamesOfAllranks([
+      ...singleEmojis,
+      ...singleCharacters,
+      ...oneKClub,
+      ...tenKClub,
+    ]);
 
-    const sortedOneK = oneKClub.sort((a, b) => {
-      return Number(a.label) - Number(b.label);
-    });
+    // loop through the items again and include the primary name
+    const emojisRank = primaryMapper(singleEmojis, rankingsWithPrimary);
+    const charactersRank = appendPrimaryInCharacters(
+      singleCharacters,
+      rankingsWithPrimary
+    );
 
-    const sortedTenK = tenKClub.sort((a, b) => {
-      return Number(a.label) - Number(b.label);
-    });
+    const sortedOneK = appendPrimaryInClubRank(oneKClub, rankingsWithPrimary);
+    const sortedTenK = appendPrimaryInClubRank(tenKClub, rankingsWithPrimary);
 
     updateRankings({
       singleEmoji: {
         isFetched: true,
-        ranking: [...singleEmojis],
+        ranking: [...emojisRank],
       },
       singleCharacter: {
         isFetched: true,
-        ranking: [...sortedCharacter],
+        ranking: [...charactersRank],
       },
       oneKClub: {
         isFetched: true,
@@ -139,7 +271,6 @@ export default function useAllNames(props?: Props) {
         isFetched: true,
         ranking: [...sortedTenK],
       },
-      totalCountNames: domains?.length,
     });
   };
 
@@ -171,9 +302,14 @@ export default function useAllNames(props?: Props) {
   useEffect(() => {
     if (isFetched) {
       getTop50Ranking();
-      getRankings();
     }
   }, [isFetched]);
+
+  useEffect(() => {
+    if (!isEmpty(rankings)) {
+      getRankings();
+    }
+  }, [rankings?.length]);
 
   return {
     domains,

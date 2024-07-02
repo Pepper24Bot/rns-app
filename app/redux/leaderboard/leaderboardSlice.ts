@@ -39,8 +39,8 @@ export interface LeaderBoardState {
     singleCharacter?: SingleRanking,
     oneKClub?: SingleRanking,
     tenKClub?: SingleRanking,
-    isFetched?: boolean,
-    totalCountNames?: number
+    totalCountNames?: number,
+    allRankings?: Ranking[]
 }
 
 const initialState: LeaderBoardState = {
