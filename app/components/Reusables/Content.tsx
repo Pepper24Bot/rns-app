@@ -17,7 +17,6 @@ import {
 } from "../Theme/StyledGlobal";
 import { FONT_SIZE } from "../Theme/Global";
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
-import Toolbar from "./Toolbar";
 
 export const GridContainer = styled(FlexCenter)(({ theme }) => ({
   position: "relative",
@@ -115,10 +114,12 @@ export interface ContentProps {
   content: React.ReactNode;
   activeTab?: number;
   onTabChange: (tab: number) => void;
+  toolbar: React.ReactNode;
 }
 
 export const Content: React.FC<ContentProps> = (props: ContentProps) => {
-  const { isVisible, title, tabs, content, activeTab, onTabChange } = props;
+  const { isVisible, title, tabs, content, activeTab, onTabChange, toolbar } =
+    props;
 
   const { isFeatureEnabled } = useFeatureToggle();
 
@@ -131,7 +132,7 @@ export const Content: React.FC<ContentProps> = (props: ContentProps) => {
               <Title id={`${title}`}>{title}</Title>
             </Grid>
             <Grid item md={6} lg={5}>
-              <Toolbar />
+              {toolbar}
             </Grid>
           </FlexJustified>
           <ContentContainer>

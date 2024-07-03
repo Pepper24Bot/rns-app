@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 import Content from "../Reusables/Content";
+import Toolbar from "../Reusables/Toolbar";
 
 export interface DashboardProps {
   children?: React.ReactNode;
@@ -53,6 +54,7 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
       content={children}
       activeTab={getSelectedTab()}
       onTabChange={setPathNameFromTab}
+      toolbar={<Toolbar />}
     />
   );
 };

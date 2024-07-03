@@ -79,6 +79,8 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
       content={content}
       activeTab={tab || 0}
       onTabChange={setPathNameFromTab}
+      // TODO: Implement this
+      toolbar={<></>}
     />
   );
 };
