@@ -18,5 +18,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return <Holders />;
+  return <Holders tab={4} />;
 }

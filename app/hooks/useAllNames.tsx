@@ -63,8 +63,7 @@ export default function useAllNames(props?: Props) {
     if (
       findCharacterSet(labelName) === "digit" &&
       length <= 3 &&
-      Number(labelName) < 1000 &&
-      String(parseInt(labelName)).length === length
+      Number(labelName) < 1000
     ) {
       ranks.push(item);
     }
@@ -160,7 +159,10 @@ export default function useAllNames(props?: Props) {
     ranksWithPrimary: Ranking[]
   ) => {
     const sortedItems = items.sort((a, b) => {
-      return Number(a.label) - Number(b.label);
+      return a.label?.length === b.label?.length
+        ? Number(a.label) - Number(b.label)
+        : Number(a.label) - Number(b.label) &&
+            (a.label?.length || 0) - (b.label?.length || 0);
     });
 
     return primaryMapper(sortedItems, ranksWithPrimary);

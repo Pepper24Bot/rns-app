@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { LEADERBOARD_TAB_ITEMS } from "@/constants/components";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import Content from "../Reusables/Content";
@@ -10,10 +10,11 @@ import Ranking from "./Ranking/Ranking";
 
 export interface HolderProps {
   children?: React.ReactNode;
+  tab: number;
 }
 
 export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
-  const { children } = props;
+  const { tab: pageTab } = props;
 
   // prefetch here
   const {} = useAllNames();
@@ -28,26 +29,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   } = useLeaderboard();
 
   const router = useRouter();
-  const pathName = usePathname();
-
-  const getSelectedTab = () => {
-    switch (pathName) {
-      case "/leaderboard/top-50":
-        return 0;
-      case "/leaderboard/single-emoji":
-        return 1;
-      case "/leaderboard/single-character":
-        return 2;
-      case "/leaderboard/999-club":
-        return 3;
-      case "/leaderboard/10k-club":
-        return 4;
-      default:
-        return 0;
-    }
-  };
-
-  const [tab, setTab] = useState<number>(getSelectedTab());
+  const [tab, setTab] = useState<number>(pageTab);
 
   const setPathNameFromTab = (tab: number) => {
     setTab(tab);
@@ -70,7 +52,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
     }
   };
 
-  const getContent = () => {
+  const content = useMemo(() => {
     switch (tab) {
       case 0:
         return <Top50 leaderboard={top} totalNames={totalNames} />;
@@ -85,16 +67,15 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
       default:
         return <Top50 leaderboard={top} totalNames={totalNames} />;
     }
-  };
+  }, [tab, top.isFetched, singleEmoji.isFetched]);
 
-  // TODO: Add skeleton loading here
   return (
     <Content
       title="Holders"
       isVisible={true}
       tabs={LEADERBOARD_TAB_ITEMS}
-      content={getContent()}
-      activeTab={tab}
+      content={content}
+      activeTab={tab || 0}
       onTabChange={setPathNameFromTab}
     />
   );

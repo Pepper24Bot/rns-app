@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Grid, styled } from "@mui/material";
 import { SingleRanking } from "@/redux/leaderboard/leaderboardSlice";
 import {
@@ -111,4 +111,8 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
   );
 };
 
-export default Ranking;
+const MemoizedRanking = memo((props: RankingProps) => {
+  return <Ranking {...props} />;
+});
+
+export default MemoizedRanking;

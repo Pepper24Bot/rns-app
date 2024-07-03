@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { memo } from "react";
 import { Grid, styled } from "@mui/material";
 import { Ranking, TopRanking } from "@/redux/leaderboard/leaderboardSlice";
 import { getMaskedAddress } from "@/utils/common";
 import {
   Flex,
   FlexCenter,
+  InformationTip,
   Relative,
   SkeletonTypography,
 } from "@/components/Theme/StyledGlobal";
@@ -47,40 +48,55 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   const end = Math.floor(ranking?.length / 2 + 3) - 1;
   const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
 
+  const getTooltipContent = (item: any) => {
+    console.log("item:: ", item);
+    return <></>;
+  };
+
   return (
     <Grid>
       <FlexCenter container p={2} mt={6} mb={4}>
-        {[...Array(3)].map((_, index) => {
+        {[...Array(3)].map((item, index) => {
           return (
-            <TopContainer key={`top-${index + 1}`} xs={3} mx={1} container>
-              <Flex mr={1}>
-                <Image
-                  src={`/icons/ranking/rank${index + 1}.svg`}
-                  alt={`Badge-${index + 1}`}
-                  height={60}
-                  width={60}
-                />
-              </Flex>
-              <Grid pb={1}>
-                <Relative>
-                  <SkeletonTypography isloading={!isFetched} />
-                  <TopTotalCount isloading={!isFetched}>
-                    {top3[index]?.total || "0000"}
-                  </TopTotalCount>
-                </Relative>
-                <Relative>
-                  <SkeletonTypography isloading={!isFetched} />
-                  <TopHolder
-                    isloading={!isFetched}
-                    isPrimary={!!top3[index]?.primary}
-                  >
-                    {/* Pass empty address for skeleton loading */}
-                    {top3[index]?.primary ||
-                      getMaskedAddress(top3[index]?.owner || EMPTY_ADDRESS)}
-                  </TopHolder>
-                </Relative>
-              </Grid>
-            </TopContainer>
+            <InformationTip
+              key={`top-${index + 1}`}
+              arrow
+              placement="bottom"
+              title={
+                // !isEmpty(top3[index]) ? getTooltipContent(top3[index]) : ""
+                ""
+              }
+            >
+              <TopContainer xs={3} mx={1} container>
+                <Flex mr={1}>
+                  <Image
+                    src={`/icons/ranking/rank${index + 1}.svg`}
+                    alt={`Badge-${index + 1}`}
+                    height={60}
+                    width={60}
+                  />
+                </Flex>
+                <Grid pb={1}>
+                  <Relative>
+                    <SkeletonTypography isloading={!isFetched} />
+                    <TopTotalCount isloading={!isFetched}>
+                      {top3[index]?.total || "0000"}
+                    </TopTotalCount>
+                  </Relative>
+                  <Relative>
+                    <SkeletonTypography isloading={!isFetched} />
+                    <TopHolder
+                      isloading={!isFetched}
+                      isPrimary={!!top3[index]?.primary}
+                    >
+                      {/* Pass empty address for skeleton loading */}
+                      {top3[index]?.primary ||
+                        getMaskedAddress(top3[index]?.owner || EMPTY_ADDRESS)}
+                    </TopHolder>
+                  </Relative>
+                </Grid>
+              </TopContainer>
+            </InformationTip>
           );
         })}
       </FlexCenter>
@@ -174,4 +190,8 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   );
 };
 
-export default Top50;
+const MemoizedTop50 = memo((props: TopRankingProps) => {
+  return <Top50 {...props} />;
+});
+
+export default MemoizedTop50;
