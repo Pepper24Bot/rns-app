@@ -19,6 +19,7 @@ import { PrimaryProps } from "@/interfaces/global/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";
@@ -69,6 +70,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const { isFeatureEnabled } = useFeatureToggle();
   const { setAddressRecord } = useRecords();
   const { setPrimaryName, getPrimaryName, isLoading } = usePrimary();
+  const { refetchRanking } = useLeaderboardState();
 
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -209,6 +211,9 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
 
   useEffect(() => {
     if (isPrimaryCompleted) {
+      // Refresh the data in Leaderboard
+      refetchRanking();
+
       enqueueSnackbar(
         `Well done! You have successfully set ${name} as your primary`,
         { variant: "success" }

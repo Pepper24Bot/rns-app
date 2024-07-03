@@ -30,6 +30,7 @@ import { debounce as _debounce } from "lodash";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import EnsImage from "../Reusables/EnsImage";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -73,6 +74,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
+  const { refetchRanking } = useLeaderboardState();
 
   const { refetch: refetchEnsName } = useEnsName({
     address,
@@ -209,6 +211,9 @@ export const Transfer: React.FC<TransactionProps> = (
 
   useEffect(() => {
     if (isTransferred) {
+      // Refresh the data in Leaderboard
+      refetchRanking();
+
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `You have successfully transferred ${name} to ${getMaskedAddress(

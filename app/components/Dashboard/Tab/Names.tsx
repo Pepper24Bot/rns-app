@@ -103,9 +103,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const nameList = names || displayedNames;
 
   const isLoadingState =
-    isFetching ||
-    (!hasMounted && !displayedNames) ||
-    (!names && !displayedNames); // names is undefined initially
+    (isFetching && !nameList) || (!hasMounted && !nameList) || !nameList; // names is undefined initially
 
   const hasNoNamesState =
     (isEmpty(names) && isEmpty(displayedNames) && isFetched && !isFetching) ||
@@ -117,8 +115,8 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   //     isFetching:: ${isFetching}
   //     isFetched:: ${isFetched}
   //     !hasMounted:: ${!hasMounted}
-  //     isEmpty(names):: ${isEmpty(names)} || ${names}
-  //     isEmpty(displayedNames):: ${isEmpty(displayedNames)} || ${displayedNames}
+  //     isEmpty(names):: ${isEmpty(names)}
+  //     isEmpty(displayedNames):: ${isEmpty(displayedNames)}
   //   `);
   // }, [
   //   isFetching,

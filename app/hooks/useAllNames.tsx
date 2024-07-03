@@ -24,18 +24,15 @@ interface PushProps {
 
 export default function useAllNames(props?: Props) {
   const [lastQueryId, setLastQueryId] = useState<string>("");
-  const [lastId, setLastId] = useState<string>("");
   const [isFetched, setIsFetched] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [domains, setDomains] = useState<NameResponse[]>([]);
 
   const [rankings, setRankings] = useState<Ranking[]>([]);
 
-  const { data } = useNamesQuery({ lastId: lastQueryId }, { skip: isFetched });
   const { updateRankings, useLeaderboard } = useLeaderboardState();
-
-  const { top: { isFetched: isSuccess } = { isFetched: false } } =
-    useLeaderboard();
+  const { isFetched: isSuccess } = useLeaderboard();
+  const { data } = useNamesQuery({ lastId: lastQueryId });
 
   const pushToEmojis = (props: PushProps) => {
     const { labelName, length, ranks, item } = props;
@@ -187,27 +184,30 @@ export default function useAllNames(props?: Props) {
       .slice(0, maxLength);
 
     const mappedNames = await Promise.all(
-      sorted.map(async (item, index) => {
-        const response = await getEnsName(config, {
-          address: item[0] as Address,
-        });
+      sorted.map(async (item) => {
+        let primary = null;
+
+        if (item[0]) {
+          primary = await getEnsName(config, {
+            address: item[0] as Address,
+          });
+        }
 
         return {
           owner: item[0],
           names: item[1],
           total: item[1].length,
-          primary: response as string,
+          primary: primary as string,
         };
       })
     );
 
-    setRankings(mappedNames);
+    setRankings([...mappedNames]);
     updateRankings({
       top: {
         isFetched: true,
         ranking: [...mappedNames],
       },
-      allRankings: [...mappedNames],
       totalCountNames: domains?.length,
     });
   };
@@ -273,6 +273,7 @@ export default function useAllNames(props?: Props) {
         isFetched: true,
         ranking: [...sortedTenK],
       },
+      isFetched: true,
     });
   };
 
@@ -280,10 +281,10 @@ export default function useAllNames(props?: Props) {
     if (!isEmpty(data?.domains) && !isSuccess) {
       setIsFetching(true);
       const queryId = data?.domains[999]?.id || lastQueryId;
-      const length = (data?.domains?.length || 0) - 1;
-      const id = data?.domains[length]?.id || lastId;
+      const domainList = [...(data?.domains as NameResponse[])];
+      domains.push(...domainList);
+      setDomains([...domains]);
 
-      setLastId(id);
       if (isEmpty(data?.domains[999]?.id)) {
         setIsFetched(true);
         setIsFetching(false);
@@ -291,15 +292,7 @@ export default function useAllNames(props?: Props) {
         setLastQueryId(queryId);
       }
     }
-  }, [data?.domains]);
-
-  useEffect(() => {
-    if (lastId && !isEmpty(data?.domains) && !isSuccess) {
-      const domainList = data?.domains as NameResponse[];
-      domains.push(...domainList);
-      setDomains([...domains]);
-    }
-  }, [lastId]);
+  }, [data?.domains, isSuccess]);
 
   useEffect(() => {
     if (isFetched) {

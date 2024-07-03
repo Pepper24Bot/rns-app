@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { TWEETS_RNS } from "@/constants/content";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import CircularProgress from "../Reusables/CircularProgressWithLabel";
 import Image from "next/image";
@@ -92,6 +93,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   const { useRootNetwork } = useRootNetworkState();
   const { data: root } = useRootNetwork();
   const { closeModal, toggleModal } = useModalState();
+  const { refetchRanking } = useLeaderboardState();
   const { data: xrpBalance } = useBalance({
     address,
   });
@@ -348,6 +350,9 @@ export const RegisterName: React.FC<RegistrationProps> = (
 
   useEffect(() => {
     if (isRegistered) {
+      // Refresh the data in Leaderboard
+      refetchRanking();
+      // Refresh the data in Dashboard
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         "Congratulations! You have successfully registered a new identity!",

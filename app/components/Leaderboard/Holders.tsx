@@ -11,6 +11,7 @@ import Ranking from "./Ranking/Ranking";
 export interface HolderProps {
   children?: React.ReactNode;
   tab: number;
+  isMounted?: boolean;
 }
 
 export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
@@ -26,6 +27,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
     oneKClub = { ranking: [] },
     tenKClub = { ranking: [] },
     totalCountNames: totalNames,
+    isFetched,
   } = useLeaderboard();
 
   const router = useRouter();
@@ -67,7 +69,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
       default:
         return <Top50 leaderboard={top} totalNames={totalNames} />;
     }
-  }, [tab, top.isFetched, singleEmoji.isFetched]);
+  }, [tab, top.isFetched, isFetched]);
 
   return (
     <Content

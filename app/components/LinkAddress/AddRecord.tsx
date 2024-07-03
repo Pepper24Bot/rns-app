@@ -17,6 +17,7 @@ import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -52,6 +53,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
+  const { refetchRanking } = useLeaderboardState();
 
   /** Status Flags */
   const [isValidAddress, setValidAddress] = useState<boolean>(true);
@@ -112,6 +114,9 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
+      // Refresh the data in Leaderboard
+      refetchRanking();
+
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `You have successfully added an address record to ${name ?? ""}.`,

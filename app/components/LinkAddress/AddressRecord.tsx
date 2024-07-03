@@ -17,6 +17,7 @@ import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { useDispatch } from "react-redux";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import useRecords from "@/hooks/useRecords";
 import ProgressBar from "../Reusables/ProgressBar";
@@ -59,6 +60,7 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
   const { enqueueSnackbar } = useSnackbar();
+  const { refetchRanking } = useLeaderboardState();
 
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isRemoveMode, setIsRemoveMode] = useState<boolean>(false);
@@ -132,6 +134,9 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
 
   useEffect(() => {
     if (isCompleted) {
+      // Refresh the data in Leaderboard
+      refetchRanking();
+
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `You have successfully ${

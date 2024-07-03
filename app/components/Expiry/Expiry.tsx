@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { ExpiryProps } from "@/interfaces/global/transaction";
 import { useDispatch } from "react-redux";
 import { graphqlApi } from "@/redux/graphql/graphqlApi";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import Form from "../Registration/Form";
 import Summary from "./Summary";
@@ -79,6 +80,7 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
+  const { refetchRanking } = useLeaderboardState();
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -200,6 +202,9 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
 
   useEffect(() => {
     if (isExtended) {
+      // Refresh the data in Leaderboard
+      refetchRanking();
+
       dispatch(graphqlApi.util.invalidateTags(["Name"]));
       enqueueSnackbar(
         `Congratulations! You have successfully extended the expiry of ${

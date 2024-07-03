@@ -40,7 +40,7 @@ export interface LeaderBoardState {
     oneKClub?: SingleRanking,
     tenKClub?: SingleRanking,
     totalCountNames?: number,
-    allRankings?: Ranking[]
+    isFetched?: boolean
 }
 
 const initialState: LeaderBoardState = {
@@ -64,6 +64,7 @@ const initialState: LeaderBoardState = {
         isFetched: false,
         ranking: [],
     },
+    isFetched: false
 }
 
 export const leaderboardState = createSlice({
@@ -94,6 +95,10 @@ export const leaderboardState = createSlice({
         update10kClubRanking: (state, { payload }: { payload: SingleRanking }): LeaderBoardState => {
             state.tenKClub = payload
             return state
+        },
+        refetchRanking: (state): LeaderBoardState => {
+            state = { ...state, isFetched: false }
+            return state
         }
     }
 })
@@ -107,8 +112,8 @@ export const useLeaderboardState = () => {
             dispatch(actions.updateRankings({ ...ranking }))
         },
 
-        updateTopRanking: (ranking: TopRanking) => {
-            dispatch(actions.updateTopRanking({ ...ranking }))
+        updateTopRanking: (top: TopRanking) => {
+            dispatch(actions.updateTopRanking({ isFetched: top.isFetched, ranking: [...top.ranking || []] }))
         },
 
         updateEmojiRanking: (ranking: SingleRanking) => {
@@ -125,6 +130,10 @@ export const useLeaderboardState = () => {
 
         update10kClubRanking: (ranking: SingleRanking) => {
             dispatch(actions.update10kClubRanking({ ...ranking }))
+        },
+
+        refetchRanking: () => {
+            dispatch(actions.refetchRanking())
         },
 
         useLeaderboard: () => {

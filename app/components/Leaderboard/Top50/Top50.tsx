@@ -8,7 +8,6 @@ import {
   FlexJustified,
   InformationTip,
   Relative,
-  SecondaryLabel,
   SkeletonTypography,
 } from "@/components/Theme/StyledGlobal";
 import {
@@ -54,6 +53,7 @@ const TooltipText = styled(RowText)(({ theme }) => ({
 const TooltipName = styled(TooltipText)(({ theme }) => ({
   color: theme.palette.text.primary,
   paddingRight: "8px",
+  maxWidth: "150px",
 }));
 
 const TooltipHeadingText = styled(TooltipName)(({ theme }) => ({
@@ -79,11 +79,11 @@ const TooltipContent = memo((item: Ranking) => {
         </FlexJustified>
       </TooltipHeader>
 
-      {item.names?.map((name) => {
+      {item.names?.map((name, index) => {
         const { labelName, expiryDate } = name;
 
         return (
-          <TooltipRow key={`tooltip-${labelName}`}>
+          <TooltipRow key={`tooltip-${labelName}-${index}`}>
             <FlexJustified>
               <TooltipName>{labelName}</TooltipName>
               <TooltipText>In {getExpiry(expiryDate).distance}</TooltipText>
@@ -118,7 +118,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                 !isEmpty(top3[index]) ? <TooltipContent {...top3[index]} /> : ""
               }
             >
-              <TopContainer xs={3} mx={1} container>
+              <TopContainer xs={12} sm={3} mx={1} container mb={1}>
                 <Flex mr={1}>
                   <Image
                     src={`/icons/ranking/rank${index + 1}.svg`}
