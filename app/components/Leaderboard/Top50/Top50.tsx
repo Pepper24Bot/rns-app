@@ -1,12 +1,14 @@
 import React, { memo } from "react";
-import { Grid, styled } from "@mui/material";
+import { Grid, darken, styled } from "@mui/material";
 import { Ranking, TopRanking } from "@/redux/leaderboard/leaderboardSlice";
-import { getMaskedAddress } from "@/utils/common";
+import { getExpiry, getMaskedAddress } from "@/utils/common";
 import {
   Flex,
   FlexCenter,
+  FlexJustified,
   InformationTip,
   Relative,
+  SecondaryLabel,
   SkeletonTypography,
 } from "@/components/Theme/StyledGlobal";
 import {
@@ -24,6 +26,7 @@ import {
 } from "../StyledLeaderboard";
 import { EMPTY_ADDRESS } from "@/constants/components";
 import { isEmpty } from "lodash";
+import { FONT_WEIGHT } from "@/components/Theme/Global";
 import Image from "next/image";
 
 const Container = styled(Grid)(({ theme }) => ({}));
@@ -32,11 +35,65 @@ const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({
   maxHeight: "500px",
 }));
 
+const TooltipHeader = styled(Grid)(({ theme }) => ({
+  padding: "8px",
+  border: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+  marginBottom: "4px",
+}));
+
+const TooltipRow = styled(TooltipHeader)(({ theme }) => ({
+  border: "none",
+  padding: "0px 8px",
+}));
+
+const TooltipText = styled(RowText)(({ theme }) => ({
+  fontSize: "12px",
+  color: darken(theme.palette.text.primary, 0.5),
+}));
+
+const TooltipName = styled(TooltipText)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  paddingRight: "8px",
+}));
+
+const TooltipHeadingText = styled(TooltipName)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  fontSize: "14px",
+  fontWeight: FONT_WEIGHT.Bold,
+  paddingRight: 0,
+}));
+
 interface TopRankingProps {
   leaderboard: TopRanking;
   isFetched?: boolean;
   totalNames?: number;
 }
+
+const TooltipContent = memo((item: Ranking) => {
+  return (
+    <Grid maxHeight={300} minWidth={250} overflow="overlay">
+      <TooltipHeader>
+        <FlexJustified>
+          <TooltipHeadingText>Name</TooltipHeadingText>
+          <TooltipHeadingText>Expiry</TooltipHeadingText>
+        </FlexJustified>
+      </TooltipHeader>
+
+      {item.names?.map((name) => {
+        const { labelName, expiryDate } = name;
+
+        return (
+          <TooltipRow key={`tooltip-${labelName}`}>
+            <FlexJustified>
+              <TooltipName>{labelName}</TooltipName>
+              <TooltipText>In {getExpiry(expiryDate).distance}</TooltipText>
+            </FlexJustified>
+          </TooltipRow>
+        );
+      })}
+    </Grid>
+  );
+});
 
 export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   const {
@@ -48,11 +105,6 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   const end = Math.floor(ranking?.length / 2 + 3) - 1;
   const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
 
-  const getTooltipContent = (item: any) => {
-    console.log("item:: ", item);
-    return <></>;
-  };
-
   return (
     <Grid>
       <FlexCenter container p={2} mt={6} mb={4}>
@@ -63,8 +115,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
               arrow
               placement="bottom"
               title={
-                // !isEmpty(top3[index]) ? getTooltipContent(top3[index]) : ""
-                ""
+                !isEmpty(top3[index]) ? <TooltipContent {...top3[index]} /> : ""
               }
             >
               <TopContainer xs={3} mx={1} container>
