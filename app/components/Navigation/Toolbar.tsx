@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Grid, Link, alpha, styled } from "@mui/material";
+import {
+  Grid,
+  Link,
+  MenuItem as MuiMenuItem,
+  alpha,
+  styled,
+} from "@mui/material";
 import {
   Divider,
   Flex,
@@ -14,6 +20,7 @@ import {
   TitleTooltip,
   FlexJustified,
   ProgressTooltip,
+  ToolbarButton,
 } from "../Theme/StyledGlobal";
 import { useAccount, useEnsName } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
@@ -27,6 +34,7 @@ import { Address } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { DISCORD, DOCS, TWITTER } from "@/constants/url";
 import { usePathname, useRouter } from "next/navigation";
+import { Menu } from "@mui/icons-material";
 
 import useWalletIcon, { Wallet } from "@/hooks/useWalletIcon";
 import ReactJoyride, { Step } from "react-joyride";
@@ -87,6 +95,36 @@ const ToolbarLabel = styled(SecondaryLabel, {
   },
 }));
 
+const MenuContainer = styled(Grid)(({ theme }) => ({
+  minWidth: "150px",
+  padding: "8px 0",
+}));
+
+const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
+  display: "flex",
+  alignItems: "baseline",
+  padding: "4px 8px",
+  minHeight: 0,
+
+  "&:last-of-type": {
+    borderRadius: "8px",
+  },
+
+  "&:hover": {
+    backgroundColor: theme.palette.background.darker,
+  },
+}));
+
+const MenuLabel = styled(ToolbarLabel)(({ theme }) => ({
+  fontSize: "14px",
+  padding: "2px 4px",
+  width: "100%",
+}));
+
+const MenuDivider = styled(Divider)(({ theme }) => ({
+  margin: "12px 0 !important", // fix the important here - avoid this
+}));
+
 export const Toolbar: React.FC = () => {
   const { address: walletAddress, connector, status, chainId } = useAccount();
   const { useRootNetwork } = useRootNetworkState();
@@ -114,6 +152,11 @@ export const Toolbar: React.FC = () => {
     null
   );
 
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [menuAnchor, setMenuAnchor] = useState<
+    (EventTarget & HTMLElement) | null
+  >(null);
+
   /**
    * Move wallet label and icon path to useState/useEffect
    * to fix nextjs hydration issue wherein the generated
@@ -133,6 +176,34 @@ export const Toolbar: React.FC = () => {
 
   const addressRef = useRef(null);
   const isTutorialDisabled = parseCookie("showTutorial") === "false";
+
+  const handleDashboard = () => {
+    setIsMenuOpen(false);
+    setMenuAnchor(null);
+    if (pathName === "" || pathName === "/identities") {
+      scrollIntoElement("My Dashboard-Container");
+    } else {
+      router.replace(`/identities`, { scroll: false });
+    }
+  };
+
+  const handleLeaderboard = () => {
+    setIsMenuOpen(false);
+    setMenuAnchor(null);
+    if (pathName.includes("/leaderboard")) {
+      scrollIntoElement("Holders-Container");
+    } else {
+      router.replace(`/leaderboard/top-50`, { scroll: false });
+    }
+  };
+
+  const handleLinkWindow = (url: string) => {
+    setIsMenuOpen(false);
+    setMenuAnchor(null);
+    if (typeof window !== "undefined") {
+      window.open(url, "_blank");
+    }
+  };
 
   useEffect(() => {
     if (addressRef.current) {
@@ -215,6 +286,7 @@ export const Toolbar: React.FC = () => {
       {address && !isTutorialDisabled && (
         <ReactJoyride steps={steps} disableCloseOnEsc run={run} />
       )}
+      {/* Desktop Layout */}
       <Flex
         sx={{
           display: {
@@ -228,11 +300,7 @@ export const Toolbar: React.FC = () => {
             <ToolbarLabel
               isSelected={pathName === "" || pathName === "/identities"}
               onClick={() => {
-                if (pathName === "" || pathName === "/identities") {
-                  scrollIntoElement("My Dashboard-Container");
-                } else {
-                  router.replace(`/identities`, { scroll: false });
-                }
+                return handleDashboard();
               }}
             >
               My Dashboard
@@ -243,11 +311,7 @@ export const Toolbar: React.FC = () => {
         <ToolbarLabel
           isSelected={pathName.includes("/leaderboard")}
           onClick={() => {
-            if (pathName.includes("/leaderboard")) {
-              scrollIntoElement("Holders-Container");
-            } else {
-              router.replace(`/leaderboard/top-50`, { scroll: false });
-            }
+            return handleLeaderboard();
           }}
         >
           Holders
@@ -279,8 +343,95 @@ export const Toolbar: React.FC = () => {
         <Divider orientation="vertical" flexItem />
       </Flex>
 
+      {/* Mobile Layout */}
+      <Flex
+        sx={{
+          display: {
+            xs: "flex",
+            sm: "none",
+          },
+        }}
+      >
+        <ToolbarButton
+          variant="contained"
+          sx={{ mr: 1 }}
+          onClick={(event) => {
+            setMenuAnchor(event.currentTarget);
+            setIsMenuOpen(!isMenuOpen);
+          }}
+        >
+          <Menu />
+        </ToolbarButton>
+        <MenuPopover
+          isOpen={isMenuOpen}
+          anchorEl={menuAnchor}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
+          toggleClose={() => {
+            setIsMenuOpen(false);
+          }}
+        >
+          <MenuContainer>
+            <MenuItem
+              onClick={() => {
+                return handleDashboard();
+              }}
+            >
+              <MenuLabel
+                isSelected={pathName === "" || pathName === "/identities"}
+              >
+                My Dashboard
+              </MenuLabel>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                return handleLeaderboard();
+              }}
+            >
+              <MenuLabel isSelected={pathName.includes("/leaderboard")}>
+                Holders
+              </MenuLabel>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                return handleLinkWindow(DOCS);
+              }}
+            >
+              <MenuLabel>Docs</MenuLabel>
+            </MenuItem>
+            <MenuDivider />
+            <MenuItem
+              onClick={() => {
+                return handleLinkWindow(TWITTER);
+              }}
+            >
+              <MenuLabel>
+                <i
+                  className="fa-brands fa-x-twitter fa"
+                  style={{ marginRight: "8px" }}
+                />
+                Twitter
+              </MenuLabel>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                return handleLinkWindow(DISCORD);
+              }}
+            >
+              <MenuLabel>
+                <i
+                  className="fa-brands fa-discord fa"
+                  style={{ marginRight: "8px" }}
+                />
+                Discord
+              </MenuLabel>
+            </MenuItem>
+          </MenuContainer>
+        </MenuPopover>
+      </Flex>
+
       {/* TODO: Clean this */}
-      <Grid width="100%" textAlign="center">
+      <Grid textAlign="center">
         <HorizontalDivider variant="fullWidth" />
         <ToggleButtonGroup ref={addressRef}>
           <ToggleButton
@@ -340,11 +491,13 @@ export const Toolbar: React.FC = () => {
             }}
           >
             {address && (
-              <Account
-                toggleClose={() => {
-                  setIsOpen(false);
-                }}
-              />
+              <Grid p={3} minWidth={250}>
+                <Account
+                  toggleClose={() => {
+                    setIsOpen(false);
+                  }}
+                />
+              </Grid>
             )}
           </MenuPopover>
         </Grid>

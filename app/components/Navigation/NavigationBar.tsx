@@ -49,7 +49,7 @@ const Contents = styled(FlexJustified)(({ theme }) => ({
   padding: "0 40px",
   cursor: "pointer",
 
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down(1050)]: {
     padding: "0 20px",
     justifyContent: "center",
   },
@@ -59,7 +59,7 @@ const NextImage = styled(Image)(({ theme }) => ({
   height: "-webkit-fill-available",
   width: "-webkit-fill-available",
   maxWidth: "260px",
-  padding: "10px 0",
+  padding: "10px 16px 0 10px",
 }));
 
 export type ScrollProps = {
