@@ -73,14 +73,15 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
 
   return (
     <Content
-      title="Holders"
-      isVisible={true}
+      title=""
+      isSubTabs={true}
       tabs={LEADERBOARD_TAB_ITEMS}
       content={content}
       activeTab={tab || 0}
       onTabChange={setPathNameFromTab}
       // TODO: Implement this
       toolbar={<></>}
+      orientation="vertical"
     />
   );
 };

@@ -2,7 +2,6 @@ import React from "react";
 import {
   Container,
   GridContainer,
-  Content,
   ContentContainer,
   TabItem,
   Tabs,
@@ -10,6 +9,7 @@ import {
 } from "./../Reusables/Content";
 import { FlexJustified } from "../Theme/StyledGlobal";
 import { Grid } from "@mui/material";
+import { DASHBOARD_TAB_ITEMS } from "@/constants/components";
 import SkeletonNames from "./Tab/Names/SkeletonNames";
 import Toolbar from "../Reusables/Toolbar";
 
@@ -28,9 +28,9 @@ export const SkeletonDashboard: React.FC = () => {
         <ContentContainer>
           <Grid>
             <Tabs value={0}>
-              <TabItem label="IDENTITIES" />
-              <TabItem label="FAQ" />
-              {/* TODO: Make sure to add the rest here */}
+              {DASHBOARD_TAB_ITEMS?.map((label) => {
+                return <TabItem label={label} />;
+              })}
             </Tabs>
             <Grid id="Tab-Content">
               <SkeletonNames count={2} />

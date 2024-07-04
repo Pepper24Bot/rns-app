@@ -57,7 +57,7 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
   } = props;
 
   return (
-    <Grid mt={2}>
+    <Grid mt={8}>
       <ColumnContainer xs={12}>
         <Grid container>
           <Grid item xs={0.5} />

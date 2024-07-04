@@ -6,6 +6,7 @@ import {
   Collapse,
   Grid,
   Tabs as MuiTabs,
+  Box,
 } from "@mui/material";
 import { Search as MuiSearchIcon } from "@mui/icons-material";
 import {
@@ -18,24 +19,32 @@ import {
 import { FONT_SIZE } from "../Theme/Global";
 import useFeatureToggle, { FeatureList } from "@/hooks/useFeatureToggle";
 
-export const GridContainer = styled(FlexCenter)(({ theme }) => ({
+export const GridContainer = styled(FlexCenter, {
+  shouldForwardProp: (prop) => prop !== "isTransparent",
+})<{ isTransparent?: boolean }>(({ isTransparent = false, theme }) => ({
   position: "relative",
-  backgroundColor: alpha(theme.palette.background.darker, 0.35),
+  backgroundColor: isTransparent
+    ? "transparent"
+    : alpha(theme.palette.background.darker, 0.35),
   marginBottom: "10px",
 }));
 
-export const Container = styled(Grid)(({ theme }) => ({
+export const Container = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "fullWidth",
+})<{ fullWidth?: boolean }>(({ fullWidth = false, theme }) => ({
   maxWidth: "1400px",
   width: "100%",
-  padding: "30px 80px",
+  padding: fullWidth ? "0 0 20px 0" : "30px 50px",
 
   [theme.breakpoints.down("sm")]: {
-    padding: "30px 20px",
+    padding: fullWidth ? "0 0 20px 0" : "30px 20px",
   },
 }));
 
-export const ContentContainer = styled(Grid)(({ theme }) => ({
-  marginTop: "30px",
+export const ContentContainer = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "fullWidth",
+})<{ fullWidth?: boolean }>(({ fullWidth = false, theme }) => ({
+  marginTop: fullWidth ? 0 : "30px",
 }));
 
 export const SearchField = styled(BaseInputField)(({ theme }) => ({
@@ -69,35 +78,62 @@ export const Title = styled(Heading)(({ theme }) => ({
   },
 }));
 
-export const Tabs = styled(MuiTabs)(({ theme }) => ({
-  borderBottom: `solid 1px ${alpha(theme.palette.text.primary, 0.25)}`,
+export const Tabs = styled(MuiTabs)(
+  ({ orientation = "horizontal", theme }) => ({
+    borderBottom:
+      orientation === "horizontal"
+        ? `solid 1px ${alpha(theme.palette.primary.dark, 0.25)}`
+        : "none",
 
-  "&.MuiTabs-root": {
-    minHeight: 0,
-  },
-}));
+    borderRight:
+      orientation === "vertical"
+        ? `solid 1px ${alpha(theme.palette.primary.dark, 0.25)}`
+        : "none",
 
-export const TabItem = styled(Tab)(({ theme }) => ({
+    "&.MuiTabs-root": {
+      overflow: "overlay",
+      minWidth: "135px",
+      minHeight: 0,
+    },
+  })
+);
+
+export const TabItem = styled(Tab, {
+  shouldForwardProp: (prop) => prop !== "orientation",
+})<{ orientation?: string }>(({ orientation = "horizontal", theme }) => ({
   textTransform: "capitalize",
   color: theme.palette.text.primary,
 
   "&.MuiTab-root": {
-    padding: "8px 30px",
+    padding: orientation === "horizontal" ? "8px 30px" : "8px",
     backgroundColor: alpha(theme.palette.primary.dark, 0.05),
-    fontSize: "16px",
+    fontSize: orientation === "horizontal" ? "16px" : "14px",
+    textAlign: "end",
     fontFamily: "var(--secondary-font)",
     minHeight: 0,
+    alignSelf: "end",
 
     "&:not(:first-of-type)": {
-      borderLeft: `solid 2px ${theme.palette.background.paper}`,
+      borderLeft:
+        orientation === "horizontal"
+          ? `solid 2px ${theme.palette.background.paper}`
+          : "none",
+    },
+
+    "&:not(:last-of-type)": {
+      borderBottom:
+        orientation === "vertical"
+          ? `solid 2px ${theme.palette.background.paper}`
+          : "none",
     },
 
     "&:first-of-type": {
-      borderRadius: "8px 0 0 0",
+      marginTop: orientation === "horizontal" ? "" : "50px",
+      borderRadius: orientation === "horizontal" ? "8px 0 0 0" : "0",
     },
 
     "&:last-child": {
-      borderRadius: "0 8px 0 0",
+      borderRadius: orientation === "horizontal" ? "0 8px 0 0" : "0",
     },
 
     "&.Mui-selected": {
@@ -115,18 +151,29 @@ export interface ContentProps {
   activeTab?: number;
   onTabChange: (tab: number) => void;
   toolbar: React.ReactNode;
+  isSubTabs?: boolean;
+  orientation?: "horizontal" | "vertical";
 }
 
 export const Content: React.FC<ContentProps> = (props: ContentProps) => {
-  const { isVisible, title, tabs, content, activeTab, onTabChange, toolbar } =
-    props;
+  const {
+    isVisible = true,
+    title,
+    tabs,
+    content,
+    activeTab,
+    onTabChange,
+    toolbar,
+    isSubTabs,
+    orientation,
+  } = props;
 
   const { isFeatureEnabled } = useFeatureToggle();
 
   return (
     <Collapse in={isVisible}>
-      <GridContainer id={`${title}-Container`}>
-        <Container>
+      <GridContainer id={`${title}-Container`} isTransparent={isSubTabs}>
+        <Container fullWidth={isSubTabs}>
           <FlexJustified container>
             <Grid>
               <Title id={`${title}`}>{title}</Title>
@@ -135,27 +182,45 @@ export const Content: React.FC<ContentProps> = (props: ContentProps) => {
               {toolbar}
             </Grid>
           </FlexJustified>
-          <ContentContainer>
-            <Grid>
+          <ContentContainer fullWidth={isSubTabs}>
+            <Grid display={orientation === "vertical" ? "flex" : "inherit"}>
               <Tabs
+                orientation={orientation}
                 value={activeTab}
                 onChange={(_, value) => {
                   onTabChange(value);
                 }}
-                variant="scrollable"
-                scrollButtons
-                allowScrollButtonsMobile
+                // variant="scrollable"
+                // scrollButtons
+                // allowScrollButtonsMobile
               >
-                {tabs?.map((item, index) => {
+                {tabs?.map((item) => {
                   return (
                     isFeatureEnabled(
                       FeatureList[item as keyof typeof FeatureList]
-                    ) && <TabItem key={item} label={item} />
+                    ) && (
+                      <TabItem
+                        key={item}
+                        label={item}
+                        orientation={orientation}
+                      />
+                    )
                   );
                 })}
               </Tabs>
+              <Grid
+                id="Tab-Content"
+                sx={{
+                  width: "-webkit-fill-available",
+                  // backgroundColor:
+                  //   orientation === "vertical"
+                  //     ? "background.paper"
+                  //     : "transparent",
+                }}
+              >
+                {content}
+              </Grid>
             </Grid>
-            <Grid id="Tab-Content">{content}</Grid>
           </ContentContainer>
         </Container>
       </GridContainer>

@@ -117,7 +117,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
 
   return (
-    <Grid>
+    <Grid pl={3}>
       <FlexCenter container p={2} mt={6} mb={4}>
         {[...Array(3)].map((_, index) => {
           return (
