@@ -26,8 +26,10 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
     switch (pathName) {
       case "/identities":
         return 0;
-      case "/faq":
+      case "/leaderboard/top-50":
         return 1;
+      case "/faq":
+        return 2;
       default:
         return 0;
     }
@@ -40,6 +42,8 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
       case 0:
         return router.replace("/identities", { scroll: false });
       case 1:
+        return router.replace("/leaderboard/top-50", { scroll: false });
+      case 2:
         return router.replace("/faq", { scroll: false });
       default:
         return router.replace("/", { scroll: false });
