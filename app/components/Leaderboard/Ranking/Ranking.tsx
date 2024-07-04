@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Grid, styled } from "@mui/material";
+import { Grid, darken, styled } from "@mui/material";
 import { SingleRanking } from "@/redux/leaderboard/leaderboardSlice";
 import {
   ColumnContainer,
@@ -37,6 +37,10 @@ const RowText = styled(StyledRowText)(({ theme }) => ({
 const Row = styled(StyledRow)(({ theme }) => ({
   padding: "8px",
   margin: "4px 0",
+
+  "&:hover": {
+    border: `solid 1px ${darken(theme.palette.primary.main, 0.85)}`,
+  },
 }));
 
 const RelativeCenter = styled(FlexCenter)(({ theme }) => ({
@@ -62,7 +66,7 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
               <Title>Holder</Title>
             </Grid>
             <Grid item xs={3}>
-              <Title>Name</Title>
+              <Title>Identity</Title>
             </Grid>
             <Grid item xs={3} pr={1}>
               <Title>Expiry</Title>

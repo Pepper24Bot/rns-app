@@ -21,6 +21,10 @@ export const TopContainer = styled(FlexCenter)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   textAlign: "center",
   filter: `drop-shadow(0px 5px 10px ${theme.palette.background.paper})`,
+
+  "&:hover": {
+    border: `solid 1px ${darken(theme.palette.primary.main, 0.35)}`,
+  },
 }));
 
 export const TopTotalCount = styled(SecondaryLabel)(({ theme }) => ({
@@ -68,6 +72,10 @@ export const Row = styled(FlexJustified)(({ theme }) => ({
   borderRadius: "4px",
   backgroundColor: theme.palette.background.paper,
   border: `solid 1px ${darken(theme.palette.primary.main, 0.85)}`,
+
+  "&:hover": {
+    border: `solid 1px ${darken(theme.palette.primary.main, 0.35)}`,
+  },
 }));
 
 export const RowText = styled(SecondaryLabel, {

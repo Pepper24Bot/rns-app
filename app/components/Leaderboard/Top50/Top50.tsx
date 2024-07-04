@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { Grid, darken, styled } from "@mui/material";
 import { Ranking, TopRanking } from "@/redux/leaderboard/leaderboardSlice";
 import { getExpiry, getMaskedAddress } from "@/utils/common";
@@ -36,13 +36,21 @@ const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({
 
 const TooltipHeader = styled(Grid)(({ theme }) => ({
   padding: "8px",
-  border: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
-  marginBottom: "4px",
+  border: `solid 1px ${darken(theme.palette.primary.main, 0.4)}`,
+  backgroundColor: `${darken(theme.palette.primary.main, 0.95)}`,
+}));
+
+const TooltipRows = styled(ColumnContent)(({ theme }) => ({
+  maxHeight: "250px",
+  minWidth: "250px",
+  padding: "4px",
+  overflowY: "scroll",
 }));
 
 const TooltipRow = styled(TooltipHeader)(({ theme }) => ({
   border: "none",
   padding: "0px 8px",
+  backgroundColor: "transparent",
 }));
 
 const TooltipText = styled(RowText)(({ theme }) => ({
@@ -71,26 +79,26 @@ interface TopRankingProps {
 
 const TooltipContent = memo((item: Ranking) => {
   return (
-    <Grid maxHeight={300} minWidth={250} overflow="overlay">
+    <Grid>
       <TooltipHeader>
         <FlexJustified>
           <TooltipHeadingText>Name</TooltipHeadingText>
-          <TooltipHeadingText>Expiry</TooltipHeadingText>
+          <TooltipHeadingText mr={1.5}>Expiry</TooltipHeadingText>
         </FlexJustified>
       </TooltipHeader>
-
-      {item.names?.map((name, index) => {
-        const { labelName, expiryDate } = name;
-
-        return (
-          <TooltipRow key={`tooltip-${labelName}-${index}`}>
-            <FlexJustified>
-              <TooltipName>{labelName}</TooltipName>
-              <TooltipText>In {getExpiry(expiryDate).distance}</TooltipText>
-            </FlexJustified>
-          </TooltipRow>
-        );
-      })}
+      <TooltipRows>
+        {item.names?.map((name, index) => {
+          const { labelName, expiryDate } = name;
+          return (
+            <TooltipRow key={`tooltip-${labelName}-${index}`}>
+              <FlexJustified>
+                <TooltipName>{labelName}</TooltipName>
+                <TooltipText>In {getExpiry(expiryDate).distance}</TooltipText>
+              </FlexJustified>
+            </TooltipRow>
+          );
+        })}
+      </TooltipRows>
     </Grid>
   );
 });
@@ -101,6 +109,9 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
     totalNames,
   } = props;
 
+  // This is used so the tooltips in each name card will not go beyond the screensize
+  const boundingElement = useRef<HTMLDivElement | null>(null);
+
   const top3 = ranking?.slice(0, 3);
   const end = Math.floor(ranking?.length / 2 + 3) - 1;
   const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
@@ -108,7 +119,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   return (
     <Grid>
       <FlexCenter container p={2} mt={6} mb={4}>
-        {[...Array(3)].map((item, index) => {
+        {[...Array(3)].map((_, index) => {
           return (
             <InformationTip
               key={`top-${index + 1}`}
@@ -162,7 +173,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
           </Relative>
         </Flex>
       </Divider>
-      <Container container>
+      <Container container ref={boundingElement}>
         {ranks?.map((rank, columnIndex) => {
           return (
             <Grid key={`column-${columnIndex}`} container xs={12} md={6}>
@@ -185,49 +196,68 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                     <ColumnTitle>Holder</ColumnTitle>
                   </Grid>
                   <Grid item xs={4} p={1}>
-                    <ColumnTitle> RNS Identities Help</ColumnTitle>
+                    <ColumnTitle> Identities Held</ColumnTitle>
                   </Grid>
                 </Header>
                 <ColumnContent>
                   {[...(isEmpty(rank) ? Array(10) : rank)]?.map(
                     (holder: Ranking, index) => {
                       return (
-                        <Row container key={`${holder?.owner}-${index}`}>
-                          <Relative item xs={2}>
-                            <RowText pl={4}>
-                              {columnIndex ? index + end + 1 : index + 4}
-                            </RowText>
-                          </Relative>
-                          <Relative item xs={5} pl={2}>
-                            <SkeletonTypography
-                              isloading={!isFetched}
-                              width="85%"
-                            />
-                            <RowText
-                              isloading={!isFetched}
-                              isPrimary={!!holder?.primary}
+                        <InformationTip
+                          arrow
+                          key={`${holder?.owner}-${index}`}
+                          placement={
+                            (boundingElement.current?.clientWidth || 0) <= 900
+                              ? "bottom-end"
+                              : columnIndex
+                              ? "left"
+                              : "right"
+                          }
+                          title={
+                            !isEmpty(holder) ? (
+                              <TooltipContent {...holder} />
+                            ) : (
+                              ""
+                            )
+                          }
+                        >
+                          <Row container>
+                            <Relative item xs={2}>
+                              <RowText pl={4}>
+                                {columnIndex ? index + end + 1 : index + 4}
+                              </RowText>
+                            </Relative>
+                            <Relative item xs={5} pl={2}>
+                              <SkeletonTypography
+                                isloading={!isFetched}
+                                width="85%"
+                              />
+                              <RowText
+                                isloading={!isFetched}
+                                isPrimary={!!holder?.primary}
+                              >
+                                {holder?.primary ||
+                                  getMaskedAddress(
+                                    holder?.owner || EMPTY_ADDRESS
+                                  )}
+                              </RowText>
+                            </Relative>
+                            <Relative
+                              display="flex"
+                              justifyContent="center"
+                              item
+                              xs={4}
                             >
-                              {holder?.primary ||
-                                getMaskedAddress(
-                                  holder?.owner || EMPTY_ADDRESS
-                                )}
-                            </RowText>
-                          </Relative>
-                          <Relative
-                            display="flex"
-                            justifyContent="center"
-                            item
-                            xs={4}
-                          >
-                            <SkeletonTypography
-                              isloading={!isFetched}
-                              width="60%"
-                            />
-                            <HighlightValue isloading={!isFetched}>
-                              {holder?.total || "000"}
-                            </HighlightValue>
-                          </Relative>
-                        </Row>
+                              <SkeletonTypography
+                                isloading={!isFetched}
+                                width="60%"
+                              />
+                              <HighlightValue isloading={!isFetched}>
+                                {holder?.total || "000"}
+                              </HighlightValue>
+                            </Relative>
+                          </Row>
+                        </InformationTip>
                       );
                     }
                   )}
