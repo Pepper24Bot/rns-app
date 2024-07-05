@@ -51,13 +51,6 @@ const ToolbarContainer = styled(Flex)(({ theme }) => ({
   },
 }));
 
-const HorizontalDivider = styled(Divider)(({ theme }) => ({
-  margin: "8px 0 16px 0",
-  [theme.breakpoints.up("mobile")]: {
-    display: "none",
-  },
-}));
-
 const ActionLabel = styled(SecondaryLabel)(({ theme }) => ({
   textTransform: "none",
   fontSize: "15px",
@@ -97,13 +90,13 @@ const ToolbarLabel = styled(SecondaryLabel, {
 
 const MenuContainer = styled(Grid)(({ theme }) => ({
   minWidth: "150px",
-  padding: "8px 0",
+  padding: "16px 0",
 }));
 
 const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
   display: "flex",
   alignItems: "baseline",
-  padding: "4px 8px",
+  padding: "4px 16px",
   minHeight: 0,
 
   "&:last-of-type": {
@@ -295,19 +288,15 @@ export const Toolbar: React.FC = () => {
           },
         }}
       >
-        {address && (
-          <>
-            <ToolbarLabel
-              isSelected={pathName === "" || pathName === "/identities"}
-              onClick={() => {
-                return handleDashboard();
-              }}
-            >
-              My Dashboard
-            </ToolbarLabel>
-            <Divider orientation="vertical" flexItem />
-          </>
-        )}
+        <ToolbarLabel
+          isSelected={pathName === "" || pathName === "/identities"}
+          onClick={() => {
+            return handleDashboard();
+          }}
+        >
+          My Dashboard
+        </ToolbarLabel>
+        <Divider orientation="vertical" flexItem />
         <ToolbarLabel
           isSelected={pathName.includes("/leaderboard")}
           onClick={() => {
@@ -432,7 +421,6 @@ export const Toolbar: React.FC = () => {
 
       {/* TODO: Clean this */}
       <Grid textAlign="center">
-        <HorizontalDivider variant="fullWidth" />
         <ToggleButtonGroup ref={addressRef}>
           <ToggleButton
             value=""

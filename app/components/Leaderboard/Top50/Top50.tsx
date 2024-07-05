@@ -117,7 +117,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
 
   return (
-    <Grid pl={3}>
+    <Grid>
       <FlexCenter container p={2} mt={6} mb={4}>
         {[...Array(3)].map((_, index) => {
           return (
@@ -162,7 +162,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
           );
         })}
       </FlexCenter>
-      <Divider textAlign="right">
+      <Divider textAlign="left">
         <Flex>
           <RowText pr={1}>Total Registered Identities:</RowText>
           <Relative>
@@ -173,7 +173,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
           </Relative>
         </Flex>
       </Divider>
-      <Container container ref={boundingElement}>
+      <Container container ref={boundingElement} p={2}>
         {ranks?.map((rank, columnIndex) => {
           return (
             <Grid key={`column-${columnIndex}`} container xs={12} md={6}>

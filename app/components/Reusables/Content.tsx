@@ -82,12 +82,12 @@ export const Tabs = styled(MuiTabs)(
   ({ orientation = "horizontal", theme }) => ({
     borderBottom:
       orientation === "horizontal"
-        ? `solid 1px ${alpha(theme.palette.primary.dark, 0.25)}`
+        ? `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`
         : "none",
 
     borderRight:
       orientation === "vertical"
-        ? `solid 1px ${alpha(theme.palette.primary.dark, 0.25)}`
+        ? `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`
         : "none",
 
     "&.MuiTabs-root": {

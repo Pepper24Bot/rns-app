@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { useAccount } from "wagmi";
 import { debounce as _debounce } from "lodash";
 import { DASHBOARD_TAB_ITEMS } from "@/constants/components";
-import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 import Content from "../Reusables/Content";
@@ -17,30 +15,14 @@ export interface DashboardProps {
   children?: React.ReactNode;
   hasMounted?: boolean;
   tab: number;
+  holderTab?: number;
 }
 
 export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
-  const { children, tab: pageTab, hasMounted } = props;
-
-  const { status } = useAccount();
+  const { tab: pageTab, holderTab, hasMounted } = props;
 
   const router = useRouter();
-  const pathName = usePathname();
 
-  const getSelectedTab = () => {
-    switch (pathName) {
-      case "/identities":
-        return 0;
-      case "/leaderboard/top-50":
-        return 1;
-      case "/faq":
-        return 2;
-      default:
-        return 0;
-    }
-  };
-
-  const isDashboardVisible = status === "connected" || false;
   const [tab, setTab] = useState<number>(pageTab);
 
   const setPathNameFromTab = (tab: number) => {
@@ -76,7 +58,7 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
       case 0:
         return <Names hasMounted={hasMounted} />;
       case 1:
-        return <Holders tab={0} />;
+        return <Holders tab={holderTab || 0} />;
       case 2:
         return <FrequentlyAsked />;
       default:
@@ -84,16 +66,26 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
     }
   }, [tab, hasMounted]);
 
+  const toolbar = useMemo(() => {
+    switch (tab) {
+      case 0:
+        return <Toolbar />;
+      case 1:
+      case 2:
+      // TODO: Implement search bar here
+      default:
+        return <></>;
+    }
+  }, [tab, hasMounted]);
+
   return (
     <Content
       title={getTabTitle()}
-      // isVisible={tab === 0 ? isDashboardVisible : true}
-      isVisible={true}
       tabs={DASHBOARD_TAB_ITEMS}
       content={content}
       activeTab={tab || 0}
       onTabChange={setPathNameFromTab}
-      toolbar={<Toolbar />}
+      toolbar={toolbar}
     />
   );
 };
