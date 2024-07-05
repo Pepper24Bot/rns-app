@@ -24,10 +24,11 @@ interface PushProps {
 
 export default function useAllNames(props?: Props) {
   const [lastQueryId, setLastQueryId] = useState<string>("");
+  const [lastId, setLastId] = useState<string>("");
+
   const [isFetched, setIsFetched] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [domains, setDomains] = useState<NameResponse[]>([]);
-
   const [rankings, setRankings] = useState<Ranking[]>([]);
 
   const { updateRankings, useLeaderboard } = useLeaderboardState();
@@ -281,10 +282,9 @@ export default function useAllNames(props?: Props) {
     if (!isEmpty(data?.domains) && !isSuccess) {
       setIsFetching(true);
       const queryId = data?.domains[999]?.id || lastQueryId;
-      const domainList = [...(data?.domains as NameResponse[])];
-      domains.push(...domainList);
-      setDomains([...domains]);
+      const id = data?.domains[length]?.id || lastId;
 
+      setLastId(id);
       if (isEmpty(data?.domains[999]?.id)) {
         setIsFetched(true);
         setIsFetching(false);
@@ -293,6 +293,14 @@ export default function useAllNames(props?: Props) {
       }
     }
   }, [data?.domains, isSuccess]);
+
+  useEffect(() => {
+    if (lastId && !isEmpty(data?.domains) && !isSuccess) {
+      const domainList = data?.domains as NameResponse[];
+      domains.push(...domainList);
+      setDomains([...domains]);
+    }
+  }, [lastId]);
 
   useEffect(() => {
     if (isFetched) {
