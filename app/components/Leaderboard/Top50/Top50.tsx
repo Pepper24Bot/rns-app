@@ -28,7 +28,11 @@ import { isEmpty } from "lodash";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import Image from "next/image";
 
-const Container = styled(Grid)(({ theme }) => ({}));
+const Container = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.up(600)]: {
+    padding: "0 0 16px 16px",
+  },
+}));
 
 const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({}));
 
@@ -107,9 +111,6 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
     totalNames,
   } = props;
 
-  // This is used so the tooltips in each name card will not go beyond the screensize
-  const boundingElement = useRef<HTMLDivElement | null>(null);
-
   const top3 = ranking?.slice(0, 3);
   const end = Math.floor(ranking?.length / 2 + 3) - 1;
 
@@ -175,7 +176,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
           </Relative>
         </Flex>
       </Divider>
-      <Container container ref={boundingElement} pl={2} pb={2}>
+      <Container container>
         {ranks?.map((rank, columnIndex) => {
           return (
             <Grid key={`column-${columnIndex}`} container xs={12}>

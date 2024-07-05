@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { LEADERBOARD_TAB_ITEMS } from "@/constants/components";
 import { useRouter } from "next/navigation";
 import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
+import { Grid } from "@mui/material";
 
 import Content from "../Reusables/Content";
 import useAllNames from "@/hooks/useAllNames";
@@ -16,6 +17,8 @@ export interface HolderProps {
 
 export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const { tab: pageTab } = props;
+
+  const refElement = useRef<HTMLDivElement | null>(null);
 
   // prefetch here
   const {} = useAllNames();
@@ -72,17 +75,23 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   }, [tab, top.isFetched, isFetched]);
 
   return (
-    <Content
-      title=""
-      isSubTabs={true}
-      tabs={LEADERBOARD_TAB_ITEMS}
-      content={content}
-      activeTab={tab || 0}
-      onTabChange={setPathNameFromTab}
-      // TODO: Implement this
-      toolbar={<></>}
-      orientation="vertical"
-    />
+    <Grid ref={refElement}>
+      <Content
+        title=""
+        isSubTabs={true}
+        tabs={LEADERBOARD_TAB_ITEMS}
+        content={content}
+        activeTab={tab || 0}
+        onTabChange={setPathNameFromTab}
+        // TODO: Implement this
+        toolbar={<></>}
+        orientation={
+          (refElement.current?.clientWidth || 0) < 500
+            ? "horizontal"
+            : "vertical"
+        }
+      />
+    </Grid>
   );
 };
 

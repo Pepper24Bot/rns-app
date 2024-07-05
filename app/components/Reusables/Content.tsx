@@ -200,9 +200,8 @@ export const Content: React.FC<ContentProps> = (props: ContentProps) => {
                 onChange={(_, value) => {
                   onTabChange(value);
                 }}
-                // variant="scrollable"
-                // scrollButtons
-                // allowScrollButtonsMobile
+                variant="scrollable"
+                allowScrollButtonsMobile
               >
                 {tabs?.map((item) => {
                   return (
