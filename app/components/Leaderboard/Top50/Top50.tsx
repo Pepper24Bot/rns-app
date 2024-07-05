@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from "react";
+import React, { memo, useRef } from "react";
 import { Grid, darken, styled } from "@mui/material";
 import { Ranking, TopRanking } from "@/redux/leaderboard/leaderboardSlice";
 import { getExpiry, getMaskedAddress } from "@/utils/common";
@@ -30,9 +30,7 @@ import Image from "next/image";
 
 const Container = styled(Grid)(({ theme }) => ({}));
 
-const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({
-  maxHeight: "500px",
-}));
+const ColumnContent = styled(StyledColumnContent)(({ theme }) => ({}));
 
 const TooltipHeader = styled(Grid)(({ theme }) => ({
   padding: "8px",
@@ -114,7 +112,11 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
 
   const top3 = ranking?.slice(0, 3);
   const end = Math.floor(ranking?.length / 2 + 3) - 1;
-  const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
+
+  // Enable this for 2 column ranks
+  // const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
+
+  const ranks = [ranking?.slice(3, ranking?.length)];
 
   return (
     <Grid>
@@ -173,10 +175,10 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
           </Relative>
         </Flex>
       </Divider>
-      <Container container ref={boundingElement} p={2}>
+      <Container container ref={boundingElement} pl={2} pb={2}>
         {ranks?.map((rank, columnIndex) => {
           return (
-            <Grid key={`column-${columnIndex}`} container xs={12} md={6}>
+            <Grid key={`column-${columnIndex}`} container xs={12}>
               <ColumnContainer item xs={12}>
                 <Header>
                   <Grid
@@ -189,13 +191,13 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                   </Grid>
                   <Grid
                     item
-                    xs={5}
+                    xs={6}
                     sx={{ borderRight: `solid 1px #540624` }}
                     p={1}
                   >
                     <ColumnTitle>Holder</ColumnTitle>
                   </Grid>
-                  <Grid item xs={4} p={1}>
+                  <Grid item xs={3} p={1}>
                     <ColumnTitle> Identities Held</ColumnTitle>
                   </Grid>
                 </Header>
@@ -206,13 +208,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                         <InformationTip
                           arrow
                           key={`${holder?.owner}-${index}`}
-                          placement={
-                            (boundingElement.current?.clientWidth || 0) <= 900
-                              ? "bottom-end"
-                              : columnIndex
-                              ? "left"
-                              : "right"
-                          }
+                          placement="bottom-end"
                           title={
                             !isEmpty(holder) ? (
                               <TooltipContent {...holder} />

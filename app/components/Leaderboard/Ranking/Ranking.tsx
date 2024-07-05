@@ -21,9 +21,6 @@ import { EMPTY_ADDRESS } from "@/constants/components";
 
 const ContentContainer = styled(ColumnContent)(({ theme }) => ({
   height: "600px",
-  border: "none",
-  padding: 0, // override columncontent
-  paddingRight: "8px",
 }));
 
 const Title = styled(ColumnTitle)(({ theme }) => ({

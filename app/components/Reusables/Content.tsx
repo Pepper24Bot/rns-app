@@ -98,6 +98,16 @@ export const Tabs = styled(MuiTabs)(
   })
 );
 
+export const TabContent = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== "orientation",
+})<{ orientation?: string }>(({ orientation = "horizontal", theme }) => ({
+  width: "-webkit-fill-available",
+  borderBottom:
+    orientation === "vertical"
+      ? `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`
+      : "none",
+}));
+
 export const TabItem = styled(Tab, {
   shouldForwardProp: (prop) => prop !== "orientation",
 })<{ orientation?: string }>(({ orientation = "horizontal", theme }) => ({
@@ -208,18 +218,9 @@ export const Content: React.FC<ContentProps> = (props: ContentProps) => {
                   );
                 })}
               </Tabs>
-              <Grid
-                id="Tab-Content"
-                sx={{
-                  width: "-webkit-fill-available",
-                  // backgroundColor:
-                  //   orientation === "vertical"
-                  //     ? "background.paper"
-                  //     : "transparent",
-                }}
-              >
+              <TabContent id="Tab-Content" orientation={orientation}>
                 {content}
-              </Grid>
+              </TabContent>
             </Grid>
           </ContentContainer>
         </Container>

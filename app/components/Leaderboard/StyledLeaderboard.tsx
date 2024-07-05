@@ -49,9 +49,14 @@ export const ColumnContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const ColumnContent = styled(Grid)(({ theme }) => ({
-  padding: "16px",
-  borderBottom: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
-  borderLeft: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+  // padding: "16px",
+  // borderBottom: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+  // borderLeft: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+
+  maxHeight: "600px",
+  padding: 0,
+  border: "none",
+  paddingRight: "8px",
 
   overflow: "overlay",
   overscrollBehavior: "contain",
