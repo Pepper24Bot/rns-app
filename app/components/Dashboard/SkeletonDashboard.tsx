@@ -29,7 +29,7 @@ export const SkeletonDashboard: React.FC = () => {
           <Grid>
             <Tabs value={0}>
               {DASHBOARD_TAB_ITEMS?.map((label) => {
-                return <TabItem label={label} />;
+                return <TabItem label={label} key={label} />;
               })}
             </Tabs>
             <Grid id="Tab-Content">
