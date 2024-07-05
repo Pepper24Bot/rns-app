@@ -21,9 +21,6 @@ import { EMPTY_ADDRESS } from "@/constants/components";
 
 const ContentContainer = styled(ColumnContent)(({ theme }) => ({
   height: "600px",
-  border: "none",
-  padding: 0, // override columncontent
-  paddingRight: "8px",
 }));
 
 const Title = styled(ColumnTitle)(({ theme }) => ({
@@ -57,7 +54,7 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
   } = props;
 
   return (
-    <Grid mt={2}>
+    <Grid mt={8}>
       <ColumnContainer xs={12}>
         <Grid container>
           <Grid item xs={0.5} />

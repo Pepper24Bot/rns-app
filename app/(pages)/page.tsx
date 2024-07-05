@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import MainPage from "@/components/Main/MainPage";
-import Names from "@/components/Dashboard/Tab/Names";
 import Dashboard from "@/components/Dashboard/Dashboard";
 
 export default function Home() {
@@ -14,9 +13,7 @@ export default function Home() {
 
   return (
     <MainPage>
-      <Dashboard>
-        <Names hasMounted={hasMounted} />
-      </Dashboard>
+      <Dashboard tab={0} hasMounted={hasMounted} />
     </MainPage>
   );
 }

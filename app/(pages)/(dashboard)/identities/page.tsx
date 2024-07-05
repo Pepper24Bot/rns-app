@@ -19,5 +19,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return <Names hasMounted={hasMounted} />;
+  return <Dashboard tab={0} hasMounted={hasMounted} />;
 }

@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Box, Grid, styled } from "@mui/material";
+import { Box, Collapse, Grid, styled } from "@mui/material";
 import { NameCard } from "./Names/NameCard";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import { DEFAULT_DEBOUNCE, OrderBy } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
 import {
-  getFilterExpiry,
   getOrderBy,
   getOrderDirection,
   parseCookie,
@@ -16,6 +15,10 @@ import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { Address } from "viem";
 import { useDashboardState } from "@/redux/dashboard/dashboardSlice";
 import { OrderDirection } from "@/redux/graphql/hooks";
+import { useAccount } from "wagmi";
+import { NextImage } from "@/components/Search/StyledSearch";
+import { ViewContainer, ViewRnsText, ConnectButton } from "./Names/StyledName";
+import { useModalState } from "@/redux/modal/modalSlice";
 
 import SkeletonNames from "./Names/SkeletonNames";
 import Pagination from "@/components/Reusables/Pagination";
@@ -44,8 +47,10 @@ interface NamesProps {
 export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   const { hasMounted } = props;
 
+  const { status } = useAccount();
   const { updateFilterOptions, useDashboard } = useDashboardState();
   const { identities, options } = useDashboard();
+  const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
   const {
     data: { address },
@@ -101,6 +106,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
   // TODO: Why does nextJS clears the api response
   /** get the list from api response or from the state */
   const nameList = names || displayedNames;
+  const isConnected = status !== "disconnected"; // this covers reconnecting status
 
   const isLoadingState =
     (isFetching && !nameList) || (!hasMounted && !nameList) || !nameList; // names is undefined initially
@@ -146,9 +152,9 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
 
   return (
     <>
-      {isLoadingState && <SkeletonNames />}
+      {isLoadingState && isConnected && <SkeletonNames />}
 
-      {hasNoNamesState && (
+      {hasNoNamesState && isConnected && (
         <Container>
           <Label>No Names found</Label>
           <Description>
@@ -157,7 +163,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
         </Container>
       )}
 
-      {!isEmpty(nameList) && (
+      {!isEmpty(nameList) && isConnected && (
         <Container id="Names-Container" ref={boundingElement}>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
@@ -188,6 +194,32 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
           </FlexCenter>
         </Container>
       )}
+
+      <Collapse in={status === "disconnected"}>
+        <FlexCenter>
+          <ViewContainer>
+            <ViewRnsText>View your Identities</ViewRnsText>
+            <ConnectButton
+              variant="outlined"
+              onClick={() => {
+                toggleModal({
+                  id: "Wallets",
+                  isXDisabled: true,
+                  title: address ? "Switch Wallet" : "Choose your Wallet",
+                });
+              }}
+            >
+              <NextImage
+                src="/icons/wallet.svg"
+                alt="Wallet Icon"
+                width={24}
+                height={24}
+              />
+              Connect Your Wallet
+            </ConnectButton>
+          </ViewContainer>
+        </FlexCenter>
+      </Collapse>
     </>
   );
 };

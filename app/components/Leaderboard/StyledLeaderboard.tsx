@@ -49,9 +49,14 @@ export const ColumnContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const ColumnContent = styled(Grid)(({ theme }) => ({
-  padding: "16px",
-  borderBottom: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
-  borderLeft: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+  // padding: "16px",
+  // borderBottom: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+  // borderLeft: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+
+  maxHeight: "600px",
+  padding: 0,
+  border: "none",
+  paddingRight: "8px",
 
   overflow: "overlay",
   overscrollBehavior: "contain",
@@ -99,5 +104,11 @@ export const HighlightValue = styled(RowText)(({ theme }) => ({
 
 export const Divider = styled(MuiDivider)(({ theme }) => ({
   margin: "24px 0",
-  borderColor: theme.palette.primary.dark,
+
+  "&.MuiDivider-root::after": {
+    borderColor: theme.palette.primary.dark,
+  },
+  "&.MuiDivider-root::before": {
+    borderColor: theme.palette.primary.dark,
+  },
 }));

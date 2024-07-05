@@ -97,7 +97,7 @@ export const leaderboardState = createSlice({
             return state
         },
         refetchRanking: (state): LeaderBoardState => {
-            state = { ...state, isFetched: false }
+            state = { ...initialState }
             return state
         }
     }

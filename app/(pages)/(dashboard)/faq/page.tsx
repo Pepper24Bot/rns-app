@@ -19,5 +19,5 @@ export default function Page() {
     }
   }, [hasMounted]);
 
-  return <FrequentlyAsked />;
+  return <Dashboard tab={2} hasMounted={hasMounted} />;
 }

@@ -120,9 +120,9 @@ export const DASHBOARD_TAB_ITEMS = [
     "IDENTITIES",
     "HOLDERS",
     "FAQ",
-    "Favorites",
-    "Notifications",
-    "LoyaltyPoints",
+    // "Favorites",
+    // "Notifications",
+    // "LoyaltyPoints",
 ]
 
 // Leaderboard Tabs
