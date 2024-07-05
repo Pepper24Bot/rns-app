@@ -187,25 +187,3 @@ export const SearchSubText = styled(SubTitle)(({ theme }) => ({
     fontSize: FONT_SIZE.Medium,
   },
 }));
-
-export const ViewRnsText = styled(SubTitle)(({ theme }) => ({
-  fontWeight: FONT_WEIGHT.Regular,
-  marginTop: "80px",
-}));
-
-export const ConnectButton = styled(ActionButton)(({ theme }) => ({
-  fontFamily: "var(--default-font)",
-  textTransform: "uppercase",
-  color: theme.palette.text.primary,
-
-  "&.MuiButtonBase-root": {
-    padding: "8px 24px",
-    borderRadius: "16px",
-  },
-}));
-
-export const Divider = styled(MuiDivider)(({ theme }) => ({
-  width: "65vmin",
-  borderColor: "rgba(184,167,174,0.1)",
-  filter: `drop-shadow(0px 0px 5px ${alpha(theme.palette.primary.main, 0.15)})`,
-}));

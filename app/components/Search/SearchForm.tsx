@@ -4,7 +4,6 @@ import React, { useCallback, useRef, useState } from "react";
 import {
   InputAdornment,
   styled,
-  Collapse,
   ClickAwayListener,
   IconButton,
 } from "@mui/material";
@@ -25,10 +24,6 @@ import {
   SearchSubText,
   SearchField,
   SearchIcon,
-  ViewContainer,
-  ViewRnsText,
-  ConnectButton,
-  Divider,
 } from "./StyledSearch";
 import { EmojiEmotions } from "@mui/icons-material";
 
@@ -191,32 +186,6 @@ export const SearchForm: React.FC = () => {
           </Search>
         </SearchContainer>
       </FlexCenter>
-      <Collapse in={status === "disconnected"}>
-        <FlexCenter>
-          <ViewContainer>
-            <Divider orientation="horizontal" variant="fullWidth" />
-            <ViewRnsText>View your Dashboard</ViewRnsText>
-            <ConnectButton
-              variant="outlined"
-              onClick={() => {
-                toggleModal({
-                  id: "Wallets",
-                  isXDisabled: true,
-                  title: address ? "Switch Wallet" : "Choose your Wallet",
-                });
-              }}
-            >
-              <NextImage
-                src="/icons/wallet.svg"
-                alt="Wallet Icon"
-                width={24}
-                height={24}
-              />
-              Connect Your Wallet
-            </ConnectButton>
-          </ViewContainer>
-        </FlexCenter>
-      </Collapse>
     </Container>
   );
 };

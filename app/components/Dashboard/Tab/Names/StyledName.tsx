@@ -4,6 +4,8 @@ import {
   ButtonLabel,
   TooltipContainer,
   SkeletonRectangular,
+  SubTitle,
+  ActionButton,
 } from "@/components/Theme/StyledGlobal";
 import {
   MoreVert,
@@ -220,4 +222,31 @@ export const EnsImageCard = styled("img")(({ theme }) => ({
     width: "-moz-available",
     height: "-moz-available",
   },
+}));
+
+export const CardDivider = styled(MuiDivider)(({ theme }) => ({
+  width: "65vmin",
+  borderColor: "rgba(184,167,174,0.1)",
+  filter: `drop-shadow(0px 0px 5px ${alpha(theme.palette.primary.main, 0.15)})`,
+}));
+
+export const ConnectButton = styled(ActionButton)(({ theme }) => ({
+  fontFamily: "var(--default-font)",
+  textTransform: "uppercase",
+  color: theme.palette.text.primary,
+
+  "&.MuiButtonBase-root": {
+    padding: "8px 24px",
+    borderRadius: "16px",
+  },
+}));
+
+export const ViewContainer = styled(Grid)(({ theme }) => ({
+  textAlign: "center",
+  padding: "15px 0 50px 0",
+}));
+
+export const ViewRnsText = styled(SubTitle)(({ theme }) => ({
+  fontWeight: FONT_WEIGHT.Regular,
+  marginTop: "80px",
 }));
