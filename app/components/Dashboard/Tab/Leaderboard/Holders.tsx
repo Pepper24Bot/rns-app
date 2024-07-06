@@ -8,6 +8,7 @@ import Content from "../../../Reusables/Content";
 import useAllNames from "@/hooks/useAllNames";
 import Top50 from "./Top50/Top50";
 import Ranking from "./Ranking/Ranking";
+import Summary from "./Summary";
 
 export interface HolderProps {
   children?: React.ReactNode;
@@ -32,7 +33,9 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
     singleCharacter = { ranking: [] },
     oneKClub = { ranking: [] },
     tenKClub = { ranking: [] },
-    totalCountNames: totalNames,
+    totalCountNames,
+    totalNames,
+    searchAddrOrName,
     isFetched,
   } = useLeaderboard();
 
@@ -63,7 +66,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
   const content = useMemo(() => {
     switch (tab) {
       case 0:
-        return <Top50 leaderboard={top} totalNames={totalNames} />;
+        return <Top50 leaderboard={top} totalNames={totalCountNames} />;
       case 1:
         return <Ranking leaderboard={singleEmoji} />;
       case 2:
@@ -73,7 +76,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
       case 4:
         return <Ranking leaderboard={tenKClub} />;
       default:
-        return <Top50 leaderboard={top} totalNames={totalNames} />;
+        return <Top50 leaderboard={top} totalNames={totalCountNames} />;
     }
   }, [tab, top.isFetched, isFetched]);
 
@@ -85,17 +88,23 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
 
   return (
     <Grid ref={refElement}>
-      <Content
-        title=""
-        isSubTabs={true}
-        tabs={LEADERBOARD_TAB_ITEMS}
-        content={content}
-        activeTab={tab || 0}
-        onTabChange={setPathNameFromTab}
-        // TODO: Implement this
-        toolbar={<></>}
-        orientation={orientation}
-      />
+      {searchAddrOrName ? (
+        <Summary
+          totalNames={totalNames || []}
+          searchAddrOrName={searchAddrOrName}
+        />
+      ) : (
+        <Content
+          title=""
+          isSubTabs={true}
+          tabs={LEADERBOARD_TAB_ITEMS}
+          content={content}
+          activeTab={tab || 0}
+          onTabChange={setPathNameFromTab}
+          toolbar={<></>}
+          orientation={orientation}
+        />
+      )}
     </Grid>
   );
 };

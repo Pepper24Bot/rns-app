@@ -40,6 +40,10 @@ export interface LeaderBoardState {
     oneKClub?: SingleRanking,
     tenKClub?: SingleRanking,
     totalCountNames?: number,
+
+    /** total names grouped by user */
+    totalNames?: Ranking[],
+    searchAddrOrName?: string,
     isFetched?: boolean
 }
 
@@ -64,7 +68,8 @@ const initialState: LeaderBoardState = {
         isFetched: false,
         ranking: [],
     },
-    isFetched: false
+    isFetched: false,
+    searchAddrOrName: ""
 }
 
 export const leaderboardState = createSlice({
@@ -75,7 +80,6 @@ export const leaderboardState = createSlice({
             state = { ...state, ...payload }
             return state
         },
-
         updateTopRanking: (state, { payload }: { payload: TopRanking }): LeaderBoardState => {
             state.top = payload
             return state
@@ -94,6 +98,10 @@ export const leaderboardState = createSlice({
         },
         update10kClubRanking: (state, { payload }: { payload: SingleRanking }): LeaderBoardState => {
             state.tenKClub = payload
+            return state
+        },
+        updateSearchNameOrAddr: (state, { payload }: { payload: string }): LeaderBoardState => {
+            state.searchAddrOrName = payload
             return state
         },
         refetchRanking: (state): LeaderBoardState => {
@@ -130,6 +138,10 @@ export const useLeaderboardState = () => {
 
         update10kClubRanking: (ranking: SingleRanking) => {
             dispatch(actions.update10kClubRanking({ ...ranking }))
+        },
+
+        updateSearchNameOrAddr: (nameOrAddr: string) => {
+            dispatch(actions.updateSearchNameOrAddr(nameOrAddr))
         },
 
         refetchRanking: () => {

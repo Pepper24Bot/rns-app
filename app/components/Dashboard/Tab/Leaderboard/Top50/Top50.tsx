@@ -43,6 +43,8 @@ const TooltipHeader = styled(Grid)(({ theme }) => ({
 }));
 
 const TooltipRows = styled(ColumnContent)(({ theme }) => ({
+  borderBottom: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
+  borderLeft: `solid 1px ${darken(theme.palette.primary.main, 0.75)}`,
   maxHeight: "250px",
   minWidth: "250px",
   padding: "4px",

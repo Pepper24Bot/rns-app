@@ -4,6 +4,7 @@ import { InputAdornment, styled } from "@mui/material";
 import { debounce as _debounce } from "lodash";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { Search } from "@mui/icons-material";
+import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 export const SearchField = styled(BaseInputField)(({ theme }) => ({
   ".MuiInputBase-input": {
@@ -25,10 +26,12 @@ export const SearchIcon = styled(Search)(({ theme }) => ({
 }));
 
 export const SearchBar: React.FC = () => {
+  const { updateSearchNameOrAddr } = useLeaderboardState();
+
   const [inputValue, setInputValue] = useState<string>("");
 
   const handleDebounceOnChange = (value: string) => {
-    console.log("value:: ", value);
+    updateSearchNameOrAddr(value);
   };
 
   const debounceFn = useCallback(

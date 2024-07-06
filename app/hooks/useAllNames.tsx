@@ -178,17 +178,16 @@ export default function useAllNames(props?: Props) {
 
     const maxLength = groupedBy.size > 50 ? 50 : groupedBy.size;
 
-    const sorted = [...groupedBy.entries()]
-      .sort((a, b) => {
-        return b[1].length - a[1].length;
-      })
-      .slice(0, maxLength);
+    const sorted = [...groupedBy.entries()].sort((a, b) => {
+      return b[1].length - a[1].length;
+    });
+    // .slice(0, maxLength);
 
-    const mappedNames = await Promise.all(
-      sorted.map(async (item) => {
+    const allNames = await Promise.all(
+      sorted.map(async (item, index) => {
         let primary = null;
 
-        if (item[0]) {
+        if (item[0] && index < maxLength) {
           primary = await getEnsName(config, {
             address: item[0] as Address,
           });
@@ -203,12 +202,15 @@ export default function useAllNames(props?: Props) {
       })
     );
 
-    setRankings([...mappedNames]);
+    const topFifty = [...allNames].slice(0, maxLength);
+
+    setRankings([...topFifty]);
     updateRankings({
       top: {
         isFetched: true,
-        ranking: [...mappedNames],
+        ranking: [...topFifty],
       },
+      totalNames: [...allNames],
       totalCountNames: domains?.length,
     });
   };
