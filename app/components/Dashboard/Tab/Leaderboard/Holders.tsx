@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 import { Grid } from "@mui/material";
 
-import Content from "../Reusables/Content";
+import Content from "../../../Reusables/Content";
 import useAllNames from "@/hooks/useAllNames";
 import Top50 from "./Top50/Top50";
 import Ranking from "./Ranking/Ranking";

@@ -9,7 +9,8 @@ import Content from "../Reusables/Content";
 import Toolbar from "../Reusables/Toolbar";
 import Names from "./Tab/Names";
 import FrequentlyAsked from "./Tab/Faq/Faq";
-import Holders from "../Leaderboard/Holders";
+import Holders from "./Tab/Leaderboard/Holders";
+import SearchBar from "./Tab/Leaderboard/SearchBar";
 
 export interface DashboardProps {
   children?: React.ReactNode;
@@ -71,8 +72,10 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
       case 0:
         return <Toolbar />;
       case 1:
+        // TODO: Implement search bar here
+        return <SearchBar />;
       case 2:
-      // TODO: Implement search bar here
+        return <></>;
       default:
         return <></>;
     }

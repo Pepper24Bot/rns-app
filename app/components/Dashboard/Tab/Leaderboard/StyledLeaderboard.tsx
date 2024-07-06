@@ -5,12 +5,12 @@ import {
   darken,
   styled,
 } from "@mui/material";
-import { FONT_WEIGHT } from "../Theme/Global";
+import { FONT_WEIGHT } from "../../../Theme/Global";
 import {
   FlexCenter,
   SecondaryLabel,
   FlexJustified,
-} from "../Theme/StyledGlobal";
+} from "../../../Theme/StyledGlobal";
 
 export const Container = styled(Grid)(({ theme }) => ({}));
 
