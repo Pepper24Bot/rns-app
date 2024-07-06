@@ -104,11 +104,12 @@ export const HighlightValue = styled(RowText)(({ theme }) => ({
 
 export const Divider = styled(MuiDivider)(({ theme }) => ({
   margin: "24px 0",
+  // backgroundColor: theme.palette.primary.dark,
 
   "&.MuiDivider-root::after": {
-    borderColor: theme.palette.primary.dark,
+    borderColor: alpha(theme.palette.primary.dark, 0.5),
   },
   "&.MuiDivider-root::before": {
-    borderColor: theme.palette.primary.dark,
+    borderColor: alpha(theme.palette.primary.dark, 0.5),
   },
 }));
