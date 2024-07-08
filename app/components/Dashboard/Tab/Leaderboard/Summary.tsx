@@ -182,7 +182,6 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     setSingleCharacters([]);
     setOneKClub([]);
     setTenKClub([]);
-    setIsSearching(true);
   };
 
   const handleBackButton = () => {
@@ -263,28 +262,29 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     const namesOwnedByAddr = findItemByAddr(address);
     await setPrimary(namesOwnedByAddr?.owner || "");
     setSearchedItem({ ...namesOwnedByAddr });
-    setIsSearching(false);
+    // setIsSearching(false);
   };
 
   useEffect(() => {
-    if (!isEmpty(searchedItem)) {
-      getRankings();
-    }
-  }, [searchedItem.names?.length]);
-
-  useEffect(() => {
-    clearState();
-
+    setIsSearching(true);
     if (searchAddrOrName) {
       if (isAddress(searchAddrOrName)) {
         fetchByAddress(searchAddrOrName);
       } else if (ownerId && !isFetching) {
         fetchByAddress(ownerId || "");
       } else {
+        clearState();
         setIsSearching(false);
       }
     }
-  }, [searchAddrOrName, totalNames, ownerId]);
+  }, [searchAddrOrName, totalNames, isFetching]);
+
+  useEffect(() => {
+    if (!isEmpty(searchedItem)) {
+      setIsSearching(false);
+      getRankings();
+    }
+  }, [searchedItem.names?.length]);
 
   return (
     <Grid>
@@ -323,7 +323,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
           </HorizontalDivider>
         </Grid>
       </Grid>
-      {isFetched && !isSearching && !isFetching && isEmpty(searchedItem) ? (
+      {!isSearching && !isFetching && isEmpty(searchedItem) ? (
         <HeadingTitle
           p={4}
         >{`Sorry! ${searchAddrOrName} does not own any identities.`}</HeadingTitle>
