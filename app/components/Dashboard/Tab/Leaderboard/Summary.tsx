@@ -117,6 +117,7 @@ export const BackButton = styled(IconButton)(({ theme }) => ({
 export interface SummaryProps {
   totalNames: Ranking[];
   searchAddrOrName: string;
+  isFetched?: boolean;
 }
 
 export interface SearchedItem extends Ranking {
@@ -124,7 +125,7 @@ export interface SearchedItem extends Ranking {
 }
 
 export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
-  const { totalNames, searchAddrOrName } = props;
+  const { totalNames, searchAddrOrName, isFetched } = props;
 
   const [searchedItem, setSearchedItem] = useState<SearchedItem>({});
   const [singleEmojis, setSingleEmojis] = useState<Ranking[]>([]);
@@ -235,9 +236,9 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
               </BackButton>
               <HeadingTitle>Overall Ranking:</HeadingTitle>
               <Relative>
-                <SkeletonTypography isloading={false} />
-                <HighlightValue isloading={false}>
-                  {searchedItem.rank}
+                <SkeletonTypography isloading={!isFetched} />
+                <HighlightValue isloading={!isFetched}>
+                  {searchedItem.rank || "00"}
                 </HighlightValue>
               </Relative>
             </Flex>
@@ -248,9 +249,9 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
             <Flex>
               <HeadingTitle>Total Identities Owned:</HeadingTitle>
               <Relative>
-                <SkeletonTypography isloading={false} />
-                <HighlightValue isloading={false}>
-                  {searchedItem.names?.length}
+                <SkeletonTypography isloading={!isFetched} />
+                <HighlightValue isloading={!isFetched}>
+                  {searchedItem.names?.length || "000"}
                 </HighlightValue>
               </Relative>
             </Flex>
@@ -260,32 +261,50 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
       <Grid container>
         <Grid item xs={6} pt={5} pl={2} pr={4}>
           <Header container>
-            <Grid item xs={6}>
+            <Grid item xs={8}>
               <ColumnTitle>Identity</ColumnTitle>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <ColumnTitle>Expiry</ColumnTitle>
             </Grid>
           </Header>
           <ColumnContent>
-            {searchedItem.names?.map((item) => {
-              return (
-                <Row container key={`summary-identity-${item.labelName}`}>
-                  <Relative item xs={6} pl={2}>
-                    <SkeletonTypography isloading={false} width="85%" />
-                    <IdentityText isloading={false}>
-                      {item.labelName}
-                    </IdentityText>
-                  </Relative>
-                  <Relative item xs={6}>
-                    <SkeletonTypography isloading={false} width="50%" />
-                    <RowText isloading={false}>
-                      In {getExpiry(item.expiryDate).distance}
-                    </RowText>
-                  </Relative>
-                </Row>
-              );
-            })}
+            {isFetched
+              ? searchedItem?.names?.map((item) => {
+                  return (
+                    <Row container key={`summary-identity-${item?.labelName}`}>
+                      <Grid item xs={8} pl={2}>
+                        <IdentityText>{item?.labelName || "00"}</IdentityText>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <RowText>
+                          In {getExpiry(item?.expiryDate).distance}
+                        </RowText>
+                      </Grid>
+                    </Row>
+                  );
+                })
+              : // skeleton loading only
+                [...Array(5)].map((_, index) => {
+                  return (
+                    <Row container key={`skeleton-identity-${index}`}>
+                      <Relative item xs={8} pl={2}>
+                        <SkeletonTypography
+                          isloading={!isFetched}
+                          width="85%"
+                        />
+                        <IdentityText isloading={true}>000</IdentityText>
+                      </Relative>
+                      <Relative item xs={4}>
+                        <SkeletonTypography
+                          isloading={!isFetched}
+                          width="50%"
+                        />
+                        <RowText isloading={true}>00-00-00</RowText>
+                      </Relative>
+                    </Row>
+                  );
+                })}
           </ColumnContent>
         </Grid>
         <VerticalDivider flexItem orientation="vertical" />
@@ -302,18 +321,24 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                       <Flex>
                         <Grid p={2}>
                           <RowText>Total:</RowText>
-                          <TotalNames>
-                            {getNamesByCategory(label).length}
-                          </TotalNames>
+                          <Relative>
+                            <SkeletonTypography isloading={!isFetched} />
+                            <TotalNames isloading={!isFetched}>
+                              {getNamesByCategory(label).length}
+                            </TotalNames>
+                          </Relative>
                         </Grid>
                         <AccordionDivider flexItem orientation="vertical" />
                         <Grid container spacing={1} p={2}>
                           {getNamesByCategory(label).map((name, index) => {
                             return (
                               <Flex item key={name.label}>
-                                <LabelName pr={1} isloading={false}>
-                                  {name.label}
-                                </LabelName>
+                                <Relative>
+                                  <SkeletonTypography isloading={!isFetched} />
+                                  <LabelName pr={1} isloading={!isFetched}>
+                                    {name.label}
+                                  </LabelName>
+                                </Relative>
                                 {getNamesByCategory(label).length - 1 !==
                                   index && (
                                   <AccordionDivider

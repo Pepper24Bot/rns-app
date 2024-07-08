@@ -92,6 +92,7 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
         <Summary
           totalNames={totalNames || []}
           searchAddrOrName={searchAddrOrName}
+          isFetched={isFetched}
         />
       ) : (
         <Content
