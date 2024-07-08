@@ -39,6 +39,8 @@ import { isAddress } from "viem";
 import { ArrowBack, ArrowDropDown } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { usePathname, useRouter } from "next/navigation";
+import { getEnsAddress } from "@wagmi/core";
+import { config } from "@/chains/config";
 
 export const ListContainer = styled(Grid)(({ theme }) => ({
   padding: "40px 32px 0 16px",
@@ -146,12 +148,15 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
 
   const [isSearching, setIsSearching] = useState<boolean>(true);
   const [searchedItem, setSearchedItem] = useState<SearchedItem>({});
+
   const [singleEmojis, setSingleEmojis] = useState<Ranking[]>([]);
   const [singleCharacters, setSingleCharacters] = useState<Ranking[]>([]);
   const [oneKClub, setOneKClub] = useState<Ranking[]>([]);
   const [tenKClub, setTenKClub] = useState<Ranking[]>([]);
 
   const { updateSearchNameOrAddr } = useLeaderboardState();
+
+  const isLoading = !isFetched || isSearching;
 
   const categoies = [
     "Single Emoji",
@@ -166,22 +171,11 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     setSingleCharacters([]);
     setOneKClub([]);
     setTenKClub([]);
-  };
-
-  const findItemByAddr = () => {
-    const index = totalNames?.findIndex((item) => {
-      return item.owner === searchAddrOrName?.toLowerCase();
-    });
-
-    if (index !== -1 && totalNames) {
-      return {
-        ...totalNames[index!],
-        rank: index! + 1,
-      };
-    }
+    setIsSearching(true);
   };
 
   const handleBackButton = () => {
+    clearState();
     updateSearchNameOrAddr("");
     if (pathName.includes("/summary")) {
       router.push("/leaderboard/top-50", { scroll: false });
@@ -201,6 +195,37 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
       default:
         return [];
     }
+  };
+
+  const findItemByAddr = (address: string) => {
+    const index = totalNames?.findIndex((item) => {
+      return item.owner === address?.toLowerCase();
+    });
+
+    if (index !== -1 && totalNames) {
+      return {
+        ...totalNames[index!],
+        rank: index! + 1,
+      };
+    }
+  };
+
+  const fetchByPrimary = async (name: string) => {
+    const address = (await getEnsAddress(config, {
+      name: `${name}.root`,
+    })) as string;
+
+    if (address) {
+      const namesOwnedByAddr = findItemByAddr(address);
+      setSearchedItem({ ...namesOwnedByAddr });
+    }
+    setIsSearching(false);
+  };
+
+  const fetchByAddress = async (address: string) => {
+    const namesOwnedByAddr = findItemByAddr(address);
+    setSearchedItem({ ...namesOwnedByAddr });
+    setIsSearching(false);
   };
 
   useEffect(() => {
@@ -236,27 +261,15 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     }
   }, [searchedItem]);
 
-  // console.log("searchedItem:: ", searchedItem);
-  // console.log("isSearching:: ", isSearching);
-  // console.log("searchAddrOrName:: ", searchAddrOrName);
-  // console.log("isFetched:: ", isFetched);
-
   useEffect(() => {
-    // 0x03E53414a65AF0723D8dAb6dFBA768E061E5d81f
-    // console.log("totalNames:: ", totalNames);
-
     clearState();
 
     if (searchAddrOrName) {
       if (isAddress(searchAddrOrName)) {
-        const namesOwnedByAddr = findItemByAddr();
-        // console.log("namesOwnedByAddr:: ", namesOwnedByAddr);
-        setSearchedItem({ ...namesOwnedByAddr });
-        setIsSearching(false);
+        fetchByAddress(searchAddrOrName);
       } else {
-        setIsSearching(false);
+        fetchByPrimary(searchAddrOrName);
       }
-    } else {
     }
   }, [searchAddrOrName, totalNames]);
 
@@ -275,8 +288,8 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
               </BackButton>
               <HeadingTitle>Overall Ranking:</HeadingTitle>
               <Relative>
-                <SkeletonTypography isloading={!isFetched} />
-                <HighlightValue isloading={!isFetched}>
+                <SkeletonTypography isloading={isLoading} />
+                <HighlightValue isloading={isLoading}>
                   {searchedItem.rank || "-"}
                 </HighlightValue>
               </Relative>
@@ -288,8 +301,8 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
             <Flex>
               <HeadingTitle>Total Identities Owned:</HeadingTitle>
               <Relative>
-                <SkeletonTypography isloading={!isFetched} />
-                <HighlightValue isloading={!isFetched}>
+                <SkeletonTypography isloading={isLoading} />
+                <HighlightValue isloading={isLoading}>
                   {searchedItem.names?.length || "0"}
                 </HighlightValue>
               </Relative>
@@ -313,7 +326,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
               </Grid>
             </Header>
             <ColumnContent>
-              {isFetched
+              {!isLoading
                 ? searchedItem?.names?.map((item) => {
                     return (
                       <Row
@@ -337,14 +350,14 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                       <Row container key={`skeleton-identity-${index}`}>
                         <Relative item xs={8} pl={2}>
                           <SkeletonTypography
-                            isloading={!isFetched}
+                            isloading={isLoading}
                             width="85%"
                           />
                           <IdentityText isloading={true}>000</IdentityText>
                         </Relative>
                         <Relative item xs={4}>
                           <SkeletonTypography
-                            isloading={!isFetched}
+                            isloading={isLoading}
                             width="50%"
                           />
                           <RowText isloading={true}>00-00-00</RowText>
@@ -360,9 +373,12 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
             sx={{ display: { xs: "none", md: "flex" } }}
           />
           <PanelsContainer item xs={12} md={5.5}>
-            {categoies.map((label) => {
+            {categoies.map((label, index) => {
               return (
-                <Accordion defaultExpanded key={`ranking-category-${label}`}>
+                <Accordion
+                  defaultExpanded
+                  key={`ranking-category-${label}-${index}`}
+                >
                   <AccordionSummary expandIcon={<ArrowDropDown />}>
                     <ColumnTitle>{label}</ColumnTitle>
                   </AccordionSummary>
@@ -373,8 +389,8 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                           <Grid p={2}>
                             <RowText>Total:</RowText>
                             <Relative>
-                              <SkeletonTypography isloading={!isFetched} />
-                              <TotalNames isloading={!isFetched}>
+                              <SkeletonTypography isloading={isLoading} />
+                              <TotalNames isloading={isLoading}>
                                 {getNamesByCategory(label).length}
                               </TotalNames>
                             </Relative>
@@ -385,10 +401,8 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                               return (
                                 <Flex item key={name.label}>
                                   <Relative>
-                                    <SkeletonTypography
-                                      isloading={!isFetched}
-                                    />
-                                    <LabelName isloading={!isFetched}>
+                                    <SkeletonTypography isloading={isLoading} />
+                                    <LabelName isloading={isLoading}>
                                       {name.label}
                                     </LabelName>
                                   </Relative>

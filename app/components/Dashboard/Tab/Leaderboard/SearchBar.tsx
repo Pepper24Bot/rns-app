@@ -55,7 +55,7 @@ export const SearchBar: React.FC = () => {
     <>
       <SearchField
         variant="filled"
-        placeholder="Search..."
+        placeholder="Search by Address or Identity..."
         value={inputValue}
         onChange={(event) => {
           const { value } = event.target;
