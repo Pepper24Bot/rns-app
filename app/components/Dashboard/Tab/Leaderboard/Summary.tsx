@@ -40,6 +40,20 @@ import { ArrowBack, ArrowDropDown } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { usePathname, useRouter } from "next/navigation";
 
+export const ListContainer = styled(Grid)(({ theme }) => ({
+  padding: "40px 32px 0 16px",
+  [theme.breakpoints.down("md")]: {
+    padding: "25px 8px",
+  },
+}));
+
+export const PanelsContainer = styled(ListContainer)(({ theme }) => ({
+  padding: "40px 0 0 32px",
+  [theme.breakpoints.down("md")]: {
+    padding: "25px 8px",
+  },
+}));
+
 export const HorizontalDivider = styled(StyledDivider)(({ theme }) => ({
   margin: 0,
 }));
@@ -56,9 +70,6 @@ export const RowText = styled(StyledRowText)(({ theme }) => ({
 
 export const HeadingTitle = styled(StyledRowText)(({ theme }) => ({
   paddingRight: "8px",
-  [theme.breakpoints.down("md")]: {
-    fontSize: "32px", // override
-  },
 }));
 
 export const HighlightValue = styled(StyledHighlightValue)(({ theme }) => ({
@@ -177,6 +188,21 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     }
   };
 
+  const getNamesByCategory = (label: string) => {
+    switch (label) {
+      case "Single Emoji":
+        return singleEmojis;
+      case "Single Character":
+        return singleCharacters;
+      case "999 Club":
+        return oneKClub;
+      case "10K Club":
+        return tenKClub;
+      default:
+        return [];
+    }
+  };
+
   useEffect(() => {
     if (!isEmpty(searchedItem?.names)) {
       searchedItem.names?.forEach(
@@ -210,21 +236,6 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     }
   }, [searchedItem]);
 
-  const getNamesByCategory = (label: string) => {
-    switch (label) {
-      case "Single Emoji":
-        return singleEmojis;
-      case "Single Character":
-        return singleCharacters;
-      case "999 Club":
-        return oneKClub;
-      case "10K Club":
-        return tenKClub;
-      default:
-        return [];
-    }
-  };
-
   // console.log("searchedItem:: ", searchedItem);
   // console.log("isSearching:: ", isSearching);
   // console.log("searchAddrOrName:: ", searchAddrOrName);
@@ -252,7 +263,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   return (
     <Grid>
       <Grid container pt={3}>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <HorizontalDivider flexItem textAlign="left">
             <Flex>
               <BackButton
@@ -272,7 +283,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
             </Flex>
           </HorizontalDivider>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={6}>
           <HorizontalDivider flexItem textAlign="right">
             <Flex>
               <HeadingTitle>Total Identities Owned:</HeadingTitle>
@@ -292,7 +303,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
         >{`Sorry! ${searchAddrOrName} does not own any identities.`}</HeadingTitle>
       ) : (
         <Grid container>
-          <Grid item xs={6} pt={5} pl={2} pr={4}>
+          <ListContainer item xs={12} md={6}>
             <Header container>
               <Grid item xs={8}>
                 <ColumnTitle>Identity</ColumnTitle>
@@ -342,9 +353,13 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                     );
                   })}
             </ColumnContent>
-          </Grid>
-          <VerticalDivider flexItem orientation="vertical" />
-          <Grid item xs={5.5} pl={4} pt={5}>
+          </ListContainer>
+          <VerticalDivider
+            flexItem
+            orientation="vertical"
+            sx={{ display: { xs: "none", md: "flex" } }}
+          />
+          <PanelsContainer item xs={12} md={5.5}>
             {categoies.map((label) => {
               return (
                 <Accordion defaultExpanded key={`ranking-category-${label}`}>
@@ -400,7 +415,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                 </Accordion>
               );
             })}
-          </Grid>
+          </PanelsContainer>
         </Grid>
       )}
     </Grid>
