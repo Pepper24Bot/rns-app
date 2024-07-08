@@ -63,7 +63,7 @@ export const ColumnContent = styled(Grid)(({ theme }) => ({
   border: "none",
   paddingRight: "8px",
 
-  overflow: "overlay",
+  overflowY: "scroll",
   overscrollBehavior: "contain",
 
   "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
