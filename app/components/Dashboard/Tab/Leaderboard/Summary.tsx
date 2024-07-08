@@ -20,6 +20,7 @@ import {
   RowText as StyledRowText,
   Divider as StyledDivider,
   ColumnTitle,
+  OwnerContainer,
 } from "./StyledLeaderboard";
 import {
   Flex,
@@ -28,6 +29,7 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import {
   getExpiry,
+  getMaskedAddress,
   pushToCharacters,
   pushToEmojis,
   pushToOneKClub,
@@ -35,11 +37,11 @@ import {
   sortByClubRank,
   sortByLabel,
 } from "@/utils/common";
-import { isAddress } from "viem";
+import { Address, isAddress } from "viem";
 import { ArrowBack, ArrowDropDown } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { usePathname, useRouter } from "next/navigation";
-import { getEnsAddress } from "@wagmi/core";
+import { getEnsAddress, getEnsName } from "@wagmi/core";
 import { config } from "@/chains/config";
 
 export const ListContainer = styled(Grid)(({ theme }) => ({
@@ -119,7 +121,7 @@ export const Accordion = styled(MuiAccordion)(({ theme }) => ({
   },
 }));
 
-export const AccordionDivider = styled(StyledDivider)(({ theme }) => ({
+export const PanelDivider = styled(StyledDivider)(({ theme }) => ({
   margin: 0,
   borderColor: alpha(theme.palette.primary.dark, 0.5),
 }));
@@ -146,6 +148,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   const pathName = usePathname();
   const router = useRouter();
 
+  const [primaryName, setPrimaryName] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState<boolean>(true);
   const [searchedItem, setSearchedItem] = useState<SearchedItem>({});
 
@@ -182,53 +185,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     }
   };
 
-  const getNamesByCategory = (label: string) => {
-    switch (label) {
-      case "Single Emoji":
-        return singleEmojis;
-      case "Single Character":
-        return singleCharacters;
-      case "999 Club":
-        return oneKClub;
-      case "10K Club":
-        return tenKClub;
-      default:
-        return [];
-    }
-  };
-
-  const findItemByAddr = (address: string) => {
-    const index = totalNames?.findIndex((item) => {
-      return item.owner === address?.toLowerCase();
-    });
-
-    if (index !== -1 && totalNames) {
-      return {
-        ...totalNames[index!],
-        rank: index! + 1,
-      };
-    }
-  };
-
-  const fetchByPrimary = async (name: string) => {
-    const address = (await getEnsAddress(config, {
-      name: `${name}.root`,
-    })) as string;
-
-    if (address) {
-      const namesOwnedByAddr = findItemByAddr(address);
-      setSearchedItem({ ...namesOwnedByAddr });
-    }
-    setIsSearching(false);
-  };
-
-  const fetchByAddress = async (address: string) => {
-    const namesOwnedByAddr = findItemByAddr(address);
-    setSearchedItem({ ...namesOwnedByAddr });
-    setIsSearching(false);
-  };
-
-  useEffect(() => {
+  const getRankings = () => {
     if (!isEmpty(searchedItem?.names)) {
       searchedItem.names?.forEach(
         ({ wrappedOwner, labelName, expiryDate }, index) => {
@@ -258,6 +215,65 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
       setSingleCharacters([...sortedChars]);
       setOneKClub([...sortedOneK]);
       setTenKClub([...sortedTenK]);
+    }
+  };
+
+  const getNamesByCategory = (label: string) => {
+    switch (label) {
+      case "Single Emoji":
+        return singleEmojis;
+      case "Single Character":
+        return singleCharacters;
+      case "999 Club":
+        return oneKClub;
+      case "10K Club":
+        return tenKClub;
+      default:
+        return [];
+    }
+  };
+
+  const setPrimary = async (address: string) => {
+    const primary = await getEnsName(config, { address: address as Address });
+    setPrimaryName(primary);
+  };
+
+  const findItemByAddr = (address: string) => {
+    const index = totalNames?.findIndex((item) => {
+      return item.owner === address?.toLowerCase();
+    });
+
+    if (index !== -1 && totalNames) {
+      return {
+        ...totalNames[index!],
+        rank: index! + 1,
+      };
+    }
+  };
+
+  const fetchByPrimary = async (name: string) => {
+    const address = (await getEnsAddress(config, {
+      name: `${name}.root`,
+    })) as string;
+
+    if (address) {
+      const namesOwnedByAddr = findItemByAddr(address);
+      await setPrimary(namesOwnedByAddr?.owner || "");
+      setSearchedItem({ ...namesOwnedByAddr });
+    }
+    setIsSearching(false);
+  };
+
+  const fetchByAddress = async (address: string) => {
+    const namesOwnedByAddr = findItemByAddr(address);
+    await setPrimary(namesOwnedByAddr?.owner || "");
+    setSearchedItem({ ...namesOwnedByAddr });
+    setIsSearching(false);
+  };
+
+  useEffect(() => {
+    if (!isEmpty(searchedItem)) {
+      getRankings();
     }
   }, [searchedItem]);
 
@@ -317,6 +333,32 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
       ) : (
         <Grid container>
           <ListContainer item xs={12} md={6}>
+            <OwnerContainer mb={2}>
+              <Flex>
+                <IdentityText pr={1}>Owner:</IdentityText>
+                {!isLoading ? (
+                  <Flex container>
+                    {primaryName && (
+                      <Flex pr={1}>
+                        <RowText pr={1} isloading={isLoading}>
+                          {primaryName}
+                        </RowText>
+                        <PanelDivider flexItem orientation="vertical" />
+                      </Flex>
+                    )}
+                    <RowText sx={{ wordBreak: "break-all" }}>
+                      {searchedItem?.owner}
+                    </RowText>
+                  </Flex>
+                ) : (
+                  <Relative item xs={8} pl={2}>
+                    <SkeletonTypography isloading={isLoading} />
+                    <IdentityText isloading={true}>---</IdentityText>
+                  </Relative>
+                )}
+              </Flex>
+            </OwnerContainer>
+            <ColumnContent></ColumnContent>
             <Header container>
               <Grid item xs={8}>
                 <ColumnTitle>Identity</ColumnTitle>
@@ -395,7 +437,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                               </TotalNames>
                             </Relative>
                           </Grid>
-                          <AccordionDivider flexItem orientation="vertical" />
+                          <PanelDivider flexItem orientation="vertical" />
                           <Grid container p={2}>
                             {getNamesByCategory(label).map((name, index) => {
                               return (
@@ -408,7 +450,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                                   </Relative>
                                   {getNamesByCategory(label).length - 1 !==
                                     index && (
-                                    <AccordionDivider
+                                    <PanelDivider
                                       sx={{ mx: 1 }}
                                       flexItem
                                       orientation="vertical"

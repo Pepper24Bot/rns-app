@@ -38,6 +38,10 @@ export const Header = styled(FlexJustified)(({ theme }) => ({
   border: `solid 1px ${darken(theme.palette.primary.main, 0.4)}`,
 }));
 
+export const OwnerContainer = styled(Header)(({ theme }) => ({
+  border: `solid 1px ${darken(theme.palette.primary.main, 0.4)}`,
+}));
+
 export const ColumnTitle = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "18px",
   fontWeight: FONT_WEIGHT.Bold,
