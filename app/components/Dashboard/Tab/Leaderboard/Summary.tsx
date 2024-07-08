@@ -112,6 +112,7 @@ export const AccordionDivider = styled(StyledDivider)(({ theme }) => ({
 }));
 
 export const BackButton = styled(IconButton)(({ theme }) => ({
+  padding: "6px",
   marginRight: "8px",
   backgroundColor: alpha(theme.palette.primary.dark, 0.35),
 }));
@@ -146,6 +147,13 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     "999 Club",
     "10K Club",
   ];
+
+  const clearState = () => {
+    setSingleEmojis([]);
+    setSingleCharacters([]);
+    setOneKClub([]);
+    setTenKClub([]);
+  };
 
   const findItemByAddr = () => {
     const index = totalNames?.findIndex((item) => {
@@ -219,6 +227,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   useEffect(() => {
     // console.log("totalNames:: ", totalNames);
     // console.log("searchAddrOrName:: ", searchAddrOrName);
+    clearState();
 
     if (searchAddrOrName) {
       if (isAddress(searchAddrOrName)) {
