@@ -37,6 +37,8 @@ import {
 } from "@/utils/common";
 import { isAddress } from "viem";
 import { ArrowBack, ArrowDropDown } from "@mui/icons-material";
+import { isEmpty } from "lodash";
+import { usePathname, useRouter } from "next/navigation";
 
 export const HorizontalDivider = styled(StyledDivider)(({ theme }) => ({
   margin: 0,
@@ -127,6 +129,9 @@ export interface SearchedItem extends Ranking {
 export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   const { totalNames, searchAddrOrName, isFetched } = props;
 
+  const pathName = usePathname();
+  const router = useRouter();
+
   const [searchedItem, setSearchedItem] = useState<SearchedItem>({});
   const [singleEmojis, setSingleEmojis] = useState<Ranking[]>([]);
   const [singleCharacters, setSingleCharacters] = useState<Ranking[]>([]);
@@ -157,38 +162,43 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
 
   const handleBackButton = () => {
     updateSearchNameOrAddr("");
+    if (pathName.includes("/summary")) {
+      router.push("/leaderboard/top-50", { scroll: false });
+    }
   };
 
   useEffect(() => {
-    console.log("searchedItem:: ", searchedItem);
-    searchedItem.names?.forEach(
-      ({ wrappedOwner, labelName, expiryDate }, index) => {
-        const item = {
-          owner: wrappedOwner?.id,
-          label: labelName,
-          expiryDate: getExpiry(expiryDate).distance,
-        };
+    if (!isEmpty(searchedItem?.names)) {
+      console.log("searchedItem:: ", searchedItem);
+      searchedItem.names?.forEach(
+        ({ wrappedOwner, labelName, expiryDate }, index) => {
+          const item = {
+            owner: wrappedOwner?.id,
+            label: labelName,
+            expiryDate: getExpiry(expiryDate).distance,
+          };
 
-        const props = {
-          labelName,
-          length: labelName.length,
-          item,
-        };
+          const props = {
+            labelName,
+            length: labelName.length,
+            item,
+          };
 
-        pushToEmojis({ ...props, ranks: singleEmojis });
-        pushToCharacters({ ...props, ranks: singleCharacters });
-        pushToOneKClub({ ...props, ranks: oneKClub });
-        pushToTenKClub({ ...props, ranks: tenKClub });
-      }
-    );
+          pushToEmojis({ ...props, ranks: singleEmojis });
+          pushToCharacters({ ...props, ranks: singleCharacters });
+          pushToOneKClub({ ...props, ranks: oneKClub });
+          pushToTenKClub({ ...props, ranks: tenKClub });
+        }
+      );
 
-    const sortedChars = sortByLabel(singleCharacters);
-    const sortedOneK = sortByClubRank(oneKClub);
-    const sortedTenK = sortByClubRank(tenKClub);
+      const sortedChars = sortByLabel(singleCharacters);
+      const sortedOneK = sortByClubRank(oneKClub);
+      const sortedTenK = sortByClubRank(tenKClub);
 
-    setSingleCharacters([...sortedChars]);
-    setOneKClub([...sortedOneK]);
-    setTenKClub([...sortedTenK]);
+      setSingleCharacters([...sortedChars]);
+      setOneKClub([...sortedOneK]);
+      setTenKClub([...sortedTenK]);
+    }
   }, [searchedItem]);
 
   const getNamesByCategory = (label: string) => {
@@ -329,19 +339,20 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                           </Relative>
                         </Grid>
                         <AccordionDivider flexItem orientation="vertical" />
-                        <Grid container spacing={1} p={2}>
+                        <Grid container p={2}>
                           {getNamesByCategory(label).map((name, index) => {
                             return (
                               <Flex item key={name.label}>
                                 <Relative>
                                   <SkeletonTypography isloading={!isFetched} />
-                                  <LabelName pr={1} isloading={!isFetched}>
+                                  <LabelName isloading={!isFetched}>
                                     {name.label}
                                   </LabelName>
                                 </Relative>
                                 {getNamesByCategory(label).length - 1 !==
                                   index && (
                                   <AccordionDivider
+                                    sx={{ mx: 1 }}
                                     flexItem
                                     orientation="vertical"
                                   />

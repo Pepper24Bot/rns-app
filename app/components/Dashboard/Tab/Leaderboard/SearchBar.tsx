@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BaseInputField } from "@/components/Theme/StyledGlobal";
 import { InputAdornment, styled } from "@mui/material";
 import { debounce as _debounce } from "lodash";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { Search } from "@mui/icons-material";
 import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
+import { usePathname, useRouter } from "next/navigation";
 
 export const SearchField = styled(BaseInputField)(({ theme }) => ({
   ".MuiInputBase-input": {
@@ -26,12 +27,23 @@ export const SearchIcon = styled(Search)(({ theme }) => ({
 }));
 
 export const SearchBar: React.FC = () => {
-  const { updateSearchNameOrAddr } = useLeaderboardState();
+  const { updateSearchNameOrAddr, useLeaderboard } = useLeaderboardState();
+  const { searchAddrOrName } = useLeaderboard();
+
+  const router = useRouter();
+  const pathName = usePathname();
 
   const [inputValue, setInputValue] = useState<string>("");
 
+  useEffect(() => {
+    setInputValue(searchAddrOrName || "");
+  }, [searchAddrOrName]);
+
   const handleDebounceOnChange = (value: string) => {
     updateSearchNameOrAddr(value);
+    if (!value && pathName.includes("/summary")) {
+      router.push("/leaderboard/top-50", { scroll: false });
+    }
   };
 
   const debounceFn = useCallback(

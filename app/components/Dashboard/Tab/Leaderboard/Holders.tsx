@@ -47,19 +47,19 @@ export const Holders: React.FC<HolderProps> = (props: HolderProps) => {
 
     switch (tab) {
       case 0:
-        return router.replace("/leaderboard/top-50", { scroll: false });
+        return router.push("/leaderboard/top-50", { scroll: false });
       case 1:
-        return router.replace("/leaderboard/single-emoji", { scroll: false });
+        return router.push("/leaderboard/single-emoji", { scroll: false });
       case 2:
-        return router.replace("/leaderboard/single-character", {
+        return router.push("/leaderboard/single-character", {
           scroll: false,
         });
       case 3:
-        return router.replace("/leaderboard/999-club", { scroll: false });
+        return router.push("/leaderboard/999-club", { scroll: false });
       case 4:
-        return router.replace("/leaderboard/10k-club", { scroll: false });
+        return router.push("/leaderboard/10k-club", { scroll: false });
       default:
-        return router.replace("/", { scroll: false });
+        return router.push("/", { scroll: false });
     }
   };
 

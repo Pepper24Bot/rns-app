@@ -31,13 +31,13 @@ export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
 
     switch (tab) {
       case 0:
-        return router.replace("/identities", { scroll: false });
+        return router.push("/identities", { scroll: false });
       case 1:
-        return router.replace("/leaderboard/top-50", { scroll: false });
+        return router.push("/leaderboard/top-50", { scroll: false });
       case 2:
-        return router.replace("/faq", { scroll: false });
+        return router.push("/faq", { scroll: false });
       default:
-        return router.replace("/", { scroll: false });
+        return router.push("/", { scroll: false });
     }
   };
 
