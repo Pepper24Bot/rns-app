@@ -278,8 +278,10 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     if (searchAddrOrName) {
       if (isAddress(searchAddrOrName)) {
         fetchByAddress(searchAddrOrName);
-      } else {
+      } else if (ownerId && !isFetching) {
         fetchByAddress(ownerId || "");
+      } else {
+        setIsSearching(false);
       }
     }
   }, [searchAddrOrName, totalNames, ownerId]);
@@ -321,7 +323,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
           </HorizontalDivider>
         </Grid>
       </Grid>
-      {isFetched && !isSearching && isEmpty(searchedItem) ? (
+      {isFetched && !isSearching && !isFetching && isEmpty(searchedItem) ? (
         <HeadingTitle
           p={4}
         >{`Sorry! ${searchAddrOrName} does not own any identities.`}</HeadingTitle>
