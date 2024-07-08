@@ -4700,6 +4700,13 @@ export type NamesQueryVariables = Exact<{
 
 export type NamesQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', labelName?: string | null, expiryDate?: any | null, id: string, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
 
+export type OwnerQueryVariables = Exact<{
+  labelName?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type OwnerQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', labelName?: string | null, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
+
 
 export const NamesByAddressDocument = `
     query NamesByAddress($expiryDate_gte: BigInt = "0", $expiryDate_lt: BigInt = "0", $first: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate, $ensName: String = "", $sortByLength: Boolean = false) {
@@ -4764,6 +4771,16 @@ export const NamesDocument = `
   }
 }
     `;
+export const OwnerDocument = `
+    query Owner($labelName: String = "") {
+  domains(where: {labelName: $labelName}) {
+    labelName
+    wrappedOwner {
+      id
+    }
+  }
+}
+    `;
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -4773,9 +4790,12 @@ const injectedRtkApi = api.injectEndpoints({
     Names: build.query<NamesQuery, NamesQueryVariables | void>({
       query: (variables) => ({ document: NamesDocument, variables })
     }),
+    Owner: build.query<OwnerQuery, OwnerQueryVariables | void>({
+      query: (variables) => ({ document: OwnerDocument, variables })
+    }),
   }),
 });
 
 export { injectedRtkApi as api };
-export const { useNamesByAddressQuery, useLazyNamesByAddressQuery, useNamesQuery, useLazyNamesQuery } = injectedRtkApi;
+export const { useNamesByAddressQuery, useLazyNamesByAddressQuery, useNamesQuery, useLazyNamesQuery, useOwnerQuery, useLazyOwnerQuery } = injectedRtkApi;
 

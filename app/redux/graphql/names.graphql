@@ -74,3 +74,12 @@ query Names($first: Int = 1000, $lastId: ID = "") {
     id
   }
 }
+
+query Owner($labelName: String = "") {
+  domains(where: { labelName: $labelName }) {
+    labelName
+    wrappedOwner {
+      id
+    }
+  }
+}

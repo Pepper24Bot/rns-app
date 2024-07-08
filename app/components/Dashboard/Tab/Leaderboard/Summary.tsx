@@ -29,7 +29,6 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import {
   getExpiry,
-  getMaskedAddress,
   pushToCharacters,
   pushToEmojis,
   pushToOneKClub,
@@ -41,8 +40,9 @@ import { Address, isAddress } from "viem";
 import { ArrowBack, ArrowDropDown } from "@mui/icons-material";
 import { isEmpty } from "lodash";
 import { usePathname, useRouter } from "next/navigation";
-import { getEnsAddress, getEnsName } from "@wagmi/core";
+import { getEnsName } from "@wagmi/core";
 import { config } from "@/chains/config";
+import { useOwnerQuery } from "@/redux/graphql/hooks";
 
 export const ListContainer = styled(Grid)(({ theme }) => ({
   padding: "40px 32px 0 16px",
@@ -158,8 +158,16 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   const [tenKClub, setTenKClub] = useState<Ranking[]>([]);
 
   const { updateSearchNameOrAddr } = useLeaderboardState();
+  const { data: ownerData, isFetching } = useOwnerQuery(
+    { labelName: searchAddrOrName },
+    { skip: isAddress(searchAddrOrName) }
+  );
 
-  const isLoading = !isFetched || isSearching;
+  const ownerId = !isEmpty(ownerData?.domains)
+    ? ownerData?.domains[0]?.wrappedOwner?.id
+    : "";
+
+  const isLoading = !isFetched || isSearching || isFetching;
 
   const categoies = [
     "Single Emoji",
@@ -240,7 +248,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
 
   const findItemByAddr = (address: string) => {
     const index = totalNames?.findIndex((item) => {
-      return item.owner === address?.toLowerCase();
+      return item.owner?.toLowerCase() === address?.toLowerCase();
     });
 
     if (index !== -1 && totalNames) {
@@ -249,19 +257,6 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
         rank: index! + 1,
       };
     }
-  };
-
-  const fetchByPrimary = async (name: string) => {
-    const address = (await getEnsAddress(config, {
-      name: `${name}.root`,
-    })) as string;
-
-    if (address) {
-      const namesOwnedByAddr = findItemByAddr(address);
-      await setPrimary(namesOwnedByAddr?.owner || "");
-      setSearchedItem({ ...namesOwnedByAddr });
-    }
-    setIsSearching(false);
   };
 
   const fetchByAddress = async (address: string) => {
@@ -284,10 +279,10 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
       if (isAddress(searchAddrOrName)) {
         fetchByAddress(searchAddrOrName);
       } else {
-        fetchByPrimary(searchAddrOrName);
+        fetchByAddress(ownerId || "");
       }
     }
-  }, [searchAddrOrName]);
+  }, [searchAddrOrName, totalNames, ownerId]);
 
   return (
     <Grid>
