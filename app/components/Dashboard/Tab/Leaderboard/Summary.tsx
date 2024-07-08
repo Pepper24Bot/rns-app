@@ -133,6 +133,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   const pathName = usePathname();
   const router = useRouter();
 
+  const [isSearching, setIsSearching] = useState<boolean>(true);
   const [searchedItem, setSearchedItem] = useState<SearchedItem>({});
   const [singleEmojis, setSingleEmojis] = useState<Ranking[]>([]);
   const [singleCharacters, setSingleCharacters] = useState<Ranking[]>([]);
@@ -149,6 +150,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   ];
 
   const clearState = () => {
+    setSearchedItem({});
     setSingleEmojis([]);
     setSingleCharacters([]);
     setOneKClub([]);
@@ -177,7 +179,6 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
 
   useEffect(() => {
     if (!isEmpty(searchedItem?.names)) {
-      console.log("searchedItem:: ", searchedItem);
       searchedItem.names?.forEach(
         ({ wrappedOwner, labelName, expiryDate }, index) => {
           const item = {
@@ -224,9 +225,15 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     }
   };
 
+  // console.log("searchedItem:: ", searchedItem);
+  // console.log("isSearching:: ", isSearching);
+  // console.log("searchAddrOrName:: ", searchAddrOrName);
+  // console.log("isFetched:: ", isFetched);
+
   useEffect(() => {
+    // 0x03E53414a65AF0723D8dAb6dFBA768E061E5d81f
     // console.log("totalNames:: ", totalNames);
-    // console.log("searchAddrOrName:: ", searchAddrOrName);
+
     clearState();
 
     if (searchAddrOrName) {
@@ -234,11 +241,13 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
         const namesOwnedByAddr = findItemByAddr();
         // console.log("namesOwnedByAddr:: ", namesOwnedByAddr);
         setSearchedItem({ ...namesOwnedByAddr });
+        setIsSearching(false);
       } else {
+        setIsSearching(false);
       }
+    } else {
     }
   }, [searchAddrOrName, totalNames]);
-  // 0x03E53414a65AF0723D8dAb6dFBA768E061E5d81f
 
   return (
     <Grid>
@@ -257,7 +266,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
               <Relative>
                 <SkeletonTypography isloading={!isFetched} />
                 <HighlightValue isloading={!isFetched}>
-                  {searchedItem.rank || "00"}
+                  {searchedItem.rank || "-"}
                 </HighlightValue>
               </Relative>
             </Flex>
@@ -270,119 +279,130 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
               <Relative>
                 <SkeletonTypography isloading={!isFetched} />
                 <HighlightValue isloading={!isFetched}>
-                  {searchedItem.names?.length || "000"}
+                  {searchedItem.names?.length || "0"}
                 </HighlightValue>
               </Relative>
             </Flex>
           </HorizontalDivider>
         </Grid>
       </Grid>
-      <Grid container>
-        <Grid item xs={6} pt={5} pl={2} pr={4}>
-          <Header container>
-            <Grid item xs={8}>
-              <ColumnTitle>Identity</ColumnTitle>
-            </Grid>
-            <Grid item xs={4}>
-              <ColumnTitle>Expiry</ColumnTitle>
-            </Grid>
-          </Header>
-          <ColumnContent>
-            {isFetched
-              ? searchedItem?.names?.map((item) => {
-                  return (
-                    <Row container key={`summary-identity-${item?.labelName}`}>
-                      <Grid item xs={8} pl={2}>
-                        <IdentityText>{item?.labelName || "00"}</IdentityText>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <RowText>
-                          In {getExpiry(item?.expiryDate).distance}
+      {isFetched && !isSearching && isEmpty(searchedItem) ? (
+        <HeadingTitle
+          p={4}
+        >{`Sorry! ${searchAddrOrName} does not own any identities.`}</HeadingTitle>
+      ) : (
+        <Grid container>
+          <Grid item xs={6} pt={5} pl={2} pr={4}>
+            <Header container>
+              <Grid item xs={8}>
+                <ColumnTitle>Identity</ColumnTitle>
+              </Grid>
+              <Grid item xs={4}>
+                <ColumnTitle>Expiry</ColumnTitle>
+              </Grid>
+            </Header>
+            <ColumnContent>
+              {isFetched
+                ? searchedItem?.names?.map((item) => {
+                    return (
+                      <Row
+                        container
+                        key={`summary-identity-${item?.labelName}`}
+                      >
+                        <Grid item xs={8} pl={2}>
+                          <IdentityText>{item?.labelName || "00"}</IdentityText>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <RowText>
+                            In {getExpiry(item?.expiryDate).distance}
+                          </RowText>
+                        </Grid>
+                      </Row>
+                    );
+                  })
+                : // skeleton loading only
+                  [...Array(5)].map((_, index) => {
+                    return (
+                      <Row container key={`skeleton-identity-${index}`}>
+                        <Relative item xs={8} pl={2}>
+                          <SkeletonTypography
+                            isloading={!isFetched}
+                            width="85%"
+                          />
+                          <IdentityText isloading={true}>000</IdentityText>
+                        </Relative>
+                        <Relative item xs={4}>
+                          <SkeletonTypography
+                            isloading={!isFetched}
+                            width="50%"
+                          />
+                          <RowText isloading={true}>00-00-00</RowText>
+                        </Relative>
+                      </Row>
+                    );
+                  })}
+            </ColumnContent>
+          </Grid>
+          <VerticalDivider flexItem orientation="vertical" />
+          <Grid item xs={5.5} pl={4} pt={5}>
+            {categoies.map((label) => {
+              return (
+                <Accordion defaultExpanded key={`ranking-category-${label}`}>
+                  <AccordionSummary expandIcon={<ArrowDropDown />}>
+                    <ColumnTitle>{label}</ColumnTitle>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ padding: 0 }}>
+                    <Flex>
+                      {getNamesByCategory(label).length ? (
+                        <Flex>
+                          <Grid p={2}>
+                            <RowText>Total:</RowText>
+                            <Relative>
+                              <SkeletonTypography isloading={!isFetched} />
+                              <TotalNames isloading={!isFetched}>
+                                {getNamesByCategory(label).length}
+                              </TotalNames>
+                            </Relative>
+                          </Grid>
+                          <AccordionDivider flexItem orientation="vertical" />
+                          <Grid container p={2}>
+                            {getNamesByCategory(label).map((name, index) => {
+                              return (
+                                <Flex item key={name.label}>
+                                  <Relative>
+                                    <SkeletonTypography
+                                      isloading={!isFetched}
+                                    />
+                                    <LabelName isloading={!isFetched}>
+                                      {name.label}
+                                    </LabelName>
+                                  </Relative>
+                                  {getNamesByCategory(label).length - 1 !==
+                                    index && (
+                                    <AccordionDivider
+                                      sx={{ mx: 1 }}
+                                      flexItem
+                                      orientation="vertical"
+                                    />
+                                  )}
+                                </Flex>
+                              );
+                            })}
+                          </Grid>
+                        </Flex>
+                      ) : (
+                        <RowText p={2}>
+                          No names found under this category
                         </RowText>
-                      </Grid>
-                    </Row>
-                  );
-                })
-              : // skeleton loading only
-                [...Array(5)].map((_, index) => {
-                  return (
-                    <Row container key={`skeleton-identity-${index}`}>
-                      <Relative item xs={8} pl={2}>
-                        <SkeletonTypography
-                          isloading={!isFetched}
-                          width="85%"
-                        />
-                        <IdentityText isloading={true}>000</IdentityText>
-                      </Relative>
-                      <Relative item xs={4}>
-                        <SkeletonTypography
-                          isloading={!isFetched}
-                          width="50%"
-                        />
-                        <RowText isloading={true}>00-00-00</RowText>
-                      </Relative>
-                    </Row>
-                  );
-                })}
-          </ColumnContent>
+                      )}
+                    </Flex>
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
+          </Grid>
         </Grid>
-        <VerticalDivider flexItem orientation="vertical" />
-        <Grid item xs={5.5} pl={4} pt={5}>
-          {categoies.map((label) => {
-            return (
-              <Accordion defaultExpanded key={`ranking-category-${label}`}>
-                <AccordionSummary expandIcon={<ArrowDropDown />}>
-                  <ColumnTitle>{label}</ColumnTitle>
-                </AccordionSummary>
-                <AccordionDetails sx={{ padding: 0 }}>
-                  <Flex>
-                    {getNamesByCategory(label).length ? (
-                      <Flex>
-                        <Grid p={2}>
-                          <RowText>Total:</RowText>
-                          <Relative>
-                            <SkeletonTypography isloading={!isFetched} />
-                            <TotalNames isloading={!isFetched}>
-                              {getNamesByCategory(label).length}
-                            </TotalNames>
-                          </Relative>
-                        </Grid>
-                        <AccordionDivider flexItem orientation="vertical" />
-                        <Grid container p={2}>
-                          {getNamesByCategory(label).map((name, index) => {
-                            return (
-                              <Flex item key={name.label}>
-                                <Relative>
-                                  <SkeletonTypography isloading={!isFetched} />
-                                  <LabelName isloading={!isFetched}>
-                                    {name.label}
-                                  </LabelName>
-                                </Relative>
-                                {getNamesByCategory(label).length - 1 !==
-                                  index && (
-                                  <AccordionDivider
-                                    sx={{ mx: 1 }}
-                                    flexItem
-                                    orientation="vertical"
-                                  />
-                                )}
-                              </Flex>
-                            );
-                          })}
-                        </Grid>
-                      </Flex>
-                    ) : (
-                      <RowText p={2}>
-                        No names found under this category
-                      </RowText>
-                    )}
-                  </Flex>
-                </AccordionDetails>
-              </Accordion>
-            );
-          })}
-        </Grid>
-      </Grid>
+      )}
     </Grid>
   );
 };
