@@ -4,7 +4,15 @@ import {
   Ranking,
   useLeaderboardState,
 } from "@/redux/leaderboard/leaderboardSlice";
-import { findCharacterSet, getExpiry } from "@/utils/common";
+import {
+  getExpiry,
+  pushToCharacters,
+  pushToEmojis,
+  pushToOneKClub,
+  pushToTenKClub,
+  sortByClubRank,
+  sortByLabel,
+} from "@/utils/common";
 import { getEnsName } from "@wagmi/core";
 import { isEmpty } from "lodash";
 import { useEffect, useState } from "react";
@@ -15,7 +23,7 @@ interface Props {
   skip?: boolean;
 }
 
-interface PushProps {
+export interface PushProps {
   labelName: string;
   length: number;
   item: Ranking;
@@ -33,52 +41,10 @@ export default function useAllNames(props?: Props) {
 
   const { updateRankings, useLeaderboard } = useLeaderboardState();
   const { isFetched: isSuccess } = useLeaderboard();
-  const { data } = useNamesQuery({ lastId: lastQueryId });
-
-  const pushToEmojis = (props: PushProps) => {
-    const { labelName, length, ranks, item } = props;
-
-    if (findCharacterSet(labelName) === "emoji" && length <= 2) {
-      ranks.push(item);
-    }
-  };
-
-  const pushToCharacters = (props: PushProps) => {
-    const { labelName, length, ranks, item } = props;
-
-    if (
-      (findCharacterSet(labelName) === "letter" ||
-        findCharacterSet(labelName) === "digit") &&
-      length === 1
-    ) {
-      ranks.push(item);
-    }
-  };
-
-  const pushToOneKClub = (props: PushProps) => {
-    const { labelName, length, ranks, item } = props;
-
-    if (
-      findCharacterSet(labelName) === "digit" &&
-      length <= 3 &&
-      Number(labelName) < 1000
-    ) {
-      ranks.push(item);
-    }
-  };
-
-  const pushToTenKClub = (props: PushProps) => {
-    const { labelName, length, ranks, item } = props;
-
-    if (
-      findCharacterSet(labelName) === "digit" &&
-      length <= 4 &&
-      Number(labelName) < 10000 &&
-      Number(labelName) > 999
-    ) {
-      ranks.push(item);
-    }
-  };
+  const { data } = useNamesQuery(
+    { lastId: lastQueryId },
+    { skip: props?.skip }
+  );
 
   const groupNameByAddres = (items: Ranking[]) => {
     const groupedByOwner = items.reduce(
@@ -143,12 +109,7 @@ export default function useAllNames(props?: Props) {
     items: Ranking[],
     ranksWithPrimary: Ranking[]
   ) => {
-    const sortedItems = items.sort((a, b) => {
-      return (
-        a.label?.localeCompare(b.label || "", "en", { numeric: true }) || 0
-      );
-    });
-
+    const sortedItems = sortByLabel(items);
     return primaryMapper(sortedItems, ranksWithPrimary);
   };
 
@@ -156,13 +117,7 @@ export default function useAllNames(props?: Props) {
     items: Ranking[],
     ranksWithPrimary: Ranking[]
   ) => {
-    const sortedItems = items.sort((a, b) => {
-      return a.label?.length === b.label?.length
-        ? Number(a.label) - Number(b.label)
-        : Number(a.label) - Number(b.label) &&
-            (a.label?.length || 0) - (b.label?.length || 0);
-    });
-
+    const sortedItems = sortByClubRank(items);
     return primaryMapper(sortedItems, ranksWithPrimary);
   };
 

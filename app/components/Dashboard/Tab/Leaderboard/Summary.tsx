@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Ranking } from "@/redux/leaderboard/leaderboardSlice";
+import {
+  Ranking,
+  useLeaderboardState,
+} from "@/redux/leaderboard/leaderboardSlice";
 import {
   Accordion as MuiAccordion,
   AccordionDetails,
   AccordionSummary,
   Grid,
   styled,
-  Typography,
   alpha,
+  IconButton,
 } from "@mui/material";
 import {
   ColumnContent,
@@ -23,12 +26,19 @@ import {
   Relative,
   SkeletonTypography,
 } from "@/components/Theme/StyledGlobal";
-import { getExpiry } from "@/utils/common";
+import {
+  getExpiry,
+  pushToCharacters,
+  pushToEmojis,
+  pushToOneKClub,
+  pushToTenKClub,
+  sortByClubRank,
+  sortByLabel,
+} from "@/utils/common";
 import { isAddress } from "viem";
-import { ArrowDropDown } from "@mui/icons-material";
+import { ArrowBack, ArrowDropDown } from "@mui/icons-material";
 
 export const HorizontalDivider = styled(StyledDivider)(({ theme }) => ({
-  //   margin: "16px",
   margin: 0,
 }));
 
@@ -43,6 +53,7 @@ export const RowText = styled(StyledRowText)(({ theme }) => ({
 }));
 
 export const HeadingTitle = styled(StyledRowText)(({ theme }) => ({
+  paddingRight: "8px",
   [theme.breakpoints.down("md")]: {
     fontSize: "32px", // override
   },
@@ -54,9 +65,30 @@ export const HighlightValue = styled(StyledHighlightValue)(({ theme }) => ({
   },
 }));
 
+export const TotalNames = styled(RowText)(({ theme }) => ({
+  fontSize: "32px",
+  textAlign: "center",
+  color: theme.palette.text.primary,
+}));
+
+export const LabelName = styled(HighlightValue)(({ theme }) => ({
+  fontSize: "16px",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "16px", // override
+  },
+}));
+
+export const IdentityText = styled(RowText)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
+
 export const Accordion = styled(MuiAccordion)(({ theme }) => ({
+  "&.MuiAccordion-root::before": {
+    backgroundColor: "transparent",
+  },
+
   "& .MuiAccordionSummary-root": {
-    border: `solid 1px ${theme.palette.primary.dark}`,
+    border: `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`,
     borderRadius: "4px",
     backgroundColor: theme.palette.background.paper,
 
@@ -68,8 +100,18 @@ export const Accordion = styled(MuiAccordion)(({ theme }) => ({
 
   "& .MuiCollapse-root": {
     backgroundColor: theme.palette.background.paper,
-    border: `solid 1px ${theme.palette.primary.dark}`,
+    border: `solid 1px ${alpha(theme.palette.primary.dark, 0.5)}`,
   },
+}));
+
+export const AccordionDivider = styled(StyledDivider)(({ theme }) => ({
+  margin: 0,
+  borderColor: alpha(theme.palette.primary.dark, 0.5),
+}));
+
+export const BackButton = styled(IconButton)(({ theme }) => ({
+  marginRight: "8px",
+  backgroundColor: alpha(theme.palette.primary.dark, 0.35),
 }));
 
 export interface SummaryProps {
@@ -77,12 +119,27 @@ export interface SummaryProps {
   searchAddrOrName: string;
 }
 
+export interface SearchedItem extends Ranking {
+  rank?: number;
+}
+
 export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
   const { totalNames, searchAddrOrName } = props;
 
-  const [searchedItem, setSearchedItem] = useState<Ranking & { rank?: number }>(
-    {}
-  );
+  const [searchedItem, setSearchedItem] = useState<SearchedItem>({});
+  const [singleEmojis, setSingleEmojis] = useState<Ranking[]>([]);
+  const [singleCharacters, setSingleCharacters] = useState<Ranking[]>([]);
+  const [oneKClub, setOneKClub] = useState<Ranking[]>([]);
+  const [tenKClub, setTenKClub] = useState<Ranking[]>([]);
+
+  const { updateSearchNameOrAddr } = useLeaderboardState();
+
+  const categoies = [
+    "Single Emoji",
+    "Single Character",
+    "999 Club",
+    "10K Club",
+  ];
 
   const findItemByAddr = () => {
     const index = totalNames?.findIndex((item) => {
@@ -97,14 +154,65 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     }
   };
 
+  const handleBackButton = () => {
+    updateSearchNameOrAddr("");
+  };
+
   useEffect(() => {
-    console.log("totalNames:: ", totalNames);
-    console.log("searchAddrOrName:: ", searchAddrOrName);
+    console.log("searchedItem:: ", searchedItem);
+    searchedItem.names?.forEach(
+      ({ wrappedOwner, labelName, expiryDate }, index) => {
+        const item = {
+          owner: wrappedOwner?.id,
+          label: labelName,
+          expiryDate: getExpiry(expiryDate).distance,
+        };
+
+        const props = {
+          labelName,
+          length: labelName.length,
+          item,
+        };
+
+        pushToEmojis({ ...props, ranks: singleEmojis });
+        pushToCharacters({ ...props, ranks: singleCharacters });
+        pushToOneKClub({ ...props, ranks: oneKClub });
+        pushToTenKClub({ ...props, ranks: tenKClub });
+      }
+    );
+
+    const sortedChars = sortByLabel(singleCharacters);
+    const sortedOneK = sortByClubRank(oneKClub);
+    const sortedTenK = sortByClubRank(tenKClub);
+
+    setSingleCharacters([...sortedChars]);
+    setOneKClub([...sortedOneK]);
+    setTenKClub([...sortedTenK]);
+  }, [searchedItem]);
+
+  const getNamesByCategory = (label: string) => {
+    switch (label) {
+      case "Single Emoji":
+        return singleEmojis;
+      case "Single Character":
+        return singleCharacters;
+      case "999 Club":
+        return oneKClub;
+      case "10K Club":
+        return tenKClub;
+      default:
+        return [];
+    }
+  };
+
+  useEffect(() => {
+    // console.log("totalNames:: ", totalNames);
+    // console.log("searchAddrOrName:: ", searchAddrOrName);
 
     if (searchAddrOrName) {
       if (isAddress(searchAddrOrName)) {
         const namesOwnedByAddr = findItemByAddr();
-        console.log("namesOwnedByAddr:: ", namesOwnedByAddr);
+        // console.log("namesOwnedByAddr:: ", namesOwnedByAddr);
         setSearchedItem({ ...namesOwnedByAddr });
       } else {
       }
@@ -118,7 +226,14 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
         <Grid item xs={6}>
           <HorizontalDivider flexItem textAlign="left">
             <Flex>
-              <HeadingTitle pr={1}>Overall Ranking:</HeadingTitle>
+              <BackButton
+                onClick={() => {
+                  return handleBackButton();
+                }}
+              >
+                <ArrowBack />
+              </BackButton>
+              <HeadingTitle>Overall Ranking:</HeadingTitle>
               <Relative>
                 <SkeletonTypography isloading={false} />
                 <HighlightValue isloading={false}>
@@ -158,7 +273,9 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                 <Row container key={`summary-identity-${item.labelName}`}>
                   <Relative item xs={6} pl={2}>
                     <SkeletonTypography isloading={false} width="85%" />
-                    <RowText isloading={false}>{item.labelName}</RowText>
+                    <IdentityText isloading={false}>
+                      {item.labelName}
+                    </IdentityText>
                   </Relative>
                   <Relative item xs={6}>
                     <SkeletonTypography isloading={false} width="50%" />
@@ -173,62 +290,52 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
         </Grid>
         <VerticalDivider flexItem orientation="vertical" />
         <Grid item xs={5.5} pl={4} pt={5}>
-          <Accordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ArrowDropDown />}
-              aria-controls="panel2-content"
-              id="panel2-header"
-            >
-              <ColumnTitle>Single Emoji</ColumnTitle>
-            </AccordionSummary>
-            <AccordionDetails>
-              <RowText>
-                TODO: Add names here under single emoji category
-              </RowText>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ArrowDropDown />}
-              aria-controls="panel2-content"
-              id="panel2-header"
-            >
-              <ColumnTitle>Single Character</ColumnTitle>
-            </AccordionSummary>
-            <AccordionDetails>
-              <RowText>
-                TODO: Add names here under single emoji category
-              </RowText>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ArrowDropDown />}
-              aria-controls="panel2-content"
-              id="panel2-header"
-            >
-              <ColumnTitle>999 Club</ColumnTitle>
-            </AccordionSummary>
-            <AccordionDetails>
-              <RowText>
-                TODO: Add names here under single emoji category
-              </RowText>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ArrowDropDown />}
-              aria-controls="panel2-content"
-              id="panel2-header"
-            >
-              <ColumnTitle>10K Club</ColumnTitle>
-            </AccordionSummary>
-            <AccordionDetails>
-              <RowText>
-                TODO: Add names here under single emoji category
-              </RowText>
-            </AccordionDetails>
-          </Accordion>
+          {categoies.map((label) => {
+            return (
+              <Accordion defaultExpanded key={`ranking-category-${label}`}>
+                <AccordionSummary expandIcon={<ArrowDropDown />}>
+                  <ColumnTitle>{label}</ColumnTitle>
+                </AccordionSummary>
+                <AccordionDetails sx={{ padding: 0 }}>
+                  <Flex>
+                    {getNamesByCategory(label).length ? (
+                      <Flex>
+                        <Grid p={2}>
+                          <RowText>Total:</RowText>
+                          <TotalNames>
+                            {getNamesByCategory(label).length}
+                          </TotalNames>
+                        </Grid>
+                        <AccordionDivider flexItem orientation="vertical" />
+                        <Grid container spacing={1} p={2}>
+                          {getNamesByCategory(label).map((name, index) => {
+                            return (
+                              <Flex item key={name.label}>
+                                <LabelName pr={1} isloading={false}>
+                                  {name.label}
+                                </LabelName>
+                                {getNamesByCategory(label).length - 1 !==
+                                  index && (
+                                  <AccordionDivider
+                                    flexItem
+                                    orientation="vertical"
+                                  />
+                                )}
+                              </Flex>
+                            );
+                          })}
+                        </Grid>
+                      </Flex>
+                    ) : (
+                      <RowText p={2}>
+                        No names found under this category
+                      </RowText>
+                    )}
+                  </Flex>
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
         </Grid>
       </Grid>
     </Grid>

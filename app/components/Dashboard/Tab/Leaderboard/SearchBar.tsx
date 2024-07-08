@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BaseInputField } from "@/components/Theme/StyledGlobal";
 import { InputAdornment, styled } from "@mui/material";
 import { debounce as _debounce } from "lodash";
@@ -38,6 +38,7 @@ export const SearchBar: React.FC = () => {
     _debounce(handleDebounceOnChange, DEFAULT_DEBOUNCE),
     []
   );
+
   return (
     <>
       <SearchField

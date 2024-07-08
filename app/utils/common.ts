@@ -6,6 +6,8 @@ import { OrderDirection } from "@/redux/graphql/hooks";
 import { OrderBy } from "@/constants/components";
 import { DomainResponse } from "@/redux/graphql/graphqlApi";
 import { View } from "@/interfaces/global/types";
+import { PushProps } from "@/hooks/useAllNames";
+import { Ranking } from "@/redux/leaderboard/leaderboardSlice";
 import emojiRegex from "emoji-regex";
 
 export type CharacterSet = 'alphanumeric' | 'digit' | 'emoji' | 'letter' | 'mixed';
@@ -460,3 +462,65 @@ export const orderByLength = (data: DomainResponse[], orderDirection: OrderDirec
             : current - prev
     })
 }
+
+export const sortByLabel = (items: Ranking[]) => {
+    return items.sort((a, b) => {
+        return (
+            a.label?.localeCompare(b.label || "", "en", { numeric: true }) || 0
+        );
+    });
+}
+
+export const sortByClubRank = (items: Ranking[]) => {
+    return items.sort((a, b) => {
+        return a.label?.length === b.label?.length
+            ? Number(a.label) - Number(b.label)
+            : Number(a.label) - Number(b.label) &&
+            (a.label?.length || 0) - (b.label?.length || 0);
+    });
+}
+
+export const pushToEmojis = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (findCharacterSet(labelName) === "emoji" && length <= 2) {
+        ranks.push(item);
+    }
+};
+
+export const pushToCharacters = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (
+        (findCharacterSet(labelName) === "letter" ||
+            findCharacterSet(labelName) === "digit") &&
+        length === 1
+    ) {
+        ranks.push(item);
+    }
+};
+
+export const pushToOneKClub = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (
+        findCharacterSet(labelName) === "digit" &&
+        length <= 3 &&
+        Number(labelName) < 1000
+    ) {
+        ranks.push(item);
+    }
+};
+
+export const pushToTenKClub = (props: PushProps) => {
+    const { labelName, length, ranks, item } = props;
+
+    if (
+        findCharacterSet(labelName) === "digit" &&
+        length <= 4 &&
+        Number(labelName) < 10000 &&
+        Number(labelName) > 999
+    ) {
+        ranks.push(item);
+    }
+};
