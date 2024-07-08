@@ -21,7 +21,8 @@ export const TopContainer = styled(FlexCenter)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   textAlign: "center",
   filter: `drop-shadow(0px 5px 10px ${theme.palette.background.paper})`,
-
+  cursor: "pointer",
+  margin: "0 8px 8px 8px",
   "&:hover": {
     border: `solid 1px ${darken(theme.palette.primary.main, 0.35)}`,
   },

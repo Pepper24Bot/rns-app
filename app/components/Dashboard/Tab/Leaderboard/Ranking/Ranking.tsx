@@ -1,6 +1,9 @@
 import React, { memo } from "react";
 import { Grid, darken, styled } from "@mui/material";
-import { SingleRanking } from "@/redux/leaderboard/leaderboardSlice";
+import {
+  SingleRanking,
+  useLeaderboardState,
+} from "@/redux/leaderboard/leaderboardSlice";
 import {
   ColumnContainer,
   ColumnContent,
@@ -10,7 +13,7 @@ import {
   Row as StyledRow,
   RowText as StyledRowText,
 } from "../StyledLeaderboard";
-import { getMaskedAddress } from "@/utils/common";
+import { getMaskedAddress, scrollIntoElement } from "@/utils/common";
 import {
   FlexCenter,
   Relative,
@@ -34,10 +37,7 @@ const RowText = styled(StyledRowText)(({ theme }) => ({
 const Row = styled(StyledRow)(({ theme }) => ({
   padding: "8px",
   margin: "4px 0",
-
-  "&:hover": {
-    border: `solid 1px ${darken(theme.palette.primary.main, 0.85)}`,
-  },
+  cursor: "pointer",
 }));
 
 const RelativeCenter = styled(FlexCenter)(({ theme }) => ({
@@ -52,6 +52,8 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
   const {
     leaderboard: { isFetched, ranking = [] },
   } = props;
+
+  const { updateSearchNameOrAddr } = useLeaderboardState();
 
   return (
     <Grid mt={8}>
@@ -78,7 +80,15 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
                 <FlexCenter item xs={0.5}>
                   <RowText>{index + 1}</RowText>
                 </FlexCenter>
-                <Row container item xs>
+                <Row
+                  container
+                  item
+                  xs
+                  onClick={() => {
+                    updateSearchNameOrAddr(rank?.owner || "");
+                    scrollIntoElement("Holders-Container");
+                  }}
+                >
                   <Relative item xs={5}>
                     <SkeletonTypography isloading={!isFetched} />
                     <RowText isloading={!isFetched} isPrimary={!!rank?.primary}>

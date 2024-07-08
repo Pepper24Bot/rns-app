@@ -1,7 +1,11 @@
-import React, { memo, useRef } from "react";
+import React, { memo } from "react";
 import { Grid, darken, styled } from "@mui/material";
-import { Ranking, TopRanking } from "@/redux/leaderboard/leaderboardSlice";
-import { getExpiry, getMaskedAddress } from "@/utils/common";
+import {
+  Ranking,
+  TopRanking,
+  useLeaderboardState,
+} from "@/redux/leaderboard/leaderboardSlice";
+import { getExpiry, getMaskedAddress, scrollIntoElement } from "@/utils/common";
 import {
   Flex,
   FlexCenter,
@@ -116,6 +120,8 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
   const top3 = ranking?.slice(0, 3);
   const end = Math.floor(ranking?.length / 2 + 3) - 1;
 
+  const { updateSearchNameOrAddr } = useLeaderboardState();
+
   // Enable this for 2 column ranks
   // const ranks = [ranking?.slice(3, end), ranking?.slice(end, ranking?.length)];
 
@@ -127,6 +133,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
         {[...Array(3)].map((_, index) => {
           return (
             <InformationTip
+              enterDelay={500}
               key={`top-${index + 1}`}
               arrow
               placement="bottom"
@@ -134,7 +141,14 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                 !isEmpty(top3[index]) ? <TooltipContent {...top3[index]} /> : ""
               }
             >
-              <TopContainer xs={12} sm={3} mx={1} container mb={1}>
+              <TopContainer
+                container
+                xs={12}
+                sm={3}
+                onClick={() => {
+                  updateSearchNameOrAddr(top3[index].owner || "");
+                }}
+              >
                 <Flex mr={1}>
                   <Image
                     src={`/icons/ranking/rank${index + 1}.svg`}
@@ -209,6 +223,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                     (holder: Ranking, index) => {
                       return (
                         <InformationTip
+                          enterDelay={1000}
                           arrow
                           key={`${holder?.owner}-${index}`}
                           placement="bottom-end"
@@ -220,7 +235,14 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
                             )
                           }
                         >
-                          <Row container>
+                          <Row
+                            container
+                            sx={{ cursor: "pointer" }}
+                            onClick={() => {
+                              updateSearchNameOrAddr(holder.owner || "");
+                              scrollIntoElement("Holders-Container");
+                            }}
+                          >
                             <Relative item xs={2}>
                               <RowText pl={4}>
                                 {columnIndex ? index + end + 1 : index + 4}

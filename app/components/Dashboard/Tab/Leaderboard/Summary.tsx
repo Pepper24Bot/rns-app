@@ -275,7 +275,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
     if (!isEmpty(searchedItem)) {
       getRankings();
     }
-  }, [searchedItem]);
+  }, [searchedItem.names?.length]);
 
   useEffect(() => {
     clearState();
@@ -287,7 +287,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
         fetchByPrimary(searchAddrOrName);
       }
     }
-  }, [searchAddrOrName, totalNames]);
+  }, [searchAddrOrName]);
 
   return (
     <Grid>
