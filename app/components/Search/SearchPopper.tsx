@@ -27,6 +27,8 @@ import {
   SearchLabel,
   NextImage,
 } from "./StyledSearch";
+import { FeatureList } from "@/hooks/useFeatureToggle";
+import FeatureToggle from "../Reusables/FeatureToggle";
 
 export interface SearchPopper {
   isLoading: boolean;
@@ -110,14 +112,16 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
               <ButtonsContainer item xs={4.5}>
                 <Relative>
                   <FlexRight isloading={isLoading}>
-                    <InformationTip title="Coming soon!" arrow>
-                      <FavoriteButton>
-                        {/* TODO: Add checker here - if favorite */}
-                        {/* TODO: Add tooltip saying "Coming soon!" */}
-                        {/* <FavoriteIcon /> */}
-                        <StarIcon />
-                      </FavoriteButton>
-                    </InformationTip>
+                    <FeatureToggle feature={FeatureList.Favorites}>
+                      <InformationTip title="Coming soon!" arrow>
+                        <FavoriteButton>
+                          {/* TODO: Add checker here - if favorite */}
+                          {/* TODO: Add tooltip saying "Coming soon!" */}
+                          {/* <FavoriteIcon /> */}
+                          <StarIcon />
+                        </FavoriteButton>
+                      </InformationTip>
+                    </FeatureToggle>
                     {status === "Available" ||
                     status === "Invalid" ||
                     status === "Not Supported" ? (
