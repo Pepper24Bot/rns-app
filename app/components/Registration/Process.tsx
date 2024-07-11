@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, alpha, styled } from "@mui/material";
 import {
   ActionButton,
@@ -94,8 +94,8 @@ export const RegistrationProcess: React.FC<ProcessProps> = (
 
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
-  const label = isInformationHidden ? "Always show" : "Do not show again";
 
+  const [label, setLabel] = useState<string>("");
   const [isInfoDisabled, setInfoDisabled] = useState<boolean>(false);
 
   const handleDoNotShow = () => {
@@ -107,6 +107,11 @@ export const RegistrationProcess: React.FC<ProcessProps> = (
     setInfoDisabled(true);
     document.cookie = `registration_process_hidden=${false}; path=/`;
   };
+
+  useEffect(() => {
+    const label = isInformationHidden ? "Always show" : "Do not show again";
+    setLabel(label);
+  }, []);
 
   return (
     <Container>
