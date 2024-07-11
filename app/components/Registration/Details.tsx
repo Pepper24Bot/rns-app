@@ -161,10 +161,10 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                 </InformationTip>
                 <InformationTip title="View on secondary marketplace." arrow>
                   <Image
-                    src="/icons/marketplace.svg"
-                    alt="MarketPlace Icon"
-                    width={24}
-                    height={24}
+                    src="/icons/tradeverse.png"
+                    alt="Tradeverse Icon"
+                    width={32}
+                    height={32}
                     style={{ cursor: "pointer" }}
                   />
                 </InformationTip>

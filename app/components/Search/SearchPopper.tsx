@@ -193,10 +193,10 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                           arrow
                         >
                           <NextImage
-                            src="/icons/marketplace.svg"
-                            alt="MarketPlace Icon"
-                            width={24}
-                            height={24}
+                            src="/icons/tradeverse.png"
+                            alt="Tradeverse Icon"
+                            width={32}
+                            height={32}
                           />
                         </InformationTip>
                         <Divider orientation="vertical" flexItem />
