@@ -125,6 +125,7 @@ export interface FormProps {
   transactionFee?: number;
   totalFee?: number;
   walletBalance?: number;
+  isBalanceLoading?: boolean;
   address?: Address;
 
   /** hide form when transaction is successful */
@@ -143,6 +144,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     status,
     address,
     isPrimaryEnabled,
+    isBalanceLoading,
   } = props;
 
   // Get the native currency balance
@@ -264,8 +266,8 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
               <Transaction pt={0.5}>
                 <Balance pr={2}>Connected Wallet Balance</Balance>
                 <Relative>
-                  <SkeletonTypography isloading={!walletBalance} />
-                  <Balance isloading={!walletBalance}>
+                  <SkeletonTypography isloading={isBalanceLoading} />
+                  <Balance isloading={isBalanceLoading}>
                     {walletBalance?.toFixed(6)}
                   </Balance>
                 </Relative>

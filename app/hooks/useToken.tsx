@@ -34,6 +34,7 @@ export default function useToken() {
   const { writeContractAsync } = useWriteContract();
   const { address: controllerAddr } = controller;
 
+  const [isBalanceLoading, setBalanceLoading] = useState(false);
   const [isApprovalLoading, setApprovalLoading] = useState(false);
 
   /**
@@ -90,6 +91,7 @@ export default function useToken() {
     let response = { ...initializeResponse() };
 
     try {
+      setBalanceLoading(true);
       const tokenAddr = payment?.address as Address;
       const totalFee = parseUnits(fee.toString(), payment?.decimals);
 
@@ -100,6 +102,7 @@ export default function useToken() {
         args: [address as Address],
       });
 
+      setBalanceLoading(false);
       response.isSuccess = true;
       response.data = {
         balance,
@@ -109,6 +112,7 @@ export default function useToken() {
       const error = e as ErrorResponse;
       response.error = error;
       const message = error.shortMessage || error.message;
+      setBalanceLoading(false);
       enqueueSnackbar(message, { variant: "error" });
     }
 
@@ -119,5 +123,6 @@ export default function useToken() {
     approve: handleApproval,
     getBalance: getBalanceOf,
     isApprovalLoading,
+    isBalanceLoading,
   };
 }

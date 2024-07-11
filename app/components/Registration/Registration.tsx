@@ -151,7 +151,8 @@ export const RegisterName: React.FC<RegistrationProps> = (
   });
 
   const { commit, register, isLoading, commitments } = useRegister();
-  const { approve, isApprovalLoading, getBalance } = useToken();
+  const { approve, isApprovalLoading, getBalance, isBalanceLoading } =
+    useToken();
 
   const { rentFee } = useFees({
     rent: base,
@@ -310,6 +311,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   }, [hash]);
 
   // check wallet balance before doing transaction
+  // TODO: move this in hook
   useEffect(() => {
     if (address) {
       const getBalanceOf = async () => {
@@ -320,7 +322,6 @@ export const RegisterName: React.FC<RegistrationProps> = (
 
         const balance = formatUnits(data.balance, payment?.decimals ?? 6);
         setWalletBalance(Number(balance));
-
         setBalanceSufficient(data.isBalanceSufficient);
       };
 
@@ -386,6 +387,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
           isShowing={!isRegistered}
           rentFee={rentFee}
           walletBalance={walletBalance}
+          isBalanceLoading={isBalanceLoading}
           status={isRegistered ? "Registered" : "Available"}
           address={root?.address}
           isPrimaryEnabled={true}

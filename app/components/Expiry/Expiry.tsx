@@ -114,7 +114,8 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
     enabled: isWatchingExtend,
   });
 
-  const { approve, isApprovalLoading, getBalance } = useToken();
+  const { approve, isApprovalLoading, getBalance, isBalanceLoading } =
+    useToken();
   const {
     renew,
     duration,
@@ -244,6 +245,7 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
                 name={name ?? ""}
                 rentFee={rentFee}
                 walletBalance={walletBalance}
+                isBalanceLoading={isBalanceLoading}
               />
               <Collapse in={!isBalanceSufficient}>
                 <FlexCenter py={2}>
