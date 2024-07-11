@@ -35,7 +35,7 @@ export interface SearchPopper {
   anchorEl: HTMLElement | null;
   searchValue: string | null;
   address?: `0x${string}`;
-  status?: NameStatus;
+  status?: NameStatus | "";
   isNameInvalid?: boolean;
   isNameNotSupported?: boolean;
   data?: any;
@@ -81,10 +81,11 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
         );
       case "Invalid":
       case "Not Available":
-      default:
         return (
           <NotAvailableText isloading={isLoading}>{status}</NotAvailableText>
         );
+      default:
+        return <NotAvailableText isloading={true}>Loading</NotAvailableText>;
     }
   };
 

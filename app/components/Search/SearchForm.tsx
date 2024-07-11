@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   InputAdornment,
   styled,
@@ -10,8 +10,6 @@ import {
 import { FlexCenter } from "../Theme/StyledGlobal";
 import { DEFAULT_DEBOUNCE } from "@/constants/components";
 import { debounce as _debounce, isEmpty } from "lodash";
-import { useAccount } from "wagmi";
-import { useModalState } from "@/redux/modal/modalSlice";
 import { SearchPopper } from "./SearchPopper";
 import { isNameSupported } from "@/utils/common";
 import { normalize } from "viem/ens";
@@ -32,19 +30,12 @@ import useWrappedData from "@/hooks/useWrappedData";
 import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
 import EmojiPopper from "./EmojiPopper";
 
-const NextImage = styled(Image)(({ theme }) => ({
-  marginRight: "8px",
-  color: "white",
-}));
-
 export const SearchForm: React.FC = () => {
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
   const [isNameNotSupported, setIsNameNotSupported] = useState<boolean>(false);
 
-  const { status } = useAccount();
-  const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
 
   const {
@@ -69,11 +60,13 @@ export const SearchForm: React.FC = () => {
 
   const searchFieldRef = useRef(null);
 
-  const getNameStatus = () => {
+  const nameStatus = useMemo(() => {
     const item = names && names[0];
     const isAvailable = isEmpty(wrappedName);
     const isNotAvailable =
       !isEmpty(item) && item && item.wrappedOwner !== address;
+    const isRegistered =
+      !isEmpty(item) && item && item.wrappedOwner === address;
 
     return isNameInvalid
       ? "Invalid"
@@ -83,8 +76,10 @@ export const SearchForm: React.FC = () => {
       ? "Available"
       : isNotAvailable
       ? "Not Available"
-      : "Registered";
-  };
+      : isRegistered
+      ? "Registered"
+      : "";
+  }, [names, wrappedName, address]);
 
   const handleClose = () => {
     if (anchorEmoji === null) {
@@ -173,10 +168,10 @@ export const SearchForm: React.FC = () => {
                   }}
                 />
                 <SearchPopper
-                  isLoading={isFetching || isLoading}
+                  isLoading={isFetching || isLoading || nameStatus === ""}
                   anchorEl={anchorEl}
                   searchValue={searchValue}
-                  status={getNameStatus()}
+                  status={nameStatus}
                   isNameInvalid={isNameInvalid}
                   isNameNotSupported={isNameNotSupported}
                   data={names && names[0]}
