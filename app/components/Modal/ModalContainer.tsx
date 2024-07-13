@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ModalState, useModalState } from "@/redux/modal/modalSlice";
+import React from "react";
+import { useModalState } from "@/redux/modal/modalSlice";
 import {
   Dialog as MuiDialog,
   Grid,
@@ -16,8 +16,6 @@ import {
   Title,
 } from "../Theme/StyledGlobal";
 import { PolicyAndTerms } from "../Reusables/PolicyAndTerms";
-import { useSearchParams } from "next/navigation";
-import { getModalFromPath } from "@/utils/common";
 import { useRouter } from "next/navigation";
 
 import Paragraph from "../Reusables/Paragraph";
