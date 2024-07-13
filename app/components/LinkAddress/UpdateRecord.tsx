@@ -5,10 +5,10 @@ import {
   ActionButton,
   Flex,
   Tip,
-  PrimaryChip,
 } from "../Theme/StyledGlobal";
 import { Close, Edit } from "@mui/icons-material";
 import { GetEnsNameReturnType } from "viem";
+import EndAdornment from "../Reusables/EndAdornment";
 
 const ResolverButton = styled(ActionButton)(({ theme }) => ({
   "&.MuiButton-contained": {
@@ -34,6 +34,8 @@ export interface UpdateProps {
   isAddress?: boolean;
   addressInput: string;
   updateAddressInput: (value: string) => void;
+
+  hasAscii?: boolean;
 }
 
 export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
@@ -47,7 +49,10 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
     toggleEditMode,
     toggleRemoveMode,
     updateAddressInput,
+    hasAscii,
   } = props;
+
+  const isPrimary = ensName === name;
 
   return (
     <Grid>
@@ -55,12 +60,9 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
         disabled
         value={name}
         InputProps={{
-          endAdornment:
-            ensName === name ? (
-              <PrimaryChip size="small" label="Primary" />
-            ) : (
-              <></>
-            ),
+          endAdornment: (
+            <EndAdornment hasAscii={hasAscii} isPrimary={isPrimary} />
+          ),
         }}
       />
       <InputField label="Owner" disabled value={ensName || owner} />
@@ -107,8 +109,8 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
           ),
         }}
       />
-      <Collapse in={ensName === name}>
-        <Tip pt={2} isVisible={ensName === name} sx={{ width: "100%" }}>
+      <Collapse in={isPrimary}>
+        <Tip pt={2} isVisible={isPrimary} width="100%">
           Please note that changing the address that your RNS Identity is
           Linked/Resolved to will remove this RNS Identity as your Primary.
         </Tip>

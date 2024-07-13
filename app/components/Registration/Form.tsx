@@ -15,7 +15,7 @@ import {
   Flex,
   InformationTip,
 } from "@/components/Theme/StyledGlobal";
-import { Collapse, Grid, InputAdornment, alpha, styled } from "@mui/material";
+import { Collapse, Grid, alpha, styled } from "@mui/material";
 import { Add, Help, Remove } from "@mui/icons-material";
 import { Payment, useFormState } from "@/redux/form/formSlice";
 import { PAYMENT_METHOD } from "@/constants/components";
@@ -28,6 +28,7 @@ import { Address } from "viem";
 
 import MenuField from "@/components/Reusables/MenuField";
 import TooltipContent from "../Reusables/TooltipContent";
+import EndAdornment from "../Reusables/EndAdornment";
 
 const SummaryContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -133,6 +134,8 @@ export interface FormProps {
   status?: NameStatus;
 
   isPrimaryEnabled?: boolean;
+
+  hasAscii?: boolean;
 }
 
 export const Form: React.FC<FormProps> = (props: FormProps) => {
@@ -145,6 +148,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     address,
     isPrimaryEnabled,
     isBalanceLoading,
+    hasAscii,
   } = props;
 
   // Get the native currency balance
@@ -169,6 +173,8 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     return year && year > 1 ? "Years" : "Year";
   };
 
+  const isPrimary = ensName === name;
+
   return (
     <Grid minWidth={250}>
       <NameField
@@ -176,7 +182,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
         value={name}
         InputProps={{
           endAdornment: (
-            <InputAdornment position="end">
+            <EndAdornment isPrimary={isPrimary} hasAscii={hasAscii}>
               {status === "Available" ? (
                 <AvailableText>{status}</AvailableText>
               ) : status === "Registered" ? (
@@ -184,7 +190,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
               ) : (
                 <NotAvailableText>{status}</NotAvailableText>
               )}
-            </InputAdornment>
+            </EndAdornment>
           ),
         }}
       />

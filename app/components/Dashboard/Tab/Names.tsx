@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Box, Collapse, Grid, styled } from "@mui/material";
 import { NameCard } from "./Names/NameCard";
 import { FlexCenter, SecondaryLabel } from "@/components/Theme/StyledGlobal";
@@ -19,6 +19,7 @@ import { useAccount } from "wagmi";
 import { NextImage } from "@/components/Search/StyledSearch";
 import { ViewContainer, ViewRnsText, ConnectButton } from "./Names/StyledName";
 import { useModalState } from "@/redux/modal/modalSlice";
+import { DomainResponse } from "@/redux/graphql/graphqlApi";
 
 import SkeletonNames from "./Names/SkeletonNames";
 import Pagination from "@/components/Reusables/Pagination";
@@ -115,24 +116,6 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
     (isEmpty(names) && isEmpty(displayedNames) && isFetched && !isFetching) ||
     isError;
 
-  // useEffect(() => {
-  //   console.log(`
-  //     isLoadingState:: ${isLoadingState}
-  //     isFetching:: ${isFetching}
-  //     isFetched:: ${isFetched}
-  //     !hasMounted:: ${!hasMounted}
-  //     isEmpty(names):: ${isEmpty(names)}
-  //     isEmpty(displayedNames):: ${isEmpty(displayedNames)}
-  //   `);
-  // }, [
-  //   isFetching,
-  //   isLoadingState,
-  //   hasMounted,
-  //   isFetched,
-  //   names,
-  //   displayedNames,
-  // ]);
-
   const handleDebounceOnChange = (value: number) => {
     if (value > 0 && value <= 1000) {
       updateFilterOptions({ page: 1 });
@@ -167,7 +150,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
         <Container id="Names-Container" ref={boundingElement}>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
-              {nameList?.map((name) => {
+              {nameList?.map((name: DomainResponse) => {
                 return (
                   <React.Fragment key={name.name}>
                     <NameCard

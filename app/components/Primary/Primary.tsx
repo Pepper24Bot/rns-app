@@ -28,6 +28,7 @@ import usePrimary from "@/hooks/usePrimary";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
+import EndAdornment from "../Reusables/EndAdornment";
 
 const PrimaryContainer = styled(FlexTop)(({ theme }) => ({
   marginTop: "48px",
@@ -58,7 +59,7 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
-  const { item, address } = props;
+  const { item, address, hasAscii } = props;
   const { name, resolvedAddress: ensAddr } = item;
 
   const dispatch = useDispatch();
@@ -269,7 +270,14 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
               </Note>
             </>
           )}
-          <InputField disabled focused value={name} />
+          <InputField
+            disabled
+            focused
+            value={name}
+            InputProps={{
+              endAdornment: <EndAdornment hasAscii={hasAscii} />,
+            }}
+          />
           <Collapse in={isProgressVisible}>
             <FlexCenter pt={2}>
               <Relative width="100%">

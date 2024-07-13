@@ -22,7 +22,7 @@ import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address, isAddress } from "viem";
 import { TransactionProps } from "@/interfaces/global/transaction";
 import { useEnsName } from "wagmi";
-import { getMaskedAddress, isRootName } from "@/utils/common";
+import { findCharacterSet, getMaskedAddress, isRootName } from "@/utils/common";
 import { config } from "@/chains/config";
 import { normalize } from "viem/ens";
 import { getEnsAddress } from "@wagmi/core";
@@ -39,6 +39,7 @@ import useTransfer from "@/hooks/useTransfer";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import useRecords from "@/hooks/useRecords";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
+import EndAdornment from "../Reusables/EndAdornment";
 
 const TransferContainer = styled(Grid)(({ theme }) => ({
   marginTop: "48px",
@@ -76,7 +77,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const { enqueueSnackbar } = useSnackbar();
   const { refetchRanking } = useLeaderboardState();
 
-  const { refetch: refetchEnsName } = useEnsName({
+  const { refetch: refetchEnsName, data: ensName } = useEnsName({
     address,
   });
 
@@ -93,6 +94,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const [isFieldError, setFieldError] = useState<boolean>(false);
   const [isFieldValidating, setFieldValidating] = useState<boolean>(false);
   const [helperText, setHelperText] = useState<string>("");
+  const [inputHasAscii, setInputHasAscii] = useState<boolean>(false);
 
   const [inputAddr, setInputAddr] = useState<string>("");
   const [newOwner, setNewOwner] = useState<string>("");
@@ -122,6 +124,7 @@ export const Transfer: React.FC<TransactionProps> = (
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
     setIsSuccess(false);
+    setInputHasAscii(false);
   };
 
   const setErrorFieldData = (helper: string) => {
@@ -141,17 +144,23 @@ export const Transfer: React.FC<TransactionProps> = (
     }
 
     if (isValidName && !isValidAddress) {
-      const addressRecord = await getEnsAddress(config, {
-        name: normalize(value),
-      });
+      try {
+        const addressRecord = await getEnsAddress(config, {
+          name: normalize(value),
+        });
 
-      if (!addressRecord) {
-        setErrorFieldData("The RNS is not linked to any address!");
-      } else if (addressRecord === owner) {
-        setErrorFieldData("You are sending this identity to your own address!");
-      } else {
-        setNewOwner(addressRecord);
-        setHelperText(`Linked to: ${getMaskedAddress(addressRecord || "")}`);
+        if (!addressRecord) {
+          setErrorFieldData("The RNS is not linked to any address!");
+        } else if (addressRecord === owner) {
+          setErrorFieldData(
+            "You are sending this identity to your own address!"
+          );
+        } else {
+          setNewOwner(addressRecord);
+          setHelperText(`Linked to: ${getMaskedAddress(addressRecord || "")}`);
+        }
+      } catch (error) {
+        console.log(`unable to normalize inputted value:: ${value}`);
       }
     } else if (!isValidName && isValidAddress) {
       if (value.toLowerCase() === owner) {
@@ -164,8 +173,12 @@ export const Transfer: React.FC<TransactionProps> = (
   };
 
   const handleDebounceOnChange = async (value: string) => {
+    const characterSet = findCharacterSet(value.split(".root")[0]);
+    const hasAscii = characterSet === "emoji" || characterSet === "mixed";
+
     setFieldError(false);
     setHelperText("");
+    setInputHasAscii(hasAscii);
 
     if (!value) {
       setNewOwner("");
@@ -244,7 +257,13 @@ export const Transfer: React.FC<TransactionProps> = (
       <TransferContainer container>
         <EnsImage name={name ?? ""} />
         <FormContainer>
-          <InputField disabled value={name ?? ""} />
+          <InputField
+            disabled
+            value={name ?? ""}
+            InputProps={{
+              endAdornment: <EndAdornment isPrimary={ensName === name} />,
+            }}
+          />
           <InputField
             error={isFieldError}
             helperText={helperText}
@@ -259,11 +278,11 @@ export const Transfer: React.FC<TransactionProps> = (
             }}
             InputProps={{
               endAdornment: (
-                <InputAdornment position="end" sx={{ mt: 1 }}>
-                  <Collapse in={isFieldValidating}>
-                    <CircularProgress size={18} />
+                <EndAdornment hasAscii={inputHasAscii} position="start">
+                  <Collapse orientation="horizontal" in={isFieldValidating}>
+                    <CircularProgress size={18} sx={{ mt: 1 }} />
                   </Collapse>
-                </InputAdornment>
+                </EndAdornment>
               ),
             }}
           />
