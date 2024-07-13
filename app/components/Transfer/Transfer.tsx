@@ -258,9 +258,9 @@ export const Transfer: React.FC<TransactionProps> = (
         <EnsImage name={name ?? ""} />
         <FormContainer>
           <InputField
-            disabled
             value={name ?? ""}
             InputProps={{
+              readOnly: true,
               endAdornment: <EndAdornment isPrimary={ensName === name} />,
             }}
           />

@@ -134,7 +134,7 @@ export const AddRecord: React.FC<LinkProps> = (props: LinkProps) => {
         <EnsImage name={name ?? ""} />
         <FormContainer>
           <Grid>
-            <InputField disabled value={name} />
+            <InputField value={name} InputProps={{ readOnly: true }} />
             <InputField
               error={!isValidAddress}
               helperText={

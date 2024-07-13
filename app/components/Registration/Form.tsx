@@ -178,9 +178,9 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
   return (
     <Grid minWidth={250}>
       <NameField
-        disabled
         value={name}
         InputProps={{
+          readOnly: true,
           endAdornment: (
             <EndAdornment isPrimary={isPrimary} hasNonAscii={hasNonAscii}>
               {status === "Available" ? (

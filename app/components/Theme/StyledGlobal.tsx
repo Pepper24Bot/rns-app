@@ -314,6 +314,12 @@ export const InputField = styled(BaseInputField)(({ theme }) => ({
 }));
 
 export const ModalInputField = styled(InputField)(({ theme }) => ({
+  ".MuiInputBase-input": {
+    width: "-webkit-fill-available",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+
   ".MuiInputBase-root": {
     [theme.breakpoints.down("md")]: {
       fontSize: "14px",

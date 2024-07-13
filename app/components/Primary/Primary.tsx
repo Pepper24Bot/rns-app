@@ -18,7 +18,6 @@ import { useEnsName } from "wagmi";
 import { PrimaryProps } from "@/interfaces/global/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
 
 import EnsImage from "../Reusables/EnsImage";
@@ -62,7 +61,6 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
   const { item, address, hasNonAscii } = props;
   const { name, resolvedAddress: ensAddr } = item;
 
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -271,10 +269,10 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
             </>
           )}
           <InputField
-            disabled
             focused
             value={name}
             InputProps={{
+              readOnly: true,
               endAdornment: <EndAdornment hasNonAscii={hasNonAscii} />,
             }}
           />

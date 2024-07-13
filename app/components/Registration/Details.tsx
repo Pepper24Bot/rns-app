@@ -124,7 +124,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
           {/* NAME.ROOT */}
           <Field sx={{ mt: 0 }}>
             <FlexJustified container>
-              <Grid item>
+              <Grid item width="inherit">
                 <InformationTip
                   arrow
                   placement="top"

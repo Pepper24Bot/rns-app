@@ -57,15 +57,19 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
   return (
     <Grid>
       <InputField
-        disabled
         value={name}
         InputProps={{
+          readOnly: true,
           endAdornment: (
             <EndAdornment hasNonAscii={hasNonAscii} isPrimary={isPrimary} />
           ),
         }}
       />
-      <InputField label="Owner" disabled value={ensName || owner} />
+      <InputField
+        label="Owner"
+        value={ensName || owner}
+        InputProps={{ readOnly: true }}
+      />
       <InputField
         error={!isAddress}
         helperText={!isAddress ? "Please insert a valid Address only" : ""}
