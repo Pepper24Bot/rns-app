@@ -66,7 +66,7 @@ const HightlightText = styled("span")(({ theme }) => ({
 }));
 
 export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
-  const { item, address, hasAscii } = props;
+  const { item, address, hasNonAscii } = props;
   const { name, labelName } = item;
 
   const { address: walletAddress = "0x" } = useAccount();
@@ -246,7 +246,7 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
                 rentFee={rentFee}
                 walletBalance={walletBalance}
                 isBalanceLoading={isBalanceLoading}
-                hasAscii={hasAscii}
+                hasNonAscii={hasNonAscii}
                 address={address}
               />
               <Collapse in={!isBalanceSufficient}>

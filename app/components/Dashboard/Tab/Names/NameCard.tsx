@@ -109,7 +109,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   });
 
   const characterSet = findCharacterSet(labelName ?? "");
-  const hasAscii = characterSet === "emoji" || characterSet === "mixed";
+  const hasNonAscii = characterSet === "emoji" || characterSet === "mixed";
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
@@ -192,7 +192,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     const data: CardProps = {
       item,
       address,
-      hasAscii,
+      hasNonAscii,
     };
 
     toggleModal({
@@ -329,11 +329,11 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                         <TooltipContent
                           content={WARNING_ASCII.content}
                           highlights={WARNING_ASCII.highlights}
-                          isEnabled={hasAscii}
+                          isEnabled={hasNonAscii}
                         />
                       }
                     >
-                      <WarningIcon hidden={!hasAscii} />
+                      <WarningIcon hidden={!hasNonAscii} />
                     </InformationTip>
                     <DropDownMenu
                       handleSelect={handleMenuSelect}

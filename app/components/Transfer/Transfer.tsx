@@ -94,7 +94,7 @@ export const Transfer: React.FC<TransactionProps> = (
   const [isFieldError, setFieldError] = useState<boolean>(false);
   const [isFieldValidating, setFieldValidating] = useState<boolean>(false);
   const [helperText, setHelperText] = useState<string>("");
-  const [inputHasAscii, setInputHasAscii] = useState<boolean>(false);
+  const [inputHasNonAscii, setInputHasNonAscii] = useState<boolean>(false);
 
   const [inputAddr, setInputAddr] = useState<string>("");
   const [newOwner, setNewOwner] = useState<string>("");
@@ -124,7 +124,7 @@ export const Transfer: React.FC<TransactionProps> = (
     // in case the user rejected the transaction, reset the error status
     setIsError(false);
     setIsSuccess(false);
-    setInputHasAscii(false);
+    setInputHasNonAscii(false);
   };
 
   const setErrorFieldData = (helper: string) => {
@@ -174,11 +174,11 @@ export const Transfer: React.FC<TransactionProps> = (
 
   const handleDebounceOnChange = async (value: string) => {
     const characterSet = findCharacterSet(value.split(".root")[0]);
-    const hasAscii = characterSet === "emoji" || characterSet === "mixed";
+    const hasNonAscii = characterSet === "emoji" || characterSet === "mixed";
 
     setFieldError(false);
     setHelperText("");
-    setInputHasAscii(hasAscii);
+    setInputHasNonAscii(hasNonAscii);
 
     if (!value) {
       setNewOwner("");
@@ -278,7 +278,7 @@ export const Transfer: React.FC<TransactionProps> = (
             }}
             InputProps={{
               endAdornment: (
-                <EndAdornment hasAscii={inputHasAscii} position="start">
+                <EndAdornment hasNonAscii={inputHasNonAscii} position="start">
                   <Collapse orientation="horizontal" in={isFieldValidating}>
                     <CircularProgress size={18} sx={{ mt: 1 }} />
                   </Collapse>

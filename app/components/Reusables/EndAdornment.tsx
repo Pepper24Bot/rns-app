@@ -9,7 +9,7 @@ import React from "react";
 import TooltipContent from "./TooltipContent";
 
 export interface AdornmentProps {
-  hasAscii?: boolean;
+  hasNonAscii?: boolean;
   isPrimary?: boolean;
   children?: React.ReactNode;
   position?: "start" | "end";
@@ -23,7 +23,7 @@ export const Warning = styled(WarningIcon)(({ theme }) => ({
 export const EndAdornment: React.FC<AdornmentProps> = (
   props: AdornmentProps
 ) => {
-  const { children, hasAscii, isPrimary, position = "end" } = props;
+  const { children, hasNonAscii, isPrimary, position = "end" } = props;
 
   return (
     <InputAdornment position="end">
@@ -36,11 +36,11 @@ export const EndAdornment: React.FC<AdornmentProps> = (
           <TooltipContent
             content={WARNING_ASCII.content}
             highlights={WARNING_ASCII.highlights}
-            isEnabled={hasAscii}
+            isEnabled={hasNonAscii}
           />
         }
       >
-        {hasAscii ? (
+        {hasNonAscii ? (
           <Warning
             sx={{
               mr: position === "end" ? "8px" : "0",

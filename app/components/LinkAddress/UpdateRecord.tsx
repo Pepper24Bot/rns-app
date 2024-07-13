@@ -35,7 +35,7 @@ export interface UpdateProps {
   addressInput: string;
   updateAddressInput: (value: string) => void;
 
-  hasAscii?: boolean;
+  hasNonAscii?: boolean;
 }
 
 export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
@@ -49,7 +49,7 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
     toggleEditMode,
     toggleRemoveMode,
     updateAddressInput,
-    hasAscii,
+    hasNonAscii,
   } = props;
 
   const isPrimary = ensName === name;
@@ -61,7 +61,7 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
         value={name}
         InputProps={{
           endAdornment: (
-            <EndAdornment hasAscii={hasAscii} isPrimary={isPrimary} />
+            <EndAdornment hasNonAscii={hasNonAscii} isPrimary={isPrimary} />
           ),
         }}
       />

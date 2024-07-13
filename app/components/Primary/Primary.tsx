@@ -59,7 +59,7 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
-  const { item, address, hasAscii } = props;
+  const { item, address, hasNonAscii } = props;
   const { name, resolvedAddress: ensAddr } = item;
 
   const dispatch = useDispatch();
@@ -275,7 +275,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
             focused
             value={name}
             InputProps={{
-              endAdornment: <EndAdornment hasAscii={hasAscii} />,
+              endAdornment: <EndAdornment hasNonAscii={hasNonAscii} />,
             }}
           />
           <Collapse in={isProgressVisible}>

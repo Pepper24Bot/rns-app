@@ -135,7 +135,7 @@ export interface FormProps {
 
   isPrimaryEnabled?: boolean;
 
-  hasAscii?: boolean;
+  hasNonAscii?: boolean;
 }
 
 export const Form: React.FC<FormProps> = (props: FormProps) => {
@@ -148,7 +148,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     address,
     isPrimaryEnabled,
     isBalanceLoading,
-    hasAscii,
+    hasNonAscii,
   } = props;
 
   // Get the native currency balance
@@ -182,7 +182,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
         value={name}
         InputProps={{
           endAdornment: (
-            <EndAdornment isPrimary={isPrimary} hasAscii={hasAscii}>
+            <EndAdornment isPrimary={isPrimary} hasNonAscii={hasNonAscii}>
               {status === "Available" ? (
                 <AvailableText>{status}</AvailableText>
               ) : status === "Registered" ? (

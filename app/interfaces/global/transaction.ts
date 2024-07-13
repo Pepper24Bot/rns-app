@@ -13,7 +13,7 @@ export interface TransactionProps {
     item: DomainResponse;
     address: Address;
 
-    hasAscii?: boolean
+    hasNonAscii?: boolean
 }
 
 export interface PrimaryProps extends TransactionProps {
