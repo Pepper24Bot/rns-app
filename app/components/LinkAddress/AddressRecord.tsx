@@ -46,7 +46,7 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
-  const { item, address, hasNonAscii } = props;
+  const { item, address } = props;
 
   const {
     resolvedAddress: ensAddr, // linked address record
@@ -170,7 +170,6 @@ export const AddressRecord: React.FC<LinkProps> = (props: LinkProps) => {
               name={name ?? ""}
               owner={ownerId}
               addressInput={inputValue}
-              hasNonAscii={hasNonAscii}
               updateAddressInput={(value) => {
                 setInputValue(value);
                 if (!isValidAddress) {

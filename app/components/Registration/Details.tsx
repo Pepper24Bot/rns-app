@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
-import { findCharacterSet, getExpiry, isTooltipShowing } from "@/utils/common";
+import { getExpiry, hasNonAsciiChars, isTooltipShowing } from "@/utils/common";
 import {
   FieldContainer,
   Flex,
@@ -106,8 +106,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
 
   const owner = ensName || ownerAddr;
   const resolverId = linkedTo || linkedAddr;
-  const characterSet = findCharacterSet(labelName ?? "");
-  const hasWarning = characterSet === "emoji" || characterSet === "mixed";
+  const hasWarning = hasNonAsciiChars(labelName ?? "");
 
   const { expiration, distance } = getExpiry(expiryDate);
 

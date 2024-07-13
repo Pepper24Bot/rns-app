@@ -25,6 +25,7 @@ import { formatEther } from "ethers/lib/utils";
 import { NameStatus } from "@/interfaces/global/types";
 import { isEmpty } from "lodash";
 import { Address } from "viem";
+import { hasNonAsciiChars } from "@/utils/common";
 
 import MenuField from "@/components/Reusables/MenuField";
 import TooltipContent from "../Reusables/TooltipContent";
@@ -134,8 +135,6 @@ export interface FormProps {
   status?: NameStatus;
 
   isPrimaryEnabled?: boolean;
-
-  hasNonAscii?: boolean;
 }
 
 export const Form: React.FC<FormProps> = (props: FormProps) => {
@@ -148,7 +147,6 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
     address,
     isPrimaryEnabled,
     isBalanceLoading,
-    hasNonAscii,
   } = props;
 
   // Get the native currency balance
@@ -174,6 +172,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
   };
 
   const isPrimary = ensName === name;
+  const hasNonAscii = hasNonAsciiChars(name ?? "");
 
   return (
     <Grid minWidth={250}>

@@ -19,6 +19,7 @@ import { PrimaryProps } from "@/interfaces/global/transaction";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { useLeaderboardState } from "@/redux/leaderboard/leaderboardSlice";
+import { hasNonAsciiChars } from "@/utils/common";
 
 import EnsImage from "../Reusables/EnsImage";
 import useRecords from "@/hooks/useRecords";
@@ -58,7 +59,7 @@ const Note = styled(SecondaryLabel)(({ theme }) => ({
 }));
 
 export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
-  const { item, address, hasNonAscii } = props;
+  const { item, address } = props;
   const { name, resolvedAddress: ensAddr } = item;
 
   const router = useRouter();
@@ -92,6 +93,7 @@ export const Primary: React.FC<PrimaryProps> = (props: PrimaryProps) => {
     });
 
   const isTransactionLoading = isLoading || isSettingPrimary || isSettingAddr;
+  const hasNonAscii = hasNonAsciiChars(name ?? "");
 
   const setEnsRecord = async () => {
     if (isEmpty(ensName)) {

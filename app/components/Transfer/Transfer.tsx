@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Collapse,
-  Grid,
-  styled,
-  alpha,
-  InputAdornment,
-  CircularProgress,
-} from "@mui/material";
+import { Collapse, Grid, styled, alpha, CircularProgress } from "@mui/material";
 import {
   ActionButton,
   FlexCenter,
@@ -22,7 +15,7 @@ import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address, isAddress } from "viem";
 import { TransactionProps } from "@/interfaces/global/transaction";
 import { useEnsName } from "wagmi";
-import { findCharacterSet, getMaskedAddress, isRootName } from "@/utils/common";
+import { getMaskedAddress, hasNonAsciiChars, isRootName } from "@/utils/common";
 import { config } from "@/chains/config";
 import { normalize } from "viem/ens";
 import { getEnsAddress } from "@wagmi/core";
@@ -173,8 +166,7 @@ export const Transfer: React.FC<TransactionProps> = (
   };
 
   const handleDebounceOnChange = async (value: string) => {
-    const characterSet = findCharacterSet(value.split(".root")[0]);
-    const hasNonAscii = characterSet === "emoji" || characterSet === "mixed";
+    const hasNonAscii = hasNonAsciiChars(value);
 
     setFieldError(false);
     setHelperText("");

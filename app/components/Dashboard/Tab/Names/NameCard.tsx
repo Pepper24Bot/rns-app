@@ -36,9 +36,9 @@ import {
   NoAddressIcon,
 } from "./StyledName";
 import {
-  findCharacterSet,
   getExpiry,
   getMaskedAddress,
+  hasNonAsciiChars,
   isTooltipShowing,
 } from "@/utils/common";
 import { DomainResponse } from "@/redux/graphql/graphqlApi";
@@ -108,8 +108,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     address: address,
   });
 
-  const characterSet = findCharacterSet(labelName ?? "");
-  const hasNonAscii = characterSet === "emoji" || characterSet === "mixed";
+  const hasNonAscii = hasNonAsciiChars(labelName ?? "");
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
@@ -192,7 +191,6 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     const data: CardProps = {
       item,
       address,
-      hasNonAscii,
     };
 
     toggleModal({

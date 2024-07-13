@@ -8,6 +8,7 @@ import {
 } from "../Theme/StyledGlobal";
 import { Close, Edit } from "@mui/icons-material";
 import { GetEnsNameReturnType } from "viem";
+import { hasNonAsciiChars } from "@/utils/common";
 import EndAdornment from "../Reusables/EndAdornment";
 
 const ResolverButton = styled(ActionButton)(({ theme }) => ({
@@ -34,8 +35,6 @@ export interface UpdateProps {
   isAddress?: boolean;
   addressInput: string;
   updateAddressInput: (value: string) => void;
-
-  hasNonAscii?: boolean;
 }
 
 export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
@@ -49,10 +48,10 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
     toggleEditMode,
     toggleRemoveMode,
     updateAddressInput,
-    hasNonAscii,
   } = props;
 
   const isPrimary = ensName === name;
+  const hasNonAscii = hasNonAsciiChars(name ?? "");
 
   return (
     <Grid>
@@ -68,7 +67,10 @@ export const UpdateRecord: React.FC<UpdateProps> = (props: UpdateProps) => {
       <InputField
         label="Owner"
         value={ensName || owner}
-        InputProps={{ readOnly: true }}
+        InputProps={{
+          readOnly: true,
+          endAdornment: <EndAdornment hasNonAscii={hasNonAscii} />,
+        }}
       />
       <InputField
         error={!isAddress}

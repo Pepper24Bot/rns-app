@@ -483,3 +483,11 @@ export const pushToTenKClub = (props: PushProps) => {
         ranks.push(item);
     }
 };
+
+export const hasNonAsciiChars = (name: string) => {
+    const label = name.split(".root")[0]
+    const characterSet = findCharacterSet(label ?? "");
+    const hasNonAscii = characterSet === "emoji" || characterSet === "mixed";
+
+    return hasNonAscii
+}

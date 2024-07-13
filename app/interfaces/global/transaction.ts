@@ -12,8 +12,6 @@ export interface TransactionProps {
     // New properties for ensjs:getNamesForAddress support
     item: DomainResponse;
     address: Address;
-
-    hasNonAscii?: boolean
 }
 
 export interface PrimaryProps extends TransactionProps {
