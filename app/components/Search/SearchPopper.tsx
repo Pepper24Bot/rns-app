@@ -162,31 +162,6 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
                           </SearchLabel>
                         </SearchButton>
                       </Grid>
-                    ) : status === "Registered" ? (
-                      <>
-                        <Divider
-                          orientation="vertical"
-                          flexItem
-                          sx={{ ml: 1 }}
-                        />
-                        <SearchButton
-                          variant="contained"
-                          onClick={() => {
-                            toggleModal({
-                              id: "Registration Details",
-                              title: "Registration Details",
-                              data: {
-                                item: data,
-                              },
-                            });
-                            router.replace(`/${searchValue}`, {
-                              scroll: false,
-                            });
-                          }}
-                        >
-                          View
-                        </SearchButton>
-                      </>
                     ) : (
                       <>
                         <InformationTip
