@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { isEmpty } from "lodash";
 
 import useValidateName from "@/hooks/useValidateName";
 import useWrappedData from "@/hooks/useWrappedData";
 import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
+import Dashboard from "@/components/Dashboard/Dashboard";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURIComponent(params.name);
   const label = name.split(".root")[0];
 
   const { toggleModal } = useModalState();
+  const [hasMounted, setHasMounted] = useState<boolean>(false);
 
   const { label: normalizedLabel } = useValidateName({
     label,
@@ -55,6 +57,7 @@ export default function Page({ params }: { params: { name: string } }) {
   };
 
   useEffect(() => {
+    setHasMounted(true);
     if (normalizedLabel && isSuccess) {
       if (isEmpty(wrappedName)) {
         toggleRegistration();
@@ -64,5 +67,5 @@ export default function Page({ params }: { params: { name: string } }) {
     }
   }, [normalizedLabel, isSuccess, isNameSuccess]);
 
-  return <></>;
+  return <Dashboard tab={0} hasMounted={hasMounted} />;
 }

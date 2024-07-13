@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useModalState } from "@/redux/modal/modalSlice";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { isEmpty } from "lodash";
@@ -10,6 +10,7 @@ import { useSnackbar } from "notistack";
 import useValidateName from "@/hooks/useValidateName";
 import useNamesForAddress from "@/hooks/useNamesForAddress";
 import useWrappedData from "@/hooks/useWrappedData";
+import Dashboard from "@/components/Dashboard/Dashboard";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
@@ -20,6 +21,8 @@ export default function Page({ params }: { params: { name: string } }) {
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
   const { useRootNetwork } = useRootNetworkState();
+
+  const [hasMounted, setHasMounted] = useState<boolean>(false);
 
   const {
     data: { address },
@@ -57,6 +60,7 @@ export default function Page({ params }: { params: { name: string } }) {
   };
 
   useEffect(() => {
+    setHasMounted(true);
     if (normalizedLabel && address && isSuccess) {
       if (!isEmpty(names)) {
         toggleExpiryModal();
@@ -70,5 +74,5 @@ export default function Page({ params }: { params: { name: string } }) {
     }
   }, [normalizedLabel, address, isSuccess]);
 
-  return <></>;
+  return <Dashboard tab={0} hasMounted={hasMounted} />;
 }

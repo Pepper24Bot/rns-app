@@ -20,7 +20,7 @@ export interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
-  const { tab: pageTab, holderTab, hasMounted } = props;
+  const { tab: pageTab, holderTab, hasMounted, children } = props;
 
   const router = useRouter();
 
