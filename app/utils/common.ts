@@ -96,47 +96,6 @@ export const isUrlGraphql = (url: string = "") => {
 
     return !isEmpty(match)
 }
-/**
- * 
- * @param pathId This is the id from the url path
- * @param id This is the id passed from ModalContainer
- * @returns ModalState object
- */
-export const getModalFromPath = (pathId: string = "", id: string = ""): ModalState => {
-    const modals: ModalState[] = [
-        {
-            isModalOpen: true, // default
-            props: { id: "Share RNS", fullHeight: true, fullWidth: true }
-        },
-        {
-            isModalOpen: true, // default
-            props: {
-                id: "Registration Info",
-                title: "Registration Process"
-            }
-        },
-    ]
-
-    const pattern = new RegExp(
-        /(?:modal-)/g
-    );
-
-    const modalItem: ModalState = {
-        isModalOpen: false,
-    }
-
-    if (isEmpty(id)) {
-        const match = pathId.toLowerCase().match(pattern)
-        const modal = modals.find((modal: ModalState) => {
-            return (modal.props?.id === pathId.split(pattern)[1])
-        })
-
-        modalItem.isModalOpen = !isEmpty(match)
-        modalItem.props = modal?.props
-    }
-
-    return modalItem
-}
 
 /**
  * 
