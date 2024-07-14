@@ -15,7 +15,12 @@ import { graphqlApi } from "@/redux/graphql/graphqlApi";
 import { Address, isAddress } from "viem";
 import { TransactionProps } from "@/interfaces/global/transaction";
 import { useEnsName } from "wagmi";
-import { getMaskedAddress, hasNonAsciiChars, isRootName } from "@/utils/common";
+import {
+  getMaskedAddress,
+  hasNonAsciiChars,
+  isInGracePeriod,
+  isRootName,
+} from "@/utils/common";
 import { config } from "@/chains/config";
 import { normalize } from "viem/ens";
 import { getEnsAddress } from "@wagmi/core";
@@ -33,6 +38,7 @@ import useBlockLatency from "@/hooks/useBlockLatency";
 import useRecords from "@/hooks/useRecords";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
 import EndAdornment from "../Reusables/EndAdornment";
+import GracePeriodTip from "../Reusables/GracePeriodTip";
 
 const TransferContainer = styled(Grid)(({ theme }) => ({
   marginTop: "48px",
@@ -52,7 +58,7 @@ const FormContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const Note = styled(SecondaryLabel)(({ theme }) => ({
-  fontSize: "14px",
+  fontSize: "12px",
   color: alpha(theme.palette.text.primary, 0.35),
 }));
 
@@ -63,7 +69,13 @@ export const Transfer: React.FC<TransactionProps> = (
   const router = useRouter();
 
   const { address, item } = props;
-  const { resolvedAddress: ensAddr, wrappedOwner: owner, name } = item;
+  const {
+    resolvedAddress: ensAddr,
+    wrappedOwner: owner,
+    name,
+    expiryDate,
+    gracePeriod,
+  } = item;
 
   const { closeModal } = useModalState();
   const { isFeatureEnabled } = useFeatureToggle();
@@ -109,6 +121,8 @@ export const Transfer: React.FC<TransactionProps> = (
 
   const isTransactionLoading =
     isTransferLoading || isRecordLoading || isTransferring || isAddrUpdating;
+
+  const inGracePeriod = isInGracePeriod(gracePeriod);
 
   const initializeFlags = () => {
     // display progress bar
@@ -249,6 +263,13 @@ export const Transfer: React.FC<TransactionProps> = (
       <TransferContainer container>
         <EnsImage name={name ?? ""} />
         <FormContainer>
+          {inGracePeriod && (
+            <GracePeriodTip
+              expiryDate={expiryDate}
+              gracePeriod={gracePeriod}
+              content="Extend the expiry of this identity to allow transferring."
+            />
+          )}
           <InputField
             value={name ?? ""}
             InputProps={{
@@ -312,6 +333,7 @@ export const Transfer: React.FC<TransactionProps> = (
         <Collapse orientation="horizontal" in={!isSuccess}>
           <ActionButton
             disabled={
+              inGracePeriod ||
               isEmpty(newOwner) ||
               isPending ||
               isSuccess ||

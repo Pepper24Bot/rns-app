@@ -66,6 +66,15 @@ const HightlightText = styled("span")(({ theme }) => ({
   textDecoration: "underline",
 }));
 
+const Grace = styled(Grid)(({ theme }) => ({
+  marginRight: "32px",
+
+  [theme.breakpoints.down(735)]: {
+    marginRight: "0",
+    marginBottom: "10px",
+  },
+}));
+
 export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
   const { item, address } = props;
   const { name, labelName, gracePeriod, expiryDate } = item;
@@ -241,7 +250,12 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
         <Grid item xs width="min-content">
           <EnsImage name={name ?? ""} />
           {extendPage === 1 && (
-            <GracePeriodTip expiryDate={expiryDate} gracePeriod={gracePeriod} />
+            <Grace>
+              <GracePeriodTip
+                expiryDate={expiryDate}
+                gracePeriod={gracePeriod}
+              />
+            </Grace>
           )}
         </Grid>
         <DetailsContainer item>

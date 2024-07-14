@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 
 import useValidateName from "@/hooks/useValidateName";
-import useNamesForAddress from "@/hooks/useNamesForAddress";
 import Dashboard from "@/components/Dashboard/Dashboard";
+import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
 
 export default function Page({ params }: { params: { name: string } }) {
   const name = decodeURI(params.name);
@@ -31,12 +31,11 @@ export default function Page({ params }: { params: { name: string } }) {
     label,
   });
 
-  const { names, isSuccess } = useNamesForAddress({
-    skip: !normalizedLabel,
-    address: address ?? "0x",
+  const { names, isFetched: isNameSuccess } = useAllNamesForAddress({
+    skip: !normalizedLabel || !address,
     filter: {
-      searchString: `${normalizedLabel}.root`,
-      searchType: "name",
+      name: `${normalizedLabel}.root`,
+      address: address ?? "0x",
     },
   });
 
@@ -55,7 +54,7 @@ export default function Page({ params }: { params: { name: string } }) {
 
   useEffect(() => {
     setHasMounted(true);
-    if (normalizedLabel && address && isSuccess) {
+    if (normalizedLabel && address && isNameSuccess) {
       if (!isEmpty(names)) {
         toggleTransferModal();
       } else {
@@ -66,7 +65,7 @@ export default function Page({ params }: { params: { name: string } }) {
         );
       }
     }
-  }, [normalizedLabel, address, isSuccess]);
+  }, [normalizedLabel, address, isNameSuccess]);
 
   return <Dashboard tab={0} hasMounted={hasMounted} />;
 }
