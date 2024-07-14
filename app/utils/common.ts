@@ -311,10 +311,14 @@ export const formatDate = (date: Date) => {
 }
 
 export const isInGracePeriod = (grace: string = "") => {
-    const graceDate = new Date(parseInt(grace) * 1000)
-    const gracePeriod = getDistanceToDate(graceDate, "day").split(" ")[0];
+    if (grace) {
+        const graceDate = new Date(parseInt(grace) * 1000)
+        const gracePeriod = getDistanceToDate(graceDate, "day").split(" ")[0];
 
-    return Number(gracePeriod) <= 365
+        return Number(gracePeriod) <= 400
+    } else {
+        return false
+    }
 }
 
 /**

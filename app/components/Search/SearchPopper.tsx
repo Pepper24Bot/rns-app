@@ -11,9 +11,11 @@ import {
   NotAvailableText,
   RegisteredText,
   FlexRight,
+  Flex,
+  GraceText,
 } from "../Theme/StyledGlobal";
 import { useModalState } from "@/redux/modal/modalSlice";
-import { parseCookie } from "@/utils/common";
+import { isInGracePeriod, parseCookie } from "@/utils/common";
 import { useRouter } from "next/navigation";
 import { NameStatus } from "@/interfaces/global/types";
 import {
@@ -28,6 +30,7 @@ import {
   NextImage,
 } from "./StyledSearch";
 import { FeatureList } from "@/hooks/useFeatureToggle";
+import { DomainResponse } from "@/redux/graphql/graphqlApi";
 import FeatureToggle from "../Reusables/FeatureToggle";
 
 export interface SearchPopper {
@@ -38,7 +41,7 @@ export interface SearchPopper {
   status?: NameStatus | "";
   isNameInvalid?: boolean;
   isNameNotSupported?: boolean;
-  data?: any;
+  data?: DomainResponse;
 }
 
 export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
@@ -55,6 +58,8 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
   const router = useRouter();
 
   const { toggleModal } = useModalState();
+
+  const inGracePeriod = isInGracePeriod(data?.gracePeriod);
 
   const isInformationHidden =
     parseCookie("registration_process_hidden") === "true";
@@ -103,14 +108,33 @@ export const SearchPopper: React.FC<SearchPopper> = (props: SearchPopper) => {
         <Fade {...TransitionProps} timeout={350}>
           <PopperContainer>
             <FlexJustified container>
-              <Grid item xs={6}>
+              <Grid item xs={8}>
                 <SearchText>{`${searchValue}.root`}</SearchText>
-                <Relative>
-                  <SkeletonTypography isloading={isLoading} />
-                  {getStatus()}
-                </Relative>
+                <Flex>
+                  <Relative>
+                    <SkeletonTypography isloading={isLoading} />
+                    {getStatus()}
+                  </Relative>
+                  <Relative>
+                    <SkeletonTypography isloading={isLoading} />
+                    {(inGracePeriod || isLoading) && (
+                      <Grid container>
+                        {inGracePeriod && (
+                          <Divider
+                            orientation="vertical"
+                            flexItem
+                            sx={{ mx: 1 }}
+                          />
+                        )}
+                        <GraceText isloading={isLoading}>
+                          Grace Period
+                        </GraceText>
+                      </Grid>
+                    )}
+                  </Relative>
+                </Flex>
               </Grid>
-              <ButtonsContainer item xs={4.5}>
+              <ButtonsContainer item xs={4}>
                 <Relative>
                   <FlexRight isloading={isLoading}>
                     <FeatureToggle feature={FeatureList.Favorites}>

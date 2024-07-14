@@ -480,6 +480,10 @@ export const AvailableText = styled(SecondaryLabel)(({ theme }) => ({
   },
 }));
 
+export const GraceText = styled(AvailableText)(({ theme }) => ({
+  color: amber[500],
+}));
+
 export const NotAvailableText = styled(AvailableText)(({ theme }) => ({
   color: "#FF0000",
 }));
