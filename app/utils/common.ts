@@ -1,5 +1,4 @@
-import { ModalState } from "@/redux/modal/modalSlice";
-import { formatDistanceStrict } from "date-fns";
+import { formatDistanceStrict, FormatDistanceStrictUnit } from "date-fns";
 import { isEmpty } from "lodash";
 import { Response } from "@/services/interfaces";
 import { OrderDirection } from "@/redux/graphql/hooks";
@@ -283,14 +282,14 @@ export const isTooltipShowing = (ref: React.MutableRefObject<HTMLDivElement | nu
  * @param expiry 
  * @returns 
  */
-export const getDistanceToDate = (date: Date) => {
-    const currentDate = new Date().toLocaleDateString("en-US")
-    const expiryDate = date.toLocaleDateString("en-US")
+export const getDistanceToDate = (date: Date, unit: FormatDistanceStrictUnit = "day") => {
+    const currentDate = new Date().toLocaleString("en-US");
+    const endDate = date.toLocaleString("en-US");
 
     const distance = formatDistanceStrict(
         currentDate,
-        expiryDate,
-        { unit: "day" }
+        endDate,
+        { unit }
     );
 
     return distance
@@ -311,27 +310,56 @@ export const formatDate = (date: Date) => {
     return newDate.replace(/[/]/g, "-")
 }
 
+export const isInGracePeriod = (grace: string = "") => {
+    const graceDate = new Date(parseInt(grace) * 1000)
+    const gracePeriod = getDistanceToDate(graceDate, "day").split(" ")[0];
+
+    return Number(gracePeriod) <= 90
+}
+
 /**
  * 
  * @param expiry the expiration date of an identity
  * @returns distance in days format and expiration in mm-dd-yyyy
  */
 export const getExpiry = (expiry: string = "", grace: string = "") => {
-    const expiryDate = expiry ? new Date(parseInt(expiry) * 1000) : new Date()
-    const graceDate = grace ? new Date(parseInt(grace) * 1000) : new Date()
-
-    const distanceToExpiry = getDistanceToDate(expiryDate);
-    const remainingGrace = getDistanceToDate(graceDate);
-
-    const expiration = formatDate(expiryDate);
-    const gracePeriod = formatDate(graceDate);
-
-    return {
-        distanceToExpiry,
-        expiration,
-        remainingGrace,
-        gracePeriod
+    const dates = {
+        distanceToExpiry: "",
+        expiration: "",
+        remainingGrace: {
+            days: "",
+            hours: "",
+            label: ""
+        },
+        gracePeriod: ""
     }
+
+    if (expiry) {
+        const expiryDate = expiry ? new Date(parseInt(expiry) * 1000) : new Date()
+        const distanceToExpiry = getDistanceToDate(expiryDate);
+        const expiration = formatDate(expiryDate);
+
+        dates.distanceToExpiry = distanceToExpiry
+        dates.expiration = expiration
+    }
+
+    if (grace) {
+        const graceDate = grace ? new Date(parseInt(grace) * 1000) : new Date()
+        const remainingGrace = getDistanceToDate(graceDate, "hour").split(" ")[0];
+        const gracePeriod = formatDate(graceDate);
+
+        dates.gracePeriod = gracePeriod
+
+        const days = Math.floor(Number(remainingGrace) / 24)
+        const hours = Number(remainingGrace) % 24
+        dates.remainingGrace = {
+            days: days.toString(),
+            hours: hours.toString(),
+            label: `${days} ${days > 1 ? "days" : "day"} and ${hours} ${hours > 1 ? "hours" : "hour"}`
+        }
+    }
+
+    return { ...dates }
 }
 
 /**

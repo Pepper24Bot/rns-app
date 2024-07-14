@@ -39,6 +39,7 @@ import {
   getExpiry,
   getMaskedAddress,
   hasNonAsciiChars,
+  isInGracePeriod,
   isTooltipShowing,
 } from "@/utils/common";
 import { DomainResponse } from "@/redux/graphql/graphqlApi";
@@ -78,7 +79,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
     name,
     labelName,
     expiryDate,
-    gracePeriod,
+    gracePeriod: graceDate,
     resolvedAddress: ensAddr,
   } = item;
 
@@ -118,7 +119,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
-  const { expiration, distanceToExpiry } = getExpiry(expiryDate, gracePeriod);
+  const { expiration, distanceToExpiry, gracePeriod, remainingGrace } =
+    getExpiry(expiryDate, graceDate);
+
+  const inGracePeriod = isInGracePeriod(graceDate);
 
   const handleDownloadPng = (imgURI: string) => {
     const link = document.createElement("a");
