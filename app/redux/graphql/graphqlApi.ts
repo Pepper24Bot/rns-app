@@ -23,6 +23,14 @@ export interface NameResponse {
     id: string,
     labelName: string,
     expiryDate: string,
+    /** Expiration without Grace Period */
+    registration: {
+        expiryDate: string,
+    },
+    /** Expiration with Grace Period */
+    wrappedDomain: {
+        expiryDate: string,
+    },
     wrappedOwner: {
         id: string
     }

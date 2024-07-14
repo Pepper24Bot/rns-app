@@ -5,7 +5,12 @@ import {
   TopRanking,
   useLeaderboardState,
 } from "@/redux/leaderboard/leaderboardSlice";
-import { getExpiry, getMaskedAddress, scrollIntoElement } from "@/utils/common";
+import {
+  getExpiry,
+  getMaskedAddress,
+  isInGracePeriod,
+  scrollIntoElement,
+} from "@/utils/common";
 import {
   Flex,
   FlexCenter,
@@ -31,6 +36,7 @@ import { EMPTY_ADDRESS } from "@/constants/components";
 import { isEmpty } from "lodash";
 import { FONT_WEIGHT } from "@/components/Theme/Global";
 import Image from "next/image";
+import { amber } from "@mui/material/colors";
 
 const Container = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.up(600)]: {
@@ -96,14 +102,25 @@ const TooltipContent = memo((item: Ranking) => {
       </TooltipHeader>
       <TooltipRows>
         {item.names?.map((name, index) => {
-          const { labelName, expiryDate } = name;
+          const { labelName, registration, expiryDate } = name;
+
+          const inGracePeriod = isInGracePeriod(expiryDate);
+          const { distanceToExpiry, remainingGrace } = getExpiry(
+            registration?.expiryDate,
+            expiryDate
+          );
+
           return (
             <TooltipRow key={`tooltip-${labelName}-${index}`}>
               <FlexJustified>
                 <TooltipName>{labelName}</TooltipName>
-                <TooltipText>
-                  In {getExpiry(expiryDate).distanceToExpiry}
-                </TooltipText>
+                {!inGracePeriod ? (
+                  <TooltipText>{`In ${distanceToExpiry}`}</TooltipText>
+                ) : (
+                  <TooltipText
+                    sx={{ color: amber[500] }}
+                  >{`In ${remainingGrace.label}`}</TooltipText>
+                )}
               </FlexJustified>
             </TooltipRow>
           );
@@ -146,7 +163,7 @@ export const Top50: React.FC<TopRankingProps> = (props: TopRankingProps) => {
               <TopContainer
                 container
                 xs={12}
-                sm={3}
+                sm={3.5}
                 onClick={() => {
                   updateSearchNameOrAddr(top3[index].owner || "");
                 }}

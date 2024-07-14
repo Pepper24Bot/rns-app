@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Grid, darken, styled } from "@mui/material";
+import { Grid, styled } from "@mui/material";
 import {
   SingleRanking,
   useLeaderboardState,
@@ -15,8 +15,8 @@ import {
 } from "../StyledLeaderboard";
 import { getMaskedAddress, scrollIntoElement } from "@/utils/common";
 import {
+  Flex,
   FlexCenter,
-  Relative,
   SkeletonTypography,
 } from "@/components/Theme/StyledGlobal";
 import { isEmpty } from "lodash";
@@ -26,21 +26,20 @@ const ContentContainer = styled(ColumnContent)(({ theme }) => ({
   height: "600px",
 }));
 
-const Title = styled(ColumnTitle)(({ theme }) => ({
-  textAlign: "center",
-}));
+const Title = styled(ColumnTitle)(({ theme }) => ({}));
 
 const RowText = styled(StyledRowText)(({ theme }) => ({
-  textAlign: "center",
+  padding: "0 8px",
 }));
 
 const Row = styled(StyledRow)(({ theme }) => ({
   padding: "8px",
   margin: "4px 0",
   cursor: "pointer",
+  alignItems: "center",
 }));
 
-const RelativeCenter = styled(FlexCenter)(({ theme }) => ({
+const RelativeCenter = styled(Flex)(({ theme }) => ({
   position: "relative",
 }));
 
@@ -89,13 +88,13 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
                     scrollIntoElement("Holders-Container");
                   }}
                 >
-                  <Relative item xs={5}>
+                  <RelativeCenter item xs={5}>
                     <SkeletonTypography isloading={!isFetched} />
                     <RowText isloading={!isFetched} isPrimary={!!rank?.primary}>
                       {rank?.primary ||
                         getMaskedAddress(rank?.owner || EMPTY_ADDRESS)}
                     </RowText>
-                  </Relative>
+                  </RelativeCenter>
                   <RelativeCenter item xs={3}>
                     <SkeletonTypography isloading={!isFetched} width="50%" />
                     <HighlightValue isloading={!isFetched}>
@@ -104,9 +103,7 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
                   </RelativeCenter>
                   <RelativeCenter item xs={3}>
                     <SkeletonTypography isloading={!isFetched} width="50%" />
-                    <RowText isloading={!isFetched}>
-                      In {rank?.expiryDate}
-                    </RowText>
+                    <RowText isloading={!isFetched}>{rank?.expiryDate}</RowText>
                   </RelativeCenter>
                 </Row>
               </Grid>

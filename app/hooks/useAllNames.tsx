@@ -6,6 +6,7 @@ import {
 } from "@/redux/leaderboard/leaderboardSlice";
 import {
   getExpiry,
+  isInGracePeriod,
   pushToCharacters,
   pushToEmojis,
   pushToOneKClub,
@@ -177,24 +178,36 @@ export default function useAllNames(props?: Props) {
     const tenKClub: Ranking[] = [];
 
     // loop through each of the item and push to leaderboard categories
-    domains?.forEach(({ wrappedOwner, labelName, expiryDate }, index) => {
-      const item = {
-        owner: wrappedOwner?.id,
-        label: labelName,
-        expiryDate: getExpiry(expiryDate).distanceToExpiry,
-      };
+    domains?.forEach(
+      ({ wrappedOwner, labelName, expiryDate, registration }, index) => {
+        const inGracePeriod = isInGracePeriod(expiryDate);
+        const { distanceToExpiry, remainingGrace } = getExpiry(
+          registration?.expiryDate,
+          expiryDate
+        );
 
-      const props = {
-        labelName,
-        length: labelName.length,
-        item,
-      };
+        const expiryValue = !inGracePeriod
+          ? `Expires in ${distanceToExpiry}`
+          : `Grace period ends in ${remainingGrace.label}`;
 
-      pushToEmojis({ ...props, ranks: singleEmojis });
-      pushToCharacters({ ...props, ranks: singleCharacters });
-      pushToOneKClub({ ...props, ranks: oneKClub });
-      pushToTenKClub({ ...props, ranks: tenKClub });
-    });
+        const item = {
+          owner: wrappedOwner?.id,
+          label: labelName,
+          expiryDate: expiryValue,
+        };
+
+        const props = {
+          labelName,
+          length: labelName.length,
+          item,
+        };
+
+        pushToEmojis({ ...props, ranks: singleEmojis });
+        pushToCharacters({ ...props, ranks: singleCharacters });
+        pushToOneKClub({ ...props, ranks: oneKClub });
+        pushToTenKClub({ ...props, ranks: tenKClub });
+      }
+    );
 
     // get the primary names of the addresses in the ranking
     const rankingsWithPrimary = await getPrimaryNamesOfAllranks([

@@ -29,6 +29,7 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import {
   getExpiry,
+  isInGracePeriod,
   pushToCharacters,
   pushToEmojis,
   pushToOneKClub,
@@ -43,6 +44,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { getEnsName } from "@wagmi/core";
 import { config } from "@/chains/config";
 import { useOwnerQuery } from "@/redux/graphql/hooks";
+import { amber } from "@mui/material/colors";
 
 export const ListContainer = styled(Grid)(({ theme }) => ({
   padding: "40px 32px 0 16px",
@@ -194,26 +196,23 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
 
   const getRankings = () => {
     if (!isEmpty(searchedItem?.names)) {
-      searchedItem.names?.forEach(
-        ({ wrappedOwner, labelName, expiryDate }, index) => {
-          const item = {
-            owner: wrappedOwner?.id,
-            label: labelName,
-            expiryDate: getExpiry(expiryDate).distanceToExpiry,
-          };
+      searchedItem.names?.forEach(({ wrappedOwner, labelName }, index) => {
+        const item = {
+          owner: wrappedOwner?.id,
+          label: labelName,
+        };
 
-          const props = {
-            labelName,
-            length: labelName.length,
-            item,
-          };
+        const props = {
+          labelName,
+          length: labelName.length,
+          item,
+        };
 
-          pushToEmojis({ ...props, ranks: singleEmojis });
-          pushToCharacters({ ...props, ranks: singleCharacters });
-          pushToOneKClub({ ...props, ranks: oneKClub });
-          pushToTenKClub({ ...props, ranks: tenKClub });
-        }
-      );
+        pushToEmojis({ ...props, ranks: singleEmojis });
+        pushToCharacters({ ...props, ranks: singleCharacters });
+        pushToOneKClub({ ...props, ranks: oneKClub });
+        pushToTenKClub({ ...props, ranks: tenKClub });
+      });
 
       const sortedChars = sortByLabel(singleCharacters);
       const sortedOneK = sortByClubRank(oneKClub);
@@ -357,28 +356,46 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
             </OwnerContainer>
             <ColumnContent></ColumnContent>
             <Header container>
-              <Grid item xs={8}>
+              <Grid item xs={6}>
                 <ColumnTitle>Identity</ColumnTitle>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={3} />
+              <Grid item xs={3}>
                 <ColumnTitle>Expiry</ColumnTitle>
               </Grid>
             </Header>
             <ColumnContent>
               {!isLoading
                 ? searchedItem?.names?.map((item) => {
+                    const { registration, expiryDate } = item;
+
+                    const inGracePeriod = isInGracePeriod(expiryDate);
+                    const { distanceToExpiry, remainingGrace } = getExpiry(
+                      registration.expiryDate,
+                      expiryDate
+                    );
+
+                    const expiryValue = !inGracePeriod
+                      ? `In ${distanceToExpiry}`
+                      : `Ends in ${remainingGrace.label}`;
+
                     return (
                       <Row
                         container
                         key={`summary-identity-${item?.labelName}`}
                       >
-                        <Grid item xs={8} pl={2}>
-                          <IdentityText>{item?.labelName || "00"}</IdentityText>
+                        <Grid item xs={6} pl={2}>
+                          <IdentityText sx={{ wordBreak: "break-word" }}>
+                            {item?.labelName || "00"}
+                          </IdentityText>
                         </Grid>
-                        <Grid item xs={4}>
-                          <RowText>
-                            In {getExpiry(item?.expiryDate).distanceToExpiry}
+                        <Grid item xs={3}>
+                          <RowText sx={{ color: amber[500] }}>
+                            {inGracePeriod && "Grace period"}
                           </RowText>
+                        </Grid>
+                        <Grid item xs={3}>
+                          <RowText>{expiryValue}</RowText>
                         </Grid>
                       </Row>
                     );

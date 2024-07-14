@@ -4698,7 +4698,7 @@ export type NamesQueryVariables = Exact<{
 }>;
 
 
-export type NamesQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', labelName?: string | null, expiryDate?: any | null, id: string, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
+export type NamesQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', labelName?: string | null, expiryDate?: any | null, id: string, registration?: { __typename?: 'Registration', registrationDate: any, expiryDate: any } | null, wrappedDomain?: { __typename?: 'WrappedDomain', expiryDate: any } | null, wrappedOwner?: { __typename?: 'Account', id: string } | null }> };
 
 export type OwnerQueryVariables = Exact<{
   labelName?: InputMaybe<Scalars['String']['input']>;
@@ -4764,6 +4764,13 @@ export const NamesDocument = `
   ) {
     labelName
     expiryDate
+    registration {
+      registrationDate
+      expiryDate
+    }
+    wrappedDomain {
+      expiryDate
+    }
     wrappedOwner {
       id
     }

@@ -76,7 +76,7 @@ export const ColumnContent = styled(Grid)(({ theme }) => ({
 }));
 
 export const Row = styled(FlexJustified)(({ theme }) => ({
-  alignItems: "center",
+  alignItems: "start",
   padding: "8px",
   margin: "8px 0",
   borderRadius: "4px",
@@ -102,6 +102,7 @@ export const TopHolder = styled(RowText)(({ theme, isPrimary }) => ({
 }));
 
 export const HighlightValue = styled(RowText)(({ theme }) => ({
+  padding: "0 8px",
   fontSize: "32px",
   color: darken(theme.palette.primary.main, 0.5),
   textAlign: "center",

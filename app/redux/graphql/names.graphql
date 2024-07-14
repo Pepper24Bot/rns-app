@@ -68,6 +68,13 @@ query Names($first: Int = 1000, $lastId: ID = "") {
   ) {
     labelName
     expiryDate
+    registration {
+      registrationDate
+      expiryDate
+    }
+    wrappedDomain {
+      expiryDate
+    }
     wrappedOwner {
       id
     }
