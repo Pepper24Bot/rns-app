@@ -20,6 +20,7 @@ import {
   WarningIcon as StyledWarningIcon,
   FlexJustified,
   ModalInputField,
+  TooltipText,
 } from "../Theme/StyledGlobal";
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils";
 import { useEnsName } from "wagmi";
@@ -71,14 +72,6 @@ const TooltipGrid = styled(TooltipContainer)(({ theme }) => ({
 
 const Field = styled(FieldContainer)(({ theme }) => ({
   marginTop: "24px",
-
-  [theme.breakpoints.up(715)]: {
-    width: "350px",
-  },
-
-  [theme.breakpoints.down(635)]: {
-    width: "75vw",
-  },
 }));
 
 const RegisteredLabel = styled(SecondaryLabel)(({ theme }) => ({
@@ -189,23 +182,45 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
           </Field>
 
           {/* OWNER */}
-          <InputField
-            label="Owner"
-            value={owner}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-
-          {/* LINKED TO ADDRESS */}
-          {hasLinkedAddr && (
+          <InformationTip
+            arrow
+            placement="bottom"
+            title={
+              <TooltipText>
+                <HighlightText>{ensName} - </HighlightText>
+                {ownerAddr}
+              </TooltipText>
+            }
+          >
             <InputField
-              label="Linked To / Resolver"
-              value={resolverId}
+              label="Owner"
+              value={owner}
               InputProps={{
                 readOnly: true,
               }}
             />
+          </InformationTip>
+
+          {/* LINKED TO ADDRESS */}
+          {hasLinkedAddr && (
+            <InformationTip
+              arrow
+              placement="bottom"
+              title={
+                <TooltipText>
+                  <HighlightText>{resolverId} - </HighlightText>
+                  {linkedAddr}
+                </TooltipText>
+              }
+            >
+              <InputField
+                label="Linked To / Resolver"
+                value={resolverId}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </InformationTip>
           )}
 
           {/* EXPIRY DATE */}

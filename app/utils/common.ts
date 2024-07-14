@@ -333,7 +333,8 @@ export const getExpiry = (expiry: string = "", grace: string = "") => {
         remainingGrace: {
             days: 0,
             hours: 0,
-            label: ""
+            label: "",
+            end: 0
         },
         gracePeriod: ""
     }
@@ -342,6 +343,10 @@ export const getExpiry = (expiry: string = "", grace: string = "") => {
         const expiryDate = expiry ? new Date(parseInt(expiry) * 1000) : new Date()
         const distanceToExpiry = getDistanceToDate(expiryDate);
         const expiration = formatDate(expiryDate);
+        const end = distanceToExpiry.split(" ")[0]
+
+        // TODO: remove this
+        dates.remainingGrace.end = Number(end)
 
         dates.distanceToExpiry = distanceToExpiry
         dates.expiration = expiration
@@ -354,14 +359,18 @@ export const getExpiry = (expiry: string = "", grace: string = "") => {
 
         dates.gracePeriod = gracePeriod
 
+
         const days = Math.floor(Number(remainingGrace) / 24 / 60)
         const hours = (Number(remainingGrace) % 1440) / 60
         const mins = (Number(remainingGrace) % 1440) % 60
+
         dates.remainingGrace = {
+            ...dates.remainingGrace,
             days,
             hours,
             label: days
-                ? `${days} ${days > 1 ? "days" : "day"}`
+                // TODO: remove this "- dates.remainingGrace.end"
+                ? `${days - dates.remainingGrace.end} ${days > 1 ? "days" : "day"}`
                 : hours
                     ? `${hours > 1 ? "hours" : "hour"}`
                     : `${mins > 1 ? "minutes" : "minute"}`
