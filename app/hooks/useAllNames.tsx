@@ -187,13 +187,14 @@ export default function useAllNames(props?: Props) {
         );
 
         const expiryValue = !inGracePeriod
-          ? `Expires in ${distanceToExpiry}`
-          : `Grace period ends in ${remainingGrace.label}`;
+          ? `${distanceToExpiry}`
+          : `${remainingGrace.label}`;
 
         const item = {
           owner: wrappedOwner?.id,
           label: labelName,
           expiryDate: expiryValue,
+          inGracePeriod,
         };
 
         const props = {

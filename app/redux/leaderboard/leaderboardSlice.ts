@@ -15,7 +15,9 @@ export interface Ranking {
 
     label?: string,
 
-    expiryDate?: string
+    expiryDate?: string,
+
+    inGracePeriod?: boolean,
 }
 
 export interface TopRanking {

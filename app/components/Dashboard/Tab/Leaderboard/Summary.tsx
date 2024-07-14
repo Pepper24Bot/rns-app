@@ -377,7 +377,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
 
                     const expiryValue = !inGracePeriod
                       ? `In ${distanceToExpiry}`
-                      : `Ends in ${remainingGrace.label}`;
+                      : `In ${remainingGrace.label}`;
 
                     return (
                       <Row

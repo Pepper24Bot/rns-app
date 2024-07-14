@@ -21,6 +21,7 @@ import {
 } from "@/components/Theme/StyledGlobal";
 import { isEmpty } from "lodash";
 import { EMPTY_ADDRESS } from "@/constants/components";
+import { amber } from "@mui/material/colors";
 
 const ContentContainer = styled(ColumnContent)(({ theme }) => ({
   height: "600px",
@@ -63,10 +64,11 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
             <Grid item xs={5}>
               <Title>Holder</Title>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <Title>Identity</Title>
             </Grid>
-            <Grid item xs={3} pr={1}>
+            <Grid item xs={3} />
+            <Grid item xs={2} pr={1}>
               <Title>Expiry</Title>
             </Grid>
           </Header>
@@ -95,13 +97,19 @@ export const Ranking: React.FC<RankingProps> = (props: RankingProps) => {
                         getMaskedAddress(rank?.owner || EMPTY_ADDRESS)}
                     </RowText>
                   </RelativeCenter>
-                  <RelativeCenter item xs={3}>
+                  <RelativeCenter item xs={2}>
                     <SkeletonTypography isloading={!isFetched} width="50%" />
                     <HighlightValue isloading={!isFetched}>
                       {rank?.label || "00"}
                     </HighlightValue>
                   </RelativeCenter>
                   <RelativeCenter item xs={3}>
+                    <SkeletonTypography isloading={!isFetched} width="50%" />
+                    <RowText isloading={!isFetched} sx={{ color: amber[500] }}>
+                      {rank?.inGracePeriod && "Grace Period"}
+                    </RowText>
+                  </RelativeCenter>
+                  <RelativeCenter item xs={2}>
                     <SkeletonTypography isloading={!isFetched} width="50%" />
                     <RowText isloading={!isFetched}>{rank?.expiryDate}</RowText>
                   </RelativeCenter>
