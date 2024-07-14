@@ -102,6 +102,11 @@ export const Label = styled("span")(({ theme }) => ({
   paddingRight: "8px",
 }));
 
+export const GraceLabel = styled("span")(({ theme }) => ({
+  color: amber[500],
+  paddingRight: "8px",
+}));
+
 export const TooltipText = styled(Detail)(({ theme }) => ({
   color: alpha(theme.palette.text.primary, 0.5),
   paddingTop: 0,

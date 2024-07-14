@@ -314,7 +314,7 @@ export const isInGracePeriod = (grace: string = "") => {
     const graceDate = new Date(parseInt(grace) * 1000)
     const gracePeriod = getDistanceToDate(graceDate, "day").split(" ")[0];
 
-    return Number(gracePeriod) <= 90
+    return Number(gracePeriod) <= 365
 }
 
 /**
@@ -327,8 +327,8 @@ export const getExpiry = (expiry: string = "", grace: string = "") => {
         distanceToExpiry: "",
         expiration: "",
         remainingGrace: {
-            days: "",
-            hours: "",
+            days: 0,
+            hours: 0,
             label: ""
         },
         gracePeriod: ""
@@ -345,17 +345,22 @@ export const getExpiry = (expiry: string = "", grace: string = "") => {
 
     if (grace) {
         const graceDate = grace ? new Date(parseInt(grace) * 1000) : new Date()
-        const remainingGrace = getDistanceToDate(graceDate, "hour").split(" ")[0];
+        const remainingGrace = getDistanceToDate(graceDate, "minute").split(" ")[0];
         const gracePeriod = formatDate(graceDate);
 
         dates.gracePeriod = gracePeriod
 
-        const days = Math.floor(Number(remainingGrace) / 24)
-        const hours = Number(remainingGrace) % 24
+        const days = Math.floor(Number(remainingGrace) / 24 / 60)
+        const hours = (Number(remainingGrace) % 1440) / 60
+        const mins = (Number(remainingGrace) % 1440) % 60
         dates.remainingGrace = {
-            days: days.toString(),
-            hours: hours.toString(),
-            label: `${days} ${days > 1 ? "days" : "day"} and ${hours} ${hours > 1 ? "hours" : "hour"}`
+            days,
+            hours,
+            label: days
+                ? `${days} ${days > 1 ? "days" : "day"}`
+                : hours
+                    ? `${hours > 1 ? "hours" : "hour"}`
+                    : `${mins > 1 ? "minutes" : "minute"}`
         }
     }
 

@@ -34,6 +34,7 @@ import {
   ImageSkeleton,
   ExternalAddressIcon,
   NoAddressIcon,
+  GraceLabel,
 } from "./StyledName";
 import {
   getExpiry,
@@ -396,16 +397,25 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                       {getTooltipProps()?.icons?.heading || <></>}
                     </InformationTip>
                   </FlexJustified>
-                  <Grid container>
-                    <Detail mr={1}>
-                      <Label>Expiry:</Label>
-                      {expiration}
-                    </Detail>
-                    <Detail>
-                      <Label>In</Label>
-                      {distanceToExpiry}
-                    </Detail>
-                  </Grid>
+                  {!inGracePeriod ? (
+                    <Grid container>
+                      <Detail mr={1}>
+                        <Label>Expiry:</Label>
+                        {expiration}
+                      </Detail>
+                      <Detail>
+                        <Label>In</Label>
+                        {distanceToExpiry}
+                      </Detail>
+                    </Grid>
+                  ) : (
+                    <Grid container>
+                      <Detail mr={1}>
+                        <Label>Grace period ends in:</Label>
+                        <GraceLabel>{remainingGrace.label}</GraceLabel>
+                      </Detail>
+                    </Grid>
+                  )}
                 </NameDetails>
               </Grid>
             </Summary>
