@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Grid, alpha, darken, styled } from "@mui/material";
-import { getExpiry, hasNonAsciiChars, isTooltipShowing } from "@/utils/common";
+import {
+  getExpiry,
+  hasNonAsciiChars,
+  isInGracePeriod,
+  isTooltipShowing,
+} from "@/utils/common";
 import {
   FieldContainer,
   Flex,
@@ -8,15 +13,13 @@ import {
   InformationTip,
   FieldLabel,
   PrimaryChip,
-  Relative,
   SecondaryLabel,
-  SkeletonTypography,
   FieldValue,
   HighlightText,
   TooltipContainer,
   WarningIcon as StyledWarningIcon,
   FlexJustified,
-  TooltipText,
+  ModalInputField,
 } from "../Theme/StyledGlobal";
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils";
 import { useEnsName } from "wagmi";
@@ -37,6 +40,15 @@ const DetailsContainer = styled(FlexCenter)(({ theme }) => ({
   },
 
   [theme.breakpoints.down(600)]: {
+    width: "100%",
+  },
+}));
+
+const InputField = styled(ModalInputField)(({ theme }) => ({
+  maxWidth: "500px",
+
+  [theme.breakpoints.down(800)]: {
+    maxWidth: "100%",
     width: "100%",
   },
 }));
@@ -81,7 +93,7 @@ const WarningIcon = styled(StyledWarningIcon)(({ theme }) => ({
 }));
 
 export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
-  const { item, isSuccess = true } = props;
+  const { item } = props;
 
   const {
     name,
@@ -89,18 +101,20 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
     resolvedAddress: linkedAddr,
     labelName,
     expiryDate,
+    gracePeriod,
   } = item;
 
   const hasLinkedAddr = linkedAddr && linkedAddr !== EMPTY_ADDRESS;
   const nameRef = useRef<HTMLDivElement | null>(null);
+  const inGracePeriod = isInGracePeriod(gracePeriod);
 
   const [isShowNameTooltip, setIsShowNameTooltip] = useState<boolean>(false);
 
-  const { data: ensName, isLoading: isEnsLoading } = useEnsName({
+  const { data: ensName } = useEnsName({
     address: (ownerAddr as Address) || "0x",
   });
 
-  const { data: linkedTo, isLoading: isLinkedAddrLoading } = useEnsName({
+  const { data: linkedTo } = useEnsName({
     address: (linkedAddr as Address) || "0x",
   });
 
@@ -108,7 +122,10 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
   const resolverId = linkedTo || linkedAddr;
   const hasWarning = hasNonAsciiChars(labelName ?? "");
 
-  const { expiration, distanceToExpiry } = getExpiry(expiryDate);
+  const { expiration, distanceToExpiry, remainingGrace } = getExpiry(
+    expiryDate,
+    gracePeriod
+  );
 
   useEffect(() => {
     const isNameShowing = isTooltipShowing(nameRef);
@@ -172,71 +189,59 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
           </Field>
 
           {/* OWNER */}
-          <Field>
-            <Label>Owner</Label>
-            <Relative>
-              <SkeletonTypography isloading={isEnsLoading} />
-              <InformationTip
-                arrow
-                placement="bottom"
-                title={
-                  <TooltipText>
-                    <HighlightText>{ensName} - </HighlightText>
-                    {ownerAddr}
-                  </TooltipText>
-                }
-              >
-                <TooltipGrid>
-                  <FieldValue isloading={isEnsLoading}>{owner}</FieldValue>
-                </TooltipGrid>
-              </InformationTip>
-            </Relative>
-          </Field>
+          <InputField
+            label="Owner"
+            value={owner}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
 
           {/* LINKED TO ADDRESS */}
           {hasLinkedAddr && (
-            <Field>
-              <Label>Linked To / Resolver</Label>
-              <Relative>
-                <SkeletonTypography isloading={isLinkedAddrLoading} />
-                <InformationTip
-                  arrow
-                  placement="bottom"
-                  title={
-                    <TooltipText>
-                      <HighlightText>{resolverId}</HighlightText>{" "}
-                      {`- ${linkedAddr}`}
-                    </TooltipText>
-                  }
-                >
-                  <TooltipGrid>
-                    <FieldValue isloading={isLinkedAddrLoading}>
-                      {resolverId}
-                    </FieldValue>
-                  </TooltipGrid>
-                </InformationTip>
-              </Relative>
-            </Field>
+            <InputField
+              label="Linked To / Resolver"
+              value={resolverId}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
           )}
 
           {/* EXPIRY DATE */}
-          <Field>
-            <Label>Expiry</Label>
-            <FlexJustified width="100%">
-              <Relative>
-                <SkeletonTypography isloading={!isSuccess} />
-                <FieldValue isloading={!isSuccess}>
-                  {expiration || "00-00-0000"}
-                </FieldValue>
-              </Relative>
-              <Relative minWidth={75}>
-                <SkeletonTypography isloading={!isSuccess} />
-                <FieldLabel
-                  isloading={!isSuccess}
-                >{`In ${distanceToExpiry}`}</FieldLabel>
-              </Relative>
-            </FlexJustified>
-          </Field>
+          {!inGracePeriod ? (
+            <InputField
+              label="Expiry"
+              value={expiration}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <FieldValue minWidth="100px">{`In ${distanceToExpiry}`}</FieldValue>
+                ),
+              }}
+            />
+          ) : (
+            <Grid container mt={0.25} spacing={2}>
+              <Grid item xs={5}>
+                <InputField
+                  label="Expiry"
+                  value={expiration}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={7}>
+                <InputField
+                  label="Grace Period"
+                  value={`Ends in ${remainingGrace.label}`}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Grid>
+            </Grid>
+          )}
         </Grid>
       </DetailsContainer>
     </Grid>
