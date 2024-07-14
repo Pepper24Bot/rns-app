@@ -43,7 +43,7 @@ export const GracePeriodTip: React.FC<GracePeriodProps> = (
     <GraceContainer>
       <WarningIcon />
       <GraceTip>
-        The grace period for this identity will end on
+        The grace period for this identity will end in
         <HighlightTip> {remainingGrace.label}</HighlightTip>.{" "}
         {content
           ? content
