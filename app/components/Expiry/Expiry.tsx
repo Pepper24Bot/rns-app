@@ -35,6 +35,7 @@ import useToken from "@/hooks/useToken";
 import useBlockLatency from "@/hooks/useBlockLatency";
 import ViewTransaction from "../Reusables/ViewTransaction";
 import useFeatureToggle from "@/hooks/useFeatureToggle";
+import GracePeriodTip from "../Reusables/GracePeriodTip";
 
 const SummaryLabel = styled(SecondaryLabel)(({ theme }) => ({
   fontSize: "24px",
@@ -67,7 +68,7 @@ const HightlightText = styled("span")(({ theme }) => ({
 
 export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
   const { item, address } = props;
-  const { name, labelName } = item;
+  const { name, labelName, gracePeriod, expiryDate } = item;
 
   const { address: walletAddress = "0x" } = useAccount();
   const { data: xrpBalance } = useBalance({
@@ -237,7 +238,12 @@ export const Expiry: React.FC<ExpiryProps> = (props: ExpiryProps) => {
   return (
     <Grid>
       <FormContainer container>
-        <EnsImage name={name ?? ""} />
+        <Grid item xs width="min-content">
+          <EnsImage name={name ?? ""} />
+          {extendPage === 1 && (
+            <GracePeriodTip expiryDate={expiryDate} gracePeriod={gracePeriod} />
+          )}
+        </Grid>
         <DetailsContainer item>
           {extendPage === 1 ? (
             <Grid>
