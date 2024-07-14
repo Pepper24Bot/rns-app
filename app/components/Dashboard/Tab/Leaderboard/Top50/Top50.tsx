@@ -101,7 +101,9 @@ const TooltipContent = memo((item: Ranking) => {
             <TooltipRow key={`tooltip-${labelName}-${index}`}>
               <FlexJustified>
                 <TooltipName>{labelName}</TooltipName>
-                <TooltipText>In {getExpiry(expiryDate).distance}</TooltipText>
+                <TooltipText>
+                  In {getExpiry(expiryDate).distanceToExpiry}
+                </TooltipText>
               </FlexJustified>
             </TooltipRow>
           );

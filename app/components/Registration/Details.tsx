@@ -108,7 +108,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
   const resolverId = linkedTo || linkedAddr;
   const hasWarning = hasNonAsciiChars(labelName ?? "");
 
-  const { expiration, distance } = getExpiry(expiryDate);
+  const { expiration, distanceToExpiry } = getExpiry(expiryDate);
 
   useEffect(() => {
     const isNameShowing = isTooltipShowing(nameRef);
@@ -233,7 +233,7 @@ export const Details: React.FC<DetailsProps> = (props: DetailsProps) => {
                 <SkeletonTypography isloading={!isSuccess} />
                 <FieldLabel
                   isloading={!isSuccess}
-                >{`In ${distance}`}</FieldLabel>
+                >{`In ${distanceToExpiry}`}</FieldLabel>
               </Relative>
             </FlexJustified>
           </Field>

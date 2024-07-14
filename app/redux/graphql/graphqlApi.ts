@@ -14,7 +14,8 @@ export interface DomainResponse extends Omit<Name, "createdAt" | "expiryDate" | 
     cost?: string,
     records?: { text?: string[], coinTypes: string[] }
     createdAt?: string,
-    expiryDate?: string
+    expiryDate?: string,
+    gracePeriod?: string,
     registrationDate?: string
 }
 
@@ -52,6 +53,7 @@ export const graphqlApi = api.enhanceEndpoints({
                         records: { ...domain.resolver },
                         createdAt: domain.createdAt,
                         expiryDate: domain.registration?.expiryDate,
+                        gracePeriod: domain.wrappedDomain?.expiryDate,
                         registrationDate: domain.registration?.registrationDate
                     }
                 })

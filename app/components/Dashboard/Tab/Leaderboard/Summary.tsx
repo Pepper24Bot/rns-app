@@ -199,7 +199,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
           const item = {
             owner: wrappedOwner?.id,
             label: labelName,
-            expiryDate: getExpiry(expiryDate).distance,
+            expiryDate: getExpiry(expiryDate).distanceToExpiry,
           };
 
           const props = {
@@ -377,7 +377,7 @@ export const Summary: React.FC<SummaryProps> = (props: SummaryProps) => {
                         </Grid>
                         <Grid item xs={4}>
                           <RowText>
-                            In {getExpiry(item?.expiryDate).distance}
+                            In {getExpiry(item?.expiryDate).distanceToExpiry}
                           </RowText>
                         </Grid>
                       </Row>

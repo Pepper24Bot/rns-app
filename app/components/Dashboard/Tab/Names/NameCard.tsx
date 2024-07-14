@@ -74,7 +74,13 @@ export interface NameProps {
 
 export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const { item, address, boundingArea } = props;
-  const { name, labelName, expiryDate, resolvedAddress: ensAddr } = item;
+  const {
+    name,
+    labelName,
+    expiryDate,
+    gracePeriod,
+    resolvedAddress: ensAddr,
+  } = item;
 
   const { enqueueSnackbar } = useSnackbar();
   const { toggleModal } = useModalState();
@@ -112,7 +118,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
-  const { expiration, distance } = getExpiry(expiryDate);
+  const { expiration, distanceToExpiry } = getExpiry(expiryDate, gracePeriod);
 
   const handleDownloadPng = (imgURI: string) => {
     const link = document.createElement("a");
@@ -393,7 +399,7 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
                     </Detail>
                     <Detail>
                       <Label>In</Label>
-                      {distance}
+                      {distanceToExpiry}
                     </Detail>
                   </Grid>
                 </NameDetails>

@@ -181,7 +181,7 @@ export default function useAllNames(props?: Props) {
       const item = {
         owner: wrappedOwner?.id,
         label: labelName,
-        expiryDate: getExpiry(expiryDate).distance,
+        expiryDate: getExpiry(expiryDate).distanceToExpiry,
       };
 
       const props = {

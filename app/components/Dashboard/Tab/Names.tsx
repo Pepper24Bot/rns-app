@@ -124,7 +124,7 @@ export const Names: React.FC<NamesProps> = (props: NamesProps) => {
       document.cookie = `itemsPerPage=${value}; path=/`;
 
       // Scroll to the top
-      scrollIntoElement("Dashboard-Container");
+      scrollIntoElement("My Dashboard-Container");
     }
   };
 

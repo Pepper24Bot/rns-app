@@ -283,9 +283,9 @@ export const isTooltipShowing = (ref: React.MutableRefObject<HTMLDivElement | nu
  * @param expiry 
  * @returns 
  */
-export const getDistanceToExpiration = (expiry: Date) => {
+export const getDistanceToDate = (date: Date) => {
     const currentDate = new Date().toLocaleDateString("en-US")
-    const expiryDate = expiry.toLocaleDateString("en-US")
+    const expiryDate = date.toLocaleDateString("en-US")
 
     const distance = formatDistanceStrict(
         currentDate,
@@ -316,16 +316,21 @@ export const formatDate = (date: Date) => {
  * @param expiry the expiration date of an identity
  * @returns distance in days format and expiration in mm-dd-yyyy
  */
-export const getExpiry = (expiry: string = "") => {
-    const expiryDate = new Date(parseInt(expiry) * 1000)
-    const date = expiry ? expiryDate : new Date();
+export const getExpiry = (expiry: string = "", grace: string = "") => {
+    const expiryDate = expiry ? new Date(parseInt(expiry) * 1000) : new Date()
+    const graceDate = grace ? new Date(parseInt(grace) * 1000) : new Date()
 
-    const distance = getDistanceToExpiration(date);
-    const expiration = formatDate(date);
+    const distanceToExpiry = getDistanceToDate(expiryDate);
+    const remainingGrace = getDistanceToDate(graceDate);
+
+    const expiration = formatDate(expiryDate);
+    const gracePeriod = formatDate(graceDate);
 
     return {
-        distance,
-        expiration
+        distanceToExpiry,
+        expiration,
+        remainingGrace,
+        gracePeriod
     }
 }
 
