@@ -30,6 +30,7 @@ query NamesByAddress(
     parent {
       name
     }
+    expiryDate
     createdAt
     resolvedAddress {
       id

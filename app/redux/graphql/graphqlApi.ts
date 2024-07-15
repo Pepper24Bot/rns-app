@@ -61,7 +61,7 @@ export const graphqlApi = api.enhanceEndpoints({
                         records: { ...domain.resolver },
                         createdAt: domain.createdAt,
                         expiryDate: domain.registration?.expiryDate,
-                        gracePeriod: domain.wrappedDomain?.expiryDate,
+                        gracePeriod: domain?.expiryDate,
                         registrationDate: domain.registration?.registrationDate
                     }
                 })

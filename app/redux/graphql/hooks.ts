@@ -4690,7 +4690,7 @@ export type NamesByAddressQueryVariables = Exact<{
 }>;
 
 
-export type NamesByAddressQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, isMigrated: boolean, createdAt: any, parent?: { __typename?: 'Domain', name?: string | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, owner: { __typename?: 'Account', id: string }, registrant?: { __typename?: 'Account', id: string } | null, wrappedOwner?: { __typename?: 'Account', id: string } | null, registration?: { __typename?: 'Registration', cost?: any | null, registrationDate: any, expiryDate: any } | null, wrappedDomain?: { __typename?: 'WrappedDomain', expiryDate: any, fuses: number } | null, resolver?: { __typename?: 'Resolver', texts?: Array<string> | null, coinTypes?: Array<any> | null } | null }> };
+export type NamesByAddressQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, labelName?: string | null, labelhash?: any | null, name?: string | null, isMigrated: boolean, expiryDate?: any | null, createdAt: any, parent?: { __typename?: 'Domain', name?: string | null } | null, resolvedAddress?: { __typename?: 'Account', id: string } | null, owner: { __typename?: 'Account', id: string }, registrant?: { __typename?: 'Account', id: string } | null, wrappedOwner?: { __typename?: 'Account', id: string } | null, registration?: { __typename?: 'Registration', cost?: any | null, registrationDate: any, expiryDate: any } | null, wrappedDomain?: { __typename?: 'WrappedDomain', expiryDate: any, fuses: number } | null, resolver?: { __typename?: 'Resolver', texts?: Array<string> | null, coinTypes?: Array<any> | null } | null }> };
 
 export type NamesQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -4725,6 +4725,7 @@ export const NamesByAddressDocument = `
     parent {
       name
     }
+    expiryDate
     createdAt
     resolvedAddress {
       id
