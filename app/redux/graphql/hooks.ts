@@ -4711,7 +4711,7 @@ export type OwnerQuery = { __typename?: 'Query', domains: Array<{ __typename?: '
 export const NamesByAddressDocument = `
     query NamesByAddress($expiryDate_gte: BigInt = "0", $expiryDate_lt: BigInt = "0", $first: Int = 1000, $skip: Int = 0, $name: String = "", $id: ID = "", $orderDirection: OrderDirection = desc, $orderBy: Domain_orderBy = registration__registrationDate, $ensName: String = "", $sortByLength: Boolean = false) {
   domains(
-    where: {wrappedOwner_: {id: $id}, name_contains: $name, expiryDate_gte: $expiryDate_gte, expiryDate_lt: $expiryDate_lt}
+    where: {wrappedOwner_: {id: $id}, name_starts_with: $name, expiryDate_gte: $expiryDate_gte, expiryDate_lt: $expiryDate_lt}
     first: $first
     skip: $skip
     orderBy: $orderBy

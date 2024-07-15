@@ -120,8 +120,10 @@ export const NameCard: React.FC<NameProps> = (props: NameProps) => {
   const hasLinkedAddr = ensAddr && ensAddr !== EMPTY_ADDRESS;
   const imageUrl = `https://rns-metadata.fly.dev/${networkName}/${contractAddr}/${nameHash}/image`;
 
-  const { expiration, distanceToExpiry, gracePeriod, remainingGrace } =
-    getExpiry(expiryDate, graceDate);
+  const { expiration, distanceToExpiry, remainingGrace } = getExpiry(
+    expiryDate,
+    graceDate
+  );
 
   const inGracePeriod = isInGracePeriod(graceDate);
 

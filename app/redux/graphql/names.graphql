@@ -13,7 +13,7 @@ query NamesByAddress(
   domains(
     where: {
       wrappedOwner_: { id: $id }
-      name_contains: $name
+      name_starts_with: $name
       expiryDate_gte: $expiryDate_gte
       expiryDate_lt: $expiryDate_lt
     }
