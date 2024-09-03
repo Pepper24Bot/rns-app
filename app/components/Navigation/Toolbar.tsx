@@ -34,7 +34,7 @@ import {
   parseCookie,
   scrollIntoElement,
 } from "@/utils/common";
-import { Address, toBytes } from "viem";
+import { Address, fromBytes, toBytes } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { DISCORD, DOCS, TWITTER } from "@/constants/url";
 import { usePathname, useRouter } from "next/navigation";
@@ -380,7 +380,7 @@ export const Toolbar: React.FC = () => {
               env="Production"
               signMessage={async (message: Uint8Array) => {
                 const result = await signMessageAsync({
-                  message: message.toString(),
+                  message: fromBytes(message, "string"),
                 });
                 return toBytes(result);
               }}
