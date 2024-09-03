@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  NotifiContext,
+  NotifiSubscriptionCard,
+} from "@notifi-network/notifi-react-card";
+import {
   Grid,
   Link,
   MenuItem as MuiMenuItem,
@@ -22,7 +26,7 @@ import {
   ProgressTooltip,
   ToolbarButton,
 } from "../Theme/StyledGlobal";
-import { useAccount, useEnsName } from "wagmi";
+import { useAccount, useEnsName, useSignMessage } from "wagmi";
 import { useModalState } from "@/redux/modal/modalSlice";
 import {
   getMaskedAddress,
@@ -30,7 +34,7 @@ import {
   parseCookie,
   scrollIntoElement,
 } from "@/utils/common";
-import { Address } from "viem";
+import { Address, toBytes } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
 import { DISCORD, DOCS, TWITTER } from "@/constants/url";
 import { usePathname, useRouter } from "next/navigation";
@@ -112,6 +116,8 @@ const MenuLabel = styled(ToolbarLabel)(({ theme }) => ({
   fontSize: "14px",
   padding: "2px 4px",
   width: "100%",
+  display: "flex",
+  alignItems: "center",
 }));
 
 const MenuDivider = styled(Divider)(({ theme }) => ({
@@ -163,6 +169,12 @@ export const Toolbar: React.FC = () => {
   const [run, setRun] = useState<boolean>(true);
   const [steps, setSteps] = useState<Step[]>([]);
 
+  const [openNotifiPanel, setOpenNotifiPanel] = useState<boolean>(false);
+  const notifiButtonRef = useRef<HTMLButtonElement>(null);
+  const notifiMobileButtonRef = useRef<HTMLButtonElement>(null);
+  const [notifiPanelAnchor, setNotifiPanelAnchor] = useState(notifiButtonRef);
+  const { signMessageAsync } = useSignMessage();
+
   const isLabelLoading =
     isAccountLoading(status) ||
     (status !== "disconnected" && isEnsFetching && !isEnsFetched);
@@ -195,6 +207,23 @@ export const Toolbar: React.FC = () => {
     setMenuAnchor(null);
     if (typeof window !== "undefined") {
       window.open(url, "_blank");
+    }
+  };
+
+  const handleCloseNotifiPanel = () => {
+    setOpenNotifiPanel(false);
+  };
+
+  const handleOpenNotifiPanel = (isMobile = false) => {
+    if (!address) {
+      toggleModal({
+        id: "Wallets",
+        title: "Choose your Wallet",
+        isXDisabled: true,
+      });
+    } else {
+      setNotifiPanelAnchor(isMobile ? notifiMobileButtonRef : notifiButtonRef);
+      setOpenNotifiPanel(true);
     }
   };
 
@@ -329,6 +358,39 @@ export const Toolbar: React.FC = () => {
             <i className="fa-brands fa-x-twitter fa-xl" />
           </SocialButton>
         </Link>
+        <SocialButton
+          variant="outlined"
+          onClick={() => handleOpenNotifiPanel()}
+          ref={notifiButtonRef}
+        >
+          <Image src="/icons/bell.svg" alt="RNS Icon" width={24} height={24} />
+        </SocialButton>
+        <MenuPopover
+          isOpen={openNotifiPanel}
+          anchorEl={notifiPanelAnchor.current}
+          toggleClose={handleCloseNotifiPanel}
+        >
+          <div
+            style={{
+              width: "300px",
+            }}
+          >
+            <NotifiContext
+              dappAddress="arypdj20udmttckhcpdu"
+              env="Production"
+              signMessage={async (message: Uint8Array) => {
+                const result = await signMessageAsync({
+                  message: message.toString(),
+                });
+                return toBytes(result);
+              }}
+              walletPublicKey={address!}
+              walletBlockchain="THE_ROOT_NETWORK"
+            >
+              <NotifiSubscriptionCard cardId="f8d39d0f7f164b038a6ca9d10741c55c" />
+            </NotifiContext>
+          </div>
+        </MenuPopover>
         <Divider orientation="vertical" flexItem />
       </Flex>
 
@@ -348,6 +410,7 @@ export const Toolbar: React.FC = () => {
             setMenuAnchor(event.currentTarget);
             setIsMenuOpen(!isMenuOpen);
           }}
+          ref={notifiMobileButtonRef}
         >
           <Menu />
         </ToolbarButton>
@@ -413,6 +476,18 @@ export const Toolbar: React.FC = () => {
                   style={{ marginRight: "8px" }}
                 />
                 Discord
+              </MenuLabel>
+            </MenuItem>
+            <MenuItem onClick={() => handleOpenNotifiPanel(true)}>
+              <MenuLabel>
+                <Image
+                  src="/icons/bell.svg"
+                  alt="RNS Icon"
+                  width={18}
+                  height={18}
+                  style={{ marginRight: "8px" }}
+                />
+                Alerts
               </MenuLabel>
             </MenuItem>
           </MenuContainer>
