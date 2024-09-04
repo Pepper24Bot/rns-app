@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import PageWrapper from "@/components/Wrapper/PageWrapper";
 
 import "@/styles/globals.css";
-import "@notifi-network/notifi-react-card/dist/index.css";
+import "@notifi-network/notifi-react/dist/index.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

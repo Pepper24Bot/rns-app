@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  NotifiContext,
-  NotifiSubscriptionCard,
-} from "@notifi-network/notifi-react-card";
+  NotifiContextProvider,
+  NotifiCardModal,
+} from "@notifi-network/notifi-react";
 import {
   Grid,
   Link,
@@ -375,8 +375,8 @@ export const Toolbar: React.FC = () => {
               width: "300px",
             }}
           >
-            <NotifiContext
-              dappAddress="arypdj20udmttckhcpdu"
+            <NotifiContextProvider
+              tenantId="arypdj20udmttckhcpdu"
               env="Production"
               signMessage={async (message: Uint8Array) => {
                 const result = await signMessageAsync({
@@ -386,9 +386,10 @@ export const Toolbar: React.FC = () => {
               }}
               walletPublicKey={address!}
               walletBlockchain="THE_ROOT_NETWORK"
+              cardId="f8d39d0f7f164b038a6ca9d10741c55c"
             >
-              <NotifiSubscriptionCard cardId="f8d39d0f7f164b038a6ca9d10741c55c" />
-            </NotifiContext>
+              <NotifiCardModal />
+            </NotifiContextProvider>
           </div>
         </MenuPopover>
         <Divider orientation="vertical" flexItem />
