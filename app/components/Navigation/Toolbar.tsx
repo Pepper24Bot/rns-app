@@ -387,6 +387,14 @@ export const Toolbar: React.FC = () => {
               walletPublicKey={address!}
               walletBlockchain="THE_ROOT_NETWORK"
               cardId="f8d39d0f7f164b038a6ca9d10741c55c"
+              inputs={{
+                walletAddress: [
+                  {
+                    label: "",
+                    value: address,
+                  },
+                ],
+              }}
             >
               <NotifiCardModal />
             </NotifiContextProvider>
