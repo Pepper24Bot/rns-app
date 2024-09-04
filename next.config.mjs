@@ -1,8 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-};
-
 export default {
   reactStrictMode: true,
   images: {
@@ -18,6 +14,9 @@ export default {
         port: "8080",
       },
     ],
+  },
+  experimental: {
+    serverComponentsExternalPackages: ["@xmtp/user-preferences-bindings-wasm"],
   },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
