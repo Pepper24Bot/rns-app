@@ -128,7 +128,7 @@ export const Toolbar: React.FC = () => {
   const { address: walletAddress, connector, status, chainId } = useAccount();
   const { useRootNetwork } = useRootNetworkState();
   const {
-    data: { address },
+    data: { address, eoaAddress },
   } = useRootNetwork();
 
   const {
@@ -384,14 +384,14 @@ export const Toolbar: React.FC = () => {
                 });
                 return toBytes(result);
               }}
-              walletPublicKey={address!}
+              walletPublicKey={eoaAddress!}
               walletBlockchain="THE_ROOT_NETWORK"
               cardId="f8d39d0f7f164b038a6ca9d10741c55c"
               inputs={{
                 walletAddress: [
                   {
                     label: "",
-                    value: address,
+                    value: eoaAddress,
                   },
                 ],
               }}
