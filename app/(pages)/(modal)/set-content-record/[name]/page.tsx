@@ -50,14 +50,12 @@ export default function Page({ params }: { params: { name: string } }) {
 
 	const {
 		data,
-		isSuccess: isContentSuccess,
-		status,
-		error,
+    isSuccess
 	} = useReadContract({
 		abi: PUBLIC_RESOLVER.abi,
 		address: PUBLIC_RESOLVER.address as `0x${string}`,
 		functionName: "contenthash",
-		args: [namehash(name)],
+		args: [namehash(`${name}.root`)],
 	});
 
 	const toggleContentModal = () => {
@@ -69,7 +67,7 @@ export default function Page({ params }: { params: { name: string } }) {
 			data: {
 				item: names[0],
 				address,
-				contentHash: data,
+				contentHash: data
 			},
 		});
 	};
@@ -77,7 +75,7 @@ export default function Page({ params }: { params: { name: string } }) {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		setHasMounted(true);
-		if (normalizedLabel && address && isNameSuccess && isContentSuccess) {
+		if (normalizedLabel && address && isNameSuccess && isSuccess) {
 			if (!isEmpty(names)) {
 				toggleContentModal();
 			} else {
@@ -92,7 +90,7 @@ export default function Page({ params }: { params: { name: string } }) {
 		normalizedLabel,
 		address,
 		isNameSuccess,
-		isContentSuccess,
+		isSuccess,
 		enqueueSnackbar,
 	]);
 

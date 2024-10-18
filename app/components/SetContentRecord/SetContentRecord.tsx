@@ -81,6 +81,7 @@ export const SetContentRecord: React.FC<ContentProps> = (
 	const router = useRouter();
 
 	const { address, item, contentHash: originalContentHash } = props;
+
 	const doesContentExist = useMemo(
 		() => originalContentHash && originalContentHash !== "0x",
 		[originalContentHash],
@@ -218,7 +219,7 @@ export const SetContentRecord: React.FC<ContentProps> = (
 					)}
 					<InputField
 						label="Content Hash"
-						placeholder="eg. ipfs://bafedfd........"
+						placeholder={originalContentHash === undefined ? "fetching content hash..." : "eg. ipfs://bafedfd........"}
 						focused
 						disabled={!isEditing && doesContentExist}
 						value={
