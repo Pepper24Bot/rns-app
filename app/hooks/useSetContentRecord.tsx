@@ -43,8 +43,8 @@ export default function useSetContentRecord() {
 
 				if (isFpActive) {
 					transferHash = (await contentProxyCall({
-						contentHash: content,
-						name,
+						contentHash: toHex(content),
+						name: nameHash,
 					})) as Address;
 				} else {
 					transferHash = await writeContractAsync({

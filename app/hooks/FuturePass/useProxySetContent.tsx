@@ -24,7 +24,7 @@ export default function useProxySetContent(props: ProxyProps) {
 			const publicResolver = getContract();
 			const transferData = publicResolver.interface.encodeFunctionData(
 				"setContenthash",
-				[name, toHex(contentHash)],
+				[name, contentHash],
 			);
 
 			try {
