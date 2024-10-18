@@ -11,6 +11,9 @@ import useValidateName from "@/hooks/useValidateName";
 import useWrappedData from "@/hooks/useWrappedData";
 import Dashboard from "@/components/Dashboard/Dashboard";
 import useAllNamesForAddress from "@/hooks/useAllNamesForAddress";
+import { useReadContract } from "wagmi";
+import { PUBLIC_RESOLVER } from "@/abis/root/PublicResolver";
+import { namehash } from "viem";
 
 export default function Page({ params }: { params: { name: string } }) {
 	const name = decodeURI(params.name);
@@ -45,6 +48,18 @@ export default function Page({ params }: { params: { name: string } }) {
 		},
 	});
 
+	const {
+		data,
+		isSuccess: isContentSuccess,
+		status,
+		error,
+	} = useReadContract({
+		abi: PUBLIC_RESOLVER.abi,
+		address: PUBLIC_RESOLVER.address as `0x${string}`,
+		functionName: "contenthash",
+		args: [namehash(name)],
+	});
+
 	const toggleContentModal = () => {
 		toggleModal({
 			id: "Set Content Record",
@@ -54,13 +69,15 @@ export default function Page({ params }: { params: { name: string } }) {
 			data: {
 				item: names[0],
 				address,
+				contentHash: data,
 			},
 		});
 	};
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		setHasMounted(true);
-		if (normalizedLabel && address && isNameSuccess) {
+		if (normalizedLabel && address && isNameSuccess && isContentSuccess) {
 			if (!isEmpty(names)) {
 				toggleContentModal();
 			} else {
@@ -71,7 +88,13 @@ export default function Page({ params }: { params: { name: string } }) {
 				);
 			}
 		}
-	}, [normalizedLabel, address, isNameSuccess]);
+	}, [
+		normalizedLabel,
+		address,
+		isNameSuccess,
+		isContentSuccess,
+		enqueueSnackbar,
+	]);
 
 	return <Dashboard tab={0} hasMounted={hasMounted} />;
 }
