@@ -12,7 +12,7 @@ import useNamesForAddress from "@/hooks/useNamesForAddress";
 import Dashboard from "@/components/Dashboard/Dashboard";
 
 export default function Page({ params }: { params: { name: string } }) {
-  const name = decodeURI(params.name);
+  const name = decodeURIComponent(params.name);
   const label = name.split(".root")[0];
 
   const router = useRouter();
