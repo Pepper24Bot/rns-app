@@ -36,7 +36,7 @@ import {
 } from "@/utils/common";
 import { Address, fromBytes, toBytes } from "viem";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
-import { DISCORD, DOCS, TWITTER } from "@/constants/url";
+import { DISCORD, DOCS, TRADE, TWITTER } from "@/constants/url";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu } from "@mui/icons-material";
 
@@ -49,7 +49,7 @@ import Account from "./Account";
 const ToolbarContainer = styled(Flex)(({ theme }) => ({
   padding: "10px 0",
 
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("md")]: {
     width: "100%",
     justifyContent: "center",
   },
@@ -313,7 +313,8 @@ export const Toolbar: React.FC = () => {
         sx={{
           display: {
             xs: "none",
-            sm: "flex",
+            sm: "none",
+            md: "flex",
           },
         }}
       >
@@ -339,11 +340,16 @@ export const Toolbar: React.FC = () => {
           <ToolbarLabel>Docs</ToolbarLabel>
         </Link>
         <Divider orientation="vertical" flexItem />
+        <Link href={TRADE} target="_blank">
+          <ToolbarLabel>Trade</ToolbarLabel>
+        </Link>
+        <Divider orientation="vertical" flexItem />
       </Flex>
       <Flex
         sx={{
           display: {
             xs: "none",
+            sm: "none",
             md: "flex",
           },
         }}
@@ -407,8 +413,8 @@ export const Toolbar: React.FC = () => {
       <Flex
         sx={{
           display: {
-            xs: "flex",
-            sm: "none",
+            sm: "flex",
+            md: "none",
           },
         }}
       >
@@ -459,6 +465,14 @@ export const Toolbar: React.FC = () => {
               }}
             >
               <MenuLabel>Docs</MenuLabel>
+            </MenuItem>
+            <MenuDivider />
+            <MenuItem
+              onClick={() => {
+                return handleLinkWindow(TRADE);
+              }}
+            >
+              <MenuLabel>Trade</MenuLabel>
             </MenuItem>
             <MenuDivider />
             <MenuItem
