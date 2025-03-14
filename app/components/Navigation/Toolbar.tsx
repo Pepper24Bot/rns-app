@@ -340,10 +340,10 @@ export const Toolbar: React.FC = () => {
           <ToolbarLabel>Docs</ToolbarLabel>
         </Link>
         <Divider orientation="vertical" flexItem />
-        <Link href={TRADE} target="_blank">
+        {/* <Link href={TRADE} target="_blank">
           <ToolbarLabel>Trade</ToolbarLabel>
         </Link>
-        <Divider orientation="vertical" flexItem />
+        <Divider orientation="vertical" flexItem /> */}
       </Flex>
       <Flex
         sx={{
@@ -467,14 +467,14 @@ export const Toolbar: React.FC = () => {
               <MenuLabel>Docs</MenuLabel>
             </MenuItem>
             <MenuDivider />
-            <MenuItem
+            {/* <MenuItem
               onClick={() => {
                 return handleLinkWindow(TRADE);
               }}
             >
               <MenuLabel>Trade</MenuLabel>
             </MenuItem>
-            <MenuDivider />
+            <MenuDivider /> */}
             <MenuItem
               onClick={() => {
                 return handleLinkWindow(TWITTER);
