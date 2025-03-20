@@ -365,7 +365,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
   useEffect(() => {
     if (xrpBalance?.value !== undefined) {
       const isSufficient =
-        Number(formatEther(xrpBalance?.value ?? BigInt(0))) >= 5;
+        Number(formatEther(xrpBalance?.value ?? BigInt(0))) >= 2.5;
       setXrpSufficient(isSufficient);
     }
   }, [xrpBalance?.value]);
@@ -402,9 +402,8 @@ export const RegisterName: React.FC<RegistrationProps> = (
             <Collapse in={!isXrpSufficient}>
               <FlexCenter pb={3}>
                 <ErrorTip>
-                  Approximately 5 XRP for gas fees is required per RNS
-                  registration. Please top up your XRP balance in your EOA
-                  wallet via the{" "}
+                  To avoid any disruptions, please top up your XRP balance in
+                  your EOA wallet to at least 2.5 XRP via the.
                   <Link href={FUTUREVERSE} target="_blank">
                     <HightlightText>FuturePass Dashboard</HightlightText>
                   </Link>

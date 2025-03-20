@@ -281,7 +281,7 @@ export const Form: React.FC<FormProps> = (props: FormProps) => {
             <Grid py={1}>
               <Transaction>
                 <TransactionLabel pr={2}>Transaction fees</TransactionLabel>
-                <Value>XRP</Value>
+                <Value>Paid in XRP</Value>
               </Transaction>
               <Transaction pt={0.5}>
                 <Balance pr={2}>EOA Wallet Balance</Balance>
