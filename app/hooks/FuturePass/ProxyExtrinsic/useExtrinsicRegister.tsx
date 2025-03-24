@@ -1,15 +1,15 @@
-import "@therootnetwork/api-types"; // optional, for Typescript support
-import { useAccount } from "wagmi";
-import { Address, encodeFunctionData } from "viem";
-import { signExtrinsicPayload } from "@/utils/futurepass";
-import { useEffect, useState } from "react";
-import { ApiPromise } from "@polkadot/api";
 import { CommitProps, RegisterProps } from "@/interfaces/registration";
 import { useRootNetworkState } from "@/redux/rootNetwork/rootNetworkSlice";
+import { signExtrinsicPayload } from "@/utils/futurepass";
+import { ApiPromise } from "@polkadot/api";
+import "@therootnetwork/api-types"; // optional, for Typescript support
+import { useEffect, useState } from "react";
+import { Address, encodeFunctionData } from "viem";
+import { useAccount } from "wagmi";
 
+import useConnectRoot from "../../useConnectRoot";
 import useContractDetails from "../../useContractDetails";
 import useEstimateFees from "../../useEstimateFees";
-import useConnectRoot from "../../useConnectRoot";
 
 export interface ConnectProps {
   state: "initialize" | "reinitialize";
@@ -26,11 +26,12 @@ export default function useExtrinsicRegister() {
     data: { futurePassAddress: futurePass },
   } = useRootNetwork();
 
-  const [api, setApiPromise] = useState<ApiPromise>();
+  const [apiPromise, setApiPromise] = useState<ApiPromise>();
 
   const commitExtrinsic = async (props: CommitProps) => {
     const { hash } = props;
-    if (hash && futurePass && api) {
+    if (hash && futurePass && apiPromise) {
+      console.log("hash-extr:: ", hash);
       // Get transaction data using encodeFunctionData
       const data = encodeFunctionData({
         abi: controller.abi,
@@ -49,12 +50,12 @@ export default function useExtrinsicRegister() {
       const maxFeePerGas = await getMaxFeePerGas();
 
       // Prepare Transaction Call
-      const evmCall = api.tx.evm.call(
+      const evmCall = apiPromise.tx.evm.call(
         futurePass,
         controller.address,
         data,
         0,
-        gasLimit,
+        0, // gasLimit,
         maxFeePerGas,
         0,
         null,
@@ -62,20 +63,21 @@ export default function useExtrinsicRegister() {
       );
 
       // Call ProxyExtrinsic
-      const extrinsic = api.tx.futurepass.proxyExtrinsic(
+      const extrinsic = apiPromise.tx.futurepass.proxyExtrinsic(
         futurePass ?? "",
         evmCall
       );
 
       // Create Extrinsic Payload and Sign it using the wallet/eoa address
       const signedExtrinsic = await signExtrinsicPayload({
-        api,
+        api: apiPromise,
         address: walletAddress ?? "",
         extrinsic,
       });
 
       // Submit the transaction
-      const result = await api.tx(signedExtrinsic).send();
+      const result = await apiPromise.tx(signedExtrinsic).send();
+      console.log("commit-extrinsic-tx:: ", result.toHex());
       return result.toHex();
     }
   };
@@ -83,7 +85,7 @@ export default function useExtrinsicRegister() {
   const registerExtrinsic = async (props: RegisterProps) => {
     const { args } = props;
 
-    if (args && futurePass && api) {
+    if (args && futurePass && apiPromise) {
       // Get transaction data using encodeFunctionData
       const data = encodeFunctionData({
         abi: controller.abi,
@@ -102,22 +104,22 @@ export default function useExtrinsicRegister() {
       });
 
       // Estimate Contract Gas
-      const gasLimit = await getEstimatedGas({
-        account: walletAddress as Address,
-        contractAddr: controller.address,
-        data,
-      });
+      // const gasLimit = await getEstimatedGas({
+      //   account: walletAddress as Address,
+      //   contractAddr: controller.address,
+      //   data,
+      // });
 
       // Get Fee History
       const maxFeePerGas = await getMaxFeePerGas();
 
       // Prepare Transaction Call
-      const evmCall = api.tx.evm.call(
+      const evmCall = apiPromise.tx.evm.call(
         futurePass,
         controller.address,
         data,
         0,
-        gasLimit,
+        0, // gasLimit,
         maxFeePerGas,
         0,
         null,
@@ -125,21 +127,23 @@ export default function useExtrinsicRegister() {
       );
 
       // Call ProxyExtrinsic
-      const extrinsic = api.tx.futurepass.proxyExtrinsic(
+      const extrinsic = apiPromise.tx.futurepass.proxyExtrinsic(
         futurePass ?? "",
         evmCall
       );
 
       // Create Extrinsic Payload and Sign it using the wallet/eoa address
       const signedExtrinsic = await signExtrinsicPayload({
-        api,
+        api: apiPromise,
         address: walletAddress ?? "",
         extrinsic,
       });
 
       // Submit the transaction
-      const result = await api.tx(signedExtrinsic).send();
-      console.log("register-tx:: ", result);
+      const result = await apiPromise.tx(signedExtrinsic).send();
+      console.log("register-extrinsic-toHuman:: ", result.toHuman());
+      console.log("register-extrinsic-toHex:: ", result.toHex());
+      console.log("---------------------");
       return result.toHex();
     }
   };

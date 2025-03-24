@@ -13,9 +13,11 @@ import { useSnackbar } from "notistack";
 import useContractDetails from "./useContractDetails";
 import useProxyRegister from "./FuturePass/useProxyRegister";
 import useWaitTransaction from "./useWaitTransaction";
+import useExtrinsicRegister from "./FuturePass/ProxyExtrinsic/useExtrinsicRegister";
 
 export default function useRegister() {
   const controller = useContractDetails({ action: "RegistrarController" });
+  const ensRegistry = useContractDetails({ action: "ENSRegistry" });
 
   const { enqueueSnackbar } = useSnackbar();
   const { abi, address: controllerAddr } = controller;
@@ -28,6 +30,8 @@ export default function useRegister() {
   const { registerProxyCall, commitProxyCall } = useProxyRegister({
     registrarController: controller,
   });
+
+  const { registerExtrinsic, commitExtrinsic } = useExtrinsicRegister();
 
   const [isCommitLoading, setCommitLoading] = useState(false);
   const [isRegisterLoading, setRegisterLoading] = useState(false);
@@ -72,6 +76,36 @@ export default function useRegister() {
     return response;
   };
 
+  const getRecord = async (name: string) => {
+    const hash = namehash(name);
+    const tokenId = BigInt(hash);
+
+    console.log("tokenId:: ", tokenId);
+    console.log("hash:: ", hash);
+
+    let response = { ...initializeResponse() };
+
+    if (hash) {
+      try {
+        const record = await readContract(config, {
+          abi: ensRegistry.abi,
+          address: ensRegistry.address,
+          functionName: "recordExists",
+          args: [hash],
+        });
+        response.data = record;
+        console.log("records-response:: ", record);
+      } catch (e) {
+        const error = e as ErrorResponse;
+        response.error = error;
+        enqueueSnackbar(error.shortMessage, { variant: "error" });
+      }
+    }
+
+    console.log("Records-Response:: ", response);
+    return response;
+  };
+
   /**
    *
    * @param props
@@ -87,7 +121,17 @@ export default function useRegister() {
         let commitHash = "0x" as Address;
 
         if (isFpActive) {
-          commitHash = (await commitProxyCall({ hash })) as Address;
+          // commitHash = (await commitProxyCall({ hash })) as Address;
+          setCommitLoading(true);
+          commitHash = (await commitExtrinsic({ hash })) as Address;
+          response = {
+            isSuccess: true,
+            error: null,
+            data: {
+              hash: commitHash,
+              receipt: hash,
+            },
+          };
         } else {
           commitHash = await writeContractAsync({
             abi,
@@ -95,13 +139,14 @@ export default function useRegister() {
             functionName: "commit",
             args: [hash],
           });
+
+          setCommitLoading(true);
+          response = await waitForWriteTransaction(commitHash);
         }
 
         enqueueSnackbar("Request to register is in progress.", {
           variant: "info",
         });
-        setCommitLoading(true);
-        response = await waitForWriteTransaction(commitHash);
       } catch (e) {
         const error = e as ErrorResponse;
         response.error = error;
@@ -145,7 +190,20 @@ export default function useRegister() {
       });
 
       if (isFpActive) {
-        registerHash = (await registerProxyCall({
+        // registerHash = (await registerProxyCall({
+        //   args: {
+        //     name,
+        //     owner: address ?? "",
+        //     duration,
+        //     secret,
+        //     resolverAddr,
+        //     paymentAddress,
+        //     addressRecord,
+        //     isPrimary: isPrimary || false,
+        //   },
+        // })) as Address;
+        setRegisterLoading(true);
+        registerHash = (await registerExtrinsic({
           args: {
             name,
             owner: address ?? "",
@@ -157,6 +215,14 @@ export default function useRegister() {
             isPrimary: isPrimary || false,
           },
         })) as Address;
+        response = {
+          isSuccess: true,
+          error: null,
+          data: {
+            hash: registerHash,
+            receipt: registerHash,
+          },
+        };
       } else {
         registerHash = await writeContractAsync({
           abi,
@@ -175,14 +241,14 @@ export default function useRegister() {
             paymentAddress ?? "",
           ],
         });
+
+        setRegisterLoading(true);
+        response = await waitForWriteTransaction(registerHash);
       }
 
       enqueueSnackbar("Registration is in progress. Please, do not close.", {
         variant: "info",
       });
-
-      setRegisterLoading(true);
-      response = await waitForWriteTransaction(registerHash);
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
@@ -199,6 +265,7 @@ export default function useRegister() {
     commit: handleCommit,
     register: handleRegister,
     commitments: getCommitments,
+    records: getRecord,
     isLoading: isCommitLoading || isRegisterLoading,
     isCommitLoading,
     isRegisterLoading,

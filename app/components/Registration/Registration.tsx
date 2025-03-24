@@ -150,7 +150,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
     isPrimary: primary,
   });
 
-  const { commit, register, isLoading, commitments } = useRegister();
+  const { commit, register, isLoading, commitments, records } = useRegister();
   const { approve, isApprovalLoading, getBalance, isBalanceLoading } =
     useToken();
 
@@ -193,6 +193,7 @@ export const RegisterName: React.FC<RegistrationProps> = (
    */
   const getCommitment = async () => {
     const { data, isSuccess } = await commitments({ hash: hashStr });
+    await records(name);
     if (isSuccess) {
       setSkipCommit(data.isCommitmentValid);
     }

@@ -13,6 +13,7 @@ import { useSnackbar } from "notistack";
 import useContractDetails from "./useContractDetails";
 import useProxyToken from "./FuturePass/useProxyToken";
 import useWaitTransaction from "./useWaitTransaction";
+import useExtrinsicTokenApproval from "./FuturePass/ProxyExtrinsic/useExtrinsicTokenApproval";
 
 export interface TokenProps {
   payment?: Payment;
@@ -30,6 +31,7 @@ export default function useToken() {
     data: { address, isFpActive },
   } = useRootNetwork();
   const { approveProxyCall } = useProxyToken();
+  const { approveTokenExtrinsic } = useExtrinsicTokenApproval();
   const { waitForWriteTransaction } = useWaitTransaction();
   const { writeContractAsync } = useWriteContract();
   const { address: controllerAddr } = controller;
@@ -56,11 +58,26 @@ export default function useToken() {
       const value = parseUnits(fee.toString(), payment?.decimals);
 
       if (isFpActive) {
-        approveHash = (await approveProxyCall({
+        // approveHash = (await approveProxyCall({
+        //   spender,
+        //   tokenAddr,
+        //   amount: value,
+        // })) as Address;
+        setApprovalLoading(true);
+        approveHash = (await approveTokenExtrinsic({
           spender,
           tokenAddr,
           amount: value,
         })) as Address;
+
+        response = {
+          isSuccess: true,
+          error: null,
+          data: {
+            hash: approveHash,
+            receipt: approveHash,
+          },
+        };
       } else {
         approveHash = await writeContractAsync({
           abi: erc20Abi,
@@ -68,11 +85,11 @@ export default function useToken() {
           functionName: "approve",
           args: [spender, value],
         });
+
+        response = await waitForWriteTransaction(approveHash);
       }
 
       enqueueSnackbar("Token approval is in progress.", { variant: "info" });
-      setApprovalLoading(true);
-      response = await waitForWriteTransaction(approveHash);
     } catch (e) {
       const error = e as ErrorResponse;
       response.error = error;
