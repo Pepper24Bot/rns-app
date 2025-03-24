@@ -5,7 +5,7 @@ export const TWITTER_AUTH = "https://twitter.com/i/oauth2/authorize";
 
 export const FUTURE_PASS = "https://futurepass.futureverse.app/stuff/";
 
-export const DISCORD = "https://discord.gg/rootnameservice";
+export const DISCORD = "https://discord.gg/n34dGeXtdW";
 
 export const DOCS = "https://docs.rootnameservice.com/";
 
